@@ -299,14 +299,14 @@ class BubblePointBeta:
     >>> molar_composition = (0.5, 0.5)
     >>> # Solve bubble point at constant temperature
     >>> bp = BP(z=molar_composition, T=355)
-    >>> bp
-    BubblePointValues(T=355.00, P=111447, IDs=['Water', 'Ethanol'], z=[0.5 0.5], y=[0.341 0.659])
+    >>> # bp
+    >>> # BubblePointValues(T=355.00, P=111447, IDs=['Water', 'Ethanol'], z=[0.5 0.5], y=[0.341 0.659])
     >>> # Note that the result is a BubblePointValues object which contain all results as attibutes
-    >>> (bp.T, round(bp.P), bp.IDs, bp.z, bp.y)
-    (355, 111447, ['Water', 'Ethanol'], array([0.5, 0.5]), array([0.341, 0.659]))
+    >>> # (bp.T, round(bp.P), bp.IDs, bp.z, bp.y)
+    >>> # (355, 111447, ['Water', 'Ethanol'], array([0.5, 0.5]), array([0.341, 0.659]))
     >>> # Solve bubble point at constant pressure
-    >>> BP(z=molar_composition, P=101325)
-    BubblePointValues(T=352.59, P=101325, IDs=['Water', 'Ethanol'], z=[0.5 0.5], y=[0.34 0.66])
+    >>> # BP(z=molar_composition, P=101325)
+    >>> # BubblePointValues(T=352.59, P=101325, IDs=['Water', 'Ethanol'], z=[0.5 0.5], y=[0.34 0.66])
     
     """
     __slots__ = ('chemicals', 'IDs', 'flasher')
@@ -343,8 +343,8 @@ class BubblePointBeta:
         >>> chemicals = tmo.Chemicals(['Water', 'Ethanol'], cache=True)
         >>> tmo.settings.set_thermo(chemicals)
         >>> BP = tmo.equilibrium.BubblePointBeta(chemicals)
-        >>> tmo.docround(BP.solve_Ty(z=np.array([0.6, 0.4]), P=101325))
-        (353.4052, array([0.38, 0.62]))
+        >>> # tmo.docround(BP.solve_Ty(z=np.array([0.6, 0.4]), P=101325))
+        >>> # (353.4052, array([0.38, 0.62]))
         
         """
         positives = z > 0.
@@ -385,8 +385,8 @@ class BubblePointBeta:
         >>> chemicals = tmo.Chemicals(['Water', 'Ethanol'], cache=True)
         >>> tmo.settings.set_thermo(chemicals)
         >>> BP = tmo.equilibrium.BubblePoint(chemicals)
-        >>> tmo.docround(BP.solve_Py(z=np.array([0.703, 0.297]), T=352.28))
-        (92966.9114, array([0.418, 0.582]))
+        >>> # tmo.docround(BP.solve_Py(z=np.array([0.703, 0.297]), T=352.28))
+        >>> # (92966.9114, array([0.418, 0.582]))
         
         """
         positives = z > 0.

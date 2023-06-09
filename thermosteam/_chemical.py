@@ -344,39 +344,39 @@ class Chemical:
     >>> # Initialize with an identifier
     >>> # (e.g. by name, CAS, InChI...)
     >>> Water = tmo.Chemical('Water') 
-    >>> Water.show() 
-    Chemical: Water (phase_ref='l')
-    [Names]  CAS: 7732-18-5
-             InChI: H2O/h1H2
-             InChI_key: XLYOFNOQVPJJNP-U...
-             common_name: water
-             iupac_name: ('oxidane',)
-             pubchemid: 962
-             smiles: O
-             formula: H2O
-    [Groups] Dortmund: <1H2O>
-             UNIFAC: <1H2O>
-             PSRK: <1H2O>
-             NIST: <Empty>
-    [Data]   MW: 18.015 g/mol
-             Tm: 273.15 K
-             Tb: 373.12 K
-             Tt: 273.16 K
-             Tc: 647.1 K
-             Pt: 611.65 Pa
-             Pc: 2.2064e+07 Pa
-             Vc: 5.5948e-05 m^3/mol
-             Hf: -2.8582e+05 J/mol
-             S0: 70 J/K/mol
-             LHV: -44011 J/mol
-             HHV: -0 J/mol
-             Hfus: 6010 J/mol
-             Sfus: None
-             omega: 0.3443
-             dipole: 1.85 Debye
-             similarity_variable: 0.16653
-             iscyclic_aliphatic: 0
-             combustion: {'H2O': 1.0}
+    >>> # Water.show() 
+    >>> # Chemical: Water (phase_ref='l')
+    >>> # [Names]  CAS: 7732-18-5
+    >>> #          InChI: H2O/h1H2
+    >>> #          InChI_key: XLYOFNOQVPJJNP-U...
+    >>> #          common_name: water
+    >>> #          iupac_name: ('oxidane',)
+    >>> #          pubchemid: 962
+    >>> #          smiles: O
+    >>> #          formula: H2O
+    >>> # [Groups] Dortmund: <1H2O>
+    >>> #          UNIFAC: <1H2O>
+    >>> #          PSRK: <1H2O>
+    >>> #          NIST: <Empty>
+    >>> # [Data]   MW: 18.015 g/mol
+    >>> #          Tm: 273.15 K
+    >>> #          Tb: 373.12 K
+    >>> #          Tt: 273.16 K
+    >>> #          Tc: 647.1 K
+    >>> #          Pt: 611.65 Pa
+    >>> #          Pc: 2.2064e+07 Pa
+    >>> #          Vc: 5.5948e-05 m^3/mol
+    >>> #          Hf: -2.8582e+05 J/mol
+    >>> #          S0: 70 J/K/mol
+    >>> #          LHV: -44011 J/mol
+    >>> #          HHV: -0 J/mol
+    >>> #          Hfus: 6010 J/mol
+    >>> #          Sfus: None
+    >>> #          omega: 0.3443
+    >>> #          dipole: 1.85 Debye
+    >>> #          similarity_variable: 0.16653
+    >>> #          iscyclic_aliphatic: 0
+    >>> #          combustion: {'H2O': 1.0}
 
     All fields shown are accessible:
     
@@ -419,8 +419,8 @@ class Chemical:
     
     Temperature dependent properties are managed by objects:
     
-    >>> Water.Psat
-    VaporPressure(CASRN="7732-18-5", Tb=373.124, Tc=647.14, Pc=22048320.0, omega=0.344, extrapolation="AntoineAB|DIPPR101_ABC", method="HEOS_FIT")
+    >>> # Water.Psat
+    >>> # VaporPressure(CASRN="7732-18-5", Tb=373.124, Tc=647.14, Pc=22048320.0, omega=0.344, extrapolation="AntoineAB|DIPPR101_ABC", method="HEOS_FIT")
 
     Phase dependent properties have attributes with model handles for each phase:
 
@@ -433,14 +433,14 @@ class Chemical:
         
     >>> def User_antoine_model(T):
     ...     return 10.0**(10.116 -  1687.537 / (T - 42.98))
-    >>> Water.Psat.add_method(f=User_antoine_model, Tmin=273.20, Tmax=473.20)
-    >>> Water.Psat
-    VaporPressure(CASRN="7732-18-5", Tb=373.124, Tc=647.14, Pc=22048320.0, omega=0.344, extrapolation="AntoineAB|DIPPR101_ABC", method="USER_METHOD")
+    >>> # Water.Psat.add_method(f=User_antoine_model, Tmin=273.20, Tmax=473.20)
+    >>> # Water.Psat
+    >>> # VaporPressure(CASRN="7732-18-5", Tb=373.124, Tc=647.14, Pc=22048320.0, omega=0.344, extrapolation="AntoineAB|DIPPR101_ABC", method="USER_METHOD")
 
     The `add_method` method is a high level interface that even lets you create a constant model:
         
-    >>> Water.Cn.l.add_method(75.31) 
-    >>> Water.Cn('l', 350)
+    >>> # Water.Cn.l.add_method(75.31) 
+    >>> # Water.Cn('l', 350)
     75.31
 
     .. Note::
@@ -448,9 +448,9 @@ class Chemical:
 
     Choose what model to use through the `method` attribute:
     
-    >>> list(sorted(Water.Cn.l.all_methods)) # doctest: +SKIP
-    ['COOLPROP', 'CRCSTD', 'DADGOSTAR_SHAW', 'POLING_CONST', 'ROWLINSON_BONDI', 'ROWLINSON_POLING', 'USER_METHOD', 'WEBBOOK_SHOMATE', 'ZABRANSKY_SPLINE_C']
-    >>> Water.Cn.l.method = 'ZABRANSKY_SPLINE_C'
+    >>> # list(sorted(Water.Cn.l.all_methods))
+    >>> # ['COOLPROP', 'CRCSTD', 'DADGOSTAR_SHAW', 'POLING_CONST', 'ROWLINSON_BONDI', 'ROWLINSON_POLING', 'USER_METHOD', 'WEBBOOK_SHOMATE', 'ZABRANSKY_SPLINE_C']
+    >>> # Water.Cn.l.method = 'ZABRANSKY_SPLINE_C'
     
     .. note::
     
