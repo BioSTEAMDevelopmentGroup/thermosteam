@@ -344,7 +344,7 @@ class Chemical:
     >>> # Initialize with an identifier
     >>> # (e.g. by name, CAS, InChI...)
     >>> Water = tmo.Chemical('Water') 
-    >>> Water.show() # 
+    >>> Water.show() 
     Chemical: Water (phase_ref='l')
     [Names]  CAS: 7732-18-5
              InChI: H2O/h1H2
@@ -361,11 +361,11 @@ class Chemical:
     [Data]   MW: 18.015 g/mol
              Tm: 273.15 K
              Tb: 373.12 K
-             Tt: 273.15 K
-             Tc: 647.14 K
-             Pt: 610 Pa
-             Pc: 2.2048e+07 Pa
-             Vc: 5.6e-05 m^3/mol
+             Tt: 273.16 K
+             Tc: 647.1 K
+             Pt: 611.65 Pa
+             Pc: 2.2064e+07 Pa
+             Vc: 5.5948e-05 m^3/mol
              Hf: -2.8582e+05 J/mol
              S0: 70 J/K/mol
              LHV: -44011 J/mol
