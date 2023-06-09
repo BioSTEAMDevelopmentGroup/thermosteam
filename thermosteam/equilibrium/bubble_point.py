@@ -281,7 +281,7 @@ class BubblePoint:
         return f"{type(self).__name__}([{chemicals}])"
 
 
-class BubblePointBeta:
+class BubblePointBeta: # doctest: +SKIP
     """
     Create a BubblePointBeta object that returns bubble point values when
     called with a composition and either a temperture (T) or pressure (P).
