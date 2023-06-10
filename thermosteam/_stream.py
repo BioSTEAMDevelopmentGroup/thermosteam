@@ -2648,9 +2648,9 @@ class Stream:
             T = UofM.convert(self.T, 'K', T_units)
             P = UofM.convert(self.P, 'Pa', P_units)
             display_notation = self.display_notation
-            T_notation = display_notation['T']
-            P_notation = display_notation['P']
-            flow_notation = display_notation['flow']
+            T_notation = display_notation.T
+            P_notation = display_notation.P
+            flow_notation = display_notation.flow
             tooltip = (
                 f"Temperature: {T:{T_notation}} {T_units}{newline}"
                 f"Pressure: {P:{P_notation}} {P_units}"
