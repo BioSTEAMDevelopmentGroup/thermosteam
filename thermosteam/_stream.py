@@ -2605,7 +2605,7 @@ class Stream:
     def _info(self, layout, T, P, flow, composition, N, IDs, sort=None, df=False):
         """Return string with all specifications."""
         units, notation = self.get_display_units_and_notation(T=T, P=P, flow=flow)
-        flow, composition, N, sort = self._translate_layout(layout, units['flow'], composition, N, sort)
+        units['flow'], composition, N, sort = self._translate_layout(layout, units['flow'], composition, N, sort)
         display_units = self.display_units
         N_max = display_units.N if N is None else N
         composition = display_units.composition if composition is None else composition
@@ -2706,7 +2706,7 @@ class Stream:
         with the highest mass fractions:
             
         >>> import biosteam as bst
-        >>> bst.set_thermo(['Water', 'Ethanol', 'Methanol', 'Propanol'])
+        >>> bst.settings.set_thermo(['Water', 'Ethanol', 'Methanol', 'Propanol'])
         >>> stream = bst.Stream('stream', Water=0.5, Ethanol=1.5, Methanol=0.2, Propanol=0.3, units='kg/hr')
         >>> stream.show('cwt2s') # Alternatively: stream.show(composition=True, flow='kg/hr', N=2, sort=True)
         Stream: stream
