@@ -2472,8 +2472,6 @@ class Stream:
     
     def _translate_layout(self, layout, flow, composition, N, sort):
         if layout:
-            for param in (flow, composition, N):
-                if param is not None: raise ValueError(f'cannot specify both `layout` and `{param}`')
             if layout[-1] == 's':
                 sort = True
                 layout = layout[:-1]
