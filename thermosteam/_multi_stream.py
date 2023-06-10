@@ -985,10 +985,12 @@ class MultiStream(Stream):
     
     ### Representation ###
     
-    def _info_str(self, T_units, P_units, flow_units, composition, N_max, all_IDs, indexer, factor):
+    def _info_str(self, units, notation, composition, N_max, all_IDs, indexer, factor):
         """Return string with all specifications."""
         basic_info = self._basic_info()
-        basic_info += Stream._info_phaseTP(self, self.phases, T_units, P_units)
+        basic_info += Stream._info_phaseTP(self, self.phases, units, notation)
+        flow_units = units['flow']
+        flow_notation = notation['flow']
         N_all_IDs = len(all_IDs)
         if N_all_IDs == 0:
             return basic_info + ' flow: 0' 
@@ -1028,13 +1030,13 @@ class MultiStream(Stream):
             for i in range(N):
                 spaces = ' ' * (maxlen - lengths[i])
                 if i: flow_rates += new_line    
-                flow_rates += f'{IDs[i]}' + spaces + f'{data[i]:.3g}'
+                flow_rates += f'{IDs[i]}' + spaces + f'{data[i]:{flow_notation}}'
             if too_many_chemicals:
                 spaces = ' ' * (maxlen - 3)
-                flow_rates += new_line + '...' + spaces + f'{data[N_max:].sum():.3g}'
+                flow_rates += new_line + '...' + spaces + f'{data[N_max:].sum():{flow_notation}}'
             if composition:
                 dashes = '-' * (maxlen - 2)
-                flow_rates += f"{new_line}{dashes}  {total_flow:.3g} {flow_units}"
+                flow_rates += f"{new_line}{dashes}  {total_flow:{flow_notation}} {flow_units}"
             # Put it together
             phases_flow_rates_info += beginning + flow_rates + '\n'
             

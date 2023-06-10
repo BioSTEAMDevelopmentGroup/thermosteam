@@ -10,8 +10,14 @@
 __all__ = ('chemical_units_of_measure', 
            'stream_units_of_measure',
            'ureg', 'get_dimensionality',
-           'DisplayUnits', 'AbsoluteUnitsOfMeasure', 'convert',
-           'Quantity', 'format_units', 'format_plot_units',
+           'DisplayUnits', 
+           'DisplayNotation',
+           'AbsoluteUnitsOfMeasure', 
+           'convert',
+           'Quantity', 
+           'parse_units_notation',
+           'format_units', 
+           'format_plot_units',
            'reformat_units')
 
 from .exceptions import DimensionError
@@ -34,6 +40,18 @@ Quantity = ureg.Quantity
 del os
 
 # %% Functions
+
+def parse_units_notation(value):
+    if value is None:
+        units = None
+        notation = None
+    elif ':' in value:
+        units, notation = value.split(':')
+        if not units: units = None
+    else:
+        units = value
+        notation = None
+    return units, notation
 
 def format_degrees(units):
     r"""
@@ -192,6 +210,39 @@ class RelativeUnitsOfMeasure(UnitsOfMeasure):
 
 # %% Manage display units
 
+class DisplayNotation:
+    """
+    Create a DisplayNotation object where default units for representation are stored.
+    
+    Examples
+    --------
+    Its possible to change the default units of measure for the Stream show method:
+        
+    >>> import thermosteam as tmo
+    >>> tmo.settings.set_thermo(['Water'], cache=True)
+    >>> tmo.Stream.display_format.flow = '.2g'
+    >>> stream = tmo.Stream('stream', Water=1.324, units='kg/hr')
+    >>> stream.show()
+    Stream: stream
+    phase: 'l', T: 298.15 K, P: 101325 Pa
+    flow (kg/hr): Water  1.3
+    
+    >>> # Change back to kmol/hr
+    >>> tmo.Stream.display_units.flow = '.3g'
+    
+    """
+    __slots__ = ('T', 'P', 'flow')
+    
+    def __init__(self, T, P, flow):
+        self.T = T
+        self.P = P
+        self.flow = flow
+
+    def __repr__(self):
+        sig = ', '.join([f"{i}={getattr(self, i)!r}'" for i in self.__slots__])
+        return f'{type(self).__name__}({sig})'
+
+
 class DisplayUnits:
     """
     Create a DisplayUnits object where default units for representation are stored.
@@ -245,9 +296,9 @@ class DisplayUnits:
                 if name_dim != unit_dim:
                     raise DimensionError(f"dimensions for '{name}' must be in ({name_dim}), not ({unit_dim})")
         object.__setattr__(self, name, unit)
-            
+    
     def __repr__(self):
-        sig = ', '.join((f"{i}='{j}'" if isinstance(j, str) else f'{i}={j}') for i,j in self.__dict__.items() if i != 'dims')
+        sig = ', '.join([f"{i}={j!r}" for i,j in self.__dict__.items() if i != 'dims'])
         return f'{type(self).__name__}({sig})'
 
 

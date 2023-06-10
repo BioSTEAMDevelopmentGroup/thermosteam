@@ -15,7 +15,7 @@ import flexsolve as flx
 from thermosteam import functional as fn, Thermo
 from . import indexer
 from . import equilibrium as eq
-from . import units_of_measure as thermo_units
+from . import units_of_measure as UofM
 from .exceptions import DimensionError, InfeasibleRegion
 from chemicals.elements import array_to_atoms, symbol_to_index
 from . import utils
@@ -50,7 +50,7 @@ class StreamData:
     
 # %%
 
-@utils.units_of_measure(thermo_units.stream_units_of_measure)
+@utils.units_of_measure(UofM.stream_units_of_measure)
 @utils.thermo_user
 @utils.registered(ticket_name='s')
 class Stream:
@@ -264,13 +264,15 @@ class Stream:
     line = 'Stream'
     
     #: Units of measure for IPython display (class attribute)
-    display_units = thermo_units.DisplayUnits(T='K', P='Pa',
+    display_units = UofM.DisplayUnits(T='K', P='Pa',
                                               flow=('kmol/hr', 'kg/hr', 'm3/hr'),
                                               composition=False,
                                               sort=False,
                                               N=7)
+    
+    display_notation = UofM.DisplayNotation(T='.5g', P='.6g', flow='.3g')
 
-    _units_of_measure = thermo_units.stream_units_of_measure
+    _units_of_measure = UofM.stream_units_of_measure
 
     _flow_cache = {}
 
@@ -746,7 +748,7 @@ class Stream:
         if units in cache:
             name, factor = cache[units]
         else:
-            dimensionality = thermo_units.get_dimensionality(units)
+            dimensionality = UofM.get_dimensionality(units)
             if dimensionality == mol_units.dimensionality:
                 name = 'mol'
                 factor = mol_units.conversion_factor(units)
@@ -2456,11 +2458,13 @@ class Stream:
     def _basic_info(self):
         return f"{type(self).__name__}: {self.ID or ''}\n"
     
-    def _info_phaseTP(self, phase, T_units, P_units):
-        T = thermo_units.convert(self.T, 'K', T_units)
-        P = thermo_units.convert(self.P, 'Pa', P_units)
+    def _info_phaseTP(self, phase, units, notation):
+        T_units = units['T']
+        P_units = units['P']
+        T = UofM.convert(self.T, 'K', T_units)
+        P = UofM.convert(self.P, 'Pa', P_units)
         s = '' if isinstance(phase, str) else 's'
-        return f"phase{s}: {repr(phase)}, T: {T:.5g} {T_units}, P: {P:.6g} {P_units}\n"
+        return f"phase{s}: {repr(phase)}, T: {T:{notation['T']}} {T_units}, P: {P:{notation['P']}} {P_units}\n"
     
     def _source_info(self):
         source = self.source
@@ -2498,9 +2502,22 @@ class Stream:
                 N = int(layout)
         return flow, composition, N, sort
 
-    def _info_str(self, T_units, P_units, flow_units, composition, N_max, all_IDs, indexer, factor):
+    def get_display_units_and_notation(self, **kwargs):
+        display_units = self.display_units
+        display_notation = self.display_notation
+        units_dct = {}
+        notation_dct = {}
+        for name, value in kwargs.items():
+            units, notation = UofM.parse_units_notation(value)
+            units_dct[name] = getattr(display_units, name) if units is None else units
+            notation_dct[name] = getattr(display_notation, name) if notation is None else notation
+        return units_dct, notation_dct
+
+    def _info_str(self, units, notation, composition, N_max, all_IDs, indexer, factor):
         basic_info = self._basic_info()
-        basic_info += self._info_phaseTP(self.phase, T_units, P_units)
+        basic_info += self._info_phaseTP(self.phase, units, notation)
+        flow_units = units['flow']
+        flow_notation = notation['flow']
         if N_max == 0:
             return basic_info[:-1]
         N_IDs = len(all_IDs)
@@ -2525,28 +2542,34 @@ class Stream:
         for i in range(N_max):
             spaces = ' ' * (maxlen - lengths[i])
             if i: flow_rates += new_line
-            flow_rates += all_IDs[i] + spaces + f'{flow_array[i]:.3g}'
+            flow_rates += all_IDs[i] + spaces + f'{flow_array[i]:{flow_notation}}'
         if too_many_chemicals: 
             spaces = ' ' * (maxlen - 3)
-            flow_rates += new_line + '...' + spaces + f'{flow_array[N_max:].sum():.3g}'
+            flow_rates += new_line + '...' + spaces + f'{flow_array[N_max:].sum():{flow_notation}}'
         if composition:
             dashes = '-' * (maxlen - 2)
-            flow_rates += f"{new_line}{dashes}  {total_flow:.3g} {flow_units}"
+            flow_rates += f"{new_line}{dashes}  {total_flow:{flow_notation}} {flow_units}"
         return (basic_info 
               + beginning
               + flow_rates)
     
-    def _info_df(self, T_units, P_units, flow_units, composition, N_max, all_IDs, indexer, factor):
+    def _info_df(self, units, notation, composition, N_max, all_IDs, indexer, factor):
         if not all_IDs:
             return pd.DataFrame([0], columns=[self.ID.replace('_', ' ')], index=['Flow'])
-        T = thermo_units.convert(self.T, 'K', T_units)
-        P = thermo_units.convert(self.P, 'Pa', P_units)
+        T_units = units['T']
+        P_units = units['P']
+        flow_units = units['flow']
+        T_notation = notation['T']
+        P_notation = notation['P']
+        flow_notation = notation['flow']
+        T = UofM.convert(self.T, 'K', T_units)
+        P = UofM.convert(self.P, 'Pa', P_units)
         data = []
         index = []
         index.append((f"Temperature [{T_units}]", ''))
-        data.append(f"{T:.3g}")
+        data.append(f"{T:{T_notation}}")
         index.append((f"Pressure [{P_units}]", ''))
-        data.append(f"{P:.6g}")
+        data.append(f"{P:{P_notation}}")
         for phase in self.phases:
             if indexer.data.ndim == 2:
                 flow_array = factor * indexer[phase, all_IDs]
@@ -2557,41 +2580,39 @@ class Stream:
             if composition:
                 total_flow = flow_array.sum()
                 index.append((f"{phase} [{flow_units}]", ''))
-                data.append(f"{total_flow:.3g}")
+                data.append(f"{total_flow:{flow_notation}}")
                 comp_array = 100 * flow_array / total_flow
                 for i, (ID, comp) in enumerate(zip(all_IDs, comp_array)):
                     if not comp: continue
                     if i >= N_max:
                         index.append(("Composition [%]", '(remainder)'))
-                        data.append(f"{comp_array[N_max:].sum():.3g}")
+                        data.append(f"{comp_array[N_max:].sum():{flow_notation}}")
                         break
                     else:
                         index.append(("Composition [%]", ID))
-                        data.append(f"{comp:.3g}")
+                        data.append(f"{comp:{flow_notation}}")
             else:   
                 for i, (ID, flow) in enumerate(zip(all_IDs, flow_array)):
                     if not flow: continue
                     if i >= N_max:
                         index.append((f"{phase} [{flow_units}]", '(remainder)'))
-                        data.append(f"{flow_array[N_max:].sum():.3g}")
+                        data.append(f"{flow_array[N_max:].sum():{flow_notation}}")
                         break
                     else:
                         index.append((f"{phase} [{flow_units}]", ID))
-                        data.append(f"{flow:.3g}")
+                        data.append(f"{flow:{flow_notation}}")
         return pd.DataFrame(data, columns=[self.ID.replace('_', ' ')], 
                             index=pd.MultiIndex.from_tuples(index))
         
     def _info(self, layout, T, P, flow, composition, N, IDs, sort=None, df=False):
         """Return string with all specifications."""
-        flow, composition, N, sort = self._translate_layout(layout, flow, composition, N, sort)
+        units, notation = self.get_display_units_and_notation(T=T, P=P, flow=flow)
+        flow, composition, N, sort = self._translate_layout(layout, units['flow'], composition, N, sort)
         display_units = self.display_units
-        T_units = T or display_units.T
-        P_units = P or display_units.P
-        flow_units = flow or display_units.flow
         N_max = display_units.N if N is None else N
         composition = display_units.composition if composition is None else composition
         sort = display_units.sort if sort is None else sort
-        name, factor = self._get_flow_name_and_factor(flow_units)
+        name, factor = self._get_flow_name_and_factor(units['flow'])
         indexer = getattr(self, 'i' + name)
         if not IDs:
             IDs = self.chemicals.IDs
@@ -2603,7 +2624,9 @@ class Stream:
             index = sorted(range(len(data)), key=lambda x: data[x], reverse=True)
             IDs = [IDs[i] for i in index]
         IDs = tuple(IDs)
-        return (self._info_df if df else self._info_str)(T_units, P_units, flow_units, composition, N_max, IDs, indexer, factor)
+        return (self._info_df if df else self._info_str)(
+            units, notation, composition, N_max, IDs, indexer, factor,
+        )
     
     def _get_tooltip_string(self, format, full):
         if format not in ('html', 'svg'): return ''
@@ -2622,18 +2645,22 @@ class Stream:
             T_units = display_units.T
             P_units = display_units.P
             flow_units = display_units.flow
-            T = thermo_units.convert(self.T, 'K', T_units)
-            P = thermo_units.convert(self.P, 'Pa', P_units)
+            T = UofM.convert(self.T, 'K', T_units)
+            P = UofM.convert(self.P, 'Pa', P_units)
+            display_notation = self.display_notation
+            T_notation = display_notation['T']
+            P_notation = display_notation['P']
+            flow_notation = display_notation['flow']
             tooltip = (
-                f"Temperature: {T:.3g} {T_units}{newline}"
-                f"Pressure: {P:.6g} {P_units}"
+                f"Temperature: {T:{T_notation}} {T_units}{newline}"
+                f"Pressure: {P:{P_notation}} {P_units}"
             )
             for phase in self.phases:
                 stream = self[phase] if self.imol.data.ndim == 2 else self
                 flow = stream.get_total_flow(flow_units)
                 phase = valid_phases[phase]
                 if phase.islower(): phase = phase.capitalize()
-                tooltip += f"{newline}{phase} flow: {flow:.3g} {flow_units}"
+                tooltip += f"{newline}{phase} flow: {flow:{flow_notation}} {flow_units}"
             if format == 'html':
                 tooltip = " " + tooltip
         return tooltip
@@ -2681,7 +2708,7 @@ class Stream:
         with the highest mass fractions:
             
         >>> import biosteam as bst
-        >>> bst.settings.set_thermo(['Water', 'Ethanol', 'Methanol', 'Propanol'])
+        >>> bst.set_thermo(['Water', 'Ethanol', 'Methanol', 'Propanol'])
         >>> stream = bst.Stream('stream', Water=0.5, Ethanol=1.5, Methanol=0.2, Propanol=0.3, units='kg/hr')
         >>> stream.show('cwt2s') # Alternatively: stream.show(composition=True, flow='kg/hr', N=2, sort=True)
         Stream: stream
