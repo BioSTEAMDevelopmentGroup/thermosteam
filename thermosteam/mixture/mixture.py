@@ -206,14 +206,14 @@ class Mixture:
         >>> from thermosteam import Mixture
         >>> mixture = Mixture.from_chemicals(['Water', 'Ethanol'])
         >>> mixture.Hvap([0.2, 0.8], 350)
-        39601.089
+        39750.62
 
         Calculate density for a water and ethanol mixture in g/L:
 
         >>> from thermosteam import Mixture
         >>> mixture = Mixture.from_chemicals(['Water', 'Ethanol'])
         >>> mixture.get_property('rho', 'g/L', 'l', [0.2, 0.8], 350, 101325)
-        752.513
+        754.23
         
         """
         if rule == 'ideal':

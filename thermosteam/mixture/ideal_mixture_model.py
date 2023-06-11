@@ -47,7 +47,7 @@ class IdealTPMixtureModel:
     >>> mixture_model
     <IdealTPMixtureModel(phase, mol, T, P) -> V [m^3/mol]>
     >>> mixture_model('l', [0.2, 0.8], 350, 101325)
-    5.376...e-05
+    5.364...-05
     
     """
     __slots__ = ('var', 'models')
@@ -97,7 +97,7 @@ class IdealEntropyModel:
     >>> mixture_model
     <IdealEntropyModel(phase, mol, T, P) -> S [J/K/mol]>
     >>> mixture_model('l', np.array([0.2, 0.8]), 350, 101325)
-    160.3
+    160.174
     
     """
     __slots__ = IdealTPMixtureModel.__slots__
@@ -142,7 +142,7 @@ class IdealTMixtureModel:
     >>> mixture_model
     <IdealTMixtureModel(phase, mol, T, P=None) -> Cn [J/mol/K]>
     >>> mixture_model('l', [0.2, 0.8], 350)
-    125.2
+    122.529
     
     """
     __slots__ = IdealTPMixtureModel.__slots__
@@ -186,7 +186,7 @@ class SinglePhaseIdealTMixtureModel:
     >>> mixture_model
     <SinglePhaseIdealTMixtureModel(mol, T, P=None) -> Psat [Pa]>
     >>> mixture_model([0.2, 0.8], 350)
-    84914.8703877987
+    84499.12
     
     """
     __slots__ = IdealTPMixtureModel.__slots__
@@ -230,7 +230,7 @@ class SinglePhaseIdealTPMixtureModel:
     >>> mixture_model
     <SinglePhaseIdealTPMixtureModel(mol, T, P) -> V [m^3/mol]>
     >>> mixture_model([0.2, 0.8], 350, 101325)
-    5.376...e-05
+    5.3640...-05
     
     """
     __slots__ = ('var', 'models')

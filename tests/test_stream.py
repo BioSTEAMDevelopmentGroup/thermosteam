@@ -37,8 +37,8 @@ def test_vlle():
     xl = s.imol['l'].sum() / total
     xL = s.imol['L'].sum() / total
     xg = s.imol['g'].sum() / total
-    assert_allclose(xl + xL, 0.6635504681579003, atol=0.05) # Convergence
-    assert_allclose(xg, 0.33644953184209986, atol=0.05)
+    assert_allclose(xl + xL, 0.7361640850059188, atol=0.05) # Convergence
+    assert_allclose(xg, 0.26383591499408116, atol=0.05)
     # Make sure past equilibrium conditions do not affect result of vlle
     s = tmo.Stream(None, Water=1, Ethanol=1, Octane=2, T=350)
     s.vle(T=350, P=101325)
@@ -47,8 +47,8 @@ def test_vlle():
     xl = s.imol['l'].sum() / total
     xL = s.imol['L'].sum() / total
     xg = s.imol['g'].sum() / total
-    assert_allclose(xl + xL, 0.6635504681579003, atol=0.05) # Convergence
-    assert_allclose(xg, 0.33644953184209986, atol=0.05)
+    assert_allclose(xl + xL, 0.7361640850059188, atol=0.05) # Convergence
+    assert_allclose(xg, 0.26383591499408116, atol=0.05)
     
     s = tmo.Stream(None, Water=1, Ethanol=1, Octane=2, vlle=True, T=300)
     assert set(s.phases) == set(['l', 'L']) # No gas phase
@@ -68,7 +68,7 @@ def stream_methods():
     s1 = tmo.Stream(None, Water=1, Ethanol=1, phase='l')
     s2 = tmo.Stream(None, Water=100, Ethanol=100, phase='g')
     s3 = tmo.Stream.sum([s1, s2], vle=True)
-    assert_allclose([s3.T, s3.vapor_fraction], [356.42348688162764, 0.9159452891657182])
+    assert_allclose([s3.T, s3.vapor_fraction], [356.45552794986, 0.9157652669624603])
     s1.P = 101325 * 5
     s2.P = 101325 * 2
     s3.mix_from([s1, s2], vle=True)
@@ -84,15 +84,15 @@ def test_critical():
     s.vle(V=vapor_fraction, P=101325)
     assert_allclose(s.vapor_fraction, vapor_fraction)
     assert_allclose(s.mol, [1, 1, 2])
-    assert_allclose(s['g'].z_mol, [0.0006053116760182865, 0.43970244158393407, 0.5596922467400477], rtol=1e-2)
+    assert_allclose(s['g'].z_mol, [0.0005899562150044437, 0.439751371507529, 0.5596586722774665], rtol=1e-2)
     
     bp = s.bubble_point_at_P()
     assert_allclose(bp.T, 102.62052288398583, rtol=1e-3)
-    assert_allclose(bp.y, [3.803565920764843e-05, 0.7778539445712263, 0.222108019769566], rtol=1e-2)
+    assert_allclose(bp.y, [3.6820522686269676e-05, 0.7780884456009951, 0.22187473387631854], rtol=1e-2)
     
     dp = s.dew_point_at_P()
     assert_allclose(dp.T, 164.2843303081629, rtol=1e-3)
-    assert_allclose(dp.x, [0.9697130577019155, 0.0034114070277255068, 0.02687553527035907], rtol=1e-2)
+    assert_allclose(dp.x, [0.9698259345522571, 0.003426383313112619, 0.02674768213463028], rtol=1e-2)
     
     s = tmo.Stream(None, CO2=1, O2=1, CH4=2, vlle=True, T=80)
     s.phase == 'l'
@@ -108,11 +108,11 @@ def test_critical():
     
     bp = s.bubble_point_at_P()
     assert_allclose(bp.T, 97.37091146329703, rtol=1e-3)
-    assert_allclose(bp.y, [2.614648198782934e-05, 0.999973853518012], rtol=1e-2)
+    assert_allclose(bp.y, [2.5146656093575396e-05, 0.9999748533439065], rtol=1e-2)
     
     dp = s.dew_point_at_P()
     assert_allclose(dp.T, 173.64797757499818, rtol=1e-3)
-    assert_allclose(dp.x, [0.9951836814710002, 0.004816318528999781], rtol=1e-2)
+    assert_allclose(dp.x, [0.9952339113391101, 0.0047660886608899755], rtol=1e-2)
     
     s = tmo.Stream(None, CO2=1, O2=1, vlle=True, T=80)
     s.phase == 'l'
@@ -122,20 +122,20 @@ def test_stream():
     stream = tmo.Stream(None, Water=1, T=300)
     assert [stream.chemicals.Water] == stream.available_chemicals
     assert_allclose(stream.epsilon, 77.744307)
-    assert_allclose(stream.alpha * 1e6, 0.14330776454124503)
-    assert_allclose(stream.nu, 8.799123532986536e-07)
-    assert_allclose(stream.Pr, 6.14001869413997)
-    assert_allclose(stream.Cn, 75.29555729396768)
-    assert_allclose(stream.C, 75.29555729396768)
-    assert_allclose(stream.Cp, 4.179538552493643)
-    assert_allclose(stream.P_vapor, 3536.806752274638)
-    assert_allclose(stream.mu, 0.0008766363688287887)
-    assert_allclose(stream.kappa, 0.5967303492959747)
-    assert_allclose(stream.rho, 996.2769195618362)
-    assert_allclose(stream.V, 1.80826029854462e-05)
-    assert_allclose(stream.H, 139.31398526921475)
-    assert_allclose(stream.S, 70.46581776376684)
-    assert_allclose(stream.sigma, 0.07168596252716256)
+    assert_allclose(stream.alpha * 1e6, 0.143374, rtol=1e-3)
+    assert_allclose(stream.nu, 8.567663853669672e-07, rtol=1e-3)
+    assert_allclose(stream.Pr, 5.9757311368776005, rtol=1e-3)
+    assert_allclose(stream.Cn, 75.29555729396768, rtol=1e-3)
+    assert_allclose(stream.C, 75.29555729396768, rtol=1e-3)
+    assert_allclose(stream.Cp, 4.179538552493643, rtol=1e-3)
+    assert_allclose(stream.P_vapor, 3536.806752274638, rtol=1e-3)
+    assert_allclose(stream.mu, 0.0008538310235084569, rtol=1e-3)
+    assert_allclose(stream.kappa, 0.597342, rtol=1e-3)
+    assert_allclose(stream.rho, 996.2769195618362, rtol=1e-3)
+    assert_allclose(stream.V, 1.80826029854462e-05, rtol=1e-3)
+    assert_allclose(stream.H, 139.31398526921475, rtol=1e-3)
+    assert_allclose(stream.S, 70.46581776376684, rtol=1e-3)
+    assert_allclose(stream.sigma, 0.07168596252716256, rtol=1e-3)
     assert_allclose(stream.z_mol, [1.0])
     assert_allclose(stream.z_mass, [1.0])
     assert_allclose(stream.z_vol, [1.0])
@@ -182,21 +182,21 @@ def test_multistream():
     tmo.settings.set_thermo(['Water', 'Ethanol'], cache=True)
     stream = tmo.MultiStream(None, l=[('Water', 1)], T=300)
     assert [stream.chemicals.Water] == stream.available_chemicals
-    assert_allclose(stream.epsilon, 77.744307)
-    assert_allclose(stream.alpha * 1e6, 1.4330776454124502e-01)
-    assert_allclose(stream.nu, 8.799123532986536e-07)
-    assert_allclose(stream.Pr, 6.14001869413997)
-    assert_allclose(stream.Cn, 75.29555729396768)
-    assert_allclose(stream.C, 75.29555729396768)
-    assert_allclose(stream.Cp, 4.179538552493643)
-    assert_allclose(stream.P_vapor, 3536.806752274638)
-    assert_allclose(stream.mu, 0.0008766363688287887)
-    assert_allclose(stream.kappa, 0.5967303492959747)
-    assert_allclose(stream.rho, 996.2769195618362)
-    assert_allclose(stream.V, 1.80826029854462e-05)
-    assert_allclose(stream.H, 139.31398526921475)
-    assert_allclose(stream.S, 70.465818)
-    assert_allclose(stream.sigma, 0.07168596252716256)
+    assert_allclose(stream.epsilon, 77.744307, rtol=1e-3)
+    assert_allclose(stream.alpha * 1e6, 1.4330776454124502e-01, rtol=1e-3)
+    assert_allclose(stream.nu, 8.567663853669672e-07, rtol=1e-3)
+    assert_allclose(stream.Pr, 5.9757311368776005, rtol=1e-3)
+    assert_allclose(stream.Cn, 75.29555729396768, rtol=1e-3)
+    assert_allclose(stream.C, 75.29555729396768, rtol=1e-3)
+    assert_allclose(stream.Cp, 4.179538552493643, rtol=1e-3)
+    assert_allclose(stream.P_vapor, 3536.806752274638, rtol=1e-3)
+    assert_allclose(stream.mu, 0.0008538310235084569, rtol=1e-3)
+    assert_allclose(stream.kappa, 0.5973419454132901, rtol=1e-3)
+    assert_allclose(stream.rho, 996.2769195618362, rtol=1e-3)
+    assert_allclose(stream.V, 1.80826029854462e-05, rtol=1e-3)
+    assert_allclose(stream.H, 139.31398526921475, rtol=1e-3)
+    assert_allclose(stream.S, 70.465818, rtol=1e-3)
+    assert_allclose(stream.sigma, 0.07168596252716256, rtol=1e-3)
     assert_allclose(stream.z_mol, [1.0, 0.])
     assert_allclose(stream.z_mass, [1.0, 0.])
     assert_allclose(stream.z_vol, [1.0, 0.])

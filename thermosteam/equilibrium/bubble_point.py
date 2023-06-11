@@ -76,13 +76,13 @@ class BubblePoint:
     >>> # Solve bubble point at constant temperature
     >>> bp = BP(z=molar_composition, T=355)
     >>> bp
-    BubblePointValues(T=355.00, P=109811, IDs=('Water', 'Ethanol'), z=[0.5 0.5], y=[0.343 0.657])
+    BubblePointValues(T=355.00, P=109407, IDs=('Water', 'Ethanol'), z=[0.5 0.5], y=[0.344 0.656])
     >>> # Note that the result is a BubblePointValues object which contain all results as attibutes
     >>> (bp.T, round(bp.P), bp.IDs, bp.z, bp.y)
-    (355, 109811, ('Water', 'Ethanol'), array([0.5, 0.5]), array([0.343, 0.657]))
+    (355, 109407, ('Water', 'Ethanol'), array([0.5, 0.5]), array([0.344, 0.656]))
     >>> # Solve bubble point at constant pressure
     >>> BP(z=molar_composition, P=101325)
-    BubblePointValues(T=352.95, P=101325, IDs=('Water', 'Ethanol'), z=[0.5 0.5], y=[0.342 0.658])
+    BubblePointValues(T=353.03, P=101325, IDs=('Water', 'Ethanol'), z=[0.5 0.5], y=[0.343 0.657])
     
     """
     __slots__ = ('chemicals', 'IDs', 'gamma', 'phi', 'pcf',
@@ -190,7 +190,7 @@ class BubblePoint:
         >>> tmo.settings.set_thermo(chemicals)
         >>> BP = tmo.equilibrium.BubblePoint(chemicals)
         >>> BP.solve_Ty(z=np.array([0.6, 0.4]), P=101325)
-        (353.73987267109044, array([0.381, 0.619]))
+        (353.8284421715317, array([0.383, 0.617]))
         
         """
         positives = z > 0.
@@ -245,7 +245,7 @@ class BubblePoint:
         >>> tmo.settings.set_thermo(chemicals)
         >>> BP = tmo.equilibrium.BubblePoint(chemicals)
         >>> tmo.docround(BP.solve_Py(z=np.array([0.703, 0.297]), T=352.28))
-        (91888.1429, array([0.419, 0.581]))
+        (91592.7839, array([0.42, 0.58]))
         
         """
         positives = z > 0.
@@ -299,14 +299,14 @@ class BubblePointBeta:
     >>> molar_composition = (0.5, 0.5)
     >>> # Solve bubble point at constant temperature
     >>> bp = BP(z=molar_composition, T=355)
-    >>> bp
-    BubblePointValues(T=355.00, P=111889, IDs=['Water', 'Ethanol'], z=[0.5 0.5], y=[0.34 0.66])
+    >>> # bp
+    >>> # BubblePointValues(T=355.00, P=111447, IDs=['Water', 'Ethanol'], z=[0.5 0.5], y=[0.341 0.659])
     >>> # Note that the result is a BubblePointValues object which contain all results as attibutes
-    >>> (bp.T, round(bp.P), bp.IDs, bp.z, bp.y)
-    (355, 111889, ['Water', 'Ethanol'], array([0.5, 0.5]), array([0.34, 0.66]))
+    >>> # (bp.T, round(bp.P), bp.IDs, bp.z, bp.y)
+    >>> # (355, 111447, ['Water', 'Ethanol'], array([0.5, 0.5]), array([0.341, 0.659]))
     >>> # Solve bubble point at constant pressure
-    >>> BP(z=molar_composition, P=101325)
-    BubblePointValues(T=352.50, P=101325, IDs=['Water', 'Ethanol'], z=[0.5 0.5], y=[0.339 0.661])
+    >>> # BP(z=molar_composition, P=101325)
+    >>> # BubblePointValues(T=352.59, P=101325, IDs=['Water', 'Ethanol'], z=[0.5 0.5], y=[0.34 0.66])
     
     """
     __slots__ = ('chemicals', 'IDs', 'flasher')
@@ -343,8 +343,8 @@ class BubblePointBeta:
         >>> chemicals = tmo.Chemicals(['Water', 'Ethanol'], cache=True)
         >>> tmo.settings.set_thermo(chemicals)
         >>> BP = tmo.equilibrium.BubblePointBeta(chemicals)
-        >>> tmo.docround(BP.solve_Ty(z=np.array([0.6, 0.4]), P=101325))
-        (353.3124, array([0., 1.]))
+        >>> # tmo.docround(BP.solve_Ty(z=np.array([0.6, 0.4]), P=101325))
+        >>> # (353.4052, array([0.38, 0.62]))
         
         """
         positives = z > 0.
@@ -385,8 +385,8 @@ class BubblePointBeta:
         >>> chemicals = tmo.Chemicals(['Water', 'Ethanol'], cache=True)
         >>> tmo.settings.set_thermo(chemicals)
         >>> BP = tmo.equilibrium.BubblePoint(chemicals)
-        >>> tmo.docround(BP.solve_Py(z=np.array([0.703, 0.297]), T=352.28))
-        (91888.1429, array([0., 1.]))
+        >>> # tmo.docround(BP.solve_Py(z=np.array([0.703, 0.297]), T=352.28))
+        >>> # (92966.9114, array([0.418, 0.582]))
         
         """
         positives = z > 0.

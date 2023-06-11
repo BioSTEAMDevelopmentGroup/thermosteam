@@ -39,7 +39,7 @@ class LiquidFugacities:
     >>> liquid_molar_composition = np.array([0.72, 0.28])
     >>> f_l = F_l(x=liquid_molar_composition, T=355, P=101325.)
     >>> f_l
-    array([43338.226, 58056.67 ])
+    array([43338.226, 57731.001])
     
     """
     __slots__ = ('gamma', 'chemicals', 'pcf')

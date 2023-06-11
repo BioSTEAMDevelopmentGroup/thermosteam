@@ -1,8 +1,5 @@
 MT = 1000*kg
-Whr = 3600*J = Wh
-Debye = 0.020819434*e*nm = debye = D
-bu = 56*lb
-s2 = s**2
+Whr = Wh
 s3 = s**3
 cfm = ft^3/min
 cm2 = (cm)**2
@@ -12,7 +9,6 @@ m3 = m**3
 ft2 = ft**2
 ft3 = ft**3 = cf
 s2 = s**2
-yr = year
 USD = [currency] = usd
 CAD = 0.74 usd = cad
 EUR = 1.12 usd = eur
@@ -20,6 +16,6 @@ gpm = gal/min
 gmol = mol
 lbmol = 453.59237*mol
 MM- = 10**6
-molar = mol/L = M
+Debye = debye
 CO2e = [CO2] = CO2eq = CO2
 GGE = 114000*Btu

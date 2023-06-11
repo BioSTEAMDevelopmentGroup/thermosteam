@@ -108,7 +108,7 @@ class SLE(Equilibrium, phases='ls'):
     >>> sle
     SLE(imol=MolarFlowIndexer(phases=('l', 's'),
             l=[('Tetradecanol', 30)]),
-        thermal_condition=ThermalCondition(T=320.00, P=101325))      
+        thermal_condition=ThermalCondition(T=320.00, P=101325))
     >>> sle('Tetradecanol', H=0.) # Under melting point given H
     >>> sle
     SLE(imol=MolarFlowIndexer(phases=('l', 's'),
@@ -118,7 +118,7 @@ class SLE(Equilibrium, phases='ls'):
     >>> sle
     SLE(imol=MolarFlowIndexer(phases=('l', 's'),
             l=[('Tetradecanol', 30)]),
-        thermal_condition=ThermalCondition(T=317.59, P=101325))  
+        thermal_condition=ThermalCondition(T=317.59, P=101325))
     >>> sle('Tetradecanol', H=500000) # At melting point given H
     >>> sle
     SLE(imol=MolarFlowIndexer(

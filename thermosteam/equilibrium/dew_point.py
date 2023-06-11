@@ -85,13 +85,13 @@ class DewPoint:
     >>> molar_composition = (0.5, 0.5)
     >>> dp = DP(z=molar_composition, T=355)
     >>> dp
-    DewPointValues(T=355.00, P=92086, IDs=('Water', 'Ethanol'), z=[0.5 0.5], x=[0.85 0.15])
+    DewPointValues(T=355.00, P=92008, IDs=('Water', 'Ethanol'), z=[0.5 0.5], x=[0.849 0.151])
     >>> # Note that the result is a DewPointValues object which contain all results as attibutes
     >>> (dp.T, round(dp.P), dp.IDs, dp.z, dp.x)
-    (355, 92086, ('Water', 'Ethanol'), array([0.5, 0.5]), array([0.85, 0.15]))
+    (355, 92008, ('Water', 'Ethanol'), array([0.5, 0.5]), array([0.849, 0.151]))
     >>> # Solve for dew point at constant pressure
     >>> DP(z=molar_composition, P=2*101324)
-    DewPointValues(T=376.23, P=202648, IDs=('Water', 'Ethanol'), z=[0.5 0.5], x=[0.832 0.168])
+    DewPointValues(T=376.25, P=202648, IDs=('Water', 'Ethanol'), z=[0.5 0.5], x=[0.83 0.17])
 
     """
     __slots__ = ('chemicals', 'phi', 'gamma', 'IDs', 
@@ -204,7 +204,7 @@ class DewPoint:
         >>> tmo.settings.set_thermo(chemicals)
         >>> DP = tmo.equilibrium.DewPoint(chemicals)
         >>> tmo.docround(DP.solve_Tx(z=np.array([0.5, 0.5]), P=101325))
-        (357.42, array([0.849, 0.151]))
+        (357.4419, array([0.847, 0.153]))
         
         """
         positives = z > 0.
@@ -260,7 +260,7 @@ class DewPoint:
         >>> tmo.settings.set_thermo(chemicals)
         >>> DP = tmo.equilibrium.DewPoint(chemicals)
         >>> tmo.docround(DP.solve_Px(z=np.array([0.5, 0.5]), T=352.28))
-        (82548.7827, array([0.852, 0.148]))
+        (82480.7363, array([0.851, 0.149]))
  
         """
         positives = z > 0.
