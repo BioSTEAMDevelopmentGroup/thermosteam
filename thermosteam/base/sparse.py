@@ -399,7 +399,7 @@ def sparse(arr, copy=False, vector_size=None):
     sparse([[0., 1., 2.],
             [3., 2., 0.]])
     
-    Create a sparse array from an a list of dictionaries of index-nonzero value pairs:
+    Create a sparse array from a list of dictionaries of index-nonzero value pairs:
     
     >>> sa = sparse(
     ...     [{1: 1, 2: 2},
