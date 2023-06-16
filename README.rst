@@ -1,5 +1,5 @@
 ====================================================
-Thermosteam: BioSTEAM's Premier Thermodynamic Engine 
+ThermoSTEAM: BioSTEAM's Premier Thermodynamic Engine 
 ====================================================
 
 .. image:: http://img.shields.io/pypi/v/thermosteam.svg?style=flat
@@ -27,21 +27,21 @@ Workshops
 Join us on Friday, Jan 20, 9:15-10:15am CST, for a BioSTEAM workshop! 
 Email biosteamdevelopmentgroup@gmail.com for details.
 
-What is Thermosteam?
+What is ThermoSTEAM?
 --------------------
 
-Thermosteam is a standalone thermodynamic engine capable of estimating mixture 
+ThermoSTEAM is a standalone thermodynamic engine capable of estimating mixture 
 properties, solving thermodynamic phase equilibria, and modeling stoichiometric 
-reactions. Thermosteam builds upon `chemicals <https://github.com/CalebBell/chemicals>`_, 
+reactions. ThermoSTEAM builds upon `chemicals <https://github.com/CalebBell/chemicals>`_, 
 the chemical properties component of the Chemical Engineering Design Library, 
 with a robust and flexible framework that facilitates the creation of property packages.  
 `The Biorefinery Simulation and Techno-Economic Analysis Modules (BioSTEAM) <https://biosteam.readthedocs.io/en/latest/>`_ 
-is dependent on thermosteam for the simulation of unit operations.
+is dependent on ThermoSTEAM for the simulation of unit operations.
 
 Installation
 ------------
 
-Get the latest version of Thermosteam from `PyPI <https://pypi.python.org/pypi/thermosteam/>`_.
+Get the latest version of ThermoSTEAM from `PyPI <https://pypi.python.org/pypi/thermosteam/>`_.
 If you have an installation of Python with pip, simple install it with::
 
     $ pip install thermosteam
@@ -63,14 +63,14 @@ If you would like to clone all branches, add the "--no-single-branch" flag as su
 Documentation
 -------------
 
-Thermosteam's documentation is available on the web:
+ThermoSTEAM's documentation is available on the web:
 
     https://biosteam.readthedocs.io/en/latest/API/thermosteam/index.html
 
 Bug reports
 -----------
 
-To report bugs, please use the thermosteam's Bug Tracker at:
+To report bugs, please use the ThermoSTEAM's Bug Tracker at:
 
     https://github.com/BioSTEAMDevelopmentGroup/thermosteam
 
@@ -81,15 +81,15 @@ License information
 See ``LICENSE.txt`` for information on the terms & conditions for usage
 of this software, and a DISCLAIMER OF ALL WARRANTIES.
 
-Although not required by the thermosteam license, if it is convenient for you,
-please cite Thermosteam if used in your work. Please also consider contributing
+Although not required by the ThermoSTEAM license, if it is convenient for you,
+please cite ThermoSTEAM if used in your work. Please also consider contributing
 any changes you make back, and benefit the community.
 
 
 Citation
 --------
 
-To cite Thermosteam in publications use::
+To cite ThermoSTEAM in publications use::
 
-    Cortes-Pena, Y., (2020). Thermosteam: BioSTEAM's Premier Thermodynamic Engine. 
+    Cortes-Pena, Y., (2020). ThermoSTEAM: BioSTEAM's Premier Thermodynamic Engine. 
     Journal of Open Source Software, 5(56), 2814. doi.org/10.21105/joss.02814
