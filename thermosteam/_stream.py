@@ -1885,7 +1885,8 @@ class Stream:
         """
         cls = self._get_class()
         new = cls.__new__(cls)
-        new._ID = new._sink = new._source = None
+        new._ID = ''
+        new._sink = new._source = None
         new._price = 0
         new._thermo = self._thermo
         new._imol = imol = self._imol._copy_without_data()
@@ -1921,7 +1922,8 @@ class Stream:
         """
         cls = self._get_class()
         new = cls.__new__(cls)
-        new._ID = new._sink = new._source = None
+        new._ID = ''
+        new._sink = new._source = None
         new._price = self._price
         new._thermo = self._thermo
         new._imol = self._imol
