@@ -981,7 +981,7 @@ class MultiStream(Stream):
         else:
             self._imol = self._imol.to_chemical_indexer(phase)
             self._streams.clear()
-            self.__class__ = Stream
+            self._set_class(Stream)
     
     ### Representation ###
     
