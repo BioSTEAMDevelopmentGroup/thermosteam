@@ -40,9 +40,9 @@ def get_stoichiometric_string(stoichiometry, phases, chemicals):
 def set_reaction_basis(rxn, basis):
     if basis != rxn._basis:
         if basis == 'wt':
-            rxn._stoichiometry *= rxn.MWs
+            for i in rxn._stoichiometry: i *= rxn.MWs
         elif basis == 'mol':
-            rxn._stoichiometry /= rxn.MWs
+            for i in rxn._stoichiometry: i /= rxn.MWs
         else:
             raise ValueError("basis must be either by 'wt' or by 'mol'")
         rxn._rescale()
@@ -1108,7 +1108,7 @@ class ReactionSet:
         stoichiometry = self._stoichiometry
         for i, index in enumerate(self._X_index): 
             row = stoichiometry[i]
-            row[index] /= -row[index]
+            row /= -row[index]
     
     def reset_chemicals(self, chemicals):
         if chemicals is self._chemicals: return
@@ -1135,7 +1135,7 @@ class ReactionSet:
                         if value: new_stoic[i, chemicals.index(IDs[j])] = value
             X_index = [(phases.index(i), chemicals.index(j)) for i, j in reactants]
         else:
-            A, B = stoichiometry.shape
+            A, B = np.array(stoichiometry).shape
             new_stoichiometry = SparseArray.from_shape([A, chemicals.size])
             IDs = self._chemicals.IDs
             for i in range(A):
