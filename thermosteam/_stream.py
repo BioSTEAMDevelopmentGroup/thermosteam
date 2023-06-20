@@ -1426,7 +1426,10 @@ class Stream:
         if N_streams == 0:
             self.empty()
         elif N_streams == 1:
-            self.copy_like(streams[0])
+            if energy_balance:
+                self.copy_like(streams[0])
+            else:
+                self.copy_flow(streams[0])
         else:
             self.P = P = min([i.P for i in streams])
             if conserve_phases:
@@ -2396,18 +2399,28 @@ class Stream:
         """
         assert self.phase == 'g', 'stream must be a gas to receive vent'
         thermo = self.thermo.ideal() if ideal else self.thermo
-        ms = tmo.Stream(None, T=self.T, P=self.P, thermo=thermo)
+        T = self.T
+        P = self.P
+        ms = tmo.Stream(None, T=T, P=P, thermo=thermo)
         ms.mix_from([self, other], energy_balance=False)
         if energy_balance: ms.H = H = self.H + other.H
         ms.vle._setup()
+        vapor = ms['g']
+        liquid = ms['l']
+        for chemical in ms.chemicals:
+            try: Psat = chemical.Psat(T)
+            except: continue
+            ID = chemical.ID
+            if Psat < P:
+                liquid.imol[ID] = ms.imol[ID]
+                vapor.imol[ID] = 0.
+            else:
+                vapor.imol[ID] = ms.imol[ID]
+                liquid.imol[ID] = 0.
         chemicals = ms.vle_chemicals
         F_l = eq.LiquidFugacities(chemicals, thermo)
         IDs = tuple([i.ID for i in chemicals])
         x = other.get_molar_fraction(IDs)
-        T = ms.T
-        P = ms.P
-        vapor = ms['g']
-        liquid = ms['l']
         F_mol_vapor = vapor.F_mol
         mol = liquid.imol[IDs] + vapor.imol[IDs]
         if energy_balance:

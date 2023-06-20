@@ -158,8 +158,7 @@ def remove_negligible_negative_values(material):
         material_sum = abs(material).sum()
         if material_sum > 1e-16:
             negligible = material[negative_index] / material_sum > -1e-16
-            index = [negative_index[i] for i, j in enumerate(negligible) if j]
-            material[index] = 0. 
+            material[negligible] = 0. 
         else:
             material[negative_index] = 0. 
 
