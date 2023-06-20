@@ -1472,18 +1472,17 @@ class ReactionSystem:
     >>> cellulosic_rxnsys = RxnSys(saccharification, fermentation, cell_growth)
     >>> cellulosic_rxnsys.show()
     ReactionSystem:
-    index  reaction
-    [0]    ParallelReaction (by mol):
-           subindex  stoichiometry              reactant    X[%]
-           [0]       Water + Glucan -> Glucose  Glucan     90.00
-           [1]       Glucan -> 2 Water + HMF    Glucan      2.50
-    [1]    SeriesReaction (by mol):
-           subindex  stoichiometry                 reactant    X[%]
-           [0]       Glucose -> 2 LacticAcid       Glucose     3.00
-           [1]       Glucose -> 2 Ethanol + 2 CO2  Glucose    95.00
-    [2]    Reaction (by mol):
-           stoichiometry       reactant    X[%]
-           Glucose -> Biomass  Glucose   100.00
+    [0]  ParallelReaction (by mol):
+         index  stoichiometry              reactant    X[%]
+         [0]    Water + Glucan -> Glucose  Glucan     90.00
+         [1]    Glucan -> 2 Water + HMF    Glucan      2.50
+    [1]  SeriesReaction (by mol):
+         index  stoichiometry                 reactant    X[%]
+         [0]    Glucose -> 2 LacticAcid       Glucose     3.00
+         [1]    Glucose -> 2 Ethanol + 2 CO2  Glucose    95.00
+    [2]  Reaction (by mol):
+         stoichiometry       reactant    X[%]
+         Glucose -> Biomass  Glucose   100.00
     
     Compute the flux of glucan through saccharification reactions:
     
@@ -1629,16 +1628,13 @@ class ReactionSystem:
         return f"{type(self).__name__}({', '.join([repr(i) for i in self.reactions])})"
     
     def _info(self):
-        indexed_info = f"{type(self).__name__}:\n"
+        indexed_info = f"{type(self).__name__}:"
         isa = isinstance
-        infos = [(i._info('subindex') if isa(i, ReactionSet) else i._info()) 
+        infos = [(i._info() if isa(i, ReactionSet) else i._info()) 
                  for i in self._reactions]
         N = len(infos)
-        index_name = 'index'
-        maxnumspace = max(len(str(N)) + 1, len(index_name))
-        header = f"{index_name}" + " "*(max(2, maxnumspace-3))
-        indexed_info += header + "reaction"
-        info_dim = '\n' + len(header) * " "
+        maxnumspace = len(str(N)) + 2
+        info_dim = '\n' + " " * (maxnumspace + 2)
         for index, info in enumerate(infos):
             num = str(index) 
             numspace = (maxnumspace - len(num)) * " "
