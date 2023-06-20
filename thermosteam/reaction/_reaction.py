@@ -40,9 +40,15 @@ def get_stoichiometric_string(stoichiometry, phases, chemicals):
 def set_reaction_basis(rxn, basis):
     if basis != rxn._basis:
         if basis == 'wt':
-            for i in rxn._stoichiometry: i *= rxn.MWs
+            if isinstance(rxn, ReactionSet):
+                for i in rxn._stoichiometry: i *= rxn.MWs
+            else:
+                rxn._stoichiometry *= rxn.MWs
         elif basis == 'mol':
-            for i in rxn._stoichiometry: i /= rxn.MWs
+            if isinstance(rxn, ReactionSet):
+                for i in rxn._stoichiometry: i /= rxn.MWs
+            else:
+                rxn._stoichiometry /= rxn.MWs
         else:
             raise ValueError("basis must be either by 'wt' or by 'mol'")
         rxn._rescale()
