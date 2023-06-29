@@ -87,7 +87,7 @@ def format_units_power(units, isnumerator=True, mathrm=True):
         units += '^{' + (power if isnumerator else '-' + power) + '}'
         if other: units += other[0]
     else:
-        units = format_degrees(units)
+        units = format_degrees(units)        
         if mathrm: 
             units = '\mathrm{' + units + '}'
         if not isnumerator:
@@ -108,6 +108,7 @@ def format_units(units, ends='$', mathrm=True):
     
     """
     units = str(units)
+    if units == '%': return units
     all_numerators = []
     all_denominators = []
     term_is_numerator = True

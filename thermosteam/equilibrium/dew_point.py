@@ -20,7 +20,7 @@ __all__ = ('DewPoint', 'DewPointCache')
 
 # %% Solvers
 
-@njit(cache=True)
+# @njit(cache=True)
 def x_iter(x, x_gamma, T, P, f_gamma, gamma_args):
     # Add back trace amounts for activity coefficients at infinite dilution
     mask = x < 1e-32
@@ -32,8 +32,11 @@ def x_iter(x, x_gamma, T, P, f_gamma, gamma_args):
         x = x_gamma / denominator
     except: 
         raise Exception('liquid phase composition is infeasible')
-    if (np.abs(x) > 1e16).any():
+    if (x < 0).any():
         raise Exception('liquid phase composition is infeasible')
+    mask = x > 1e3
+    if mask.any():
+        x[mask] = 1e3 +  np.log(x[mask] / 1e3) # Avoid crazy numbers
     return x
 
 # @njit(cache=True)

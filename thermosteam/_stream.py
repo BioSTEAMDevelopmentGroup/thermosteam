@@ -259,8 +259,7 @@ class Stream:
         '_vle_cache', '_lle_cache', '_sle_cache',
         '_sink', '_source', '_price', '_property_cache_key',
         '_property_cache', 'characterization_factors', '_user_equilibrium',
-        'port',
-        # '_velocity', '_height'
+        'port', # '_velocity', '_height'
     )
     line = 'Stream'
     
@@ -1433,7 +1432,8 @@ class Stream:
         else:
             self.P = P = min([i.P for i in streams])
             if conserve_phases:
-                self.phases = {i.phase for i in others}
+                phases = self.phase + ''.join([i.phase for i in others])
+                self.phases = phases
             if vle:
                 self._imol.mix_from([i._imol for i in streams])
                 if energy_balance: 
@@ -1441,6 +1441,7 @@ class Stream:
                     self.vle(H=H, P=P)
                 else:
                     self.vle(T=self.T, P=P)
+                self.reduce_phases()
             else:
                 if energy_balance: H = sum([i.H for i in streams], Q)
                 self._imol.mix_from([i._imol for i in streams])
@@ -1451,7 +1452,7 @@ class Stream:
                         try:
                             self.H = H
                         except:
-                            self.phases = {i.phase for i in others}
+                            self.phases = self.phase + ''.join([i.phase for i in others])
                             self._imol.mix_from([i._imol for i in streams])
                             self.H = H
                 
@@ -1488,6 +1489,13 @@ class Stream:
         chemicals = self.chemicals
         values = mol * split
         dummy = mol - values
+        if energy_balance:
+            tc1 = s1._thermal_condition
+            tc2 = s2._thermal_condition
+            tc = self._thermal_condition
+            tc1._T = tc2._T = tc._T
+            tc1._P = tc2._P = tc._P
+            s1.phase = s2.phase = self.phase
         if s1.chemicals is chemicals: 
             s1.mol[:] = values
         else:
@@ -1501,13 +1509,6 @@ class Stream:
             s2.empty()
             CASs, values = zip(*[(i, j) for i, j in zip(chemicals.CASs, values) if j])
             s2._imol[CASs] = values
-        if energy_balance:
-            tc1 = s1._thermal_condition
-            tc2 = s2._thermal_condition
-            tc = self._thermal_condition
-            tc1._T = tc2._T = tc._T
-            tc1._P = tc2._P = tc._P
-            s1.phase = s2.phase = self.phase
             
         
     def link_with(self, other: Stream, 
@@ -2457,6 +2458,7 @@ class Stream:
         return (self.phase,)
     @phases.setter
     def phases(self, phases):
+        phases = set(phases)
         if len(phases) == 1:
             self.phase, = phases
         else:

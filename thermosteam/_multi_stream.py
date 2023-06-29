@@ -441,8 +441,9 @@ class MultiStream(Stream):
         return self._imol._phases
     @phases.setter
     def phases(self, phases):
+        phases = set(phases)
         if len(phases) == 1:
-            self.phase = phases[0]
+            self.phase, = phases
         phases = phase_tuple(phases)
         if phases != self.phases:
             self._imol = self._imol.to_material_indexer(phases)
@@ -970,6 +971,10 @@ class MultiStream(Stream):
             self.phase = self.phases[0]
         else:
             raise RuntimeError('multiple phases present; cannot convert to single phase stream')
+    
+    def reduce_phases(self):
+        """Remove empty phases."""
+        self.phase = self.phase
     
     @property
     def phase(self) -> str:
