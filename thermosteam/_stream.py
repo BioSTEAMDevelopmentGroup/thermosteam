@@ -259,7 +259,7 @@ class Stream:
         '_vle_cache', '_lle_cache', '_sle_cache',
         '_sink', '_source', '_price', '_property_cache_key',
         '_property_cache', 'characterization_factors', '_user_equilibrium',
-        # '_velocity', '_height'
+        'port', # '_velocity', '_height'
     )
     line = 'Stream'
     
@@ -324,7 +324,7 @@ class Stream:
             if total_flow:
                 mol = self.mol
                 mol *= total_flow / mol.sum()
-        self._sink = self._source = None # For BioSTEAM
+        self._sink = self._source = None
         self.reset_cache()
         self._register(ID)
         self._user_equilibrium = None
@@ -1361,7 +1361,7 @@ class Stream:
             self._imol.separate_out(other._imol)
             if energy_balance: self.H = H_new
     
-    def mix_from(self, others, energy_balance=True, vle=False, Q=0.):
+    def mix_from(self, others, energy_balance=True, vle=False, Q=0., conserve_phases=False):
         """
         Mix all other streams into this one, ignoring its initial contents.
         
@@ -1425,9 +1425,15 @@ class Stream:
         if N_streams == 0:
             self.empty()
         elif N_streams == 1:
-            self.copy_like(streams[0])
+            if energy_balance:
+                self.copy_like(streams[0])
+            else:
+                self.copy_flow(streams[0])
         else:
             self.P = P = min([i.P for i in streams])
+            if conserve_phases:
+                phases = self.phase + ''.join([i.phase for i in others])
+                self.phases = phases
             if vle:
                 self._imol.mix_from([i._imol for i in streams])
                 if energy_balance: 
@@ -1435,16 +1441,20 @@ class Stream:
                     self.vle(H=H, P=P)
                 else:
                     self.vle(T=self.T, P=P)
+                self.reduce_phases()
             else:
                 if energy_balance: H = sum([i.H for i in streams], Q)
                 self._imol.mix_from([i._imol for i in streams])
                 if energy_balance and not self.isempty():
-                    try:
+                    if conserve_phases: 
                         self.H = H
-                    except:
-                        self.phases = {i.phase for i in others}
-                        self._imol.mix_from([i._imol for i in streams])
-                        self.H = H
+                    else:
+                        try:
+                            self.H = H
+                        except:
+                            self.phases = self.phase + ''.join([i.phase for i in others])
+                            self._imol.mix_from([i._imol for i in streams])
+                            self.H = H
                 
     def split_to(self, s1, s2, split, energy_balance=True):
         """
@@ -1479,6 +1489,13 @@ class Stream:
         chemicals = self.chemicals
         values = mol * split
         dummy = mol - values
+        if energy_balance:
+            tc1 = s1._thermal_condition
+            tc2 = s2._thermal_condition
+            tc = self._thermal_condition
+            tc1._T = tc2._T = tc._T
+            tc1._P = tc2._P = tc._P
+            s1.phase = s2.phase = self.phase
         if s1.chemicals is chemicals: 
             s1.mol[:] = values
         else:
@@ -1492,13 +1509,6 @@ class Stream:
             s2.empty()
             CASs, values = zip(*[(i, j) for i, j in zip(chemicals.CASs, values) if j])
             s2._imol[CASs] = values
-        if energy_balance:
-            tc1 = s1._thermal_condition
-            tc2 = s2._thermal_condition
-            tc = self._thermal_condition
-            tc1._T = tc2._T = tc._T
-            tc1._P = tc2._P = tc._P
-            s1.phase = s2.phase = self.phase
             
         
     def link_with(self, other: Stream, 
@@ -1814,6 +1824,11 @@ class Stream:
                 else:
                     other_mol[other_index] = 0
     
+    def _get_class(self):
+        return self.__class__
+    def _set_class(self, cls):
+        self.__class__ = cls
+    
     def copy(self, ID=None, thermo=None):
         """
         Return a copy of the stream.
@@ -1834,10 +1849,10 @@ class Stream:
         
         Warnings
         --------
-        Prices, and LCA characterization factors are not copied are not copied.
+        Prices, and LCA characterization factors are not copied.
         
         """
-        cls = self.__class__
+        cls = self._get_class()
         new = cls.__new__(cls)
         new._sink = new._source = None
         new.characterization_factors = {}
@@ -1872,10 +1887,11 @@ class Stream:
         True
         
         """
-        cls = self.__class__
+        cls = self._get_class()
         new = cls.__new__(cls)
-        new.ID = new._sink = new._source = None
-        new.price = 0
+        new._ID = ID or ''
+        new._sink = new._source = None
+        new._price = 0
         new._thermo = self._thermo
         new._imol = imol = self._imol._copy_without_data()
         imol.data = self._imol.data
@@ -1887,7 +1903,7 @@ class Stream:
     
     def proxy(self, ID=None):
         """
-        Return a new stream that shares all thermochemical data with this one.
+        Return a new stream that shares all data with this one.
         
         See Also
         --------
@@ -1908,11 +1924,11 @@ class Stream:
         True
         
         """
-        cls = self.__class__
+        cls = self._get_class()
         new = cls.__new__(cls)
-        new.ID = None
+        new._ID = ID or ''
         new._sink = new._source = None
-        new.price = self.price
+        new._price = self._price
         new._thermo = self._thermo
         new._imol = self._imol
         new._thermal_condition = self._thermal_condition
@@ -1921,9 +1937,7 @@ class Stream:
         new._bubble_point_cache = self._bubble_point_cache
         new._dew_point_cache = self._dew_point_cache
         new._user_equilibrium = self._user_equilibrium
-        try: new._vle_cache = self._vle_cache
-        except AttributeError: pass
-        new.characterization_factors = {}
+        new.characterization_factors = self.characterization_factors
         return new
     
     def empty(self):
@@ -2386,18 +2400,28 @@ class Stream:
         """
         assert self.phase == 'g', 'stream must be a gas to receive vent'
         thermo = self.thermo.ideal() if ideal else self.thermo
-        ms = tmo.Stream(None, T=self.T, P=self.P, thermo=thermo)
+        T = self.T
+        P = self.P
+        ms = tmo.Stream(None, T=T, P=P, thermo=thermo)
         ms.mix_from([self, other], energy_balance=False)
         if energy_balance: ms.H = H = self.H + other.H
         ms.vle._setup()
+        vapor = ms['g']
+        liquid = ms['l']
+        for chemical in ms.chemicals:
+            try: Psat = chemical.Psat(T)
+            except: continue
+            ID = chemical.ID
+            if Psat < P:
+                liquid.imol[ID] = ms.imol[ID]
+                vapor.imol[ID] = 0.
+            else:
+                vapor.imol[ID] = ms.imol[ID]
+                liquid.imol[ID] = 0.
         chemicals = ms.vle_chemicals
         F_l = eq.LiquidFugacities(chemicals, thermo)
         IDs = tuple([i.ID for i in chemicals])
         x = other.get_molar_fraction(IDs)
-        T = ms.T
-        P = ms.P
-        vapor = ms['g']
-        liquid = ms['l']
         F_mol_vapor = vapor.F_mol
         mol = liquid.imol[IDs] + vapor.imol[IDs]
         if energy_balance:
@@ -2434,11 +2458,11 @@ class Stream:
         return (self.phase,)
     @phases.setter
     def phases(self, phases):
-        if self.phases == phases: return
+        phases = set(phases)
         if len(phases) == 1:
-            self.phase = phases[0]
+            self.phase, = phases
         else:
-            self.__class__ = tmo.MultiStream
+            self._set_class(tmo.MultiStream)
             self._imol = self._imol.to_material_indexer(phases)
             self._streams = {}
             self._vle_cache = eq.VLECache(self._imol,
@@ -2465,10 +2489,6 @@ class Stream:
         P = UofM.convert(self.P, 'Pa', P_units)
         s = '' if isinstance(phase, str) else 's'
         return f"phase{s}: {repr(phase)}, T: {T:{notation['T']}} {T_units}, P: {P:{notation['P']}} {P_units}\n"
-    
-    def _source_info(self):
-        source = self.source
-        return f"{source}-{source.outs.index(self)}" if source else self.ID
     
     def _translate_layout(self, layout, flow, composition, N, sort):
         if layout:

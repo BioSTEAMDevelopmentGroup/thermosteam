@@ -35,6 +35,7 @@ def get_phase_fraction(stream, phases):
             phase_fraction += imol[phase].sum() 
     return phase_fraction / F_mol
 
+@utils.registered_franchise(Stream)
 class MultiStream(Stream):
     """
     Create a MultiStream object that defines material flow rates for multiple
@@ -440,8 +441,9 @@ class MultiStream(Stream):
         return self._imol._phases
     @phases.setter
     def phases(self, phases):
+        phases = set(phases)
         if len(phases) == 1:
-            self.phase = phases[0]
+            self.phase, = phases
         phases = phase_tuple(phases)
         if phases != self.phases:
             self._imol = self._imol.to_material_indexer(phases)
@@ -970,18 +972,24 @@ class MultiStream(Stream):
         else:
             raise RuntimeError('multiple phases present; cannot convert to single phase stream')
     
+    def reduce_phases(self):
+        """Remove empty phases."""
+        self.phase = self.phase
+    
     @property
     def phase(self) -> str:
         imol = self._imol
         return ''.join([phases[0] for phases in ('g', 'lL', 'sS') if not imol.phases_are_empty(phases)])
     @phase.setter
     def phase(self, phase):
-        if len(phase) > 1: 
+        N_phase = len(phase)
+        if N_phase > 1: 
             self.phases = phase
         else:
+            if N_phase == 0: phase = 'l' # Default phase for streams
             self._imol = self._imol.to_chemical_indexer(phase)
             self._streams.clear()
-            self.__class__ = Stream
+            self._set_class(Stream)
     
     ### Representation ###
     

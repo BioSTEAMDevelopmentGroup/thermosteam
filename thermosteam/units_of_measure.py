@@ -87,7 +87,7 @@ def format_units_power(units, isnumerator=True, mathrm=True):
         units += '^{' + (power if isnumerator else '-' + power) + '}'
         if other: units += other[0]
     else:
-        units = format_degrees(units)
+        units = format_degrees(units)        
         if mathrm: 
             units = '\mathrm{' + units + '}'
         if not isnumerator:
@@ -108,6 +108,7 @@ def format_units(units, ends='$', mathrm=True):
     
     """
     units = str(units)
+    if units == '%': return units
     all_numerators = []
     all_denominators = []
     term_is_numerator = True
@@ -386,53 +387,54 @@ heat_utility_units_of_measure = {
     'duty': AbsoluteUnitsOfMeasure('kJ/hr'),
 }
 
-definitions = {'MW': 'Molecular weight',
-               'T': 'Temperature',
-               'Tr': 'Reduced temperature',
-               'Tm': 'Melting point temperature',
-               'Tb': 'Boiling point temperature',
-               'Tbr': 'Reduced boiling point temperature',
-               'Tt': 'Triple point temperature',
-               'Tc': 'Critical point temperature',
-               'P': 'Pressure',
-               'Pr': 'Reduced pressure',
-               'Pc': 'Critical point pressure',
-               'Psat': 'Saturated vapor pressure',
-               'Pt': 'Triple point pressure',
-               'V': 'Molar volume',
-               'Vc': 'Critical point volume',
-               'Cp': 'Specific heat capacity',
-               'Cn': 'Molar heat capacity',
-               'rho': 'Density',
-               'rhoc': 'Critical point density',
-               'nu': 'Kinematic viscosity',
-               'mu': 'hydraulic viscosity',
-               'sigma': 'Surface tension',
-               'kappa': 'Thermal conductivity',
-               'alpha': 'Thermal diffusivity',
-               'Hvap': 'Heat of vaporization',
-               'H': 'Enthalpy',
-               'Hf': 'Heat of formation',
-               'Hc': 'Heat of combustion', 
-               'Hfus': 'Heat of fusion',
-               'Hsub': 'Heat of sublimation',
-               'S': 'Entropy',
-               'S0': 'Absolute entropy of formation',
-               'G': 'Gibbs free energy',
-               'U': 'Internal energy',
-               'H_excess': 'Excess enthalpy',
-               'S_excess': 'Excess entropy',
-               'R': 'Universal gas constant',
-               'Zc': 'Critical compressibility',
-               'dZ': 'Change in compressibility factor',
-               'omega': 'Acentric factor',
-               'dipole': 'Dipole momment',
-               'delta': 'Solubility parameter',
-               'epsilon': 'Relative permittivity',
-               'similarity_variable': 'Heat capacity similarity variable',
-               'iscyclic_aliphatic': 'Whether a chemical is cyclic aliphatic',
-               'has_hydroxyl': 'Whether a polar chemical has hydroxyl groups',
-               'atoms': 'Atom-count pairs'
+definitions = {
+    'MW': 'Molecular weight',
+    'T': 'Temperature',
+    'Tr': 'Reduced temperature',
+    'Tm': 'Melting point temperature',
+    'Tb': 'Boiling point temperature',
+    'Tbr': 'Reduced boiling point temperature',
+    'Tt': 'Triple point temperature',
+    'Tc': 'Critical point temperature',
+    'P': 'Pressure',
+    'Pr': 'Reduced pressure',
+    'Pc': 'Critical point pressure',
+    'Psat': 'Saturated vapor pressure',
+    'Pt': 'Triple point pressure',
+    'V': 'Molar volume',
+    'Vc': 'Critical point volume',
+    'Cp': 'Specific heat capacity',
+    'Cn': 'Molar heat capacity',
+    'rho': 'Density',
+    'rhoc': 'Critical point density',
+    'nu': 'Kinematic viscosity',
+    'mu': 'hydraulic viscosity',
+    'sigma': 'Surface tension',
+    'kappa': 'Thermal conductivity',
+    'alpha': 'Thermal diffusivity',
+    'Hvap': 'Heat of vaporization',
+    'H': 'Enthalpy',
+    'Hf': 'Heat of formation',
+    'Hc': 'Heat of combustion', 
+    'Hfus': 'Heat of fusion',
+    'Hsub': 'Heat of sublimation',
+    'S': 'Entropy',
+    'S0': 'Absolute entropy of formation',
+    'G': 'Gibbs free energy',
+    'U': 'Internal energy',
+    'H_excess': 'Excess enthalpy',
+    'S_excess': 'Excess entropy',
+    'R': 'Universal gas constant',
+    'Zc': 'Critical compressibility',
+    'dZ': 'Change in compressibility factor',
+    'omega': 'Acentric factor',
+    'dipole': 'Dipole momment',
+    'delta': 'Solubility parameter',
+    'epsilon': 'Relative permittivity',
+    'similarity_variable': 'Heat capacity similarity variable',
+    'iscyclic_aliphatic': 'Whether a chemical is cyclic aliphatic',
+    'has_hydroxyl': 'Whether a polar chemical has hydroxyl groups',
+    'atoms': 'Atom-count pairs'
 }
 
 types = {'atoms': 'Dict[str, int]'}
