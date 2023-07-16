@@ -110,15 +110,12 @@ def format_units(units, ends='$', mathrm=True):
     if '%' in units: return units
     all_numerators = []
     all_denominators = []
-    term_is_numerator = True
-    for unprocessed_denominators in units.split("/"):
-        term, *numerators = unprocessed_denominators.split("*")
-        if term_is_numerator:
-            all_numerators.append(term)
-        else:
-            all_denominators.append(term)
-        term_is_numerator = not term_is_numerator
-        all_numerators.extend(numerators)
+    unprocessed_numerators, *unprocessed_denominators = units.split("/")
+    all_numerators = unprocessed_numerators.split("*")
+    for unprocessed_denominator in unprocessed_denominators:
+        denominator, *unprocessed_numerators = unprocessed_denominator.split("*")
+        all_numerators.extend(unprocessed_numerators)
+        all_denominators.append(denominator)
     all_numerators = [format_units_power(i, True, mathrm) for i in all_numerators]
     all_denominators = [format_units_power(i, False, mathrm) for i in all_denominators]
     return ends + ' \cdot '.join(all_numerators + all_denominators).replace('$', '\$') + ends
