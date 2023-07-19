@@ -397,6 +397,9 @@ class MultiStream(Stream):
         >>> s1 = tmo.MultiStream('s1', l=[('Water', 20), ('Ethanol', 10)], units='kg/hr')
         >>> s1.get_flow('kg/hr', ('l', 'Water'))
         20.0
+        
+        >>> s1.get_flow('kg/hr')
+        sparse([20., 10.])
 
         """
         name, factor = self._get_flow_name_and_factor(units)
