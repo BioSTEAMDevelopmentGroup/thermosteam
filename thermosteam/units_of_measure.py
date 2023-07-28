@@ -87,8 +87,9 @@ def format_units_power(units, isnumerator=True, mathrm=True):
         units += '^{' + (power if isnumerator else '-' + power) + '}'
         if other: units += other[0]
     else:
-        units = format_degrees(units)        
-        if mathrm: units = '\mathrm{' + units + '}'
+        if units != '%':
+            units = format_degrees(units)      
+            if mathrm: units = '\mathrm{' + units + '}'
         if not isnumerator:
             units = units + '^{-1}'
     return units
@@ -107,7 +108,6 @@ def format_units(units, ends='$', mathrm=True):
     
     """
     units = str(units)
-    if '%' in units: return units
     all_numerators = []
     all_denominators = []
     unprocessed_numerators, *unprocessed_denominators = units.split("/")
@@ -116,9 +116,9 @@ def format_units(units, ends='$', mathrm=True):
         denominator, *unprocessed_numerators = unprocessed_denominator.split("*")
         all_numerators.extend(unprocessed_numerators)
         all_denominators.append(denominator)
-    all_numerators = [format_units_power(i, True, mathrm) for i in all_numerators]
-    all_denominators = [format_units_power(i, False, mathrm) for i in all_denominators]
-    return ends + ' \cdot '.join(all_numerators + all_denominators).replace('$', '\$') + ends
+    all_numerators = [format_units_power(i, True, mathrm) for i in all_numerators if i != '1']
+    all_denominators = [format_units_power(i, False, mathrm) for i in all_denominators if i != '1']
+    return ends + ' \cdot '.join(all_numerators + all_denominators).replace('$', '\$').replace('%', '\%') + ends
 
 def reformat_units(name):
     left, right = name.split('[')
