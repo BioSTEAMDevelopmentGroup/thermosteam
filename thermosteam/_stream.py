@@ -1419,7 +1419,7 @@ class Stream:
         for i in others:
             if isa(i, Stream):
                 if not i.isempty(): streams.append(i)
-            else: 
+            elif i: 
                 Q += i.heat # Must be a heat or power object, assume power turns to heat
         N_streams = len(streams)
         if N_streams == 0:

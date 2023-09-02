@@ -253,6 +253,29 @@ class MultiStream(Stream):
         self._user_equilibrium = None
         if vlle: self.vlle(T, P)
         
+    @classmethod
+    def from_streams(cls, streams):
+        if not streams: raise ValueError('at least one stream must be passed')
+        self = cls.__new__(cls)
+        self._streams = streams_by_phase = {i.phase: i for i in streams}
+        phases = phase_tuple(streams_by_phase)
+        N_streams = len(streams)
+        if len(phases) != N_streams: raise ValueError('each stream must have a different phase')
+        base, *others = streams
+        self.characterization_factors = {}
+        self._thermal_condition = base._thermal_condition
+        self._load_thermo(base.thermo)
+        self.price = 0
+        self._imol = MolarFlowIndexer.from_data(
+            [streams_by_phase[i]._imol.data for i in phases], phases, 
+            chemicals=base.chemicals
+        )
+        self._sink = self._source = None
+        self.reset_cache()
+        self._register(None)
+        self._user_equilibrium = base._user_equilibrium
+        return self
+        
     def reset_flow(self, total_flow=None, units=None, phases=None, **phase_flows):
         """
         Convinience method for resetting flow rate data.
