@@ -264,6 +264,7 @@ class MultiStream(Stream):
         base, *others = streams
         self.characterization_factors = {}
         self._thermal_condition = base._thermal_condition
+        for i in others: i._thermal_condition = base._thermal_condition
         self._load_thermo(base.thermo)
         self.price = 0
         self._imol = MolarFlowIndexer.from_data(
