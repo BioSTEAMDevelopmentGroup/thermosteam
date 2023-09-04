@@ -93,7 +93,7 @@ class Registry: # pragma: no cover
             data = self.data
             ID_old = getattr(obj, '_ID', None)
             if ID_old and data.get(ID_old) is obj: del data[ID_old]
-            obj._ID = ID[1:] if ID[0] == '.' else ID
+            obj._ID = ID.lstrip('.')
         else:
             check_valid_ID(ID)
             data = self.data
