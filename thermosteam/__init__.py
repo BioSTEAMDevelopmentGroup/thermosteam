@@ -81,7 +81,7 @@ import pandas as pd
 np.set_printoptions(suppress=False)
 np.set_printoptions(precision=3) 
 pd.options.display.float_format = '{:.3g}'.format
-pd.set_option('display.max_rows', 35)
+pd.set_option('display.max_rows', 50)
 pd.set_option('display.max_columns', 10)
 pd.set_option('max_colwidth', 35)
 pd.set_option('display.width', 160)
