@@ -1735,7 +1735,7 @@ class SparseVector:
             new = dct.copy()
             for i, j in other_dct.items():
                 if i in dct:
-                    j = dct[i] + j
+                    j += dct[i]
                     if j: new[i] = j
                     else: del new[i]
                 else:
