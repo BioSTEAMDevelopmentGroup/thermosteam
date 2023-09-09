@@ -959,12 +959,9 @@ class Chemical:
         return self._formula
     @formula.setter
     def formula(self, formula):
-        if self._formula: raise AttributeError('cannot set formula')
         self._formula = str(formula)
-        if self._Hf is None:
-            self._MW = compute_molecular_weight(self.atoms)
-        else:
-            self.reset_combustion_data()
+        self._MW = compute_molecular_weight(self.atoms)
+        if self._Hf: self.reset_combustion_data()
     
     ### Functional groups ###
     
