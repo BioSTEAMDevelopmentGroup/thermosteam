@@ -258,7 +258,7 @@ class Stream:
         '_bubble_point_cache', '_dew_point_cache',
         '_vle_cache', '_lle_cache', '_sle_cache',
         '_sink', '_source', '_price', '_property_cache_key',
-        '_property_cache', 'characterization_factors', '_user_equilibrium',
+        '_property_cache', 'characterization_factors',
         'port', # '_velocity', '_height'
     )
     line = 'Stream'
@@ -327,7 +327,6 @@ class Stream:
         self._sink = self._source = None
         self.reset_cache()
         self._register(ID)
-        self._user_equilibrium = None
         if vlle: 
             self.vlle(T, P)
             data = self._imol.data
@@ -406,16 +405,6 @@ class Stream:
             for phase, stream in self._streams.items():
                 stream._imol = self._imol.get_phase(phase)
                 stream._thermo = thermo
-
-    def user_equilibrium(self, *args, **kwargs):
-        return self._user_equilibrium(self, *args, **kwargs)
-
-    def set_user_equilibrium(self, f):
-        self._user_equilibrium = f
-        
-    @property
-    def has_user_equilibrium(self) -> bool:
-        return self._user_equilibrium is not None
 
     def get_CF(self, key: str, basis : Optional[str]=None, units: Optional[str]=None):
         """
@@ -1861,7 +1850,6 @@ class Stream:
         if thermo and thermo.chemicals is not self.chemicals:
             new._imol.reset_chemicals(thermo.chemicals)
         new._thermal_condition = self._thermal_condition.copy()
-        new._user_equilibrium = self._user_equilibrium
         new.reset_cache()
         new.price = 0
         new.ID = ID
@@ -1898,7 +1886,6 @@ class Stream:
         new._thermal_condition = self._thermal_condition.copy()
         new.reset_cache()
         new.characterization_factors = {}
-        new._user_equilibrium = self._user_equilibrium
         return new
     
     def proxy(self, ID=None):
@@ -1936,7 +1923,6 @@ class Stream:
         new._property_cache_key = self._property_cache_key
         new._bubble_point_cache = self._bubble_point_cache
         new._dew_point_cache = self._dew_point_cache
-        new._user_equilibrium = self._user_equilibrium
         new.characterization_factors = self.characterization_factors
         return new
     

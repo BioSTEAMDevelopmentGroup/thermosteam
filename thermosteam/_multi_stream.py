@@ -250,7 +250,6 @@ class MultiStream(Stream):
         self._sink = self._source = None
         self.reset_cache()
         self._register(ID)
-        self._user_equilibrium = None
         if vlle: self.vlle(T, P)
         
     @classmethod
@@ -274,7 +273,6 @@ class MultiStream(Stream):
         self._sink = self._source = None
         self.reset_cache()
         self._register(None)
-        self._user_equilibrium = base._user_equilibrium
         return self
         
     def reset_flow(self, total_flow=None, units=None, phases=None, **phase_flows):
@@ -388,7 +386,6 @@ class MultiStream(Stream):
             stream._property_cache = {}
             stream.characterization_factors = {}
             stream._property_cache_key = None, None
-            stream._user_equilibrium = None
             streams[phase] = stream
         return stream
     
