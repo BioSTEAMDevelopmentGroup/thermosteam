@@ -29,7 +29,7 @@ if TYPE_CHECKING:
     import biosteam as bst
 # from .constants import g
 
-__all__ = ('Stream', )
+__all__ = ('Stream',)
 
 # %% Utilities
 
@@ -2757,3 +2757,53 @@ class Stream:
         price = utils.repr_kwarg('price', self.price)
         print(f"{type(self).__name__}(ID={repr(self.ID)}, phase={repr(self.phase)}, T={self.T:.2f}, "
               f"P={self.P:.6g}{price}{chemical_flows}, units={repr(units)})")
+
+    # Convinience math methods for scripting
+
+    def __add__(self, other):
+        return Stream.sum([self, other])
+        
+    def __radd__(self, other):
+        return Stream.sum([self, other])
+    
+    def __sub__(self, other):
+        new = self.copy()
+        new.separate_out(other)   
+        return new
+    
+    def __iadd__(self, other):
+        self.mix_from([self, other])
+        return self
+    
+    def __isub__(self, other):
+        self.separate_out(other)   
+        return self
+    
+    def __neg__(self):
+        new = self.copy()
+        new._imol.data *= -1
+        return new
+    
+    def __mul__(self, other):
+        new = self.copy()
+        new._imol.data *= other
+        return new
+    
+    def __rmul__(self, other):
+        new = self.copy()
+        new._imol.data *= other
+        return new
+    
+    def __truediv__(self, other):
+        new = self.copy()
+        new._imol.data /= other
+        return new
+    
+    def __imul__(self, other):
+        self._imol.data *= other
+        return self
+    
+    def __itruediv__(self, other):
+        self._imol.data /= other
+        return self
+
