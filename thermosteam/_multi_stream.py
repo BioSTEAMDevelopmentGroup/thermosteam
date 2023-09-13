@@ -1013,7 +1013,7 @@ class MultiStream(Stream):
             if N_phase == 0: phase = 'l' # Default phase for streams
             self._imol = self._imol.to_chemical_indexer(phase)
             self._streams.clear()
-            self._set_class(Stream)
+            self.__class__ = Stream
     
     ### Representation ###
     

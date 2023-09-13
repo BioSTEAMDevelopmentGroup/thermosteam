@@ -1813,11 +1813,6 @@ class Stream:
                 else:
                     other_mol[other_index] = 0
     
-    def _get_class(self):
-        return self.__class__
-    def _set_class(self, cls):
-        self.__class__ = cls
-    
     def copy(self, ID=None, thermo=None):
         """
         Return a copy of the stream.
@@ -1841,7 +1836,7 @@ class Stream:
         Prices, and LCA characterization factors are not copied.
         
         """
-        cls = self._get_class()
+        cls = self.__class__
         new = cls.__new__(cls)
         new._sink = new._source = None
         new.characterization_factors = {}
@@ -1875,7 +1870,7 @@ class Stream:
         True
         
         """
-        cls = self._get_class()
+        cls = self.__class__
         new = cls.__new__(cls)
         new._ID = ID or ''
         new._sink = new._source = None
@@ -1911,7 +1906,7 @@ class Stream:
         True
         
         """
-        cls = self._get_class()
+        cls = self.__class__
         new = cls.__new__(cls)
         new._ID = ID or ''
         new._sink = new._source = None
@@ -2448,7 +2443,7 @@ class Stream:
         if len(phases) == 1:
             self.phase, = phases
         else:
-            self._set_class(tmo.MultiStream)
+            self.__class__ = tmo.MultiStream
             self._imol = self._imol.to_material_indexer(phases)
             self._streams = {}
             self._vle_cache = eq.VLECache(self._imol,

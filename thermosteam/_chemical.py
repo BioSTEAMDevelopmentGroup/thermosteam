@@ -1877,7 +1877,7 @@ class Chemical:
         >>> Substance = Chemical.blank('Substance')
         >>> missing_properties = Substance.default()
         >>> sorted(missing_properties)
-        ['Dortmund', 'Hfus', 'Hvap', 'PSRK', 'Pc', 'Psat', 'Pt', 'Sfus', 'Tb', 'Tc', 'Tm', 'Tt', 'UNIFAC', 'Vc', 'dipole', 'iscyclic_aliphatic', 'omega', 'similarity_variable']
+        ['Dortmund', 'Hvap', 'PSRK', 'Pc', 'Psat', 'Pt', 'Tb', 'Tc', 'Tm', 'Tt', 'UNIFAC', 'Vc', 'dipole', 'iscyclic_aliphatic', 'omega', 'similarity_variable']
         
         Note that missing properties does not include essential properties volume, heat capacity, and conductivity.
         
@@ -1966,13 +1966,17 @@ class Chemical:
                 Cn_phase = getfield(Cn, phase_ref)
                 Cn_phase.add_method(4.18*MW)
             self.reset_free_energies()
+        if 'Hfus' in properties:
+            self._Hfus = 0.
+        if 'Sfus' in properties:
+            self._Sfus = 0.
         if not getattr(self, '_H', None):
             self.reset_free_energies()
         missing = set(properties)
         missing.difference_update({'MW', 'CAS', 'Cn', 'Hf', 'sigma',
                                    'mu', 'kappa', 'LHV', 'HHV', 'epsilon', 'H',
                                    'S', 'H_excess', 'S_excess', 'phase_ref', 
-                                   'combustion'})
+                                   'combustion', 'Hfus', 'Sfus'})
         return missing
     
     def get_missing_properties(self, properties=None):
