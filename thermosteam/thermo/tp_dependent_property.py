@@ -82,3 +82,9 @@ VolumeGas.ranked_methods_P.append(IDEAL)
 for methods in (VolumeLiquid.ranked_methods, VolumeLiquid.ranked_methods_P, VolumeGas.ranked_methods_P):
     methods.remove(EOS)
     methods.append(EOS)
+
+VolumeGas.RAISE_PROPERTY_CALCULATION_ERROR = False
+def calculate_molar_volume_with_ideal_fallback(self, T, P):
+    return self.TP_dependent_property(T, P) or self.calculate_P(T, P, IDEAL)
+
+VolumeGas.__call__ = calculate_molar_volume_with_ideal_fallback
