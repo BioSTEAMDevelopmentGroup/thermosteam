@@ -112,14 +112,15 @@ class Reaction:
                A dictionary of stoichiometric coefficients or a stoichiometric
                equation written as:
                i1 R1 + ... + in Rn -> j1 P1 + ... + jm Pm
-    reactant : str
-               ID of reactant compound.
-    X : float
-        Reactant conversion (fraction).
-    chemicals=None : Chemicals, defaults to settings.chemicals.
-        Chemicals corresponding to each entry in the stoichiometry array.
-    basis='mol': {'mol', 'wt'}
-        Basis of reaction.
+    reactant : str, optional
+               ID of reactant chemical. Defaults to reactant if only one available.
+    X : float, optional
+        Reactant conversion (fraction). Defaults to 1.
+    chemicals : Chemicals, optional
+        Chemicals corresponding to each entry in the stoichiometry array. 
+        Defaults to settings.chemicals
+    basis: {'mol', 'wt'}, optional
+        Basis of reaction. Defaults to 'mol'.
     
     Other Parameters
     ----------------
@@ -254,7 +255,7 @@ class Reaction:
                  '_stoichiometry', 
                  '_X')
     
-    def __init__(self, reaction, reactant, X, 
+    def __init__(self, reaction, reactant=None, X=1., 
                  chemicals=None, basis='mol', *,
                  phases=None,
                  check_mass_balance=False,
@@ -271,13 +272,29 @@ class Reaction:
             self._phases = phases = phase_tuple(phases) if phases else xprs.get_phases(reaction)
             if phases:
                 self._stoichiometry = stoichiometry = xprs.get_stoichiometric_array(reaction, phases, chemicals)
-                reactant_index = self._chemicals.index(reactant)
+                if reactant is None:
+                    _, reactants_index = stoichiometry.negative_index()
+                    N_reactants = len(reactants_index)
+                    if N_reactants == 1:
+                        reactant_index = reactants_index[0]
+                    else:
+                        raise ValueError('must pass reactant when multiple reactants are involved')
+                else:
+                    reactant_index = self._chemicals.index(reactant)
                 for phase_index, x in enumerate(stoichiometry[:, reactant_index]):
                     if x: break
                 self._X_index = (phase_index, reactant_index)
             else:
                 self._stoichiometry = prs.get_stoichiometric_array(reaction, chemicals)
-                self._X_index = self._chemicals.index(reactant)
+                if reactant is None:
+                    reactants_index, = self._stoichiometry.negative_index()
+                    N_reactants = len(reactants_index)
+                    if N_reactants == 1:
+                        self._X_index = reactants_index[0]
+                    else:
+                        raise ValueError('must pass reactant when multiple reactants are involved')
+                else:
+                    self._X_index = self._chemicals.index(reactant)
             self._rescale()
             if correct_atomic_balance:
                 self.correct_atomic_balance()
@@ -292,6 +309,29 @@ class Reaction:
             self._phases = ()
             self._stoichiometry = SparseVector.from_size(chemicals.size)
             self._X_index = self._chemicals.index(reactant)
+    
+    def backwards(self, reactant=None, X=None):
+        new = self.copy()
+        if reactant is None:
+            if new._phases:
+                _, reactants_index = new._stoichiometry.positive_index()
+                N_reactants = len(reactants_index)
+                if N_reactants == 1:
+                    new._X_index = reactants_index[0]
+                else:
+                    raise ValueError('must pass reactant when multiple reactants are involved')
+            else:
+                reactants_index, = new._stoichiometry.positive_index()
+                N_reactants = len(reactants_index)
+                if N_reactants == 1:
+                    self._X_index = reactants_index[0]
+                else:
+                    raise ValueError('must pass reactant when multiple reactants are involved')
+        else:
+            new._X_index = new._chemicals.index(reactant)
+        if X is not None: new.X = X
+        new._rescale()
+        return new
     
     @property
     def reaction_chemicals(self):

@@ -1498,8 +1498,7 @@ class SparseVector:
     
     def negative_keys(self):
         dct = self.dct
-        for i in dct:
-            if dct[i] < 0.: yield i
+        return {i for i in dct if dct[i] < 0.}
     
     def negative_index(self):
         dct = self.dct
@@ -2544,7 +2543,7 @@ class SparseLogicalVector:
     def has_negatives(self):
         return False
     
-    def negative_keys(self): ()
+    def negative_keys(self): set()
     
     def negative_index(self): [],
     
