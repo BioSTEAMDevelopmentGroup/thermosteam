@@ -13,7 +13,7 @@
 # 
 # 2. The MIT open-source license. See
 # https://github.com/CalebBell/chemicals/blob/master/LICENSE.txt for details.
-from thermo.volume import COOLPROP, EOS, NEGLECT_P
+from thermo.volume import COOLPROP, EOS, IDEAL, NEGLECT_P
 from thermo import (
     TPDependentProperty,
     VaporPressure, 
@@ -76,7 +76,15 @@ for cls in subs:
 
 VolumeLiquid.property_max = 1e6
 VolumeSolid.property_max = 1e6
+VolumeGas.ranked_methods_P.remove(IDEAL)
+VolumeGas.ranked_methods_P.append(IDEAL)
 
 for methods in (VolumeLiquid.ranked_methods, VolumeLiquid.ranked_methods_P, VolumeGas.ranked_methods_P):
     methods.remove(EOS)
     methods.append(EOS)
+
+VolumeGas.RAISE_PROPERTY_CALCULATION_ERROR = False
+def calculate_molar_volume_with_ideal_fallback(self, T, P):
+    return self.TP_dependent_property(T, P) or self.calculate_P(T, P, IDEAL)
+
+VolumeGas.__call__ = calculate_molar_volume_with_ideal_fallback

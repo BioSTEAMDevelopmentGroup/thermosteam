@@ -87,9 +87,9 @@ def format_units_power(units, isnumerator=True, mathrm=True):
         units += '^{' + (power if isnumerator else '-' + power) + '}'
         if other: units += other[0]
     else:
-        units = format_degrees(units)        
-        if mathrm: 
-            units = '\mathrm{' + units + '}'
+        if units != '%':
+            units = format_degrees(units)      
+            if mathrm: units = '\mathrm{' + units + '}'
         if not isnumerator:
             units = units + '^{-1}'
     return units
@@ -108,21 +108,17 @@ def format_units(units, ends='$', mathrm=True):
     
     """
     units = str(units)
-    if units == '%': return units
     all_numerators = []
     all_denominators = []
-    term_is_numerator = True
-    for unprocessed_denominators in units.split("/"):
-        term, *numerators = unprocessed_denominators.split("*")
-        if term_is_numerator:
-            all_numerators.append(term)
-        else:
-            all_denominators.append(term)
-        term_is_numerator = not term_is_numerator
-        all_numerators.extend(numerators)
-    all_numerators = [format_units_power(i, True, mathrm) for i in all_numerators]
-    all_denominators = [format_units_power(i, False, mathrm) for i in all_denominators]
-    return ends + ' \cdot '.join(all_numerators + all_denominators).replace('$', '\$') + ends
+    unprocessed_numerators, *unprocessed_denominators = units.split("/")
+    all_numerators = unprocessed_numerators.split("*")
+    for unprocessed_denominator in unprocessed_denominators:
+        denominator, *unprocessed_numerators = unprocessed_denominator.split("*")
+        all_numerators.extend(unprocessed_numerators)
+        all_denominators.append(denominator)
+    all_numerators = [format_units_power(i, True, mathrm) for i in all_numerators if i != '1']
+    all_denominators = [format_units_power(i, False, mathrm) for i in all_denominators if i != '1']
+    return ends + ' \cdot '.join(all_numerators + all_denominators).replace('$', '\$').replace('%', '\%') + ends
 
 def reformat_units(name):
     left, right = name.split('[')

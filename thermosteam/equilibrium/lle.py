@@ -152,6 +152,17 @@ class LLE(Equilibrium, phases='lL'):
             else:
                 mol_L = self.solve_lle_liquid_mol(mol, T, lle_chemicals)
                 mol_l = mol - mol_L
+                if top_chemical:
+                    MW = self.chemicals.MW[index]
+                    mass_L = mol_L * MW
+                    mass_l = mol_l * MW
+                    IDs = {i.ID: n for n, i in enumerate(lle_chemicals)}
+                    try: top_chemical_index = IDs[top_chemical]
+                    except: pass
+                    else:
+                        C_L = mass_L[top_chemical_index] / mass_L.sum()
+                        C_l = mass_l[top_chemical_index] / mass_l.sum()
+                        if C_L < C_l: mol_l, mol_L = mol_L, mol_l
                 F_mol_l = mol_l.sum()
                 F_mol_L = mol_L.sum()
                 if not F_mol_L:
@@ -161,17 +172,6 @@ class LLE(Equilibrium, phases='lL'):
                     self._K = 1e16 * np.ones_like(mol)
                     self._phi = 1.
                 else:
-                    if top_chemical:
-                        MW = self.chemicals.MW[index]
-                        mass_L = mol_L * MW
-                        mass_l = mol_l * MW
-                        IDs = {i.ID: n for n, i in enumerate(lle_chemicals)}
-                        try: top_chemical_index = IDs[top_chemical]
-                        except: pass
-                        else:
-                            C_L = mass_L[top_chemical_index] / mass_L.sum()
-                            C_l = mass_l[top_chemical_index] / mass_l.sum()
-                            if C_L < C_l: mol_l, mol_L = mol_L, mol_l
                     x_mol_l = mol_l / F_mol_l
                     x_mol_L = mol_L / F_mol_L
                     x_mol_l[x_mol_l < 1e-16] = 1e-16
@@ -184,6 +184,26 @@ class LLE(Equilibrium, phases='lL'):
             if not update: return self._lle_chemicals, self._K, self._phi
             imol['l'][index] = mol_l * F_mol
             imol['L'][index] = mol_L * F_mol
+        elif not update: 
+            mol_l = mol
+            mol_L = np.zeros_like(mol_l)
+            if top_chemical:
+                MW = self.chemicals.MW[index]
+                IDs = {i.ID: n for n, i in enumerate(lle_chemicals)}
+                try: top_chemical_index = IDs[top_chemical]
+                except: pass
+                else:
+                    C_L = mol_L[top_chemical_index]
+                    C_l = mol_l[top_chemical_index]
+                    if C_L < C_l: mol_l, mol_L = mol_L, mol_l
+            F_mol_L = mol_L.sum()
+            if F_mol_L:
+                K = 1e16 * np.ones_like(mol)
+                phi = 1.
+            else:
+                K = np.zeros_like(mol)
+                phi = 0.
+            return lle_chemicals, K, phi
         
     def solve_lle_liquid_mol(self, mol, T, lle_chemicals):
         gamma = self.thermo.Gamma(lle_chemicals)

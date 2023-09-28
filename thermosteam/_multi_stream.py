@@ -250,8 +250,30 @@ class MultiStream(Stream):
         self._sink = self._source = None
         self.reset_cache()
         self._register(ID)
-        self._user_equilibrium = None
         if vlle: self.vlle(T, P)
+        
+    @classmethod
+    def from_streams(cls, streams):
+        if not streams: raise ValueError('at least one stream must be passed')
+        self = cls.__new__(cls)
+        self._streams = streams_by_phase = {i.phase: i for i in streams}
+        phases = phase_tuple(streams_by_phase)
+        N_streams = len(streams)
+        if len(phases) != N_streams: raise ValueError('each stream must have a different phase')
+        base, *others = streams
+        self.characterization_factors = {}
+        self._thermal_condition = base._thermal_condition
+        for i in others: i._thermal_condition = base._thermal_condition
+        self._load_thermo(base.thermo)
+        self.price = 0
+        self._imol = MolarFlowIndexer.from_data(
+            [streams_by_phase[i]._imol.data for i in phases], phases, 
+            chemicals=base.chemicals
+        )
+        self._sink = self._source = None
+        self.reset_cache()
+        self._register(None)
+        return self
         
     def reset_flow(self, total_flow=None, units=None, phases=None, **phase_flows):
         """
@@ -364,7 +386,6 @@ class MultiStream(Stream):
             stream._property_cache = {}
             stream.characterization_factors = {}
             stream._property_cache_key = None, None
-            stream._user_equilibrium = None
             streams[phase] = stream
         return stream
     
@@ -397,6 +418,9 @@ class MultiStream(Stream):
         >>> s1 = tmo.MultiStream('s1', l=[('Water', 20), ('Ethanol', 10)], units='kg/hr')
         >>> s1.get_flow('kg/hr', ('l', 'Water'))
         20.0
+        
+        >>> s1.get_flow('kg/hr')
+        sparse([20., 10.])
 
         """
         name, factor = self._get_flow_name_and_factor(units)
@@ -989,7 +1013,7 @@ class MultiStream(Stream):
             if N_phase == 0: phase = 'l' # Default phase for streams
             self._imol = self._imol.to_chemical_indexer(phase)
             self._streams.clear()
-            self._set_class(Stream)
+            self.__class__ = Stream
     
     ### Representation ###
     

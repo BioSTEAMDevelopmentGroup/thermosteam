@@ -143,7 +143,7 @@ class SLE(Equilibrium, phases='ls'):
     )
     
     def __init__(self, imol=None, thermal_condition=None, thermo=None, 
-                 solubility_weight=None, activity_coefficient=None):
+                 activity_coefficient=None):
         super().__init__(imol, thermal_condition, thermo)
         self._phase_data = tuple(imol)
         self._nonzero = None

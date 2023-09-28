@@ -29,7 +29,7 @@ if TYPE_CHECKING:
     import biosteam as bst
 # from .constants import g
 
-__all__ = ('Stream', )
+__all__ = ('Stream',)
 
 # %% Utilities
 
@@ -258,7 +258,7 @@ class Stream:
         '_bubble_point_cache', '_dew_point_cache',
         '_vle_cache', '_lle_cache', '_sle_cache',
         '_sink', '_source', '_price', '_property_cache_key',
-        '_property_cache', 'characterization_factors', '_user_equilibrium',
+        '_property_cache', 'characterization_factors',
         'port', # '_velocity', '_height'
     )
     line = 'Stream'
@@ -327,7 +327,6 @@ class Stream:
         self._sink = self._source = None
         self.reset_cache()
         self._register(ID)
-        self._user_equilibrium = None
         if vlle: 
             self.vlle(T, P)
             data = self._imol.data
@@ -406,16 +405,6 @@ class Stream:
             for phase, stream in self._streams.items():
                 stream._imol = self._imol.get_phase(phase)
                 stream._thermo = thermo
-
-    def user_equilibrium(self, *args, **kwargs):
-        return self._user_equilibrium(self, *args, **kwargs)
-
-    def set_user_equilibrium(self, f):
-        self._user_equilibrium = f
-        
-    @property
-    def has_user_equilibrium(self) -> bool:
-        return self._user_equilibrium is not None
 
     def get_CF(self, key: str, basis : Optional[str]=None, units: Optional[str]=None):
         """
@@ -1419,7 +1408,7 @@ class Stream:
         for i in others:
             if isa(i, Stream):
                 if not i.isempty(): streams.append(i)
-            else: 
+            elif i: 
                 Q += i.heat # Must be a heat or power object, assume power turns to heat
         N_streams = len(streams)
         if N_streams == 0:
@@ -1824,11 +1813,6 @@ class Stream:
                 else:
                     other_mol[other_index] = 0
     
-    def _get_class(self):
-        return self.__class__
-    def _set_class(self, cls):
-        self.__class__ = cls
-    
     def copy(self, ID=None, thermo=None):
         """
         Return a copy of the stream.
@@ -1852,7 +1836,7 @@ class Stream:
         Prices, and LCA characterization factors are not copied.
         
         """
-        cls = self._get_class()
+        cls = self.__class__
         new = cls.__new__(cls)
         new._sink = new._source = None
         new.characterization_factors = {}
@@ -1861,7 +1845,6 @@ class Stream:
         if thermo and thermo.chemicals is not self.chemicals:
             new._imol.reset_chemicals(thermo.chemicals)
         new._thermal_condition = self._thermal_condition.copy()
-        new._user_equilibrium = self._user_equilibrium
         new.reset_cache()
         new.price = 0
         new.ID = ID
@@ -1887,7 +1870,7 @@ class Stream:
         True
         
         """
-        cls = self._get_class()
+        cls = self.__class__
         new = cls.__new__(cls)
         new._ID = ID or ''
         new._sink = new._source = None
@@ -1898,7 +1881,6 @@ class Stream:
         new._thermal_condition = self._thermal_condition.copy()
         new.reset_cache()
         new.characterization_factors = {}
-        new._user_equilibrium = self._user_equilibrium
         return new
     
     def proxy(self, ID=None):
@@ -1924,7 +1906,7 @@ class Stream:
         True
         
         """
-        cls = self._get_class()
+        cls = self.__class__
         new = cls.__new__(cls)
         new._ID = ID or ''
         new._sink = new._source = None
@@ -1936,7 +1918,6 @@ class Stream:
         new._property_cache_key = self._property_cache_key
         new._bubble_point_cache = self._bubble_point_cache
         new._dew_point_cache = self._dew_point_cache
-        new._user_equilibrium = self._user_equilibrium
         new.characterization_factors = self.characterization_factors
         return new
     
@@ -2462,7 +2443,7 @@ class Stream:
         if len(phases) == 1:
             self.phase, = phases
         else:
-            self._set_class(tmo.MultiStream)
+            self.__class__ = tmo.MultiStream
             self._imol = self._imol.to_material_indexer(phases)
             self._streams = {}
             self._vle_cache = eq.VLECache(self._imol,
@@ -2771,3 +2752,53 @@ class Stream:
         price = utils.repr_kwarg('price', self.price)
         print(f"{type(self).__name__}(ID={repr(self.ID)}, phase={repr(self.phase)}, T={self.T:.2f}, "
               f"P={self.P:.6g}{price}{chemical_flows}, units={repr(units)})")
+
+    # Convinience math methods for scripting
+
+    def __add__(self, other):
+        return Stream.sum([self, other])
+        
+    def __radd__(self, other):
+        return Stream.sum([self, other])
+    
+    def __sub__(self, other):
+        new = self.copy()
+        new.separate_out(other)   
+        return new
+    
+    def __iadd__(self, other):
+        self.mix_from([self, other])
+        return self
+    
+    def __isub__(self, other):
+        self.separate_out(other)   
+        return self
+    
+    def __neg__(self):
+        new = self.copy()
+        new._imol.data *= -1
+        return new
+    
+    def __mul__(self, other):
+        new = self.copy()
+        new._imol.data *= other
+        return new
+    
+    def __rmul__(self, other):
+        new = self.copy()
+        new._imol.data *= other
+        return new
+    
+    def __truediv__(self, other):
+        new = self.copy()
+        new._imol.data /= other
+        return new
+    
+    def __imul__(self, other):
+        self._imol.data *= other
+        return self
+    
+    def __itruediv__(self, other):
+        self._imol.data /= other
+        return self
+

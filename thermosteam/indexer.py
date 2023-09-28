@@ -970,7 +970,7 @@ class MaterialIndexer(Indexer):
                 ])
             elif kind == 3: # List
                 values = np.array([sum([dct[i] for dct in dcts if i in dct]) for i in index])
-            elif kind == 4:
+            elif kind is None:
                 values = self.data.sum(0)
             else:
                 raise IndexError('invalid index kind')
