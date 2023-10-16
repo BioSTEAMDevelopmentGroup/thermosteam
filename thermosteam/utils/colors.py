@@ -50,7 +50,7 @@ colors.yellow_dark = colors.yellow.shade(55)
                      
 # Contrast colors
 colors.green = Color('green', '#33CC33')
-colors.green_tint =colors. green.tint(20).shade(15)
+colors.green_tint = colors.green.tint(20).shade(15)
 colors.green_shade = colors.green.shade(50).tint(40).shade(30)
 colors.purple = Color('purple', 255*np.array([0.635, 0.502, 0.725]))
 colors.purple_tint = colors.purple.tint(60)
