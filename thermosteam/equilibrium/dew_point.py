@@ -23,8 +23,8 @@ __all__ = ('DewPoint', 'DewPointCache')
 # @njit(cache=True)
 def x_iter(x, x_gamma, T, P, f_gamma, gamma_args):
     # Add back trace amounts for activity coefficients at infinite dilution
-    xmin = x.min()
-    if xmin < 1e-32: x[:] -= (xmin - 1e-32)
+    mask = x < 1e-32
+    x[mask] = 1e-32
     x = fn.normalize(x)
     gamma = f_gamma(x, T, *gamma_args)
     denominator = gamma
