@@ -123,22 +123,30 @@ class Registry: # pragma: no cover
         self._open_registration(ID, obj)
         self._close_registration(ID, obj)
         
-    def register_alias_safely(self, alias, obj):
+    def register_alias_safely(self, alias, obj, override=None):
         """Register object safely, with checks and due warnings."""
         check_valid_alias(alias)
         data = self.data
         if alias in data:
             other = data[alias]
             if obj is not other and other not in self.safe_to_replace:
-                warning = RuntimeWarning(
-                    f"alias {repr(alias)} of {repr(other)} has been replaced in registry with {repr(obj)}"
-                )
-                warn(warning, stacklevel=getattr(obj, '_stacklevel', 5) - 1)
+                if override is None:
+                    warning = RuntimeWarning(
+                        f"alias {repr(alias)} of {repr(other)} has been replaced in registry with {repr(obj)}"
+                    )
+                    warn(warning, stacklevel=getattr(obj, '_stacklevel', 5) - 1)
+                elif not override:
+                    raise RuntimeError(
+                        f"alias {repr(alias)} is already registered to {repr(other)}"
+                    )
         self.register_alias(alias, obj)
         
-    def register_alias(self, alias, obj):
+    def register_alias(self, alias, obj, override=True):
         """Register object alias without warnings or checks."""
-        self.data[alias] = obj
+        if override:
+            self.data[alias] = obj
+        elif alias not in self.data:
+            self.data[alias] = obj
         for i in self.context_levels: i.append(obj)
         
     def _open_registration(self, ID, obj):
