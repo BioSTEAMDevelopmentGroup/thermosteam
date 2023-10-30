@@ -2457,6 +2457,8 @@ class Stream:
             self._sle_cache = eq.SLECache(self._imol,
                                           self._thermal_condition,
                                           self._thermo)
+    def reduce_phases(self): 
+        """Remove empty phases."""
     
     ### Representation ###
     
