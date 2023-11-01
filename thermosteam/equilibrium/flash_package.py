@@ -59,7 +59,7 @@ class FlashPackage:
     'FlashVLN'
     >>> PT = flasher.flash(zs=[0.3, 0.2, 0.5], T=330, P=101325)
     >>> tmo.docround([PT.VF, PT.betas, PT.liquid0.zs, PT.H()]) # doctest: +SKIP
-    [0.752, [0.752, 0.248], [0.7617, 0.2337, 0.0046], -7644.4997]
+    [0.7514, [0.7514, 0.2486], [0.7606, 0.2347, 0.0046], -7650.0958]
     >>> # VLE using activity coefficients for the liquid phase 
     >>> # and equations of state for the gas phase.
     >>> flasher = flashpkg.flasher(['Water', 'Ethanol'], N_liquid=1)
@@ -67,7 +67,7 @@ class FlashPackage:
     'FlashVL'
     >>> PT = flasher.flash(zs=[0.5, 0.5], T=353, P=101325)
     >>> tmo.docround([PT.VF, PT.gas.zs, PT.H()]) # doctest: +SKIP
-    [0.32, [0.3644, 0.6356], -25179.1688]
+    [0.2738, [0.3614, 0.6386], -27042.1818]
     >>> # Single component equilibrium.
     >>> flasher = flashpkg.flasher(['Ethanol']) 
     >>> type(flasher).__name__
@@ -107,7 +107,7 @@ class FlashPackage:
     def __init__(self, G=tm.CEOSGas, L=tm.GibbsExcessLiquid, S=tm.GibbsExcessSolid,
                  GE=tm.UNIFAC, Gkw=None, Lkw=None, Skw=None, GEkw=None, 
                  settings=None, chemicals=None, N_liquid=None, N_solid=None):
-        self.chemicals = tmo.settings.get_default_chemicals(chemicals)
+        self.chemicals = tmo.settings.get_chemicals() if chemicals is None else chemicals
         self.G = G
         self.L = L
         self.S = S
@@ -223,6 +223,18 @@ def from_data(cls, data,
     )
 
 @constructor(tm.CEOSGas)
+def from_data(cls, data, eos_class=None):
+    if eos_class is None: eos_class = tm.PRMIX
+    eos_kwargs = dict(Tcs=data.Tcs,
+                      Pcs=data.Pcs,
+                      omegas=data.omegas)
+    try:
+        eos_kwargs['kijs'] = IPDB.get_ip_asymmetric_matrix('ChemSep PR', data.CASs, 'kij')
+    except:
+        pass        
+    return cls(eos_class, eos_kwargs, data.HeatCapacityGases)
+
+@constructor(tm.CEOSLiquid)
 def from_data(cls, data, eos_class=None):
     if eos_class is None: eos_class = tm.PRMIX
     eos_kwargs = dict(Tcs=data.Tcs,
