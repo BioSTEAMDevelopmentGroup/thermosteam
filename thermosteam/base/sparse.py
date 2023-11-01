@@ -686,6 +686,11 @@ class SparseArray:
                 if i is other: return True
         return False
     
+    def tolist(self):
+        return [i.tolist() for i in self.rows]
+    
+    to_list = tolist
+    
     def to_flat_array(self, arr=None):
         vector_size = self.vector_size
         rows = self.rows
@@ -1443,6 +1448,11 @@ class SparseVector:
     
     def __len__(self):
         return self.size
+    
+    def tolist(self):
+        dct = self.dct
+        return [dct[i] if i in dct else 0. for i in range(self.size)]
+    to_list = tolist
     
     def to_flat_array(self, arr=None):
         if arr is None:
@@ -2507,6 +2517,11 @@ class SparseLogicalVector:
     
     def __len__(self):
         return self.size
+    
+    def tolist(self):
+        set = self.set
+        return [i in set for i in range(self.size)]
+    to_list = tolist
     
     def to_flat_array(self, arr=None):
         if arr is None:
