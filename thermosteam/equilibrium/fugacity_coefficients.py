@@ -31,9 +31,6 @@ class FugacityCoefficients:
     """
     __slots__ = ()
     
-    def __init__(self, chemicals):
-        self.chemicals = chemicals
-    
     def __repr__(self):
         chemicals = ", ".join([i.ID for i in self.chemicals])
         return f"<{type(self).__name__}([{chemicals}])>"
@@ -50,6 +47,9 @@ class IdealFugacityCoefficients(FugacityCoefficients):
     
     """
     __slots__ = ('_chemicals')
+    
+    def __init__(self, chemicals):
+        self.chemicals = chemicals
     
     @property
     def chemicals(self):
@@ -75,19 +75,29 @@ class GCEOSFugacityCoefficients(FugacityCoefficients):
     """
     __slots__ = ('_chemicals', '_eos')
     EOS = None # type[GCEOSMIX] Subclasses must implement this attribute.
+    cache = None # [dict] Subclasses must implement this attribute.
+    chemsep_db = None # Optional[str] Name of chemsep data base for interaction parameters.
+    
+    def __new__(cls, chemicals):
+        chemicals = tuple(chemicals)
+        cache = cls.cache
+        if chemicals in cache:
+            return cache[chemicals]
+        else:
+            self = super().__new__(cls)
+            self._chemicals = chemicals
+            cache[chemicals] = self
+            return self
     
     @classmethod
     def subclass(cls, EOS, name=None):
         if name is None: name = EOS.__name__[:-3] + 'FugacityCoefficients'
-        return type(name, (cls,), dict(EOS=EOS))
+        return type(name, (cls,), dict(EOS=EOS, cache={}))
     
     @property
     def chemicals(self):
         """tuple[Chemical] All chemicals involved in the calculation of fugacity coefficients."""
         return self._chemicals
-    @chemicals.setter
-    def chemicals(self, chemicals):
-        self._chemicals = tuple(chemicals)
     
     def eos(self, zs, T, P):
         if zs.__class__ is np.ndarray: zs = [float(i) for i in zs]
@@ -95,10 +105,13 @@ class GCEOSFugacityCoefficients(FugacityCoefficients):
             self._eos = eos = self._eos.to_TP_zs_fast(T=T, P=P, zs=zs, only_g=True, full_alphas=False)
         except:
             data = tmo.ChemicalData(self.chemicals)
-            try:
-                kijs = IPDB.get_ip_asymmetric_matrix('ChemSep PR', data.CASs, 'kij')
-            except:
+            if self.chemsep_db is None:
                 kijs = None
+            else:
+                try:
+                    kijs = IPDB.get_ip_asymmetric_matrix(self.chemsep_db, data.CASs, 'kij')
+                except:
+                    kijs = None
             self._eos = eos = self.EOS(
                 zs=zs, T=T, P=P, Tcs=data.Tcs, Pcs=data.Pcs, omegas=data.omegas, kijs=kijs,
                 only_g=True
@@ -127,5 +140,6 @@ for name in ('PRMIX', 'SRKMIX', 'PR78MIX', 'VDWMIX', 'PRSVMIX',
     clsnames.append(clsname)
     dct[clsname] = cls
 
+dct['PRFugacityCoefficients'].chemsep_db = 'ChemSep PR'
 __all__ = (*__all__, *clsnames)
 del dct, clsnames
