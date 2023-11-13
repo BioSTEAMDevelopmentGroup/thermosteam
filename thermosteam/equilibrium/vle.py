@@ -286,7 +286,7 @@ class VLE(Equilibrium, phases='lg'):
     H_hat_tol = 1e-6
     S_hat_tol = 1e-6
     V_tol = 1e-6
-    x_tol = 1e-9
+    x_tol = 1e-8
     y_tol = 1e-8
     default_method = 'fixed-point'
     

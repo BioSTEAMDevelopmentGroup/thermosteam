@@ -343,7 +343,7 @@ class Mixture:
                 lambda T: self.H(phase, mol, T, P) - H,
                 x0=T_guess, x1=T, xtol=self.T_tol, ytol=0.
             )
-            if abs(T - T_guess) < self.T_tol else T
+            if abs(T - T_guess) > self.T_tol else T
         )
         
     def xsolve_T_at_HP(self, phase_mol, H, T_guess, P):
@@ -357,7 +357,7 @@ class Mixture:
                 lambda T: self.xH(phase_mol, T, P) - H,
                 x0=T_guess, x1=T, xtol=self.T_tol, ytol=0.
             )
-            if abs(T - T_guess) < self.T_tol else T
+            if abs(T - T_guess) > self.T_tol else T
         )
     
     def solve_T_at_SP(self, phase, mol, S, T_guess, P):
@@ -370,7 +370,7 @@ class Mixture:
                 lambda T: self.S(phase, mol, T, P) - S,
                 x0=T_guess, x1=T, xtol=self.T_tol, ytol=0.
             )
-            if abs(T - T_guess) < self.T_tol else T
+            if abs(T - T_guess) > self.T_tol else T
         )
         
     def xsolve_T_at_SP(self, phase_mol, S, T_guess, P):
@@ -384,7 +384,7 @@ class Mixture:
                 lambda T: self.xS(phase_mol, T, P) - S,
                 x0=T_guess, x1=T, xtol=self.T_tol, ytol=0.
             )
-            if abs(T - T_guess) < self.T_tol else T
+            if abs(T - T_guess) > self.T_tol else T
         )
     
     def xCn(self, phase_mol, T, P=None):
