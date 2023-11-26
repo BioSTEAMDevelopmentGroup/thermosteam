@@ -91,7 +91,7 @@ class GCEOSFugacityCoefficients(FugacityCoefficients):
     
     @classmethod
     def subclass(cls, EOS, name=None):
-        if name is None: name = EOS.__name__[:-3] + 'FugacityCoefficients'
+        if name is None: name = EOS.__name__.replace('MIX', '') + 'FugacityCoefficients'
         return type(name, (cls,), dict(EOS=EOS, cache={}))
     
     @property

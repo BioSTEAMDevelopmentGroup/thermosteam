@@ -25,49 +25,44 @@ import numpy as np
 
 __all__ = ('VLE', 'VLECache')
 
-# @njit(cache=True)
-def xV_iter(xV, pcf_Psat_over_P_phi, T, P, z, z_light, z_heavy, f_gamma, gamma_args):
-    xV = xV.copy()
+@njit(cache=True)
+def xy(xV, Ks):
     x = xV[:-1]
-    V = xV[-1]
     x[x < 0.] = 0.
-    x = fn.normalize(x)
-    Ks = pcf_Psat_over_P_phi * f_gamma(x, T, *gamma_args)
-    V = binary.solve_phase_fraction_Rashford_Rice(z, Ks, V, z_light, z_heavy)
-    if V < 0.: V = 0.
-    elif V > 1.: V = 1.
-    xV[-1] = V
-    xV[:-1] = z/(1. + V * (Ks - 1.))
-    return xV
-
-@njit(cache=True)    
-def xV_iter_2n(xV, pcf_Psat_over_P_phi, T, P, z, f_gamma, gamma_args):
-    xV = xV.copy()
-    x = xV[:-1]
-    V = xV[-1]
-    x[x < 0.] = 0.
-    x = fn.normalize(x)
-    Ks = pcf_Psat_over_P_phi * f_gamma(x, T, *gamma_args)
-    V = binary.compute_phase_fraction_2N(z, Ks)
-    if V < 0.: V = 0.
-    elif V > 1.: V = 1.
-    xV[-1] = V
-    xV[:-1] = z/(1. + V * (Ks - 1.))
-    return xV
+    x /= x.sum()
+    return x, Ks * x
 
 @njit(cache=True)
-def xV_iter_3n(xV, pcf_Psat_over_P_phi, T, P, z, f_gamma, gamma_args):
-    xV = xV.copy()
-    x = xV[:-1]
-    V = xV[-1]
-    x[x < 0.] = 0.
-    x = fn.normalize(x)
-    Ks = pcf_Psat_over_P_phi * f_gamma(x, T, *gamma_args)
-    V = binary.compute_phase_fraction_3N(z, Ks)
+def update_xV(xV, V, Ks, z):
     if V < 0.: V = 0.
     elif V > 1.: V = 1.
     xV[-1] = V
     xV[:-1] = z/(1. + V * (Ks - 1.))
+
+def xV_iter(xV, pcf_Psat_over_P, T, P,
+            z, z_light, z_heavy, f_gamma, gamma_args,
+            Ks, f_phi):
+    xV = xV.copy()
+    x, y = xy(xV, Ks)
+    Ks[:] = pcf_Psat_over_P * f_gamma(x, T, *gamma_args) / f_phi(y, T, P)
+    V = binary.solve_phase_fraction_Rashford_Rice(z, Ks, xV[-1], z_light, z_heavy)
+    update_xV(xV, V, Ks, z)
+    return xV
+
+def xV_iter_2n(xV, pcf_Psat_over_P, T, P, z, f_gamma, gamma_args, Ks, f_phi):
+    xV = xV.copy()
+    x, y = xy(xV, Ks)
+    Ks[:] = pcf_Psat_over_P * f_gamma(x, T, *gamma_args) / f_phi(y, T, P)
+    V = binary.compute_phase_fraction_2N(z, Ks)
+    update_xV(xV, V, Ks, z)
+    return xV
+
+def xV_iter_3n(xV, pcf_Psat_over_P, T, P, z, f_gamma, gamma_args, Ks, f_phi):
+    xV = xV.copy()
+    x, y = xy(xV, Ks)
+    Ks[:] = pcf_Psat_over_P * f_gamma(x, T, *gamma_args) / f_phi(y, T, P)
+    V = binary.compute_phase_fraction_3N(z, Ks)
+    update_xV(xV, V, Ks, z)
     return xV
 
 def set_flows(vapor_mol, liquid_mol, index, vapor_data, total_data):
@@ -1196,23 +1191,23 @@ class VLE(Equilibrium, phases='lg'):
     def _V_err_at_T(self, T, V):
         return self._solve_v(T, self._P).sum()/self._F_mol_vle  - V
     
-    def _y_iter(self, y, pcf_Psat_over_P, T, P):
-        phi = self._phi(y, T, P)
+    def _solve_y(self, y, pcf_Psat_over_P, T, P):
         gamma = self._gamma
         x = self._x
-        pcf_Psat_over_P_phi = pcf_Psat_over_P / phi
+        pcf_Psat_over_P = pcf_Psat_over_P
         N = self._N
         z = self._z
+        Ks = pcf_Psat_over_P.copy()
         if N > 3 or self._z_light or self._z_heavy:
             f = xV_iter
-            args = (pcf_Psat_over_P_phi, T, P, z, self._z_light, 
-                    self._z_heavy, gamma.f, gamma.args)
+            args = (pcf_Psat_over_P, T, P, z, self._z_light, 
+                    self._z_heavy, gamma.f, gamma.args, Ks, self._phi)
         elif N == 2:
             f = xV_iter_2n
-            args = (pcf_Psat_over_P_phi, T, P, z, gamma.f, gamma.args)
+            args = (pcf_Psat_over_P, T, P, z, gamma.f, gamma.args, Ks, self._phi)
         elif N == 3:
             f = xV_iter_3n
-            args = (pcf_Psat_over_P_phi, T, P, z, gamma.f, gamma.args)
+            args = (pcf_Psat_over_P, T, P, z, gamma.f, gamma.args, Ks, self._phi)
         xV = np.zeros(x.size + 1)
         xV[:-1] = x
         xV[-1] = self._V
@@ -1228,7 +1223,7 @@ class VLE(Equilibrium, phases='lg'):
         else:
             Ks = (z / x - 1) / V + 1.
         self._z_last = z
-        v = self._F_mol * V * x * Ks    
+        v = self._F_mol * V * x * Ks   
         return fn.normalize(v, v.sum() + self._F_mol_light)
     
     def _solve_v(self, T, P):
@@ -1252,15 +1247,7 @@ class VLE(Equilibrium, phases='lg'):
                               self._bubble_point.Psats])
             pcf_Psats_over_P = self._pcf(T, P, Psats) * Psats / P
             self._T = T
-            if isinstance(self._phi, IdealFugacityCoefficients):
-                y = self._y_iter(self._y, pcf_Psats_over_P, T, P)
-            else:
-                y = flx.aitken(self._y_iter, self._y, self.y_tol,
-                               args=(pcf_Psats_over_P, T, P),
-                               checkiter=False, 
-                               checkconvergence=False, 
-                               convergenceiter=5,
-                               maxiter=self.maxiter)
+            y = self._solve_y(self._y, pcf_Psats_over_P, T, P)
             self._v = v = self._F_mol * self._V * y
             mask = v > self._mol_vle
             v[mask] = self._mol_vle[mask]

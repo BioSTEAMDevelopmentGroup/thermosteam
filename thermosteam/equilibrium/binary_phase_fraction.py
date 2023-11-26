@@ -54,7 +54,7 @@ def phase_composition(zs, Ks, phi):
     return zs * Ks / (phi * Ks + (1. - phi))
 
 # @njit(cache=True)
-def solve_phase_fraction_Rashford_Rice(zs, Ks, guess, za, zb):
+def solve_phase_fraction_Rashford_Rice(zs, Ks, guess, za=0, zb=0):
     """
     Return phase fraction for N-component binary equilibrium by
     numerically solving the Rashford Rice equation.
