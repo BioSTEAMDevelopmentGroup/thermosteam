@@ -819,7 +819,14 @@ class SparseArray:
                 if m == open_slice:
                     if n.__class__ is slice:
                         if n == open_slice:
-                            self[:] = value
+                            if vd in (0, 1):
+                                for i in rows: i[:] = value
+                            elif vd == 2:
+                                for i, j in zip(rows, value): i[:] = j # TODO: With python 3.10, use strict=True zip kwarg
+                            else:
+                                raise IndexError(
+                                    'cannot set an array element with a sequence'
+                                )
                             return
                         else:
                             n = default_range(n, self.vector_size)
