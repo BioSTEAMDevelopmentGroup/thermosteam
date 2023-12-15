@@ -31,7 +31,7 @@ def x_iter(x, x_gamma, T, P, f_gamma, gamma_args):
     try:
         x = x_gamma / denominator
     except: 
-        raise Exception('liquid phase composition is infeasible')
+        return x
     if (x < 0).any():
         raise Exception('liquid phase composition is infeasible')
     mask = x > 1e3
