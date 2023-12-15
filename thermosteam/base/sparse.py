@@ -820,7 +820,7 @@ class SparseArray:
                     rows = [rows[i] for i in default_range(m, len(rows))]
                 if n.__class__ is slice:
                     if n == open_slice:
-                        self[:] = value
+                        for i in rows: i[:] = value
                         return
                     else:
                         n = default_range(n, self.vector_size)
