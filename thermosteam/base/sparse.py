@@ -816,14 +816,21 @@ class SparseArray:
         if index.__class__ is tuple:
             m, n = unpack_index(index, self.ndim)
             if m.__class__ is slice:
-                if m != open_slice:
+                if m == open_slice:
+                    if n.__class__ is slice:
+                        if n == open_slice:
+                            self[:] = value
+                            return
+                        else:
+                            n = default_range(n, self.vector_size)
+                else:
                     rows = [rows[i] for i in default_range(m, len(rows))]
-                if n.__class__ is slice:
-                    if n == open_slice:
-                        for i in rows: i[:] = value
-                        return
-                    else:
-                        n = default_range(n, self.vector_size)
+                    if n.__class__ is slice:
+                        if n == open_slice:
+                            for i in rows: i[:] = value
+                            return
+                        else:
+                            n = default_range(n, self.vector_size)
                 if vd == 0.:
                     for i in rows: i[n] = value
                 elif vd == 1:

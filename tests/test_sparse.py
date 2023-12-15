@@ -797,6 +797,12 @@ def test_sparse_array_indexing():
     arr = np.zeros([5, 5])
     arr[0:3, :] = 1
     assert (sa == arr).all()
+    
+    sa = SparseArray.from_shape([5, 5])
+    sa[:, :] = 1
+    arr = np.zeros([5, 5])
+    arr[:, :] = 1
+    assert (sa == arr).all()
 
 def test_sparse_array_boolean_indexing():
     for dtype in (float, bool):
