@@ -344,6 +344,11 @@ class Stream:
         self.set_data(data)
         return self
 
+    def __getitem__(self, key):
+        phase = self.phase
+        if key.lower() == phase.lower(): return self
+        raise tmo.UndefinedPhase(phase)
+    
     def __reduce__(self):
         return self.from_data, (self.get_data(), self._ID, self._price, self.characterization_factors, self._thermo)
 

@@ -2180,7 +2180,8 @@ class SparseVector:
         other_size = other.size
         other_dct = other.dct
         if size == other_size:
-            if len(dct) > len(other_dct): raise ZeroDivisionError('division by zero')
+            if len(dct) > len(other_dct): 
+                raise ZeroDivisionError('division by zero')
             new = {i: dct[i] / other_dct[i] for i in dct if i in other_dct}
         elif size == 1 and other_size: 
             if 0 in dct: 
