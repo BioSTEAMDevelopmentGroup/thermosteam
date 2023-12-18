@@ -29,6 +29,8 @@ if TYPE_CHECKING:
     import biosteam as bst
 # from .constants import g
 
+MaterialIndexer = tmo.indexer.MaterialIndexer
+
 __all__ = ('Stream',)
 
 # %% Utilities
@@ -1632,7 +1634,7 @@ class Stream:
         flow (kg/hr): Water  2
 
         """
-        if isinstance(other, tmo.MultiStream):
+        if isinstance(other.imol, MaterialIndexer):
             phases = other.phases
             if len(phases) == 1:
                 phase, = phases
