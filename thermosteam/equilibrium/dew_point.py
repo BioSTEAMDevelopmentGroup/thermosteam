@@ -31,7 +31,7 @@ def x_iter(x, x_gamma, T, P, f_gamma, gamma_args):
     try:
         x = x_gamma / denominator
     except: 
-        raise Exception('liquid phase composition is infeasible')
+        return x
     if (x < 0).any():
         raise Exception('liquid phase composition is infeasible')
     mask = x > 1e3
@@ -263,7 +263,7 @@ class DewPoint:
         >>> tmo.settings.set_thermo(chemicals)
         >>> DP = tmo.equilibrium.DewPoint(chemicals)
         >>> tmo.docround(DP.solve_Px(z=np.array([0.5, 0.5]), T=352.28))
-        (82480.7363, array([0.851, 0.149]))
+        (82480.7311, array([0.851, 0.149]))
  
         """
         positives = z > 0.

@@ -589,7 +589,13 @@ class ChemicalIndexer(Indexer):
     
     def to_material_indexer(self, phases):
         material_array = self._MaterialIndexer.blank(phases, self._chemicals)
-        material_array[self.phase].copy_like(self.data)
+        phase = self.phase
+        if phase not in phases: 
+            if phase.isupper():
+                phase = phase.lower()
+            else:
+                phase = phase.upper()
+        material_array[phase].copy_like(self.data)
         return material_array
     
     def copy_like(self, other):
@@ -797,12 +803,13 @@ class MaterialIndexer(Indexer):
         if new_phases: 
             data = self.data
             data_by_phase = {i: j for i, j in zip(phases, data.rows)}
-            all_phases = new_phases | phases
+            all_phases = new_phases.union(phases)
             self._set_phases(all_phases)
             size = self._chemicals.size
             for i in new_phases: data_by_phase[i] = SparseVector.from_size(size)
             phases = self._phases
             data.rows = [data_by_phase[i] for i in phases]
+            self._set_cache()
             
     def mix_from(self, others):
         isa = isinstance
@@ -946,7 +953,13 @@ class MaterialIndexer(Indexer):
     def to_material_indexer(self, phases):
         material_indexer = self.__class__.blank(phases, self._chemicals)
         for phase, data in self:
-            if data.any(): material_indexer[phase] = data
+            if data.any(): 
+                if phase not in phases:
+                    if phase.isupper():
+                        phase = phase.lower()
+                    else:
+                        phase = phase.upper()
+                material_indexer[phase] += data
         return material_indexer
     
     def get_phase(self, phase):

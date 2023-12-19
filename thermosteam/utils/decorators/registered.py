@@ -77,8 +77,11 @@ def ID(self):
     """Unique identification (str). If set as '', it will choose a default ID."""
     return self._ID
  
-def register_alias(self, alias):
-    self.registry.register_alias_safely(alias, self) 
+def register_alias(self, alias, override=None, safe=True):
+    if safe:
+        self.registry.register_alias_safely(alias, self, override) 
+    else:
+        self.registry.register_alias(alias, self, override) 
     
 def __repr__(self):
     if self.ID:

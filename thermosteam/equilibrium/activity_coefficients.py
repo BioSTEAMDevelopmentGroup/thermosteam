@@ -20,6 +20,11 @@ from warnings import warn
 from .unifac import DOUFSG, DOUFIP2016, UFIP, UFSG, NISTUFSG, NISTUFIP
 from numba import njit, prange
 from .ideal import ideal
+import thermosteam as tmo
+from thermo.interaction_parameters import IPDB
+from fluids.constants import R_inv
+from thermo import eos_mix
+import numpy as np
 
 __all__ = ('ActivityCoefficients',
            'IdealActivityCoefficients',
@@ -466,3 +471,84 @@ class NISTActivityCoefficients(GroupActivityCoefficients):
     def psi(self):
         return psi_modified_UNIFAC
 
+
+class GCEOSActivityCoefficients(ActivityCoefficients):
+    """
+    Abstract class for estimating fugacity coefficients using a generic cubic equation of state 
+    when called with composition, temperature (K), and pressure (Pa).
+    
+    Parameters
+    ----------
+    chemicals : Iterable[:class:`~thermosteam.Chemical`]
+    
+    """
+    __slots__ = ('_chemicals', '_eos')
+    EOS = None # type[GCEOSMIX] Subclasses must implement this attribute.
+    chemsep_db = None # Optional[str] Name of chemsep data base for interaction parameters.
+    cache = None # [dict] Subclasses must implement this attribute.
+    
+    def __new__(cls, chemicals):
+        chemicals = tuple(chemicals)
+        cache = cls.cache
+        if chemicals in cache:
+            return cache[chemicals]
+        else:
+            self = super().__new__(cls)
+            self._chemicals = chemicals
+            cache[chemicals] = self
+            return self
+    
+    @classmethod
+    def subclass(cls, EOS, name=None):
+        if name is None: name = EOS.__name__[:-3] + 'ActivityCoefficients'
+        return type(name, (cls,), dict(EOS=EOS, cache={}))
+    
+    @property
+    def chemicals(self):
+        """tuple[Chemical] All chemicals involved in the calculation of fugacity coefficients."""
+        return self._chemicals
+    
+    def eos(self, zs, T, P):
+        if zs.__class__ is np.ndarray: zs = [float(i) for i in zs]
+        try:
+            self._eos = eos = self._eos.to_TP_zs_fast(T=T, P=P, zs=zs, only_l=True, full_alphas=False)
+        except:
+            data = tmo.ChemicalData(self.chemicals)
+            if self.chemsep_db is None:
+                kijs = None
+            else:
+                try:
+                    kijs = IPDB.get_ip_asymmetric_matrix(self.chemsep_db, data.CASs, 'kij')
+                except:
+                    kijs = None
+            self._eos = eos = self.EOS(
+                zs=zs, T=T, P=P, Tcs=data.Tcs, Pcs=data.Pcs, omegas=data.omegas, kijs=kijs,
+                only_l=True
+            )
+        return eos
+    
+    def __call__(self, x, T, P=101325):
+        eos = self.eos(x, T, P)
+        try:
+            log_phis = np.array(eos.dlnphi_dns(eos.Z_l)) + eos.G_dep_l * R_inv / T
+            return np.exp(log_phis)
+        except:
+            return 1.
+    f = __call__
+    args = ()
+        
+dct = globals()    
+clsnames = []
+for name in ('PRMIX', 'SRKMIX', 'PR78MIX', 'VDWMIX', 'PRSVMIX',
+             'PRSV2MIX', 'TWUPRMIX', 'TWUSRKMIX', 'APISRKMIX', 'IGMIX', 'RKMIX',
+             'PRMIXTranslatedConsistent', 'PRMIXTranslatedPPJP', 'PRMIXTranslated',
+             'SRKMIXTranslatedConsistent', 'PSRK', 'MSRKMIXTranslated',
+             'SRKMIXTranslated'):
+    cls = GCEOSActivityCoefficients.subclass(getattr(eos_mix, name))
+    clsname = cls.__name__
+    clsnames.append(clsname)
+    dct[clsname] = cls
+
+dct['PRActivityCoefficients'].chemsep_db = 'ChemSep PR'
+__all__ = (*__all__, *clsnames)
+del dct, clsnames

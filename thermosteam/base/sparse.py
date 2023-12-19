@@ -686,6 +686,11 @@ class SparseArray:
                 if i is other: return True
         return False
     
+    def tolist(self):
+        return [i.tolist() for i in self.rows]
+    
+    to_list = tolist
+    
     def to_flat_array(self, arr=None):
         vector_size = self.vector_size
         rows = self.rows
@@ -811,14 +816,28 @@ class SparseArray:
         if index.__class__ is tuple:
             m, n = unpack_index(index, self.ndim)
             if m.__class__ is slice:
-                if m != open_slice:
+                if m == open_slice:
+                    if n.__class__ is slice:
+                        if n == open_slice:
+                            if vd in (0, 1):
+                                for i in rows: i[:] = value
+                            elif vd == 2:
+                                for i, j in zip(rows, value): i[:] = j # TODO: With python 3.10, use strict=True zip kwarg
+                            else:
+                                raise IndexError(
+                                    'cannot set an array element with a sequence'
+                                )
+                            return
+                        else:
+                            n = default_range(n, self.vector_size)
+                else:
                     rows = [rows[i] for i in default_range(m, len(rows))]
-                if n.__class__ is slice:
-                    if n == open_slice:
-                        self[:] = value
-                        return
-                    else:
-                        n = default_range(n, self.vector_size)
+                    if n.__class__ is slice:
+                        if n == open_slice:
+                            for i in rows: i[:] = value
+                            return
+                        else:
+                            n = default_range(n, self.vector_size)
                 if vd == 0.:
                     for i in rows: i[n] = value
                 elif vd == 1:
@@ -1443,6 +1462,11 @@ class SparseVector:
     
     def __len__(self):
         return self.size
+    
+    def tolist(self):
+        dct = self.dct
+        return [dct[i] if i in dct else 0. for i in range(self.size)]
+    to_list = tolist
     
     def to_flat_array(self, arr=None):
         if arr is None:
@@ -2156,7 +2180,8 @@ class SparseVector:
         other_size = other.size
         other_dct = other.dct
         if size == other_size:
-            if len(dct) > len(other_dct): raise ZeroDivisionError('division by zero')
+            if len(dct) > len(other_dct): 
+                raise ZeroDivisionError('division by zero')
             new = {i: dct[i] / other_dct[i] for i in dct if i in other_dct}
         elif size == 1 and other_size: 
             if 0 in dct: 
@@ -2507,6 +2532,11 @@ class SparseLogicalVector:
     
     def __len__(self):
         return self.size
+    
+    def tolist(self):
+        set = self.set
+        return [i in set for i in range(self.size)]
+    to_list = tolist
     
     def to_flat_array(self, arr=None):
         if arr is None:

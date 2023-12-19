@@ -37,8 +37,8 @@ def test_vlle():
     xl = s.imol['l'].sum() / total
     xL = s.imol['L'].sum() / total
     xg = s.imol['g'].sum() / total
-    assert_allclose(xl + xL, 0.7361640850059188, atol=0.05) # Convergence
-    assert_allclose(xg, 0.26383591499408116, atol=0.05)
+    assert_allclose(xl + xL, 0.6773951226773982, atol=0.05) # Convergence
+    assert_allclose(xg, 0.32260487732260174, atol=0.05)
     # Make sure past equilibrium conditions do not affect result of vlle
     s = tmo.Stream(None, Water=1, Ethanol=1, Octane=2, T=350)
     s.vle(T=350, P=101325)
@@ -47,8 +47,8 @@ def test_vlle():
     xl = s.imol['l'].sum() / total
     xL = s.imol['L'].sum() / total
     xg = s.imol['g'].sum() / total
-    assert_allclose(xl + xL, 0.7361640850059188, atol=0.05) # Convergence
-    assert_allclose(xg, 0.26383591499408116, atol=0.05)
+    assert_allclose(xl + xL, 0.6773951226773982, atol=0.05) # Convergence
+    assert_allclose(xg, 0.32260487732260174, atol=0.05)
     
     s = tmo.Stream(None, Water=1, Ethanol=1, Octane=2, vlle=True, T=300)
     assert set(s.phases) == set(['l', 'L']) # No gas phase

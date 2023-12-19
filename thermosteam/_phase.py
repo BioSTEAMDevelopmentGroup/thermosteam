@@ -110,7 +110,14 @@ class PhaseIndexer:
         try:
             return self._index[phase]
         except:
-            raise UndefinedPhase(phase)        
+            if phase.isupper():
+                phase = phase.lower()
+            else:
+                phase = phase.upper()
+            try:
+                return self._index[phase]
+            except:
+                raise UndefinedPhase(phase)        
     
     @property
     def phases(self):

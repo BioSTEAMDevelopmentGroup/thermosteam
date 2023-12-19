@@ -790,6 +790,19 @@ def test_sparse_array_indexing():
     sa[[0, 1]] = [[[0, 1]]] # Broadcast 3-d array to 2-d
         
     sa[[0, 1], 0] = [[0, 1]] # Reduce dimensions
+    
+    # Check closed and open slices
+    sa = SparseArray.from_shape([5, 5])
+    sa[0:3, :] = 1
+    arr = np.zeros([5, 5])
+    arr[0:3, :] = 1
+    assert (sa == arr).all()
+    
+    sa = SparseArray.from_shape([5, 5])
+    sa[:, :] = 1
+    arr = np.zeros([5, 5])
+    arr[:, :] = 1
+    assert (sa == arr).all()
 
 def test_sparse_array_boolean_indexing():
     for dtype in (float, bool):
