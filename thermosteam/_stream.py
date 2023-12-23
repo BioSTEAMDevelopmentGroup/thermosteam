@@ -354,6 +354,12 @@ class Stream:
     def __reduce__(self):
         return self.from_data, (self.get_data(), self._ID, self._price, self.characterization_factors, self._thermo)
 
+    def _update_decoupled_variable(self, variable, value):
+        if variable == 'mol': 
+            self.mol[:] = value
+        else:
+            raise NotImplementedError(f'variable {variable!r} cannot be updated')
+    
     def scale(self, scale):
         """
         Multiply flow rate by given scale.
@@ -2011,7 +2017,11 @@ class Stream:
                 vle(T=T, P=P)
                 done[0] = no_vapor and not data[1].any() # No VLE
             return data.to_array()
-        data[:] = flx.fixed_point(f, data / total_flow, xtol=1e-3, checkiter=False, checkconvergence=False, convergenceiter=10) * total_flow
+        data[:] = total_flow * flx.fixed_point(
+            f, data / total_flow, xtol=1e-3, 
+            checkiter=False, checkconvergence=False, 
+            convergenceiter=10
+        )
 
     @property
     def vle_chemicals(self) -> list[tmo.Chemical]:
