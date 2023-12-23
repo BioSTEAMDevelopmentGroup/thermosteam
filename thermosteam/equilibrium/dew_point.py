@@ -33,7 +33,7 @@ def x_iter(x, x_gamma, T, P, f_gamma, gamma_args):
     except: 
         return x
     if (x < 0).any():
-        raise Exception('liquid phase composition is infeasible')
+        return x
     mask = x > 1e3
     if mask.any():
         x[mask] = 1e3 +  np.log(x[mask] / 1e3) # Avoid crazy numbers

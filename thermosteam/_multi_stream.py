@@ -253,7 +253,7 @@ class MultiStream(Stream):
         if vlle: self.vlle(T, P)
         
     @classmethod
-    def from_streams(cls, streams):
+    def from_streams(cls, streams, thermo=None):
         if not streams: raise ValueError('at least one stream must be passed')
         self = cls.__new__(cls)
         self._streams = streams_by_phase = {i.phase: i for i in streams}
@@ -264,7 +264,7 @@ class MultiStream(Stream):
         self.characterization_factors = {}
         self._thermal_condition = base._thermal_condition
         for i in others: i._thermal_condition = base._thermal_condition
-        self._load_thermo(base.thermo)
+        self._load_thermo(thermo or base.thermo)
         self.price = 0
         self._imol = MolarFlowIndexer.from_data(
             [streams_by_phase[i]._imol.data for i in phases], phases, 
