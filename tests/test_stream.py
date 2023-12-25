@@ -373,6 +373,20 @@ def test_mixing_balance():
     ms['l'].mix_from(streams)
     assert ms['l'].imol['Water'] == total_flow
 
+def test_mixing_phases():
+    tmo.settings.set_thermo(['Water'], cache=True)
+    ms = tmo.MultiStream(None, l=[('Water', 1)], g=[('Water', 2)])
+    stream = tmo.Stream(Water=1, phase='L')
+    ms.mix_from([ms, stream], conserve_phases=True)
+    assert ms.phases == ('L', 'g', 'l') # New phase is created
+    assert ms.imol['L', 'Water'] == ms.imol['l', 'Water'] == 1
+    
+    ms = tmo.MultiStream(None, l=[('Water', 1)], g=[('Water', 2)])
+    stream = tmo.Stream(Water=1, phase='L')
+    ms.mix_from([ms, stream]) 
+    assert ms.phases == ('g', 'l') # 'L' phase gets added to 'l' phase
+    assert ms.imol['l', 'Water'] == 2
+
 def test_mixing_pressure():
     P = 111458
     s1 = tmo.Stream(None, Water=1000, P=P)
@@ -431,4 +445,5 @@ if __name__ == '__main__':
     test_vle_critical_pure_component()
     test_critical()
     test_mixture()
+    test_mixing_phases()
     test_mixing_pressure()

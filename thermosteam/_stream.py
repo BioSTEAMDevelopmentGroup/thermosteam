@@ -1445,9 +1445,9 @@ class Stream:
                     self.vle(T=self.T, P=P)
                 self.reduce_phases()
             else:
-                if energy_balance: H = sum([i.H for i in streams], Q)
-                self._imol.mix_from([i._imol for i in streams])
-                if energy_balance and not self.isempty():
+                if energy_balance: 
+                    self._imol.mix_from([i._imol for i in streams])
+                    H = sum([i.H for i in streams], Q)
                     if conserve_phases: 
                         self.H = H
                     else:
@@ -1457,6 +1457,8 @@ class Stream:
                             self.phases = self.phase + ''.join([i.phase for i in others])
                             self._imol.mix_from([i._imol for i in streams])
                             self.H = H
+                else:
+                    self._imol.mix_from([i._imol for i in streams])
                 
     def split_to(self, s1, s2, split, energy_balance=True):
         """

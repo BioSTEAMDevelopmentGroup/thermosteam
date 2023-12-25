@@ -774,11 +774,13 @@ class MaterialIndexer(Indexer):
     
     def copy_like(self, other):
         if self is other: return
+        phase_indexer = self._phase_indexer
         if isinstance(other, ChemicalIndexer):
             self.empty()
             other_data = other.data
-            self._expand_phases(other.phase)
-            phase_index = self.get_phase_index(other.phase)
+            phase = other.phase
+            if phase not in phase_indexer: self._expand_phases(phase)
+            phase_index = phase_indexer(phase)
             if self.chemicals is other.chemicals:
                 self.data.rows[phase_index].copy_like(other_data)
             else:
@@ -786,17 +788,32 @@ class MaterialIndexer(Indexer):
                 left_index, right_index = index_overlap(self._chemicals, other._chemicals, [*other_data.nonzero_keys()])
                 self.data.rows[phase_index][left_index] = other_data[right_index] 
         else:
+            other_phase_indexer = other._phase_indexer
             if self.chemicals is other.chemicals:
-                self._expand_phases(other.phases)
-                self.data.copy_like(other.data)
+                if phase_indexer is other_phase_indexer:
+                    self.data.copy_like(other.data)
+                elif phase_indexer.compatible_with(other_phase_indexer):
+                    self.empty()
+                    data = self.data
+                    for i, j in other: data[phase_indexer(i)] = j
+                else:
+                    self._expand_phases(other._phases)
+                    self.data.copy_like(other.data)
             else:
                 self.empty()
-                self._expand_phases(other.phases)
                 other_data = other.data
+                data = self.data
                 left_index, other_data = index_overlap(self._chemicals, other._chemicals, [*other_data.nonzero_keys()])
-                self.data[:, left_index] = other_data[:, right_index]
+                if phase_indexer is other_phase_indexer:
+                    data[:, left_index] = other_data[:, right_index]
+                elif phase_indexer.compatible_with(other_phase_indexer):
+                    for i, j in other: data[phase_indexer(i)] += j
+                else:
+                    self._expand_phases(other._phases)
+                    data[:, left_index] = other_data[:, right_index]
+                    
     
-    def _expand_phases(self, other_phases):
+    def _expand_phases(self, other_phases=None):
         phases = self._phases
         other_phases = set(other_phases)
         new_phases = other_phases.difference(phases)
@@ -822,10 +839,22 @@ class MaterialIndexer(Indexer):
             else: raise ValueError("can only mix from chemical or material indexers")
         other_phases = [i.phase for i in chemical_indexers]
         for i in material_indexers: other_phases.extend(i._phases)
-        self._expand_phases(other_phases)
+        other_phases = set(other_phases)
+        phase_indexer = self._phase_indexer
+        new_phases = [i for i in other_phases if i not in phase_indexer]
         phases = self._phases
+        if new_phases: self._expand_phases(other_phases)
         scp_data = {i: [] for i in phases} # Same chemicals by phase
         dcp_data = {i: [] for i in phases} # Different chemicals by phase
+        for i in other_phases.difference(phases):
+            if i.isupper():
+                ilow = i.lower()
+                scp_data[i] = scp_data[ilow]
+                dcp_data[i] = dcp_data[ilow]
+            else:
+                iup = i.upper()
+                scp_data[i] = scp_data[iup]
+                dcp_data[i] = dcp_data[iup]
         for i in material_indexers:
             ichemicals = i._chemicals
             idata = i.data
@@ -835,7 +864,7 @@ class MaterialIndexer(Indexer):
             else:
                 left_index, right_index = index_overlap(chemicals, ichemicals, idata.nonzero_keys())
                 for i, j in zip(i._phases, i.data.rows):
-                    dcp_data[i].append((idata, left_index, right_index))
+                    dcp_data[i].append((j, left_index, right_index))
         for i in chemical_indexers:
             ichemicals = i._chemicals
             idata = i.data
