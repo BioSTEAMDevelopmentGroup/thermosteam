@@ -117,7 +117,8 @@ def plot_lle_ternary_diagram(carrier, solvent, solute, T, P=101325, thermo=None,
                              tie_line_points=None,
                              tie_color=None,
                              N_tie_lines=15,
-                             N_equilibrium_grids=15): # pragma: no cover
+                             N_equilibrium_grids=15,
+                             method='shgo'): # pragma: no cover
     """
     Plot the ternary phase diagram of chemicals in liquid-liquid equilibrium.
 
@@ -158,7 +159,7 @@ def plot_lle_ternary_diagram(carrier, solvent, solute, T, P=101325, thermo=None,
     IDs = chemicals.IDs
     imol = MaterialIndexer(['l', 'L'], chemicals=chemicals)
     data = imol.data
-    lle = LLE(imol, thermo=thermo)
+    lle = LLE(imol, thermo=thermo, method=method)
     composition_grid = ternary_composition_grid(N_equilibrium_grids, tie_line_points)
     tie_lines = []
     MW = chemicals.MW
