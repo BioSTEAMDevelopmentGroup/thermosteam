@@ -60,7 +60,8 @@ def psuedo_equilibrium_inner_loop(Kgammay, z, T, n, f_gamma, gamma_args, phi):
     K = gammax / gammay 
     y = K * x
     y /= y.sum()
-    K = gammax / f_gamma(y, T, *gamma_args)
+    gammay = f_gamma(y, T, *gamma_args)
+    K = gammax / gammay
     Kgammay_new[:n] = K
     Kgammay_new[n:] = gammay
     return Kgammay_new
@@ -157,7 +158,7 @@ class LLE(Equilibrium, phases='lL'):
                  '_K',
                  '_phi'
     )
-    default_method = 'shgo'
+    default_method = 'pseudo equilibrium'
     shgo_options = dict(f_tol=1e-6, minimizer_kwargs=dict(f_tol=1e-6))
     differential_evolution_options = {'seed': 0,
                                       'popsize': 12,
