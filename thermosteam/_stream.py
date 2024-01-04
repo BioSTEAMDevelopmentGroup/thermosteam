@@ -370,8 +370,10 @@ class Stream:
         else:
             return []
 
+    def _get_decoupled_variable(self, variable): pass
+
     def _update_decoupled_variable(self, variable, value):
-        if variable == 'mol': 
+        if variable in ('mol', 'mol-LLE'): 
             value[value < 0] = 0
             self.mol[:] = value
         else:
