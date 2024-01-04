@@ -372,6 +372,7 @@ class Stream:
 
     def _update_decoupled_variable(self, variable, value):
         if variable == 'mol': 
+            value[value < 0] = 0
             self.mol[:] = value
         else:
             raise NotImplementedError(f'variable {variable!r} cannot be updated')

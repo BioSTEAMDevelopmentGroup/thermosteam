@@ -871,7 +871,7 @@ class MaterialIndexer(Indexer):
             if chemicals is ichemicals:
                 scp_data[i.phase].append(idata)
             else:
-                dcp_data[i].append((idata, *index_overlap(chemicals, ichemicals, idata.nonzero_keys())))
+                dcp_data[i.phase].append((idata, *index_overlap(chemicals, ichemicals, idata.nonzero_keys())))
         for phase, sv in zip(phases, self.data.rows):
             sv.mix_from(scp_data[phase])
             for idata, left_index, right_index in dcp_data[phase]:
