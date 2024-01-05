@@ -80,6 +80,7 @@ def pseudo_equilibrium_outer_loop(Kgammayphi, z, T, n, f_gamma, gamma_args, inne
         phi = phase_fraction(z, K, phi)
     except ZeroDivisionError:
         raise NoEquilibrium
+    if np.isnan(phi): raise NoEquilibrium
     if phi > 1: phi = 1 - 1e-16
     if phi < 0: phi = 1e-16
     Kgammayphi_new[:2*n] = Kgammay
