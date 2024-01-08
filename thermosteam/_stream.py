@@ -25,7 +25,7 @@ from ._phase import valid_phases
 if TYPE_CHECKING:
     from .base import SparseVector, SparseArray
     from numpy.typing import NDArray
-    from typing import Optional, Sequence
+    from typing import Optional, Sequence, Callable
     import biosteam as bst
 # from .constants import g
 
@@ -260,7 +260,7 @@ class Stream:
         '_bubble_point_cache', '_dew_point_cache',
         '_vle_cache', '_lle_cache', '_sle_cache',
         '_sink', '_source', '_price', '_property_cache_key',
-        '_property_cache', 'characterization_factors',
+        '_property_cache', 'characterization_factors', 'equations',
         'port', # '_velocity', '_height'
     )
     line = 'Stream'
@@ -291,6 +291,7 @@ class Stream:
                  vlle: Optional[bool]=False,
                  # velocity=0., height=0.,
                  **chemical_flows:float):
+        self.equations: dict[str, list[Callable]] = {} 
         #: Characterization factors for life cycle assessment [impact/kg].
         self.characterization_factors: dict[str, float] = {} if characterization_factors is None else {}
         self._thermal_condition = tmo.ThermalCondition(T, P)
@@ -354,8 +355,26 @@ class Stream:
     def __reduce__(self):
         return self.from_data, (self.get_data(), self._ID, self._price, self.characterization_factors, self._thermo)
 
+    def equation(self, variable, f=None):
+        if f is None: return lambda f: self.equation(variable, f)
+        equations = self.equations
+        if variable in equations:
+            equations[variable].append(f)
+        else:
+            equations[variable] = [f]
+            
+    def _create_linear_equations(self, variable):
+        equations = self.equations
+        if variable in equations:
+            return [i() for i in equations[variable]]
+        else:
+            return []
+
+    def _get_decoupled_variable(self, variable): pass
+
     def _update_decoupled_variable(self, variable, value):
-        if variable == 'mol': 
+        if variable in ('mol', 'mol-LLE'): 
+            value[value < 0] = 0
             self.mol[:] = value
         else:
             raise NotImplementedError(f'variable {variable!r} cannot be updated')
@@ -1445,9 +1464,9 @@ class Stream:
                     self.vle(T=self.T, P=P)
                 self.reduce_phases()
             else:
-                if energy_balance: H = sum([i.H for i in streams], Q)
-                self._imol.mix_from([i._imol for i in streams])
-                if energy_balance and not self.isempty():
+                if energy_balance: 
+                    self._imol.mix_from([i._imol for i in streams])
+                    H = sum([i.H for i in streams], Q)
                     if conserve_phases: 
                         self.H = H
                     else:
@@ -1457,6 +1476,8 @@ class Stream:
                             self.phases = self.phase + ''.join([i.phase for i in others])
                             self._imol.mix_from([i._imol for i in streams])
                             self.H = H
+                else:
+                    self._imol.mix_from([i._imol for i in streams])
                 
     def split_to(self, s1, s2, split, energy_balance=True):
         """

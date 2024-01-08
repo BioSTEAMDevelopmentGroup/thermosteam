@@ -750,7 +750,7 @@ class MultiStream(Stream):
         flow: 0
         
         """
-        if self.chemicals is not other.chemicals:
+        if self.chemicals is not other.chemicals and self.chemicals.IDs != other.chemicals.IDs:
             raise ValueError('other stream must have the same chemicals defined to copy flow')
         other_ismultistream = isinstance(other, MultiStream)
         if other_ismultistream: self.phases = [*self.phases, *other.phases]

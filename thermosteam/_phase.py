@@ -92,7 +92,7 @@ class PhaseIndexer:
     True
     
     """
-    __slots__ = ('_index',)
+    __slots__ = ('_index', '_phases', '_compatibility')
     _index_cache = {}
     
     def __new__(cls, phases):
@@ -102,32 +102,40 @@ class PhaseIndexer:
             self = cache[phases]
         else:
             cache[phases] = self = new(cls)
-            self._index = index = {j:i for i,j in enumerate(sorted(phases))}
-            index[...] = slice(None) 
+            self._phases = phases = tuple(sorted(phases))
+            self._index = index = {j: i for i,j in enumerate(phases)}
+            for phase, n in tuple(index.items()):
+                if phase.isupper():
+                    phase = phase.lower()
+                else:
+                    phase = phase.upper()
+                if phase not in index: index[phase] = n
+            self._compatibility = ''.join([i.lower() for i in phases])
+            index[...] = slice(None)
         return self
+    
+    @property
+    def phases(self):
+        return self._phases
+    
+    def __contains__(self, phase):
+        return phase in self._index
+    
+    def compatible_with(self, other):
+        return self._compatibility == other._compatibility
     
     def __call__(self, phase):
         try:
             return self._index[phase]
         except:
-            if phase.isupper():
-                phase = phase.lower()
-            else:
-                phase = phase.upper()
-            try:
-                return self._index[phase]
-            except:
-                raise UndefinedPhase(phase)        
-    
-    @property
-    def phases(self):
-        return tuple(self._index)[:-1]
+            raise UndefinedPhase(phase)        
     
     def __reduce__(self):
-        return PhaseIndexer, (self.phases,)
+        return PhaseIndexer, (self._phases,)
     
     def __repr__(self):
-        return f"{type(self).__name__}({list(self.phases)})"
+        return f"{type(self).__name__}({[*self._phases]})"
+
 
 class Phase:
     __slots__ = ('_phase',)
