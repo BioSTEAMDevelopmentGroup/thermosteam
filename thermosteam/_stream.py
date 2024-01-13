@@ -1036,8 +1036,13 @@ class Stream:
     @F_mass.setter
     def F_mass(self, value):
         F_mass = self.F_mass
-        if not F_mass: raise AttributeError("undefined composition; cannot set flow rate")
-        self.imol.data *= value/F_mass
+        if F_mass: 
+            self.imol.data *= value/F_mass
+        elif value:
+            raise AttributeError("undefined composition; cannot set flow rate")
+        else: 
+            self.empty()
+        
     @property
     def F_vol(self) -> float:
         """Total volumetric flow rate [m3/hr]."""
@@ -1968,7 +1973,7 @@ class Stream:
         0
         
         """
-        self._imol.data[:] = 0.
+        self._imol.data.clear()
     
     ### Equilibrium ###
     

@@ -238,9 +238,15 @@ class LLE(Equilibrium, phases='lL'):
                     try: top_chemical_index = IDs[top_chemical]
                     except: pass
                     else:
-                        C_L = mass_L[top_chemical_index] / mass_L.sum()
-                        C_l = mass_l[top_chemical_index] / mass_l.sum()
-                        if C_L < C_l: mol_l, mol_L = mol_L, mol_l
+                        ML = mass_L.sum()
+                        Ml = mass_l.sum()
+                        if ML and Ml:
+                            C_L = mass_L[top_chemical_index] / ML
+                            C_l = mass_l[top_chemical_index] / Ml
+                            if C_L < C_l: mol_l, mol_L = mol_L, mol_l
+                        elif Ml:
+                            mol_l, mol_L = mol_L, mol_l
+                            
                 F_mol_l = mol_l.sum()
                 F_mol_L = mol_L.sum()
                 if not F_mol_L:
