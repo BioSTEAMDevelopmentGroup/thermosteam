@@ -185,7 +185,7 @@ class LLE(Equilibrium, phases='lL'):
         self._K = None
         self._phi = None
     
-    def __call__(self, T, P=None, top_chemical=None, update=True):
+    def __call__(self, T, P=None, top_chemical=None, update=True, use_cache=True):
         """
         Perform liquid-liquid equilibrium.
 
@@ -212,9 +212,13 @@ class LLE(Equilibrium, phases='lL'):
         F_mol = mol.sum()
         if F_mol and len(lle_chemicals) > 1:
             z_mol = mol = mol / F_mol # Normalize first
-            if ((use_cache:=(self._lle_chemicals == lle_chemicals))
+            use_cache = (
+                use_cache 
+                and self._lle_chemicals == lle_chemicals
                 and T - self._T < self.temperature_cache_tolerance 
-                and (self._z_mol - z_mol < self.composition_cache_tolerance).all()):
+                and (self._z_mol - z_mol < self.composition_cache_tolerance).all()
+            )
+            if use_cache:
                 K = self._K 
                 self._phi = phi = phase_fraction(z_mol, K, self._phi)
                 if phi >= 1.:
@@ -225,46 +229,45 @@ class LLE(Equilibrium, phases='lL'):
                     mol_l = y * phi
                     mol_L = mol - mol_l
             else:
-                if not use_cache: 
+                if self._lle_chemicals != lle_chemicals: 
                     self._K = None
                     self._phi = None
                 mol_L = self.solve_lle_liquid_mol(mol, T, lle_chemicals)
                 mol_l = mol - mol_L
-                if top_chemical:
-                    MW = self.chemicals.MW[index]
-                    mass_L = mol_L * MW
-                    mass_l = mol_l * MW
-                    IDs = {i.ID: n for n, i in enumerate(lle_chemicals)}
-                    try: top_chemical_index = IDs[top_chemical]
-                    except: pass
-                    else:
-                        ML = mass_L.sum()
-                        Ml = mass_l.sum()
-                        if ML and Ml:
-                            C_L = mass_L[top_chemical_index] / ML
-                            C_l = mass_l[top_chemical_index] / Ml
-                            if C_L < C_l: mol_l, mol_L = mol_L, mol_l
-                        elif Ml:
-                            mol_l, mol_L = mol_L, mol_l
-                            
-                F_mol_l = mol_l.sum()
-                F_mol_L = mol_L.sum()
-                if not F_mol_L:
-                    self._K = np.zeros_like(mol)
-                    self._phi = 0.
-                elif not F_mol_l:
-                    self._K = 1e16 * np.ones_like(mol)
-                    self._phi = 1.
+            if top_chemical:
+                MW = self.chemicals.MW[index]
+                mass_L = mol_L * MW
+                mass_l = mol_l * MW
+                IDs = {i.ID: n for n, i in enumerate(lle_chemicals)}
+                try: top_chemical_index = IDs[top_chemical]
+                except: pass
                 else:
-                    x_mol_l = mol_l / F_mol_l
-                    x_mol_L = mol_L / F_mol_L
-                    x_mol_l[x_mol_l < 1e-16] = 1e-16
-                    K = x_mol_L / x_mol_l
-                    self._K = K
-                    self._phi = F_mol_L / (F_mol_L + F_mol_l)
-                self._lle_chemicals = lle_chemicals
-                self._z_mol = z_mol
-                self._T = T
+                    ML = mass_L.sum()
+                    Ml = mass_l.sum()
+                    if ML and Ml:
+                        C_L = mass_L[top_chemical_index] / ML
+                        C_l = mass_l[top_chemical_index] / Ml
+                        if C_L < C_l: mol_l, mol_L = mol_L, mol_l
+                    elif Ml:
+                        mol_l, mol_L = mol_L, mol_l
+            F_mol_l = mol_l.sum()
+            F_mol_L = mol_L.sum()
+            if not F_mol_L:
+                self._K = np.zeros_like(mol)
+                self._phi = 0.
+            elif not F_mol_l:
+                self._K = 1e16 * np.ones_like(mol)
+                self._phi = 1.
+            else:
+                x_mol_l = mol_l / F_mol_l
+                x_mol_L = mol_L / F_mol_L
+                x_mol_l[x_mol_l < 1e-16] = 1e-16
+                K = x_mol_L / x_mol_l
+                self._K = K
+                self._phi = F_mol_L / (F_mol_L + F_mol_l)
+            self._lle_chemicals = lle_chemicals
+            self._z_mol = z_mol
+            self._T = T
             if not update: return self._lle_chemicals, self._K, self._phi
             imol['l'][index] = mol_l * F_mol
             imol['L'][index] = mol_L * F_mol
