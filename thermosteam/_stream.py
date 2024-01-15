@@ -1816,7 +1816,10 @@ class Stream:
                 self.mol[:] = other.mol
             else:
                 self.empty()
-                CASs, values = zip(*[(i, j) for i, j in zip(other_chemicals.CASs, other_mol.nonzero_values())])
+                CASs = other_chemicals.CASs
+                dct = other_mol.dct
+                CASs = [CASs[i] for i in dct]
+                values = list(dct.values())
                 self.imol[CASs] = values
             if remove: 
                 if isinstance(other, tmo.MultiStream):
