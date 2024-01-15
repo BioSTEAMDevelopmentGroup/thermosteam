@@ -41,8 +41,8 @@ def phase_fraction(zs, Ks, guess=None, za=0., zb=0.):
     if za or zb or N > 2:
         phase_fraction = solve_phase_fraction_Rashford_Rice(zs, Ks, guess, za, zb)
     else:
-        if Ks.max() <= 1.0: return 1
-        if Ks.min() >= 1.0: return 0
+        if Ks.max() <= (1.0 + 1e-9): return 1
+        if Ks.min() >= (1.0 - 1e-9): return 0
         if N == 2:
             phase_fraction = compute_phase_fraction_2N(zs, Ks)
         else:
@@ -61,8 +61,8 @@ def solve_phase_fraction_Rashford_Rice(zs, Ks, guess, za=0, zb=0):
     numerically solving the Rashford Rice equation.
     
     """
-    if Ks.max() <= 1.0 and not za: return 0.
-    if Ks.min() >= 1.0 and not zb: return 1.
+    if Ks.max() <= (1.0 + 1e-9) and not za: return 0.
+    if Ks.min() >= (1.0 - 1e-9) and not zb: return 1.
     K_minus_1 = Ks - 1.
     args = (- zs * K_minus_1, K_minus_1, za, zb)
     f = phase_fraction_objective_function
