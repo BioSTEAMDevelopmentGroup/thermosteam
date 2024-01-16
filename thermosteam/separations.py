@@ -544,10 +544,15 @@ def partition(feed, top, bottom, IDs, K, phi=None, top_chemicals=None,
     feed_mol = feed.mol
     mol = feed.imol[IDs]
     F_mol = mol.sum()
-    if not bottom.shares_flow_rate_with(feed): bottom.empty()
-    Fa = feed.imol[top_chemicals].sum() if top_chemicals else 0.
+    if top_chemicals:
+        top.imol[top_chemicals] = top_flows = feed.imol[top_chemicals]
+        bottom.imol[top_chemicals] = 0
+        Fa = top_flows.sum() if hasattr(top_flows, 'sum') else top_flows
+    else:
+        Fa = 0.
     if bottom_chemicals:
         bottom.imol[bottom_chemicals] = bottom_flows = feed.imol[bottom_chemicals]
+        top.imol[bottom_chemicals] = 0
         Fb = bottom_flows.sum() if hasattr(bottom_flows, 'sum') else bottom_flows
     else:
         Fb = 0.
