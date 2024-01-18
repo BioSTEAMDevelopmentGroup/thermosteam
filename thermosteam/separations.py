@@ -642,13 +642,6 @@ def lle(feed, top, bottom, top_chemical=None, efficiency=1.0, multi_stream=None)
         ms = feed.copy()
     ms.lle(feed.T, top_chemical=top_chemical)
     top_phase, bottom_phase = ms.phases
-    if not top_chemical:
-        rho_l = ms['l'].rho
-        rho_L = ms['L'].rho
-        top_l = rho_l < rho_L
-        if top_l:
-            top_phase = 'l'
-            bottom_phase = 'L'
     top.mol[:] = ms.imol[top_phase]
     bottom.mol[:] = ms.imol[bottom_phase]
     top.T = bottom.T = feed.T

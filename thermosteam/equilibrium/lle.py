@@ -223,7 +223,7 @@ class LLE(Equilibrium, phases='lL'):
                 self._phi = phi = phase_fraction(z_mol, K, self._phi)
                 if phi >= 1.:
                     mol_l = mol
-                    mol_L = 0.
+                    mol_L = 0. * mol
                 else:
                     y = z_mol * K / (phi * K + (1 - phi))
                     mol_l = y * phi

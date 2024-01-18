@@ -1266,11 +1266,15 @@ class Stream:
     @property
     def rho(self) -> float:
         """Density [kg/m^3]."""
-        return fn.V_to_rho(self.V, self.MW)
+        V = self.V
+        if V is None: return V
+        return fn.V_to_rho(V, self.MW)
     @property
     def nu(self) -> float:
         """Kinematic viscosity [m^2/s]."""
-        return fn.mu_to_nu(self.mu, self.rho)
+        mu = self.mu
+        if mu is None: return mu
+        return fn.mu_to_nu(mu, self.rho)
     @property
     def Pr(self) -> float:
         """Prandtl number [-]."""
