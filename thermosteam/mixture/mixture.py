@@ -204,59 +204,79 @@ class Mixture:
             S += self._S_excess(phase, mol, T, P)
         return S
     
+    def _load_free_energy_args(self, *args): pass
+    def _load_xfree_energy_args(self, *args): pass
+    
     def solve_T_at_HP(self, phase, mol, H, T_guess, P):
         """Solve for temperature in Kelvin."""
-        args = (H, self.H, phase, mol, P, self.Cn, [0, None])
-        T_guess = flx.aitken(iter_T_at_HP, T_guess, self.T_tol, args, self.maxiter, checkiter=False)
-        T = iter_T_at_HP(T_guess, *args)
-        return (
-            flx.aitken_secant(
-                lambda T: self.H(phase, mol, T, P) - H,
-                x0=T_guess, x1=T, xtol=self.T_tol, ytol=0.
+        self._load_free_energy_args(phase, mol, T_guess, P)
+        try:
+            args = (H, self.H, phase, mol, P, self.Cn, [0, None])
+            T_guess = flx.aitken(iter_T_at_HP, T_guess, self.T_tol, args, self.maxiter, checkiter=False)
+            T = iter_T_at_HP(T_guess, *args)
+            return (
+                flx.aitken_secant(
+                    lambda T: self.H(phase, mol, T, P) - H,
+                    x0=T_guess, x1=T, xtol=self.T_tol, ytol=0.
+                )
+                if abs(T - T_guess) > self.T_tol else T
             )
-            if abs(T - T_guess) > self.T_tol else T
-        )
+        finally:
+            self._free_energy_args.clear()
         
     def xsolve_T_at_HP(self, phase_mol, H, T_guess, P):
         """Solve for temperature in Kelvin."""
         phase_mol = tuple(phase_mol)
-        args = (H, self.xH, phase_mol, P, self.xCn, [0, None])
-        T_guess = flx.aitken(xiter_T_at_HP, T_guess, self.T_tol, args, self.maxiter, checkiter=False)
-        T = xiter_T_at_HP(T_guess, *args)
-        return (
-            flx.aitken_secant(
-                lambda T: self.xH(phase_mol, T, P) - H,
-                x0=T_guess, x1=T, xtol=self.T_tol, ytol=0.
+        self._load_xfree_energy_args(phase_mol, T_guess, P)
+        try:
+            free_energy_args = self._xfree_energy_args(phase_mol, T_guess, P)
+            args = (H, self.xH, phase_mol, P, self.xCn, [0, None], free_energy_args)
+            T_guess = flx.aitken(xiter_T_at_HP, T_guess, self.T_tol, args, self.maxiter, checkiter=False)
+            T = xiter_T_at_HP(T_guess, *args)
+            return (
+                flx.aitken_secant(
+                    lambda T: self.xH(phase_mol, T, P, free_energy_args) - H,
+                    x0=T_guess, x1=T, xtol=self.T_tol, ytol=0.
+                )
+                if abs(T - T_guess) > self.T_tol else T
             )
-            if abs(T - T_guess) > self.T_tol else T
-        )
+        finally:
+            self._free_energy_args.clear()
     
     def solve_T_at_SP(self, phase, mol, S, T_guess, P):
         """Solve for temperature in Kelvin."""
-        args = (S, self.S, phase, mol, P, self.Cn, [0, None])
-        T_guess = flx.aitken(iter_T_at_SP, T_guess, self.T_tol, args, self.maxiter, checkiter=False)
-        T = iter_T_at_SP(T_guess, *args)
-        return (
-            flx.aitken_secant(
-                lambda T: self.S(phase, mol, T, P) - S,
-                x0=T_guess, x1=T, xtol=self.T_tol, ytol=0.
+        self._load_free_energy_args(phase, mol, T_guess, P)
+        try:
+            args = (S, self.S, phase, mol, P, self.Cn, [0, None])
+            T_guess = flx.aitken(iter_T_at_SP, T_guess, self.T_tol, args, self.maxiter, checkiter=False)
+            T = iter_T_at_SP(T_guess, *args)
+            return (
+                flx.aitken_secant(
+                    lambda T: self.S(phase, mol, T, P) - S,
+                    x0=T_guess, x1=T, xtol=self.T_tol, ytol=0.
+                )
+                if abs(T - T_guess) > self.T_tol else T
             )
-            if abs(T - T_guess) > self.T_tol else T
-        )
+        finally:
+            self._free_energy_args.clear()
         
     def xsolve_T_at_SP(self, phase_mol, S, T_guess, P):
         """Solve for temperature in Kelvin."""
         phase_mol = tuple(phase_mol)
-        args = (S, self.xS, phase_mol, P, self.xCn, [0, None])
-        T_guess = flx.aitken(xiter_T_at_SP, T_guess, self.T_tol, args, self.maxiter, checkiter=False)
-        T = xiter_T_at_SP(T_guess, *args)
-        return (
-            flx.aitken_secant(
-                lambda T: self.xS(phase_mol, T, P) - S,
-                x0=T_guess, x1=T, xtol=self.T_tol, ytol=0.
+        self._load_xfree_energy_args(phase_mol, T_guess, P)
+        try:
+            args = (S, self.xS, phase_mol, P, self.xCn, [0, None])
+            T_guess = flx.aitken(xiter_T_at_SP, T_guess, self.T_tol, args, self.maxiter, checkiter=False)
+            T = xiter_T_at_SP(T_guess, *args)
+            return (
+                flx.aitken_secant(
+                    lambda T: self.xS(phase_mol, T, P) - S,
+                    x0=T_guess, x1=T, xtol=self.T_tol, ytol=0.
+                )
+                if abs(T - T_guess) > self.T_tol else T
             )
-            if abs(T - T_guess) > self.T_tol else T
-        )
+        finally:
+            self._free_energy_args.clear()
     
     def xCn(self, phase_mol, T, P=None):
         """Multi-phase mixture molar isobaric heat capacity [J/mol/K]."""
@@ -383,6 +403,7 @@ class IdealMixture(Mixture):
         'Cn', 'mu', 'V', 'kappa',
         'Hvap', 'sigma', 'epsilon',
         'MWs', '_H', '_H_excess', '_S', '_S_excess',
+        '_free_energy_args',
     )
     
     def __init__(self, Cn, H, S, H_excess, S_excess,
@@ -401,6 +422,7 @@ class IdealMixture(Mixture):
         self._S = S
         self._H_excess = H_excess
         self._S_excess = S_excess
+        self._free_energy_args = {}
     
     @classmethod
     def from_chemicals(cls, chemicals, 
@@ -482,6 +504,7 @@ class EOSMixture(Mixture):
     __slots__ = (
         'chemicals', 'eos_chemicals', 'Cn_ideal', 'mu', 'V', 'kappa',
         'Hvap', 'sigma', 'epsilon', 'H_ideal', 'S_ideal', 'MWs', 
+        '_free_energy_args',
     )
     chemsep_db = None
     
@@ -498,55 +521,70 @@ class EOSMixture(Mixture):
         self.sigma = sigma
         self.epsilon = epsilon
         self.MWs = MWs
+        self._free_energy_args = {}
     
-    def eos(self, phase, chemicals, zs, T, P):
-        key = (phase, chemicals)
+    def eos_args(self, phase, mol, T, P):
+        chemicals = self.chemicals
+        dct = mol.dct
+        eos_chemicals = self.eos_chemicals
+        chemical_subset = []
+        mol_subset = []
+        eos_mol = 0
+        for i, j in dct.items():
+            chemical = chemicals[i]
+            if chemical in eos_chemicals:
+                chemical_subset.append(chemical)
+                mol_subset.append(j)
+                eos_mol += j
+        zs = [i / eos_mol for i in mol_subset]
+        eos_chemicals = tuple(eos_chemicals)
+        key = (phase, eos_chemicals)
         cache = self.cache
+        only_g = phase == 'g'
+        only_l = phase == 'l'
         if key in cache:
-            return cache[key]
+            eos = cache[key].to_TP_zs(
+                T=T, P=P, zs=zs, only_g=only_g, only_l=only_l,
+                fugacities=False
+            )
         else:
-            only_g = phase == 'g'
-            only_l = phase == 'l'
-            if only_g or only_l:
+            data = tmo.ChemicalData(eos_chemicals)
+            if self.chemsep_db is None:
+                kijs = None
+            else:
                 try:
-                    self._eos = eos = self._eos.to_TP_zs(
-                        T=T, P=P, zs=zs, only_g=only_g, only_l=only_l,
-                        fugacities=False
-                    )
+                    kijs = IPDB.get_ip_asymmetric_matrix(self.chemsep_db, data.CASs, 'kij')
                 except:
-                    data = tmo.ChemicalData(chemicals)
-                    if self.chemsep_db is None:
-                        kijs = None
-                    else:
-                        try:
-                            kijs = IPDB.get_ip_asymmetric_matrix(self.chemsep_db, data.CASs, 'kij')
-                        except:
-                            kijs = None
-                    self._eos = eos = self.EOS(
-                        zs=zs, T=T, P=P, Tcs=data.Tcs, Pcs=data.Pcs, omegas=data.omegas, kijs=kijs,
-                        only_g=only_g, only_l=only_l, fugacities=False, 
-                    )    
-        return eos
+                    kijs = None
+            self.cache[key] = eos = self.EOS(
+                Tcs=data.Tcs, Pcs=data.Pcs, omegas=data.omegas, kijs=kijs,
+                T=T, P=P, zs=zs, only_g=only_g, only_l=only_l,
+                fugacities=False
+            )
+        return eos, eos_mol, dict(
+            P=P, zs=zs, only_g=only_g, only_l=only_l,
+            fugacities=False
+        )
+
+    def _load_free_energy_args(self, phase, mol, T, P):
+        self._free_energy_args[phase] = self.eos_args(phase, mol, T, P)
+    
+    def _load_xfree_energy_args(self, phase_mol, T, P):
+        fea = self._free_energy_args
+        for phase, mol in phase_mol: fea[phase] = self.eos_args(phase, mol, T, P)
     
     def Cn(self, phase, mol, T, P):
         if mol.__class__ is not SparseVector: mol = SparseVector(mol)
-        chemicals = self.chemicals
-        dct = mol.dct
         Cn = self.Cn_ideal(phase, mol, T, P)
         if phase != 's':
-            eos_chemicals = self.eos_chemicals
-            chemical_subset = []
-            mol_subset = []
-            eos_mol = 0
-            for i, j in dct.items():
-                chemical = chemicals[i]
-                if chemical in eos_chemicals:
-                    chemical_subset.append(chemical)
-                    mol_subset.append(j)
-                    eos_mol += j
-            zs = [i / eos_mol for i in mol_subset]
-            eos = self.eos(
-                phase, tuple(chemical_subset), zs, T, P
+            if phase in self._free_energy_args:
+                eos, eos_mol, eos_kwargs = self._free_energy_args[phase]
+            else:
+                eos, eos_mol, eos_kwargs = self.eos_args(
+                    phase, mol, T, P
+                )
+            eos = eos.to_TP_zs(
+                T=T, **eos_kwargs
             )
             if phase == 'l':
                 Cn += eos.Cp_dep_l * eos_mol
@@ -557,23 +595,16 @@ class EOSMixture(Mixture):
     def H(self, phase, mol, T, P):
         """Return enthalpy [J/mol]."""
         if mol.__class__ is not SparseVector: mol = SparseVector(mol)
-        chemicals = self.chemicals
-        dct = mol.dct
         H = self.H_ideal(phase, mol, T, P)
         if phase != 's':
-            eos_chemicals = self.eos_chemicals
-            chemical_subset = []
-            mol_subset = []
-            eos_mol = 0
-            for i, j in dct.items():
-                chemical = chemicals[i]
-                if chemical in eos_chemicals:
-                    chemical_subset.append(chemical)
-                    mol_subset.append(j)
-                    eos_mol += j
-            zs = [i / eos_mol for i in mol_subset]
-            eos = self.eos(
-                phase, tuple(chemical_subset), zs, T, P
+            if phase in self._free_energy_args:
+                eos, eos_mol, eos_kwargs = self._free_energy_args[phase]
+            else:
+                eos, eos_mol, eos_kwargs = self.eos_args(
+                    phase, mol, T, P
+                )
+            eos = eos.to_TP_zs(
+                T=T, **eos_kwargs
             )
             if phase == 'l':
                 H += eos.H_dep_l * eos_mol
@@ -584,23 +615,16 @@ class EOSMixture(Mixture):
     def S(self, phase, mol, T, P):
         """Return entropy [J/mol/K]."""
         if mol.__class__ is not SparseVector: mol = SparseVector(mol)
-        chemicals = self.chemicals
-        dct = mol.dct
         S = self.S_ideal(phase, mol, T, P)
         if phase != 's':
-            eos_chemicals = self.eos_chemicals
-            chemical_subset = []
-            mol_subset = []
-            eos_mol = 0
-            for i, j in dct.items():
-                chemical = chemicals[i]
-                if chemical in eos_chemicals:
-                    chemical_subset.append(chemical)
-                    mol_subset.append(j)
-                    eos_mol += j
-            zs = [i / eos_mol for i in mol_subset]
-            eos = self.eos(
-                phase, tuple(chemical_subset), zs, T, P
+            if phase in self._free_energy_args:
+                eos, eos_mol, eos_kwargs = self._free_energy_args[phase]
+            else:
+                eos, eos_mol, eos_kwargs = self.eos_args(
+                    phase, mol, T, P
+                )
+            eos = eos.to_TP_zs(
+                T=T, **eos_kwargs
             )
             if phase == 'l':
                 S += eos.S_dep_l * eos_mol
