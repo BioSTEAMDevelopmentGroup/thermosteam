@@ -50,28 +50,28 @@ def create_mixture_model(chemicals, var, Model):
 def iter_T_at_HP(T, H, H_model, phase, mol, P, Cn_model, Cn_cache):
     # Used to solve for temperature at given ethalpy 
     counter, Cn = Cn_cache
-    if not counter % 5: Cn_cache[1] = Cn = Cn_model(phase, mol, T)
+    if not counter % 5: Cn_cache[1] = Cn = Cn_model(phase, mol, T, P)
     Cn_cache[0] += 1
     return T + (H - H_model(phase, mol, T, P)) / Cn
 
 def xiter_T_at_HP(T, H, H_model, phase_mol, P, Cn_model, Cn_cache):
     # Used to solve for temperature at given ethalpy 
     counter, Cn = Cn_cache
-    if not counter % 5: Cn_cache[1] = Cn = Cn_model(phase_mol, T)
+    if not counter % 5: Cn_cache[1] = Cn = Cn_model(phase_mol, T, P)
     Cn_cache[0] += 1
     return T + (H - H_model(phase_mol, T, P)) / Cn
 
 def iter_T_at_SP(T, S, S_model, phase, mol, P, Cn_model, Cn_cache):
     # Used to solve for temperature at given entropy 
     counter, Cn = Cn_cache
-    if not counter % 5: Cn_cache[1] = Cn = Cn_model(phase, mol, T)
+    if not counter % 5: Cn_cache[1] = Cn = Cn_model(phase, mol, T, P)
     Cn_cache[0] += 1
     return T * exp((S - S_model(phase, mol, T, P)) / Cn)
 
 def xiter_T_at_SP(T, S, S_model, phase_mol, P, Cn_model, Cn_cache):
     # Used to solve for temperature at given entropy 
     counter, Cn = Cn_cache
-    if not counter % 5: Cn_cache[1] = Cn = Cn_model(phase_mol, T)
+    if not counter % 5: Cn_cache[1] = Cn = Cn_model(phase_mol, T, P)
     Cn_cache[0] += 1
     return T * exp((S - S_model(phase_mol, T, P)) / Cn)
 
@@ -295,7 +295,7 @@ class Mixture:
         return sum([self.kappa(phase, mol, T, P) for phase, mol in phase_mol])
     
     def __repr__(self):
-        return f"{type(self).__name__}(rule={repr(self.rule)}, ..., include_excess_energies={self.include_excess_energies})"
+        return f"{type(self).__name__}(..., include_excess_energies={self.include_excess_energies})"
     
     def _info(self):
         return (f"{type(self).__name__}(\n"
@@ -478,17 +478,19 @@ class IdealMixture(Mixture):
     
 # %% Thermo mixture
 
-class EOSMixture:
+class EOSMixture(Mixture):
     __slots__ = (
-        'chemicals', 'Cn', 'mu', 'V', 'kappa',
-        'Hvap', 'sigma', 'epsilon',
-        'MWs', 'chemicals', 
+        'chemicals', 'eos_chemicals', 'Cn_ideal', 'mu', 'V', 'kappa',
+        'Hvap', 'sigma', 'epsilon', 'H_ideal', 'S_ideal', 'MWs', 
     )
     chemsep_db = None
     
-    def __init__(self, chemicals, Cn, mu, V, kappa, Hvap, sigma, epsilon, MWs):
+    def __init__(self, chemicals, eos_chemicals, Cn_ideal, H_ideal, S_ideal, mu, V, kappa, Hvap, sigma, epsilon, MWs):
         self.chemicals = chemicals
-        self.Cn = Cn
+        self.eos_chemicals = eos_chemicals
+        self.Cn_ideal = Cn_ideal
+        self.H_ideal = H_ideal
+        self.S_ideal = S_ideal
         self.mu = mu
         self.V = V
         self.kappa = kappa
@@ -507,9 +509,9 @@ class EOSMixture:
             only_l = phase == 'l'
             if only_g or only_l:
                 try:
-                    self._eos = eos = self._eos.to_TP_zs_fast(
+                    self._eos = eos = self._eos.to_TP_zs(
                         T=T, P=P, zs=zs, only_g=only_g, only_l=only_l,
-                        full_alphas=False
+                        fugacities=False
                     )
                 except:
                     data = tmo.ChemicalData(chemicals)
@@ -522,42 +524,92 @@ class EOSMixture:
                             kijs = None
                     self._eos = eos = self.EOS(
                         zs=zs, T=T, P=P, Tcs=data.Tcs, Pcs=data.Pcs, omegas=data.omegas, kijs=kijs,
-                        only_g=only_g, only_l=only_l,
+                        only_g=only_g, only_l=only_l, fugacities=False, 
                     )    
         return eos
+    
+    def Cn(self, phase, mol, T, P):
+        if mol.__class__ is not SparseVector: mol = SparseVector(mol)
+        chemicals = self.chemicals
+        dct = mol.dct
+        Cn = self.Cn_ideal(phase, mol, T, P)
+        if phase != 's':
+            eos_chemicals = self.eos_chemicals
+            chemical_subset = []
+            mol_subset = []
+            eos_mol = 0
+            for i, j in dct.items():
+                chemical = chemicals[i]
+                if chemical in eos_chemicals:
+                    chemical_subset.append(chemical)
+                    mol_subset.append(j)
+                    eos_mol += j
+            zs = [i / eos_mol for i in mol_subset]
+            eos = self.eos(
+                phase, tuple(chemical_subset), zs, T, P
+            )
+            if phase == 'l':
+                Cn += eos.Cp_dep_l * eos_mol
+            else:
+                Cn += eos.Cp_dep_g * eos_mol
+        return Cn
     
     def H(self, phase, mol, T, P):
         """Return enthalpy [J/mol]."""
         if mol.__class__ is not SparseVector: mol = SparseVector(mol)
         chemicals = self.chemicals
-        H = sum([j * chemicals[i].H(phase, T, P) for i, j in mol.dct.items()])
+        dct = mol.dct
+        H = self.H_ideal(phase, mol, T, P)
         if phase != 's':
-            subset_chemicals = tuple([chemicals[i] for i in mol.nonzero_keys()])
-            mol = [i for i in mol.nonzero_values()]
-            eos = self.eos(phase, subset_chemicals, mol, T, P)
+            eos_chemicals = self.eos_chemicals
+            chemical_subset = []
+            mol_subset = []
+            eos_mol = 0
+            for i, j in dct.items():
+                chemical = chemicals[i]
+                if chemical in eos_chemicals:
+                    chemical_subset.append(chemical)
+                    mol_subset.append(j)
+                    eos_mol += j
+            zs = [i / eos_mol for i in mol_subset]
+            eos = self.eos(
+                phase, tuple(chemical_subset), zs, T, P
+            )
             if phase == 'l':
-                H += eos.H_dep_l
+                H += eos.H_dep_l * eos_mol
             else:
-                H += eos.H_dep_g
+                H += eos.H_dep_g * eos_mol
         return H
     
     def S(self, phase, mol, T, P):
         """Return entropy [J/mol/K]."""
         if mol.__class__ is not SparseVector: mol = SparseVector(mol)
         chemicals = self.chemicals
-        S = sum([j * chemicals[i].S(phase, T, P) for i, j in mol.dct.items()])
+        dct = mol.dct
+        S = self.S_ideal(phase, mol, T, P)
         if phase != 's':
-            subset_chemicals = tuple([chemicals[i] for i in mol.nonzero_keys()])
-            mol = [i for i in mol.nonzero_values()]
-            eos = self.eos(phase, subset_chemicals, mol, T, P)
+            eos_chemicals = self.eos_chemicals
+            chemical_subset = []
+            mol_subset = []
+            eos_mol = 0
+            for i, j in dct.items():
+                chemical = chemicals[i]
+                if chemical in eos_chemicals:
+                    chemical_subset.append(chemical)
+                    mol_subset.append(j)
+                    eos_mol += j
+            zs = [i / eos_mol for i in mol_subset]
+            eos = self.eos(
+                phase, tuple(chemical_subset), zs, T, P
+            )
             if phase == 'l':
-                S += eos.S_dep_l
+                S += eos.S_dep_l * eos_mol
             else:
-                S += eos.S_dep_g
+                S += eos.S_dep_g * eos_mol
         return S
     
     @classmethod
-    def from_chemicals(cls, chemicals, cache=True):
+    def from_chemicals(cls, chemicals, eos_chemicals, cache=True):
         """
         Create a Mixture object from chemical objects.
         
@@ -565,13 +617,10 @@ class EOSMixture:
         ----------
         chemicals : Iterable[Chemical]
             For retrieving pure component chemical data.
+        eos_chemicals : Iterable[Chemical]
+            Chemicals with equations of state.
         cache : optional
             Whether or not to use cached chemicals and cache new chemicals. Defaults to True.
-    
-        See also
-        --------
-        :class:`~.mixture.Mixture`
-        :class:`~.IdealMixtureModel`
     
         Examples
         --------
@@ -598,19 +647,28 @@ class EOSMixture:
             chemicals = [(i if isa(i, Chemical) else Chemical(i)) for i in chemicals]
             MWs = chemical_data_array(chemicals, 'MW')
         getfield = getattr
-        Cn =  create_mixture_model(chemicals, 'Cn', IdealTMixtureModel)
+        Cn = create_mixture_model(chemicals, 'Cn', IdealTMixtureModel)
+        H = create_mixture_model(chemicals, 'H', IdealTPMixtureModel)
+        S = create_mixture_model(chemicals, 'S', IdealEntropyModel)
         mu = create_mixture_model(chemicals, 'mu', IdealTPMixtureModel)
         V = create_mixture_model(chemicals, 'V', IdealTPMixtureModel)
         kappa = create_mixture_model(chemicals, 'kappa', IdealTPMixtureModel)
         Hvap = IdealHvapModel(chemicals)
         sigma = SinglePhaseIdealTMixtureModel([getfield(i, 'sigma') for i in chemicals], 'sigma')
         epsilon = SinglePhaseIdealTMixtureModel([getfield(i, 'epsilon') for i in chemicals], 'epsilon')
-        return cls(chemicals, Cn, mu, V, kappa, Hvap, sigma, epsilon, MWs)
+        return cls(chemicals, eos_chemicals, Cn, H, S, mu, V, kappa, Hvap, sigma, epsilon, MWs)
     
     @classmethod
     def subclass(cls, EOS, name=None):
         if name is None: name = EOS.__name__.replace('MIX', '') + 'Mixture'
         return type(name, (cls,), dict(EOS=EOS, cache={}))
+
+    def _info(self):
+        return (
+            f"{type(self).__name__}(\n"
+            f"    eos_chemicals=[{', '.join([i.ID for i in self.eos_chemicals])}]\n"
+             ")"
+        )
 
 dct = globals()    
 clsnames = []
