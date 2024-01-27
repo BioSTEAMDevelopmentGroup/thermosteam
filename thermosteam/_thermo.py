@@ -12,7 +12,7 @@ import thermosteam as tmo
 from . import equilibrium as eq
 from ._chemical import Chemical
 from ._chemicals import Chemicals
-from .mixture import Mixture
+from .mixture import Mixture, IdealMixture
 from .utils import read_only, cucumber
 
 __all__ = ('Thermo', 'IdealThermo')
@@ -138,7 +138,7 @@ class Thermo:
         if PCF is None: PCF = eq.MockPoyintingCorrectionFactors
         if not isinstance(chemicals, Chemicals): chemicals = Chemicals(chemicals, cache)
         if not mixture:
-            mixture = Mixture.from_chemicals(chemicals)
+            mixture = IdealMixture.from_chemicals(chemicals)
         elif not isinstance(mixture, Mixture): # pragma: no cover
             raise ValueError(f"mixture must be a '{Mixture.__name__}' object")
         chemicals.compile(skip_checks=skip_checks)

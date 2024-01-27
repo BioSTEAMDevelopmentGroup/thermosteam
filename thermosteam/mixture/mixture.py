@@ -8,11 +8,14 @@
 """
 """
 import flexsolve as flx
+import thermosteam as tmo
 import numpy as np
 from math import exp
 from thermosteam import functional as fn
+from thermo.interaction_parameters import IPDB
+from thermo import eos_mix
 from .. import units_of_measure as thermo_units
-from ..base import PhaseHandle, MockPhaseTHandle, MockPhaseTPHandle, sparse
+from ..base import PhaseHandle, MockPhaseTHandle, MockPhaseTPHandle, SparseVector, sparse
 from .ideal_mixture_model import (
     SinglePhaseIdealTMixtureModel,
     IdealTMixtureModel, 
@@ -22,7 +25,7 @@ from .ideal_mixture_model import (
 )
 from .._chemicals import Chemical, CompiledChemicals, chemical_data_array
 
-__all__ = ('Mixture',)
+__all__ = ('Mixture', 'IdealMixture')
 
 # %% Functions for building mixture models
 
@@ -73,177 +76,45 @@ def xiter_T_at_SP(T, S, S_model, phase_mol, P, Cn_model, Cn_cache):
     return T * exp((S - S_model(phase_mol, T, P)) / Cn)
 
 
-# %% Ideal mixture
+# %% Abstract mixture
 
 class Mixture:
     """
-    Create an Mixture object for estimating mixture properties.
+    Abstract class for estimating mixture properties.
     
-    Parameters
-    ----------
-    rule : str
-        Description of mixing rules used.
-    Cn : function(phase, mol, T)
-        Molar isobaric heat capacity mixture model [J/mol/K].
-    H : function(phase, mol, T)
-        Enthalpy mixture model [J/mol].
-    S : function(phase, mol, T, P)
-        Entropy mixture model [J/mol].
-    H_excess : function(phase, mol, T, P)
-        Excess enthalpy mixture model [J/mol].
-    S_excess : function(phase, mol, T, P)
-        Excess entropy mixture model [J/mol].
-    mu : function(phase, mol, T, P)
-        Dynamic viscosity mixture model [Pa*s].
-    V : function(phase, mol, T, P)
-        Molar volume mixture model [m^3/mol].
-    kappa : function(phase, mol, T, P)
-        Thermal conductivity mixture model [W/m/K].
-    Hvap : function(mol, T)
-        Heat of vaporization mixture model [J/mol]
-    sigma : function(mol, T, P)
-        Surface tension mixture model [N/m].
-    epsilon : function(mol, T, P)
-        Relative permitivity mixture model [-]
+    Abstract methods
+    ----------------
+    Cn(phase, mol, T) : float
+        Molar isobaric heat capacity [J/mol/K].
+    H(phase, mol, T) : float
+        Enthalpy [J/mol].
+    S(phase, mol, T, P) : float
+        Entropy [J/mol].
+    mu(phase, mol, T, P) : float
+        Dynamic viscosity [Pa*s].
+    V(phase, mol, T, P) : float
+        Molar volume [m^3/mol].
+    kappa(phase, mol, T, P) : float
+        Thermal conductivity [W/m/K].
+    Hvap(mol, T) : float
+        Heat of vaporization [J/mol]
+    sigma(mol, T, P) : float
+        Surface tension [N/m].
+    epsilon(mol, T, P) : float
+        Relative permitivity [-]
+    
+    Abstract attributes
     MWs : 1d array[float]
-        Component molecular weights [g/mol].
-    include_excess_energies=False : bool
-        Whether to include excess energies
-        in enthalpy and entropy calculations.
-    
-    Notes
-    -----
-    Although the mixture models are on a molar basis, this is only if the molar
-    data is normalized before the calculation (i.e. the `mol` parameter is 
-    normalized before being passed to the model).
-    
-    See also
-    --------
-    IdealTMixtureModel
-    IdealTPMixtureModel
-    
-    Attributes
-    ----------
-    rule : str
-        Description of mixing rules used.
-    include_excess_energies : bool
-        Whether to include excess energies
-        in enthalpy and entropy calculations.
-    Cn(phase, mol, T) : 
-        Mixture molar isobaric heat capacity [J/mol/K].
-    mu(phase, mol, T, P) : 
-        Mixture dynamic viscosity [Pa*s].
-    V(phase, mol, T, P) : 
-        Mixture molar volume [m^3/mol].
-    kappa(phase, mol, T, P) : 
-        Mixture thermal conductivity [W/m/K].
-    Hvap(mol, T, P) : 
-        Mixture heat of vaporization [J/mol]
-    sigma(mol, T, P) : 
-        Mixture surface tension [N/m].
-    epsilon(mol, T, P) : 
-        Mixture relative permitivity [-].
-    MWs : 1d-array[float]
         Component molecular weights [g/mol].
     
     """
     maxiter = 20
     T_tol = 1e-6
-    __slots__ = ('rule',
-                 'rigorous_energy_balance',
-                 'include_excess_energies',
-                 'Cn', 'mu', 'V', 'kappa',
-                 'Hvap', 'sigma', 'epsilon',
-                 'MWs', '_H', '_H_excess', '_S', '_S_excess',
-    )
-    
-    def __init__(self, rule, Cn, H, S, H_excess, S_excess,
-                 mu, V, kappa, Hvap, sigma, epsilon,
-                 MWs, include_excess_energies=False):
-        self.rule = rule
-        self.include_excess_energies = include_excess_energies
-        self.Cn = Cn
-        self.mu = mu
-        self.V = V
-        self.kappa = kappa
-        self.Hvap = Hvap
-        self.sigma = sigma
-        self.epsilon = epsilon
-        self.MWs = MWs
-        self._H = H
-        self._S = S
-        self._H_excess = H_excess
-        self._S_excess = S_excess
-    
-    @classmethod
-    def from_chemicals(cls, chemicals, 
-                       include_excess_energies=False, 
-                       rule='ideal',
-                       cache=True):
-        """
-        Create a Mixture object from chemical objects.
-        
-        Parameters
-        ----------
-        chemicals : Iterable[Chemical]
-            For retrieving pure component chemical data.
-        include_excess_energies=False : bool
-            Whether to include excess energies in enthalpy and entropy calculations.
-        rule : str, optional
-            Mixing rule. Defaults to 'ideal'.
-        cache : optional
-            Whether or not to use cached chemicals and cache new chemicals. Defaults to True.
-    
-        See also
-        --------
-        :class:`~.mixture.Mixture`
-        :class:`~.IdealMixtureModel`
-    
-        Examples
-        --------
-        Calculate enthalpy of evaporation for a water and ethanol mixture:
-        
-        >>> from thermosteam import Mixture
-        >>> mixture = Mixture.from_chemicals(['Water', 'Ethanol'])
-        >>> mixture.Hvap([0.2, 0.8], 350)
-        39750.62
-
-        Calculate density for a water and ethanol mixture in g/L:
-
-        >>> from thermosteam import Mixture
-        >>> mixture = Mixture.from_chemicals(['Water', 'Ethanol'])
-        >>> mixture.get_property('rho', 'g/L', 'l', [0.2, 0.8], 350, 101325)
-        754.23
-        
-        """
-        if rule == 'ideal':
-            isa = isinstance
-            if isa(chemicals, CompiledChemicals):
-                MWs = chemicals.MW
-                chemicals = chemicals.tuple
-            else:
-                chemicals = [(i if isa(i, Chemical) else Chemical(i)) for i in chemicals]
-                MWs = chemical_data_array(chemicals, 'MW')
-            getfield = getattr
-            Cn =  create_mixture_model(chemicals, 'Cn', IdealTMixtureModel)
-            H =  create_mixture_model(chemicals, 'H', IdealTPMixtureModel)
-            S = create_mixture_model(chemicals, 'S', IdealEntropyModel)
-            H_excess = create_mixture_model(chemicals, 'H_excess', IdealTPMixtureModel)
-            S_excess = create_mixture_model(chemicals, 'S_excess', IdealTPMixtureModel)
-            mu = create_mixture_model(chemicals, 'mu', IdealTPMixtureModel)
-            V = create_mixture_model(chemicals, 'V', IdealTPMixtureModel)
-            kappa = create_mixture_model(chemicals, 'kappa', IdealTPMixtureModel)
-            Hvap = IdealHvapModel(chemicals)
-            sigma = SinglePhaseIdealTMixtureModel([getfield(i, 'sigma') for i in chemicals], 'sigma')
-            epsilon = SinglePhaseIdealTMixtureModel([getfield(i, 'epsilon') for i in chemicals], 'epsilon')
-            return cls(rule, Cn, H, S, H_excess, S_excess,
-                       mu, V, kappa, Hvap, sigma, epsilon, MWs, include_excess_energies)
-        else:
-            raise ValueError("rule '{rule}' is not available (yet)")
+    __slots__ = ()
     
     def MW(self, mol):
         """Return molecular weight [g/mol] given molar array [mol]."""
-        total_mol = sparse(mol).sum()
+        total_mol = mol.sum()
         return (mol * self.MWs).sum() / total_mol if total_mol else 0.
     
     def rho(self, phase, mol, T, P):
@@ -326,8 +197,8 @@ class Mixture:
     
     def S(self, phase, mol, T, P):
         """Return entropy in [J/mol/K]."""
-        total_mol = mol.sum()
-        if total_mol == 0.: return 0.
+        if mol.__class__ is not SparseVector: mol = SparseVector(mol)
+        if not mol.dct: return 0.
         S = self._S(phase, mol, T, P)
         if self.include_excess_energies:
             S += self._S_excess(phase, mol, T, P)
@@ -435,4 +306,324 @@ class Mixture:
     def show(self):
         print(self._info())
     _ipython_display_ = show
+
+
+# %% Ideal mixture
+
+class IdealMixture(Mixture):
+    """
+    Create an Mixture object for estimating mixture properties.
+    
+    Parameters
+    ----------
+    Cn : function(phase, mol, T)
+        Molar isobaric heat capacity mixture model [J/mol/K].
+    H : function(phase, mol, T)
+        Enthalpy mixture model [J/mol].
+    S : function(phase, mol, T, P)
+        Entropy mixture model [J/mol].
+    H_excess : function(phase, mol, T, P)
+        Excess enthalpy mixture model [J/mol].
+    S_excess : function(phase, mol, T, P)
+        Excess entropy mixture model [J/mol].
+    mu : function(phase, mol, T, P)
+        Dynamic viscosity mixture model [Pa*s].
+    V : function(phase, mol, T, P)
+        Molar volume mixture model [m^3/mol].
+    kappa : function(phase, mol, T, P)
+        Thermal conductivity mixture model [W/m/K].
+    Hvap : function(mol, T)
+        Heat of vaporization mixture model [J/mol]
+    sigma : function(mol, T, P)
+        Surface tension mixture model [N/m].
+    epsilon : function(mol, T, P)
+        Relative permitivity mixture model [-]
+    MWs : 1d array[float]
+        Component molecular weights [g/mol].
+    include_excess_energies=False : bool
+        Whether to include excess energies
+        in enthalpy and entropy calculations.
+    
+    Notes
+    -----
+    Although the mixture models are on a molar basis, this is only if the molar
+    data is normalized before the calculation (i.e. the `mol` parameter is 
+    normalized before being passed to the model).
+    
+    See also
+    --------
+    IdealTMixtureModel
+    IdealTPMixtureModel
+    
+    Attributes
+    ----------
+    include_excess_energies : bool
+        Whether to include excess energies
+        in enthalpy and entropy calculations.
+    Cn(phase, mol, T) : 
+        Mixture molar isobaric heat capacity [J/mol/K].
+    mu(phase, mol, T, P) : 
+        Mixture dynamic viscosity [Pa*s].
+    V(phase, mol, T, P) : 
+        Mixture molar volume [m^3/mol].
+    kappa(phase, mol, T, P) : 
+        Mixture thermal conductivity [W/m/K].
+    Hvap(mol, T, P) : 
+        Mixture heat of vaporization [J/mol]
+    sigma(mol, T, P) : 
+        Mixture surface tension [N/m].
+    epsilon(mol, T, P) : 
+        Mixture relative permitivity [-].
+    MWs : 1d-array[float]
+        Component molecular weights [g/mol].
+    
+    """
+    __slots__ = (
+        'include_excess_energies',
+        'Cn', 'mu', 'V', 'kappa',
+        'Hvap', 'sigma', 'epsilon',
+        'MWs', '_H', '_H_excess', '_S', '_S_excess',
+    )
+    
+    def __init__(self, Cn, H, S, H_excess, S_excess,
+                 mu, V, kappa, Hvap, sigma, epsilon,
+                 MWs, include_excess_energies=False):
+        self.include_excess_energies = include_excess_energies
+        self.Cn = Cn
+        self.mu = mu
+        self.V = V
+        self.kappa = kappa
+        self.Hvap = Hvap
+        self.sigma = sigma
+        self.epsilon = epsilon
+        self.MWs = MWs
+        self._H = H
+        self._S = S
+        self._H_excess = H_excess
+        self._S_excess = S_excess
+    
+    @classmethod
+    def from_chemicals(cls, chemicals, 
+                       include_excess_energies=False, 
+                       cache=True):
+        """
+        Create a Mixture object from chemical objects.
         
+        Parameters
+        ----------
+        chemicals : Iterable[Chemical]
+            For retrieving pure component chemical data.
+        include_excess_energies=False : bool
+            Whether to include excess energies in enthalpy and entropy calculations.
+        rule : str, optional
+            Mixing rule. Defaults to 'ideal'.
+        cache : optional
+            Whether or not to use cached chemicals and cache new chemicals. Defaults to True.
+    
+        See also
+        --------
+        :class:`~.mixture.Mixture`
+        :class:`~.IdealMixtureModel`
+    
+        Examples
+        --------
+        Calculate enthalpy of evaporation for a water and ethanol mixture:
+        
+        >>> from thermosteam import Mixture
+        >>> mixture = Mixture.from_chemicals(['Water', 'Ethanol'])
+        >>> mixture.Hvap([0.2, 0.8], 350)
+        39750.62
+
+        Calculate density for a water and ethanol mixture in g/L:
+
+        >>> from thermosteam import Mixture
+        >>> mixture = Mixture.from_chemicals(['Water', 'Ethanol'])
+        >>> mixture.get_property('rho', 'g/L', 'l', [0.2, 0.8], 350, 101325)
+        754.23
+        
+        """
+        isa = isinstance
+        if isa(chemicals, CompiledChemicals):
+            MWs = chemicals.MW
+            chemicals = chemicals.tuple
+        else:
+            chemicals = [(i if isa(i, Chemical) else Chemical(i)) for i in chemicals]
+            MWs = chemical_data_array(chemicals, 'MW')
+        getfield = getattr
+        Cn =  create_mixture_model(chemicals, 'Cn', IdealTMixtureModel)
+        H =  create_mixture_model(chemicals, 'H', IdealTPMixtureModel)
+        S = create_mixture_model(chemicals, 'S', IdealEntropyModel)
+        H_excess = create_mixture_model(chemicals, 'H_excess', IdealTPMixtureModel)
+        S_excess = create_mixture_model(chemicals, 'S_excess', IdealTPMixtureModel)
+        mu = create_mixture_model(chemicals, 'mu', IdealTPMixtureModel)
+        V = create_mixture_model(chemicals, 'V', IdealTPMixtureModel)
+        kappa = create_mixture_model(chemicals, 'kappa', IdealTPMixtureModel)
+        Hvap = IdealHvapModel(chemicals)
+        sigma = SinglePhaseIdealTMixtureModel([getfield(i, 'sigma') for i in chemicals], 'sigma')
+        epsilon = SinglePhaseIdealTMixtureModel([getfield(i, 'epsilon') for i in chemicals], 'epsilon')
+        return cls(Cn, H, S, H_excess, S_excess,
+                   mu, V, kappa, Hvap, sigma, epsilon, MWs, include_excess_energies)
+    
+    def __repr__(self):
+        return f"{type(self).__name__}(rule={repr(self.rule)}, ..., include_excess_energies={self.include_excess_energies})"
+    
+    def _info(self):
+        return (f"{type(self).__name__}(\n"
+                f"    include_excess_energies={self.include_excess_energies}\n"
+                 ")")
+    
+    def show(self):
+        print(self._info())
+    _ipython_display_ = show
+    
+# %% Thermo mixture
+
+class EOSMixture:
+    __slots__ = (
+        'chemicals', 'Cn', 'mu', 'V', 'kappa',
+        'Hvap', 'sigma', 'epsilon',
+        'MWs', 'chemicals', 
+    )
+    chemsep_db = None
+    
+    def __init__(self, chemicals, Cn, mu, V, kappa, Hvap, sigma, epsilon, MWs):
+        self.chemicals = chemicals
+        self.Cn = Cn
+        self.mu = mu
+        self.V = V
+        self.kappa = kappa
+        self.Hvap = Hvap
+        self.sigma = sigma
+        self.epsilon = epsilon
+        self.MWs = MWs
+    
+    def eos(self, phase, chemicals, zs, T, P):
+        key = (phase, chemicals)
+        cache = self.cache
+        if key in cache:
+            return cache[key]
+        else:
+            only_g = phase == 'g'
+            only_l = phase == 'l'
+            if only_g or only_l:
+                try:
+                    self._eos = eos = self._eos.to_TP_zs_fast(
+                        T=T, P=P, zs=zs, only_g=only_g, only_l=only_l,
+                        full_alphas=False
+                    )
+                except:
+                    data = tmo.ChemicalData(chemicals)
+                    if self.chemsep_db is None:
+                        kijs = None
+                    else:
+                        try:
+                            kijs = IPDB.get_ip_asymmetric_matrix(self.chemsep_db, data.CASs, 'kij')
+                        except:
+                            kijs = None
+                    self._eos = eos = self.EOS(
+                        zs=zs, T=T, P=P, Tcs=data.Tcs, Pcs=data.Pcs, omegas=data.omegas, kijs=kijs,
+                        only_g=only_g, only_l=only_l,
+                    )    
+        return eos
+    
+    def H(self, phase, mol, T, P):
+        """Return enthalpy [J/mol]."""
+        if mol.__class__ is not SparseVector: mol = SparseVector(mol)
+        chemicals = self.chemicals
+        H = sum([j * chemicals[i].H(phase, T, P) for i, j in mol.dct.items()])
+        if phase != 's':
+            subset_chemicals = tuple([chemicals[i] for i in mol.nonzero_keys()])
+            mol = [i for i in mol.nonzero_values()]
+            eos = self.eos(phase, subset_chemicals, mol, T, P)
+            if phase == 'l':
+                H += eos.H_dep_l
+            else:
+                H += eos.H_dep_g
+        return H
+    
+    def S(self, phase, mol, T, P):
+        """Return entropy [J/mol/K]."""
+        if mol.__class__ is not SparseVector: mol = SparseVector(mol)
+        chemicals = self.chemicals
+        S = sum([j * chemicals[i].S(phase, T, P) for i, j in mol.dct.items()])
+        if phase != 's':
+            subset_chemicals = tuple([chemicals[i] for i in mol.nonzero_keys()])
+            mol = [i for i in mol.nonzero_values()]
+            eos = self.eos(phase, subset_chemicals, mol, T, P)
+            if phase == 'l':
+                S += eos.S_dep_l
+            else:
+                S += eos.S_dep_g
+        return S
+    
+    @classmethod
+    def from_chemicals(cls, chemicals, cache=True):
+        """
+        Create a Mixture object from chemical objects.
+        
+        Parameters
+        ----------
+        chemicals : Iterable[Chemical]
+            For retrieving pure component chemical data.
+        cache : optional
+            Whether or not to use cached chemicals and cache new chemicals. Defaults to True.
+    
+        See also
+        --------
+        :class:`~.mixture.Mixture`
+        :class:`~.IdealMixtureModel`
+    
+        Examples
+        --------
+        Calculate enthalpy of evaporation for a water and ethanol mixture:
+        
+        >>> from thermosteam import Mixture
+        >>> mixture = Mixture.from_chemicals(['Water', 'Ethanol'])
+        >>> mixture.Hvap([0.2, 0.8], 350)
+        39750.62
+
+        Calculate density for a water and ethanol mixture in g/L:
+
+        >>> from thermosteam import Mixture
+        >>> mixture = Mixture.from_chemicals(['Water', 'Ethanol'])
+        >>> mixture.get_property('rho', 'g/L', 'l', [0.2, 0.8], 350, 101325)
+        754.23
+        
+        """
+        isa = isinstance
+        if isa(chemicals, CompiledChemicals):
+            MWs = chemicals.MW
+            chemicals = chemicals.tuple
+        else:
+            chemicals = [(i if isa(i, Chemical) else Chemical(i)) for i in chemicals]
+            MWs = chemical_data_array(chemicals, 'MW')
+        getfield = getattr
+        Cn =  create_mixture_model(chemicals, 'Cn', IdealTMixtureModel)
+        mu = create_mixture_model(chemicals, 'mu', IdealTPMixtureModel)
+        V = create_mixture_model(chemicals, 'V', IdealTPMixtureModel)
+        kappa = create_mixture_model(chemicals, 'kappa', IdealTPMixtureModel)
+        Hvap = IdealHvapModel(chemicals)
+        sigma = SinglePhaseIdealTMixtureModel([getfield(i, 'sigma') for i in chemicals], 'sigma')
+        epsilon = SinglePhaseIdealTMixtureModel([getfield(i, 'epsilon') for i in chemicals], 'epsilon')
+        return cls(chemicals, Cn, mu, V, kappa, Hvap, sigma, epsilon, MWs)
+    
+    @classmethod
+    def subclass(cls, EOS, name=None):
+        if name is None: name = EOS.__name__.replace('MIX', '') + 'Mixture'
+        return type(name, (cls,), dict(EOS=EOS, cache={}))
+
+dct = globals()    
+clsnames = []
+for name in ('PRMIX', 'SRKMIX', 'PR78MIX', 'VDWMIX', 'PRSVMIX',
+             'PRSV2MIX', 'TWUPRMIX', 'TWUSRKMIX', 'APISRKMIX', 'IGMIX', 'RKMIX',
+             'PRMIXTranslatedConsistent', 'PRMIXTranslatedPPJP', 'PRMIXTranslated',
+             'SRKMIXTranslatedConsistent', 'PSRK', 'MSRKMIXTranslated',
+             'SRKMIXTranslated'):
+    cls = EOSMixture.subclass(getattr(eos_mix, name))
+    clsname = cls.__name__
+    clsnames.append(clsname)
+    dct[clsname] = cls
+
+dct['PRMixture'].chemsep_db = 'ChemSep PR'
+__all__ = (*__all__, *clsnames)
+del dct, clsnames
