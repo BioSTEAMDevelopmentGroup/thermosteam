@@ -49,8 +49,7 @@ class Thermo:
     >>> thermo.show() 
     Thermo(
         chemicals=CompiledChemicals([Ethanol, Water]),
-        mixture=Mixture(
-            rule='ideal', ...
+        mixture=IdealMixture(
             include_excess_energies=False
         ),
         Gamma=DortmundActivityCoefficients,
@@ -66,8 +65,7 @@ class Thermo:
     >>> ideal.show()
     IdealThermo(
         chemicals=CompiledChemicals([Ethanol, Water]),
-        mixture=Mixture(
-            rule='ideal', ...
+        mixture=IdealMixture(
             include_excess_energies=False
         ),
     )
@@ -77,7 +75,7 @@ class Thermo:
     >>> # Ideal
     >>> tmo.settings.set_thermo(ideal)
     >>> stream = tmo.Stream('stream', Water=100, Ethanol=100)
-    >>> stream.vle(T=361, P=101325)
+    >>> stream.vle(T=360, P=101325)
     >>> stream.show()
     MultiStream: stream
     phases: ('g', 'l'), T: 361 K, P: 101325 Pa
@@ -88,10 +86,10 @@ class Thermo:
     >>> # Modified Roult's law:                 
     >>> tmo.settings.set_thermo(thermo)
     >>> stream = tmo.Stream('stream', Water=100, Ethanol=100)
-    >>> stream.vle(T=360, P=101325) 
+    >>> stream.vle(T=361, P=101325) 
     >>> stream.show()
     MultiStream: stream
-    phases: ('g', 'l'), T: 360 K, P: 101325 Pa
+    phases: ('g', 'l'), T: 361 K, P: 101325 Pa
     flow (kmol/hr): (g) Ethanol  100
                         Water    100
     
@@ -102,8 +100,7 @@ class Thermo:
     >>> thermo.show()
     Thermo(
         chemicals=CompiledChemicals([Ethanol, Water]),
-        mixture=Mixture(
-            rule='ideal', ...
+        mixture=IdealMixture(
             include_excess_energies=False
         ),
         Gamma=DortmundActivityCoefficients,

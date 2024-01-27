@@ -84,7 +84,20 @@ class IdealGasPoyintingCorrectionFactors(PoyintingCorrectionFactors):
     __slots__ = ('_chemicals',)
 
     def __call__(self, T, P, Psats=None):
-        vls = np.array([i.V('l', T, P) for i in self._chemicals], dtype=float)
+        vls = []
+        chemicals = []
+        index = []
+        for i, chemical in enumerate(self._chemicals):
+            try: vls.append(chemical.V('l', T, P))
+            except: continue
+            chemicals.append(chemical)
+            index.append(i)
+        vls = np.array(vls, dtype=float)
         if Psats is None:
-            Psats = np.array([i.Psat(T) for i in self._chemicals], dtype=float)
-        return ideal_gas_poyinting_correction_factors(T, P, vls, Psats)
+            Psats = np.array([i.Psat(T) for i in chemicals], dtype=float)
+        else:
+            Psats = Psats[index]
+        pcf = np.ones(len(self._chemicals))
+        pcf[index] = ideal_gas_poyinting_correction_factors(T, P, vls, Psats)
+        return pcf
+        

@@ -114,6 +114,7 @@ class Mixture:
     
     def MW(self, mol):
         """Return molecular weight [g/mol] given molar array [mol]."""
+        if mol.__class__ is not SparseVector: mol = SparseVector(mol)
         total_mol = mol.sum()
         return (mol * self.MWs).sum() / total_mol if total_mol else 0.
     
@@ -284,22 +285,16 @@ class Mixture:
     
     def xH(self, phase_mol, T, P):
         """Multi-phase mixture enthalpy [J/mol]."""
-        H = self._H
+        H = self.H
         phase_mol = tuple(phase_mol)
         H_total = sum([H(phase, mol, T, P) for phase, mol in phase_mol])
-        if self.include_excess_energies:
-            H_excess = self._H_excess
-            H_total += sum([H_excess(phase, mol, T, P) for phase, mol in phase_mol])
         return H_total
     
     def xS(self, phase_mol, T, P):
         """Multi-phase mixture entropy [J/mol/K]."""
-        S = self._S
+        S = self.S
         phase_mol = tuple(phase_mol)
         S_total = sum([S(phase, mol, T, P) for phase, mol in phase_mol])
-        if self.include_excess_energies:
-            S_excess = self._S_excess
-            S_total += sum([S_excess(phase, mol, T, P) for phase, mol in phase_mol])
         return S_total
     
     def xV(self, phase_mol, T, P):
@@ -469,7 +464,7 @@ class IdealMixture(Mixture):
             MWs = chemicals.MW
             chemicals = chemicals.tuple
         else:
-            chemicals = [(i if isa(i, Chemical) else Chemical(i)) for i in chemicals]
+            chemicals = [(i if isa(i, Chemical) else Chemical(i, cache=cache)) for i in chemicals]
             MWs = chemical_data_array(chemicals, 'MW')
         getfield = getattr
         Cn =  create_mixture_model(chemicals, 'Cn', IdealTMixtureModel)
@@ -537,7 +532,7 @@ class EOSMixture(Mixture):
                 mol_subset.append(j)
                 eos_mol += j
         zs = [i / eos_mol for i in mol_subset]
-        eos_chemicals = tuple(eos_chemicals)
+        eos_chemicals = tuple(chemical_subset)
         key = (phase, eos_chemicals)
         cache = self.cache
         only_g = phase == 'g'
@@ -576,7 +571,7 @@ class EOSMixture(Mixture):
     def Cn(self, phase, mol, T, P):
         if mol.__class__ is not SparseVector: mol = SparseVector(mol)
         Cn = self.Cn_ideal(phase, mol, T, P)
-        if phase != 's':
+        if phase != 's' and mol.dct:
             if phase in self._free_energy_args:
                 eos, eos_mol, eos_kwargs = self._free_energy_args[phase]
             else:
@@ -587,16 +582,18 @@ class EOSMixture(Mixture):
                 T=T, **eos_kwargs
             )
             if phase == 'l':
-                Cn += eos.Cp_dep_l * eos_mol
+                try: Cn += eos.Cn_dep_l * eos_mol
+                except: Cn += eos.Cn_dep_g * eos_mol
             else:
-                Cn += eos.Cp_dep_g * eos_mol
+                try: Cn += eos.Cn_dep_g * eos_mol
+                except: Cn += eos.Cn_dep_l * eos_mol
         return Cn
     
     def H(self, phase, mol, T, P):
         """Return enthalpy [J/mol]."""
         if mol.__class__ is not SparseVector: mol = SparseVector(mol)
         H = self.H_ideal(phase, mol, T, P)
-        if phase != 's':
+        if phase != 's' and mol.dct:
             if phase in self._free_energy_args:
                 eos, eos_mol, eos_kwargs = self._free_energy_args[phase]
             else:
@@ -607,16 +604,18 @@ class EOSMixture(Mixture):
                 T=T, **eos_kwargs
             )
             if phase == 'l':
-                H += eos.H_dep_l * eos_mol
+                try: H += eos.H_dep_l * eos_mol
+                except: H += eos.H_dep_g * eos_mol
             else:
-                H += eos.H_dep_g * eos_mol
+                try: H += eos.H_dep_g * eos_mol
+                except: H += eos.H_dep_l * eos_mol
         return H
     
     def S(self, phase, mol, T, P):
         """Return entropy [J/mol/K]."""
         if mol.__class__ is not SparseVector: mol = SparseVector(mol)
         S = self.S_ideal(phase, mol, T, P)
-        if phase != 's':
+        if phase != 's' and mol.dct:
             if phase in self._free_energy_args:
                 eos, eos_mol, eos_kwargs = self._free_energy_args[phase]
             else:
@@ -627,15 +626,17 @@ class EOSMixture(Mixture):
                 T=T, **eos_kwargs
             )
             if phase == 'l':
-                S += eos.S_dep_l * eos_mol
+                try: S += eos.S_dep_l * eos_mol
+                except: S += eos.S_dep_g * eos_mol
             else:
-                S += eos.S_dep_g * eos_mol
+                try: S += eos.S_dep_g * eos_mol
+                except: S += eos.S_dep_l * eos_mol
         return S
     
     @classmethod
-    def from_chemicals(cls, chemicals, eos_chemicals, cache=True):
+    def from_chemicals(cls, chemicals, eos_chemicals=None, cache=True):
         """
-        Create a Mixture object from chemical objects.
+        Create a EOSMixture object from chemical objects.
         
         Parameters
         ----------
@@ -650,15 +651,15 @@ class EOSMixture(Mixture):
         --------
         Calculate enthalpy of evaporation for a water and ethanol mixture:
         
-        >>> from thermosteam import Mixture
-        >>> mixture = Mixture.from_chemicals(['Water', 'Ethanol'])
+        >>> from thermosteam import PRMixture
+        >>> mixture = PRMixture.from_chemicals(['Water', 'Ethanol'])
         >>> mixture.Hvap([0.2, 0.8], 350)
         39750.62
 
         Calculate density for a water and ethanol mixture in g/L:
 
-        >>> from thermosteam import Mixture
-        >>> mixture = Mixture.from_chemicals(['Water', 'Ethanol'])
+        >>> from thermosteam import PRMixture
+        >>> mixture = PRMixture.from_chemicals(['Water', 'Ethanol'])
         >>> mixture.get_property('rho', 'g/L', 'l', [0.2, 0.8], 350, 101325)
         754.23
         
@@ -668,8 +669,10 @@ class EOSMixture(Mixture):
             MWs = chemicals.MW
             chemicals = chemicals.tuple
         else:
-            chemicals = [(i if isa(i, Chemical) else Chemical(i)) for i in chemicals]
+            chemicals = [(i if isa(i, Chemical) else Chemical(i, cache=cache)) for i in chemicals]
             MWs = chemical_data_array(chemicals, 'MW')
+        if eos_chemicals is None:
+            eos_chemicals = tuple(chemicals)
         getfield = getattr
         Cn = create_mixture_model(chemicals, 'Cn', IdealTMixtureModel)
         H = create_mixture_model(chemicals, 'H', IdealTPMixtureModel)
