@@ -230,13 +230,12 @@ class Mixture:
         phase_mol = tuple(phase_mol)
         self._load_xfree_energy_args(phase_mol, T_guess, P)
         try:
-            free_energy_args = self._xfree_energy_args(phase_mol, T_guess, P)
-            args = (H, self.xH, phase_mol, P, self.xCn, [0, None], free_energy_args)
+            args = (H, self.xH, phase_mol, P, self.xCn, [0, None])
             T_guess = flx.aitken(xiter_T_at_HP, T_guess, self.T_tol, args, self.maxiter, checkiter=False)
             T = xiter_T_at_HP(T_guess, *args)
             return (
                 flx.aitken_secant(
-                    lambda T: self.xH(phase_mol, T, P, free_energy_args) - H,
+                    lambda T: self.xH(phase_mol, T, P) - H,
                     x0=T_guess, x1=T, xtol=self.T_tol, ytol=0.
                 )
                 if abs(T - T_guess) > self.T_tol else T
