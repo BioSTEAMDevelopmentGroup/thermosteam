@@ -482,16 +482,15 @@ class IdealMixture(Mixture):
                    mu, V, kappa, Hvap, sigma, epsilon, MWs, include_excess_energies)
     
     def __repr__(self):
-        return f"{type(self).__name__}(rule={repr(self.rule)}, ..., include_excess_energies={self.include_excess_energies})"
+        return f"{type(self).__name__}(...)"
     
     def _info(self):
-        return (f"{type(self).__name__}(\n"
-                f"    include_excess_energies={self.include_excess_energies}\n"
-                 ")")
+        return (f"{type(self).__name__}(...)")
     
     def show(self):
         print(self._info())
     _ipython_display_ = show
+    
     
 # %% Thermo mixture
 
