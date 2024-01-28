@@ -757,7 +757,8 @@ class VLE(Equilibrium, phases='lg'):
             
             self._P = thermal_condition.P = P
             set_flows(self._vapor_mol, self._liquid_mol, self._index, v, mol)
-            self._H_hat = self.mixture.xH(self._phase_data, T, P) / self._F_mass
+            try: self._H_hat = self.mixture.xH(self._phase_data, T, P) / self._F_mass
+            except: pass
 
     def set_TH(self, T, H):
         self._setup()
@@ -914,7 +915,8 @@ class VLE(Equilibrium, phases='lg'):
                     v = self._v
             self._T = thermal_condition.T = T
             set_flows(vapor_mol, liquid_mol, index, v, mol)
-            self._H_hat = self.mixture.xH(self._phase_data, T, P)/self._F_mass
+            try: self._H_hat = self.mixture.xH(self._phase_data, T, P)/self._F_mass
+            except: pass
     
     def set_PS(self, P, S, stacklevel=0):
         self._setup()

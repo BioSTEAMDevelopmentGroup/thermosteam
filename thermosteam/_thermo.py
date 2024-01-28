@@ -12,7 +12,7 @@ import thermosteam as tmo
 from . import equilibrium as eq
 from ._chemical import Chemical
 from ._chemicals import Chemicals
-from .mixture import Mixture
+from .mixture import Mixture, IdealMixture
 from .utils import read_only, cucumber
 
 __all__ = ('Thermo', 'IdealThermo')
@@ -49,8 +49,7 @@ class Thermo:
     >>> thermo.show() 
     Thermo(
         chemicals=CompiledChemicals([Ethanol, Water]),
-        mixture=Mixture(
-            rule='ideal', ...
+        mixture=IdealMixture(...
             include_excess_energies=False
         ),
         Gamma=DortmundActivityCoefficients,
@@ -66,8 +65,7 @@ class Thermo:
     >>> ideal.show()
     IdealThermo(
         chemicals=CompiledChemicals([Ethanol, Water]),
-        mixture=Mixture(
-            rule='ideal', ...
+        mixture=IdealMixture(...
             include_excess_energies=False
         ),
     )
@@ -88,10 +86,10 @@ class Thermo:
     >>> # Modified Roult's law:                 
     >>> tmo.settings.set_thermo(thermo)
     >>> stream = tmo.Stream('stream', Water=100, Ethanol=100)
-    >>> stream.vle(T=360, P=101325) 
+    >>> stream.vle(T=361, P=101325) 
     >>> stream.show()
     MultiStream: stream
-    phases: ('g', 'l'), T: 360 K, P: 101325 Pa
+    phases: ('g', 'l'), T: 361 K, P: 101325 Pa
     flow (kmol/hr): (g) Ethanol  100
                         Water    100
     
@@ -102,8 +100,7 @@ class Thermo:
     >>> thermo.show()
     Thermo(
         chemicals=CompiledChemicals([Ethanol, Water]),
-        mixture=Mixture(
-            rule='ideal', ...
+        mixture=IdealMixture(...
             include_excess_energies=False
         ),
         Gamma=DortmundActivityCoefficients,
@@ -138,7 +135,7 @@ class Thermo:
         if PCF is None: PCF = eq.MockPoyintingCorrectionFactors
         if not isinstance(chemicals, Chemicals): chemicals = Chemicals(chemicals, cache)
         if not mixture:
-            mixture = Mixture.from_chemicals(chemicals)
+            mixture = IdealMixture.from_chemicals(chemicals)
         elif not isinstance(mixture, Mixture): # pragma: no cover
             raise ValueError(f"mixture must be a '{Mixture.__name__}' object")
         chemicals.compile(skip_checks=skip_checks)

@@ -51,15 +51,14 @@ from ._chemical_data import ChemicalData
 from ._chemical import Chemical
 from ._chemicals import Chemicals, CompiledChemicals
 from ._thermal_condition import ThermalCondition
-from . import mixture
-from .mixture import Mixture
 from ._thermo import Thermo, IdealThermo
 from ._settings import settings, ProcessSettings
 from ._thermo_data import ThermoData
 from . import (
     indexer,
     reaction,
-    equilibrium
+    equilibrium,
+    mixture,
 )
 from ._stream import Stream
 from ._heat_and_power import Heat, Power
@@ -67,10 +66,11 @@ from ._multi_stream import MultiStream
 from .base import functor
 from .reaction import *
 from .equilibrium import * 
+from .mixture import *
 
 __all__ = ('Chemical', 'ChemicalData', 'Chemicals', 'CompiledChemicals', 'Mixture', 'Thermo', 
            'IdealThermo', 'Stream', 'MultiStream', 'Heat', 'Power', 'ThermalCondition', 'ProcessSettings',
-           'mixture', 'ThermoData', *reaction.__all__, *equilibrium.__all__, 
+           'mixture', 'ThermoData', *reaction.__all__, *equilibrium.__all__,  *mixture.__all__,
            'indexer', 'settings', 'functor', 'functors', 'chemicals', 'base', 
            'equilibrium', 'units_of_measure', 'exceptions', 'functional', 
            'reaction', 'constants', 'utils', 'separations')
