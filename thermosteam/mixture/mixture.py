@@ -280,7 +280,7 @@ class Mixture:
     
     def xCn(self, phase_mol, T, P=None):
         """Multi-phase mixture molar isobaric heat capacity [J/mol/K]."""
-        return sum([self.Cn(phase, mol, T) for phase, mol in phase_mol])
+        return sum([self.Cn(phase, mol, T, P) for phase, mol in phase_mol])
     
     def xH(self, phase_mol, T, P):
         """Multi-phase mixture enthalpy [J/mol]."""
@@ -560,12 +560,14 @@ class EOSMixture(Mixture):
     
     def _load_xfree_energy_args(self, phase_mol, T, P):
         fea = self._free_energy_args
-        for phase, mol in phase_mol: fea[phase] = self.eos_args(phase, mol, T, P)
+        for phase, mol in phase_mol: 
+            if mol.dct: fea[phase] = self.eos_args(phase, mol, T, P)
     
     def Cn(self, phase, mol, T, P):
         if mol.__class__ is not SparseVector: mol = SparseVector(mol)
+        if not mol.dct: return 0
         Cn = self.Cn_ideal(phase, mol, T, P)
-        if phase != 's' and mol.dct:
+        if phase != 's':
             if phase in self._free_energy_args:
                 eos, eos_mol, eos_kwargs = self._free_energy_args[phase]
             else:
@@ -577,17 +579,20 @@ class EOSMixture(Mixture):
             )
             if phase == 'l':
                 try: Cn += eos.Cn_dep_l * eos_mol
-                except: Cn += eos.Cn_dep_g * eos_mol
+                except: 
+                    try: Cn += eos.Cn_dep_g * eos_mol
+                    except: pass
             else:
                 try: Cn += eos.Cn_dep_g * eos_mol
-                except: Cn += eos.Cn_dep_l * eos_mol
+                except: pass
         return Cn
     
     def H(self, phase, mol, T, P):
         """Return enthalpy [J/mol]."""
         if mol.__class__ is not SparseVector: mol = SparseVector(mol)
+        if not mol.dct: return 0
         H = self.H_ideal(phase, mol, T, P)
-        if phase != 's' and mol.dct:
+        if phase != 's':
             if phase in self._free_energy_args:
                 eos, eos_mol, eos_kwargs = self._free_energy_args[phase]
             else:
@@ -599,17 +604,20 @@ class EOSMixture(Mixture):
             )
             if phase == 'l':
                 try: H += eos.H_dep_l * eos_mol
-                except: H += eos.H_dep_g * eos_mol
+                except: 
+                    try: H += eos.H_dep_g * eos_mol
+                    except: pass
             else:
                 try: H += eos.H_dep_g * eos_mol
-                except: H += eos.H_dep_l * eos_mol
+                except: pass
         return H
     
     def S(self, phase, mol, T, P):
         """Return entropy [J/mol/K]."""
         if mol.__class__ is not SparseVector: mol = SparseVector(mol)
+        if not mol.dct: return 0
         S = self.S_ideal(phase, mol, T, P)
-        if phase != 's' and mol.dct:
+        if phase != 's':
             if phase in self._free_energy_args:
                 eos, eos_mol, eos_kwargs = self._free_energy_args[phase]
             else:
@@ -621,10 +629,12 @@ class EOSMixture(Mixture):
             )
             if phase == 'l':
                 try: S += eos.S_dep_l * eos_mol
-                except: S += eos.S_dep_g * eos_mol
+                except: 
+                    try: S += eos.S_dep_g * eos_mol
+                    except: pass
             else:
                 try: S += eos.S_dep_g * eos_mol
-                except: S += eos.S_dep_l * eos_mol
+                except: pass
         return S
     
     @classmethod
