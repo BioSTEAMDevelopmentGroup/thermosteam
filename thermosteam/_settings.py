@@ -63,8 +63,7 @@ class ProcessSettings:
     >>> settings.thermo.show()
     Thermo(
         chemicals=CompiledChemicals([Water]),
-        mixture=Mixture(
-            rule='ideal', ...
+        mixture=IdealMixture(...
             include_excess_energies=False
         ),
         Gamma=DortmundActivityCoefficients,
@@ -80,8 +79,7 @@ class ProcessSettings:
     Access defined mixture property algorithm:
         
     >>> settings.mixture.show()
-    Mixture(
-        rule='ideal', ...
+    IdealMixture(...
         include_excess_energies=False
     )
 

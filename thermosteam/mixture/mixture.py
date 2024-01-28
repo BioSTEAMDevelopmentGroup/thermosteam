@@ -308,14 +308,12 @@ class Mixture:
         """Multi-phase mixture thermal conductivity [W/m/K]."""
         return sum([self.kappa(phase, mol, T, P) for phase, mol in phase_mol])
     
+        
     def __repr__(self):
-        return f"{type(self).__name__}(..., include_excess_energies={self.include_excess_energies})"
+        return f"{type(self).__name__}(...)"
     
     def _info(self):
-        return (f"{type(self).__name__}(\n"
-                f"    rule={repr(self.rule)}, ...\n"
-                f"    include_excess_energies={self.include_excess_energies}\n"
-                 ")")
+        return (f"{type(self).__name__}(...)")
     
     def show(self):
         print(self._info())
@@ -445,15 +443,15 @@ class IdealMixture(Mixture):
         --------
         Calculate enthalpy of evaporation for a water and ethanol mixture:
         
-        >>> from thermosteam import Mixture
-        >>> mixture = Mixture.from_chemicals(['Water', 'Ethanol'])
+        >>> from thermosteam import IdealMixture
+        >>> mixture = IdealMixture.from_chemicals(['Water', 'Ethanol'])
         >>> mixture.Hvap([0.2, 0.8], 350)
         39750.62
 
         Calculate density for a water and ethanol mixture in g/L:
 
         >>> from thermosteam import Mixture
-        >>> mixture = Mixture.from_chemicals(['Water', 'Ethanol'])
+        >>> mixture = IdealMixture.from_chemicals(['Water', 'Ethanol'])
         >>> mixture.get_property('rho', 'g/L', 'l', [0.2, 0.8], 350, 101325)
         754.23
         
@@ -481,14 +479,12 @@ class IdealMixture(Mixture):
                    mu, V, kappa, Hvap, sigma, epsilon, MWs, include_excess_energies)
     
     def __repr__(self):
-        return f"{type(self).__name__}(...)"
+        return f"{type(self).__name__}(..., include_excess_energies={self.include_excess_energies})"
     
     def _info(self):
-        return (f"{type(self).__name__}(...)")
-    
-    def show(self):
-        print(self._info())
-    _ipython_display_ = show
+        return (f"{type(self).__name__}(...\n"
+                f"    include_excess_energies={self.include_excess_energies}\n"
+                 ")")
     
     
 # %% Thermo mixture
