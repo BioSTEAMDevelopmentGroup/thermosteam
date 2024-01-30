@@ -228,7 +228,7 @@ class IdealActivityCoefficients(ActivityCoefficients):
         self._chemicals = tuple(chemicals)
     
     def __call__(self, xs, T):
-        return 1.
+        return np.ones(xs.size)
     
 
 class GroupActivityCoefficients(ActivityCoefficients):
@@ -533,7 +533,7 @@ class GCEOSActivityCoefficients(ActivityCoefficients):
             log_phis = np.array(eos.dlnphi_dns(eos.Z_l)) + eos.G_dep_l * R_inv / T
             return np.exp(log_phis)
         except:
-            return 1.
+            return np.ones(x.size)
     f = __call__
     args = ()
         
