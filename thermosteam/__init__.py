@@ -46,7 +46,7 @@ from . import (
     separations,
     functors,
 )
-from .utils import docround
+from .utils import docround, AbstractStream, AbstractUnit
 from ._chemical_data import ChemicalData
 from ._chemical import Chemical
 from ._chemicals import Chemicals, CompiledChemicals
@@ -68,9 +68,10 @@ from .reaction import *
 from .equilibrium import * 
 from .mixture import *
 
-__all__ = ('Chemical', 'ChemicalData', 'Chemicals', 'CompiledChemicals', 'Mixture', 'Thermo', 
+__all__ = ('Chemical', 'ChemicalData', 'Chemicals', 'CompiledChemicals', 'Thermo', 
            'IdealThermo', 'Stream', 'MultiStream', 'Heat', 'Power', 'ThermalCondition', 'ProcessSettings',
            'mixture', 'ThermoData', *reaction.__all__, *equilibrium.__all__,  *mixture.__all__,
+           'AbstractStream', 'AbstractUnit',
            'indexer', 'settings', 'functor', 'functors', 'chemicals', 'base', 
            'equilibrium', 'units_of_measure', 'exceptions', 'functional', 
            'reaction', 'constants', 'utils', 'separations')

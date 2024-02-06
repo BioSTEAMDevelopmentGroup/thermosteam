@@ -15,6 +15,7 @@ from . import cache
 from . import registry
 from . import colors
 from . import plots
+from . import piping
 
 __all__ = (*pickle.__all__,
            *representation.__all__,
@@ -24,6 +25,7 @@ __all__ = (*pickle.__all__,
            *registry.__all__,
            *colors.__all__,
            *plots.__all__,
+           *piping.__all__,
 )
 
 from .pickle import *
@@ -34,3 +36,4 @@ from .cache import *
 from .registry import *
 from .colors import *
 from .plots import *
+from .piping import *

@@ -57,14 +57,6 @@ def xV_iter_2n(xV, pcf_Psat_over_P, T, P, z, f_gamma, gamma_args, Ks, f_phi):
     update_xV(xV, V, Ks, z)
     return xV
 
-def xV_iter_3n(xV, pcf_Psat_over_P, T, P, z, f_gamma, gamma_args, Ks, f_phi):
-    xV = xV.copy()
-    x, y = xy(xV, Ks)
-    Ks[:] = pcf_Psat_over_P * f_gamma(x, T, *gamma_args) / f_phi(y, T, P)
-    V = binary.compute_phase_fraction_3N(z, Ks)
-    update_xV(xV, V, Ks, z)
-    return xV
-
 def set_flows(vapor_mol, liquid_mol, index, vapor_data, total_data):
     vapor_mol[index] = vapor_data
     liquid_mol[index] = total_data - vapor_data
@@ -1200,15 +1192,12 @@ class VLE(Equilibrium, phases='lg'):
         N = self._N
         z = self._z
         Ks = pcf_Psat_over_P.copy()
-        if N > 3 or self._z_light or self._z_heavy:
+        if N > 2 or self._z_light or self._z_heavy:
             f = xV_iter
             args = (pcf_Psat_over_P, T, P, z, self._z_light, 
                     self._z_heavy, gamma.f, gamma.args, Ks, self._phi)
         elif N == 2:
             f = xV_iter_2n
-            args = (pcf_Psat_over_P, T, P, z, gamma.f, gamma.args, Ks, self._phi)
-        elif N == 3:
-            f = xV_iter_3n
             args = (pcf_Psat_over_P, T, P, z, gamma.f, gamma.args, Ks, self._phi)
         xV = np.zeros(x.size + 1)
         xV[:-1] = x

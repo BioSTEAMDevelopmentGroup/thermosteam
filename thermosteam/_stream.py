@@ -54,8 +54,7 @@ class StreamData:
 
 @utils.units_of_measure(UofM.stream_units_of_measure)
 @utils.thermo_user
-@utils.registered(ticket_name='s')
-class Stream:
+class Stream(utils.AbstractStream):
     """
     Create a Stream object that defines material flow rates
     along with its thermodynamic state. Thermodynamic and transport
@@ -259,7 +258,7 @@ class Stream:
         '_ID', '_imol', '_thermal_condition', '_thermo', '_streams',
         '_bubble_point_cache', '_dew_point_cache',
         '_vle_cache', '_lle_cache', '_sle_cache',
-        '_sink', '_source', '_price', '_property_cache_key',
+        '_price', '_property_cache_key',
         '_property_cache', 'characterization_factors', 'equations',
         'port', # '_velocity', '_height'
     )
@@ -705,39 +704,10 @@ class Stream:
         """Molar solid fraction."""
         return 1.0 if self.phase in 'sS' else 0.0
 
-    def isfeed(self):
-        """Return whether stream has a sink but no source."""
-        return bool(self._sink and not self._source)
-
-    def isproduct(self):
-        """Return whether stream has a source but no sink."""
-        return bool(self._source and not self._sink)
-
     @property
     def main_chemical(self) -> str:
         """ID of chemical with the largest mol fraction in stream."""
         return self.chemicals.tuple[self.mol.argmax()].ID
-
-    def disconnect_source(self):
-        """Disconnect stream from source."""
-        source = self._source
-        if source:
-            outs = source.outs
-            index = outs.index(self)
-            outs[index] = None
-
-    def disconnect_sink(self):
-        """Disconnect stream from sink."""
-        sink = self._sink
-        if sink:
-            ins = sink.ins
-            index = ins.index(self)
-            ins[index] = None
-
-    def disconnect(self):
-        """Disconnect stream from unit operations."""
-        self.disconnect_source()
-        self.disconnect_sink()
     
     def _init_indexer(self, flow, phase, chemicals, chemical_flows):
         """Initialize molar flow rates."""
@@ -916,15 +886,6 @@ class Stream:
         setattr(self, 'F_' + name, value / factor)
     
     ### Stream data ###
-
-    @property
-    def source(self) -> bst.Unit:
-        """Outlet location."""
-        return self._source
-    @property
-    def sink(self) -> bst.Unit:
-        """Inlet location."""
-        return self._sink
 
     def get_downstream_units(self, ends=None, facilities=True):
         """Return a set of all units downstream."""
