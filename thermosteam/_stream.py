@@ -22,6 +22,7 @@ from . import utils
 from .indexer import nonzeros
 from typing import TYPE_CHECKING
 from ._phase import valid_phases
+from .network import AbstractStream
 if TYPE_CHECKING:
     from .base import SparseVector, SparseArray
     from numpy.typing import NDArray
@@ -54,7 +55,7 @@ class StreamData:
 
 @utils.units_of_measure(UofM.stream_units_of_measure)
 @utils.thermo_user
-class Stream(utils.AbstractStream):
+class Stream(AbstractStream):
     """
     Create a Stream object that defines material flow rates
     along with its thermodynamic state. Thermodynamic and transport
@@ -2473,9 +2474,6 @@ class Stream(utils.AbstractStream):
     
     ### Representation ###
     
-    def _basic_info(self):
-        return f"{type(self).__name__}: {self.ID or ''}\n"
-    
     def _info_phaseTP(self, phase, units, notation):
         T_units = units['T']
         P_units = units['P']
@@ -2773,11 +2771,6 @@ class Stream(utils.AbstractStream):
         
     def __radd__(self, other):
         return Stream.sum([self, other])
-    
-    def __sub__(self, other):
-        new = self.copy()
-        new.separate_out(other)   
-        return new
     
     def __iadd__(self, other):
         self.mix_from([self, other])

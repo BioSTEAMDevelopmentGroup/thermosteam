@@ -1,0 +1,36 @@
+N: 7
+P: Pa:.6g
+T: K:.5g
+autodisplay: true
+background_color: transparent
+composition: false
+depth_colors:
+- '#5172512f'
+- '#1111112f'
+fill_cluster: true
+flow: kmol/hr:.3g
+graphviz_format: svg
+graphviz_html_height:
+  big-system: !!python/tuple
+  - 600px
+  - 900px
+  system: !!python/tuple
+  - 400px
+  - 600px
+  unit: !!python/tuple
+  - 225px
+  - 400px
+label_color: '#e5e5e5'
+label_streams: true
+minimal_nodes: false
+number_path: false
+profile: false
+raise_exception: false
+show_all_streams: true
+sort: false
+stream_color: '#98a2ad'
+stream_width: F_mass
+tooltips_full_results: false
+unit_color: '#555f69'
+unit_label_color: white
+unit_periphery_color: none

@@ -228,7 +228,7 @@ class IdealActivityCoefficients(ActivityCoefficients):
         self._chemicals = tuple(chemicals)
     
     def __call__(self, xs, T):
-        return np.ones(xs.size)
+        return np.ones(len(xs))
     
 
 class GroupActivityCoefficients(ActivityCoefficients):
@@ -407,7 +407,7 @@ class DortmundActivityCoefficients(GroupActivityCoefficients):
     >>> # RuntimeWarning: O2 has no defined Dortmund groups; 
     >>> # functional group interactions are ignored
     >>> Gamma([0.5, 0.5], 350.) 
-    1.0
+    array([1., 1.])
     
     """
     __slots__ = ()
@@ -533,7 +533,7 @@ class GCEOSActivityCoefficients(ActivityCoefficients):
             log_phis = np.array(eos.dlnphi_dns(eos.Z_l)) + eos.G_dep_l * R_inv / T
             return np.exp(log_phis)
         except:
-            return np.ones(x.size)
+            return np.ones(len(x))
     f = __call__
     args = ()
         
