@@ -18,6 +18,7 @@ __all__ = (
     'InfeasibleRegion',
     'InvalidMethod',
     'NoEquilibrium',
+    'UnitInheritanceError',
     'message_with_object_stamp',
     'try_method_with_object_stamp',
     'raise_error_with_object_stamp'
@@ -64,6 +65,9 @@ class InvalidMethod(ValueError):
     """ValueError regarding an attempt to evaluate an invalid method."""
     def __init__(self, method):
         super().__init__(repr(method))
+    
+class UnitInheritanceError(NotImplementedError):
+    """Exception regarding unit inhearitance."""
     
 def message_with_object_stamp(object, msg):
     object_name = str(repr(object))

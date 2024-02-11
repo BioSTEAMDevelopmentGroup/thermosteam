@@ -65,7 +65,7 @@ def stream_info(source, sink):
 @registered(ticket_name='s')
 class AbstractStream:
     __slots__ = ('_ID', '_source', '_sink', '_thermo')
-    
+    line = 'Stream'
     feed_priorities = {}
     price = F_mass = 0 # Required for filtering streams and sorting in network
     
@@ -195,21 +195,6 @@ class AbstractStream:
     def _source_info(self):
         return f"{source}-{source.outs.index(self)}" if (source:=self.source) else self.ID
 
-    # def _info(self, *args, **kwargs):
-    #     return self.materialize()._info(*args, **kwargs)
-        
-    # def show(self, *args, **kwargs):
-    #     return self.materialize().show(*args, **kwargs)
-    
-    # def print(self, *args, **kwargs):
-    #     return self.materialize().print(*args, **kwargs)
-    
-    # def _ipython_display_(self):
-    #     return self.materialize()._ipython_display_()
-    
-    # def _get_tooltip_string(self):
-    #     return self.materialize()._get_tooltip_string()
-
 
 class AbstractMissingStream:
     """
@@ -306,6 +291,7 @@ class StreamSequence:
         self._size = size
         self._fixed_size = fixed_size
         Stream = self.Stream
+        MissingStream = self.MissingStream
         dock = self._dock
         redock = self._redock
         if streams == ():
@@ -317,7 +303,7 @@ class StreamSequence:
                 if streams is not None:
                     if isa(streams, str):
                         self._streams[0] = dock(Stream(streams, thermo=thermo))
-                    elif isa(streams, Stream):
+                    elif isa(streams, (Stream, MissingStream)):
                         self._streams[0] = redock(streams, stacklevel)
                     else:
                         N = len(streams)

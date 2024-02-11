@@ -15,8 +15,11 @@ from math import ceil
 import numpy as np
 from collections.abc import Iterable
 from math import floor, log10
+from inspect import signature
+from types import FunctionType
 
 __all__ = (
+    'extended_signature',
     'factor', 'checkbounds', 'strtuple',
     'format_title', 'format_unit_name',
     'remove_undefined_chemicals',
@@ -34,6 +37,29 @@ __all__ = (
     'array_roundsigfigs',
     'docround',
 )
+
+# %% Function signature
+
+def extended_signature(f, g):
+    if hasattr(f, '__wrapped__'): f = f.__wrapped__
+    sigf = signature(f)
+    paramsf = [*sigf.parameters.values()][1:-1]
+    sigg = signature(g)
+    paramsg = [*sigg.parameters.values()][1:]
+    h = FunctionType(f.__code__, f.__globals__, name=f.__name__,
+                     argdefs=f.__defaults__, closure=f.__closure__)
+    h.__kwdefaults__ = f.__kwdefaults__
+    all_params = [*paramsf, *[i.replace(kind=3) for i in paramsg]]
+    params = []
+    names = set()
+    for i in tuple(all_params):
+        if i.name in names: continue
+        names.add(i.name)
+        params.append(i)
+    h.__signature__ = sigf.replace(parameters=params)
+    h.__annotations__ = f.__annotations__ | g.__annotations__
+    h.__wrapped__ = f
+    return h
 
 # %% Helpful tools
 

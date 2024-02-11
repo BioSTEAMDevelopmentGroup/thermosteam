@@ -263,7 +263,6 @@ class Stream(AbstractStream):
         '_property_cache', 'characterization_factors', 'equations',
         'port', # '_velocity', '_height'
     )
-    line = 'Stream'
     
     #: Units of measure for IPython display (class attribute)
     display_units = UofM.DisplayUnits(T='K', P='Pa',
