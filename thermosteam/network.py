@@ -287,11 +287,14 @@ class StreamSequence:
     MissingStream = AbstractMissingStream
     Stream = AbstractStream
     
+    def __init_subclass__(cls):
+        cls.stream_types = (cls.Stream, cls.MissingStream)
+    
     def __init__(self, size, streams, thermo, fixed_size, stacklevel):
         self._size = size
         self._fixed_size = fixed_size
         Stream = self.Stream
-        MissingStream = self.MissingStream
+        stream_types = self.stream_types
         dock = self._dock
         redock = self._redock
         if streams == ():
@@ -303,7 +306,7 @@ class StreamSequence:
                 if streams is not None:
                     if isa(streams, str):
                         self._streams[0] = dock(Stream(streams, thermo=thermo))
-                    elif isa(streams, (Stream, MissingStream)):
+                    elif isa(streams, stream_types):
                         self._streams[0] = redock(streams, stacklevel)
                     else:
                         N = len(streams)
@@ -313,7 +316,7 @@ class StreamSequence:
             elif streams is not None:
                 if isa(streams, str):
                     self._streams = [dock(Stream(streams, thermo=thermo))]
-                elif isinstance(streams, Stream):
+                elif isinstance(streams, stream_types):
                     self._streams = [redock(streams, stacklevel)]
                 else:
                     self._streams = loaded_streams = []
