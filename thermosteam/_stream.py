@@ -1036,8 +1036,13 @@ class Stream:
     @F_mass.setter
     def F_mass(self, value):
         F_mass = self.F_mass
-        if not F_mass: raise AttributeError("undefined composition; cannot set flow rate")
-        self.imol.data *= value/F_mass
+        if F_mass: 
+            self.imol.data *= value/F_mass
+        elif value:
+            raise AttributeError("undefined composition; cannot set flow rate")
+        else: 
+            self.empty()
+        
     @property
     def F_vol(self) -> float:
         """Total volumetric flow rate [m3/hr]."""
@@ -1261,11 +1266,15 @@ class Stream:
     @property
     def rho(self) -> float:
         """Density [kg/m^3]."""
-        return fn.V_to_rho(self.V, self.MW)
+        V = self.V
+        if V is None: return V
+        return fn.V_to_rho(V, self.MW)
     @property
     def nu(self) -> float:
         """Kinematic viscosity [m^2/s]."""
-        return fn.mu_to_nu(self.mu, self.rho)
+        mu = self.mu
+        if mu is None: return mu
+        return fn.mu_to_nu(mu, self.rho)
     @property
     def Pr(self) -> float:
         """Prandtl number [-]."""
@@ -1811,7 +1820,10 @@ class Stream:
                 self.mol[:] = other.mol
             else:
                 self.empty()
-                CASs, values = zip(*[(i, j) for i, j in zip(other_chemicals.CASs, other_mol.nonzero_items())])
+                CASs = other_chemicals.CASs
+                dct = other_mol.dct
+                CASs = [CASs[i] for i in dct]
+                values = list(dct.values())
                 self.imol[CASs] = values
             if remove: 
                 if isinstance(other, tmo.MultiStream):
@@ -1968,7 +1980,7 @@ class Stream:
         0
         
         """
-        self._imol.data[:] = 0.
+        self._imol.data.clear()
     
     ### Equilibrium ###
     

@@ -71,10 +71,10 @@ def index_overlap(left_chemicals, right_chemicals, right_index):
     cache = left_chemicals._index_cache
     if CASs in cache:
         left_index, kind = cache[CASs]
-        if kind:
-            raise RuntimeError('conflict in chemical groups and aliases between property packages')
-        else:
+        if kind == 0 or kind == 3:
             return left_index, right_index
+        else:
+            raise RuntimeError('conflict in chemical groups and aliases between property packages')
     else:
         dct = left_chemicals._index
         N = len(CASs)
