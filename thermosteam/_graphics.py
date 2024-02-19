@@ -308,6 +308,7 @@ def tailor_valve_node(node, unit): # pragma: no coverage
         # TODO: Remove this fallback once fix for valve svg output in digraph.py
         node.clear()
         node.update(box_node)
+        node['name'] = ''
         node['fillcolor'] = tmo.preferences.unit_color
         node['fontcolor'] = tmo.preferences.unit_label_color
         node['color'] = tmo.preferences.unit_periphery_color
