@@ -256,12 +256,12 @@ class Stream(AbstractStream):
     
     """
     __slots__ = (
-        '_ID', '_imol', '_thermal_condition', '_thermo', '_streams',
+        '_imol', '_thermal_condition', '_streams',
         '_bubble_point_cache', '_dew_point_cache',
         '_vle_cache', '_lle_cache', '_sle_cache',
         '_price', '_property_cache_key',
         '_property_cache', 'characterization_factors', 'equations',
-        'port', # '_velocity', '_height'
+        # '_velocity', '_height'
     )
     
     #: Units of measure for IPython display (class attribute)

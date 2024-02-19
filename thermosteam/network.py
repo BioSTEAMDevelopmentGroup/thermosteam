@@ -9,12 +9,14 @@
 """
 from __future__ import annotations
 from warnings import warn
-from typing import NamedTuple, Optional, Sequence, Callable, Tuple, Any
+from typing import NamedTuple, Optional, Sequence, Callable, Tuple, Any, Iterable
 import thermosteam as tmo
 from flexsolve import IQ_interpolation
+from .utils import AbstractMethod
 from .utils.decorators import registered, thermo_user
 from .base import display_asfunctor
 from ._graphics import UnitGraphics, box_graphics
+from thermosteam.utils import extended_signature
 import numpy as np
 
 int_types = (int, np.int32)
@@ -23,7 +25,7 @@ __all__ = ('stream_info', 'AbstractStream', 'AbstractUnit',
            'Connection', 'InletPipe', 'OutletPipe', 'AbstractMissingStream',
            'temporary_connection', 'TemporaryUnit',
            'BoundedNumericalSpecification', 'ProcessSpecification',
-           'Network', 'mark_disjunction', 'unmark_disjunction')
+           'Network', 'mark_disjunction', 'unmark_disjunction',)
 
 # %% Path utilities
 
@@ -64,7 +66,7 @@ def stream_info(source, sink):
 @thermo_user
 @registered(ticket_name='s')
 class AbstractStream:
-    __slots__ = ('_ID', '_source', '_sink', '_thermo')
+    __slots__ = ('_ID', '_source', '_sink', '_thermo', 'port')
     line = 'Stream'
     feed_priorities = {}
     price = F_mass = 0 # Required for filtering streams and sorting in network
@@ -868,6 +870,33 @@ def repr_ins_and_outs(layout, ins, outs, T, P, flow, composition, N, IDs, sort, 
             i += 1
     return info[:-1]
 
+# %% Auxiliary piping
+
+def superposition_property(name):
+    @property
+    def p(self):
+        return getattr(self.port.get_stream(), name)
+    @p.setter
+    def p(self, value):
+        setattr(self.port.get_stream(), name, value)
+        
+    return p
+
+def _superposition(cls, parent, port):
+    excluded = set([*cls.__dict__, port, '_' + port, 'port'])
+    for name in (*parent.__dict__, *AbstractStream.__slots__):
+        if name in excluded: continue
+        setattr(cls, name, superposition_property(name))
+    
+    for name in ('_source', '_sink'):
+        if name in excluded: continue
+        setattr(cls, name, superposition_property(name))
+    return cls
+
+def superposition(parent, port):
+    return lambda cls: _superposition(cls, parent, port)
+
+
 # %% Nodes
 streams = Optional[Sequence[AbstractStream]] 
 
@@ -886,6 +915,18 @@ class AbstractUnit:
     
     #: Class for initiallizing outlets.
     Outlets = AbstractOutlets
+    
+    #: Class for initiallizing streams.
+    Stream = AbstractStream
+    
+    #: Class for initiallizing missing streams.
+    MissingStream = AbstractMissingStream
+    
+    #: Initialize unit operation with key-word arguments.
+    _init = AbstractMethod
+    
+    #: Run mass and energy balances and update outlet streams (without user-defined specifications).
+    _run = AbstractMethod
     
     #: **class-attribute** Expected number of inlet streams. Defaults to 1.
     _N_ins: int = 1  
@@ -917,6 +958,52 @@ class AbstractUnit:
     #: and all outlet streams are emptied.
     _skip_simulation_when_inlets_are_empty = False
     
+    #: **class-attribute** Name of attributes that are auxiliary units. These units
+    #: will be accounted for in the purchase and installed equipment costs
+    #: without having to add these costs in the :attr:`~Unit.baseline_purchase_costs` dictionary.
+    #: Heat and power utilities are also automatically accounted for.
+    auxiliary_unit_names: tuple[str, ...] = ()
+
+    #: **class-attribute** Index for auxiliary inlets to parent unit for graphviz diagram settings.
+    _auxin_index = {}
+
+    #: **class-attribute** Index for auxiliary outlets to parent unit for graphviz diagram settings.
+    _auxout_index = {}
+
+    def __init_subclass__(cls):
+        dct = cls.__dict__
+        if '__init__' in dct and '_init' not in dct :
+            init = dct['__init__']
+            if hasattr(init, 'extension'): cls._init = init.extension
+        elif dct.get('_init'):
+            _init = dct['_init']
+            cls.__init__ = extended_signature(cls.__init__, _init)
+            cls.__init__.extension = _init
+        if '__init__' in dct or '_init' in dct:
+            init = dct['__init__']
+            annotations = init.__annotations__
+            for i in ('ins', 'outs'):
+                if i not in annotations: annotations[i] = streams
+            if '_stacklevel' not in dct: cls._stacklevel += 1
+        if 'Stream' not in dct: return
+        Stream = cls.Stream
+        @superposition(Stream, 'sink')
+        class SuperpositionInlet(Stream): 
+            __slots__ = ()
+            def __init__(self, port, sink=None):
+                self.port = port
+                self._sink = sink
+
+        @superposition(Stream, 'source')
+        class SuperpositionOutlet(Stream):
+            __slots__ = ()
+            def __init__(self, port, source=None):
+                self.port = port
+                self._source = source
+        
+        cls.SuperpositionInlet = SuperpositionInlet
+        cls.SuperpositionOutlet = SuperpositionOutlet
+
     def __init__(self,
             ID: Optional[str]='',
             ins: streams=None,
@@ -924,12 +1011,14 @@ class AbstractUnit:
             thermo: Optional[tmo.Thermo]=None,
             **kwargs
         ):
+        self._isdynamic = False
         self._system = None
         self._register(ID)
         self._load_thermo(thermo)
     
         ### Initialize streams
-        
+        self.auxins = {} #: dict[int, stream] Auxiliary inlets by index.
+        self.auxouts = {} #:  dict[int, stream] Auxiliary outlets by index.
         self._init_inlets(ins)
         self._init_outlets(outs)
     
@@ -947,6 +1036,8 @@ class AbstractUnit:
         
         #: Safety toggle to prevent infinite recursion
         self._active_specifications: set[ProcessSpecification] = set()
+        
+        self._init(**kwargs)
         
     def _init_inlets(self, ins):
         self._ins = self.Inlets(
@@ -967,6 +1058,203 @@ class AbstractUnit:
         """List of all outlet streams."""
         return self._outs
         
+    @property
+    def auxiliary_units(self) -> list[AbstractUnit]:
+        """Return list of all auxiliary units."""
+        getfield = getattr
+        isa = isinstance
+        auxiliary_units = []
+        for name in self.auxiliary_unit_names:
+            unit = getfield(self, name, None)
+            if unit is None: continue 
+            if isa(unit, Iterable):
+                auxiliary_units.extend(unit)
+            else:
+                auxiliary_units.append(unit)
+        return auxiliary_units
+
+    @property
+    def nested_auxiliary_units(self) -> list[AbstractUnit]:
+        """Return list of all auxiliary units, including nested ones."""
+        getfield = getattr
+        isa = isinstance
+        auxiliary_units = []
+        for name in self.auxiliary_unit_names:
+            unit = getfield(self, name, None)
+            if unit is None: continue 
+            if isa(unit, Iterable):
+                auxiliary_units.extend(unit)
+                for u in unit:
+                    if not isinstance(u, AbstractUnit): continue
+                    for auxunit in u.auxiliary_units:
+                        auxiliary_units.append(auxunit)
+                        auxiliary_units.extend(auxunit.nested_auxiliary_units)
+            else:
+                auxiliary_units.append(unit)
+                if not isinstance(unit, AbstractUnit): continue
+                for auxunit in unit.auxiliary_units:
+                    auxiliary_units.append(auxunit)
+                    auxiliary_units.extend(auxunit.nested_auxiliary_units)
+        return auxiliary_units
+
+    def _diagram_auxiliary_units_with_names(self) -> list[tuple[str, AbstractUnit]]:
+        """Return list of name - auxiliary unit pairs."""
+        getfield = getattr
+        isa = isinstance
+        auxiliary_units = []
+        names = (
+            self.diagram_auxiliary_unit_names 
+            if hasattr(self, 'diagram_auxiliary_unit_names')
+            else self.auxiliary_unit_names
+        )
+        for name in names:
+            unit = getfield(self, name, None)
+            if unit is None: continue 
+            if isa(unit, Iterable):
+                for i, u in enumerate(unit):
+                    auxiliary_units.append(
+                        (f"{name}[{i}]", u)
+                    )
+            else:
+                auxiliary_units.append(
+                    (name, unit)
+                )
+        return auxiliary_units
+
+    def get_auxiliary_units_with_names(self) -> list[tuple[str, AbstractUnit]]:
+        """Return list of name - auxiliary unit pairs."""
+        getfield = getattr
+        isa = isinstance
+        auxiliary_units = []
+        for name in self.auxiliary_unit_names:
+            unit = getfield(self, name, None)
+            if unit is None: continue 
+            if isa(unit, Iterable):
+                for i, u in enumerate(unit):
+                    auxiliary_units.append(
+                        (f"{name}[{i}]", u)
+                    )
+            else:
+                auxiliary_units.append(
+                    (name, unit)
+                )
+        return auxiliary_units
+
+    def _diagram_nested_auxiliary_units_with_names(self, depth=-1) -> list[AbstractUnit]:
+        """Return list of all diagram auxiliary units, including nested ones."""
+        auxiliary_units = []
+        if depth: 
+            depth -= 1
+        else:
+            return auxiliary_units
+        for name, auxunit in self._diagram_auxiliary_units_with_names():
+            if auxunit is None: continue 
+            auxiliary_units.append((name, auxunit))
+            if not isinstance(auxunit, AbstractUnit): continue
+            auxiliary_units.extend(
+                [('.'.join([name, i]), j)
+                 for i, j in auxunit._diagram_nested_auxiliary_units_with_names(depth)]
+            )
+        return auxiliary_units
+
+    def get_nested_auxiliary_units_with_names(self, depth=-1) -> list[AbstractUnit]:
+        """Return list of all auxiliary units, including nested ones."""
+        auxiliary_units = []
+        if depth: 
+            depth -= 1
+        else:
+            return auxiliary_units
+        for name, auxunit in self.get_auxiliary_units_with_names():
+            if auxunit is None: continue 
+            auxiliary_units.append((name, auxunit))
+            if not isinstance(auxunit, AbstractUnit): continue
+            auxiliary_units.extend(
+                [('.'.join([name, i]), j)
+                 for i, j in auxunit.get_nested_auxiliary_units_with_names(depth)]
+            )
+        return auxiliary_units
+
+    def _unit_auxlets(self, N_streams, streams, thermo):
+        if streams is None:
+            MissingStream = self.MissingStream
+            return [self.auxlet(MissingStream()) for i in range(N_streams)]
+        elif streams == ():
+            Stream = self.Stream
+            return [self.auxlet(Stream(None, thermo=thermo)) for i in range(N_streams)]
+        elif isinstance(streams, (tmo.AbstractStream, tmo.AbstractMissingStream)) or streams.__class__ is str:
+            return self.auxlet(streams, thermo=thermo)
+        else:
+            return [self.auxlet(i, thermo=thermo) for i in streams]
+
+    def auxiliary(
+            self, name, cls, ins=None, outs=(), thermo=None,
+            **kwargs
+        ):
+        """
+        Create and register an auxiliary unit operation. Inlet and outlet
+        streams automatically become auxlets so that parent unit streams will
+        not disconnect.
+
+        """
+        if thermo is None: thermo = self.thermo
+        auxunit = cls.__new__(cls)
+        stack = getattr(self, name, None)
+        if isinstance(stack, list): 
+            name = f"{name}[{len(stack)}]"
+            stack.append(auxunit)
+        else:
+            setattr(self, name, auxunit)
+        auxunit.owner = self # Avoids property package checks
+        auxunit.__init__(
+            '.' + name, 
+            self._unit_auxlets(cls._N_ins, ins, thermo), 
+            self._unit_auxlets(cls._N_outs, outs, thermo),
+            thermo, 
+            **kwargs
+        )
+        return auxunit
+
+    def auxlet(self, stream: AbstractStream, thermo=None):
+        """
+        Define auxiliary unit inlet or outlet. This method has two
+        behaviors:
+
+        * If the stream is not connected to this unit, define the Stream 
+          object's source or sink to be this unit without actually connecting 
+          it to this unit.
+
+        * If the stream is already connected to this unit, return a superposition
+          stream which can be connected to auxiliary units without being disconnected
+          from this unit. 
+
+        """
+        Stream = self.Stream
+        if thermo is None: thermo = self.thermo
+        if stream is None: stream = Stream(None, thermo=thermo)
+        if isinstance(stream, str): 
+            stream = Stream('.' + stream, thermo=thermo)
+            stream._source = stream._sink = self
+        if self is stream._source and stream in self._outs:
+            port = OutletPort.from_outlet(stream)
+            stream = self.SuperpositionOutlet(port)
+            self.auxouts[port.index] = stream
+        elif self is stream._sink and stream in self._ins:
+            port = InletPort.from_inlet(stream)
+            stream = self.SuperpositionInlet(port)
+            self.auxins[port.index] = stream
+        else:
+            if stream._source is None: stream._source = self
+            if stream._sink is None: stream._sink = self
+        return stream
+
+    def _assembled_from_auxiliary_units(self):
+        #: Serves for checking whether to include this unit in auxiliary diagrams.
+        #: If all streams are in common, it must be assembled by auxiliary units.
+        return not set([i.ID for i in self.ins + self.outs]).difference(
+            sum([[i.ID for i in (i.ins + i.outs)] for i in self.auxiliary_units], [])
+        )
+    
+    
     def get_node(self):
         """Return unit node attributes for graphviz."""
         if tmo.preferences.minimal_nodes:
