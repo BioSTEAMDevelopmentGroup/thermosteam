@@ -305,15 +305,10 @@ node = box_node.copy()
 node['peripheries'] = '0'
 def tailor_valve_node(node, unit): # pragma: no coverage
     if tmo.preferences.graphviz_format == 'svg':
-        # TODO: Remove this fallback once fix for valve svg output in digraph.py
-        node.clear()
-        node.update(box_node)
-        node['name'] = ''
         node['fillcolor'] = tmo.preferences.unit_color
         node['fontcolor'] = tmo.preferences.unit_label_color
         node['color'] = tmo.preferences.unit_periphery_color
     else:
-        node['label'] = ''
         if tmo.preferences.unit_color == "#555f69":
             filename = "graphics/valve_dark.png"
         elif tmo.preferences.unit_color == "white:#CDCDCD":
