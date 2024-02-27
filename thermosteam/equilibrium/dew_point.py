@@ -20,7 +20,6 @@ __all__ = ('DewPoint', 'DewPointCache')
 
 # %% Solvers
 
-@njit(cache=True)
 def x_iter(x, x_gamma, T, P, f_gamma, gamma_args):
     # Add back trace amounts for activity coefficients at infinite dilution
     mask = x < 1e-32
@@ -28,22 +27,18 @@ def x_iter(x, x_gamma, T, P, f_gamma, gamma_args):
     x = fn.normalize(x)
     gamma = f_gamma(x, T, *gamma_args)
     denominator = gamma
-    try:
-        x = x_gamma / denominator
-    except: 
-        return x
-    if (x < 0).any():
-        return x
+    try: x = x_gamma / denominator
+    except: return x
+    if (x < 0).any(): return x
     mask = x > 1e3
-    if mask.any():
-        x[mask] = 1e3 +  np.log(x[mask] / 1e3) # Avoid crazy numbers
+    if mask.any(): x[mask] = 1e3 +  np.log(x[mask] / 1e3) # Avoid crazy numbers
     return x
 
 # @njit(cache=True)
 def solve_x(x_guess, x_gamma, T, P, f_gamma, gamma_args):
     args = (x_gamma, T, P, f_gamma, gamma_args)
     x = flx.wegstein(x_iter, x_guess, 1e-10, args=args, checkiter=False,
-                     checkconvergence=False, convergenceiter=3)
+                 checkconvergence=False, convergenceiter=3)
     return x
 
 # %% Dew point values container
