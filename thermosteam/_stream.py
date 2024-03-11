@@ -372,7 +372,7 @@ class Stream(AbstractStream):
     def _get_decoupled_variable(self, variable): pass
 
     def _update_decoupled_variable(self, variable, value):
-        if variable in ('mol', 'mol-LLE'): 
+        if variable == 'material': 
             value[value < 0] = 0
             self.mol[:] = value
         else:
