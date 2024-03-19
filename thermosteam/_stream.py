@@ -261,6 +261,7 @@ class Stream(AbstractStream):
         '_vle_cache', '_lle_cache', '_sle_cache',
         '_price', '_property_cache_key',
         '_property_cache', 'characterization_factors', 'equations',
+        '_original',
         # '_velocity', '_height'
     )
     
@@ -1845,6 +1846,7 @@ class Stream(AbstractStream):
         """
         cls = self.__class__
         new = cls.__new__(cls)
+        new.equations = {}
         new._sink = new._source = None
         new.characterization_factors = {}
         new._thermo = thermo or self._thermo
@@ -1887,6 +1889,7 @@ class Stream(AbstractStream):
         imol.data = self._imol.data
         new._thermal_condition = self._thermal_condition.copy()
         new.reset_cache()
+        new.equations = {}
         new.characterization_factors = {}
         return new
     
@@ -1915,6 +1918,7 @@ class Stream(AbstractStream):
         """
         cls = self.__class__
         new = cls.__new__(cls)
+        new._original = self
         new._ID = ID or ''
         new._sink = new._source = None
         new._price = self._price
@@ -1925,6 +1929,7 @@ class Stream(AbstractStream):
         new._property_cache_key = self._property_cache_key
         new._bubble_point_cache = self._bubble_point_cache
         new._dew_point_cache = self._dew_point_cache
+        new.equations = self.equations
         new.characterization_factors = self.characterization_factors
         return new
     
