@@ -456,14 +456,14 @@ class Reaction:
         if tmo.reaction.CHECK_FEASIBILITY:
             has_negatives = values.has_negatives()
             if has_negatives:
-                negative_index, = values.negative_index()
+                negative_index = values.negative_index()
                 negative_values = values[negative_index]
                 if negative_values.sum() < -1e-12:
                     X_net = self.X_net()
                     for ID, X in X_net.items():
                         if X > 1.: RuntimeError(f"conversion of '{ID}' is over 100%")
                     if values.ndim == 2:
-                        negative_index = values.negative_columns()
+                        negative_index = values.negative_keys()
                     chemicals = self.chemicals.tuple
                     IDs = [chemicals[i].ID for i in negative_index]
                     if len(IDs) == 1: IDs = repr(IDs[0])
