@@ -112,18 +112,12 @@ class AbstractStream:
     def disconnect_source(self):
         """Disconnect stream from source."""
         source = self._source
-        if source:
-            outs = source.outs
-            index = outs.index(self)
-            outs[index] = None
+        if source: source.outs.remove(self)
 
     def disconnect_sink(self):
         """Disconnect stream from sink."""
         sink = self._sink
-        if sink:
-            ins = sink.ins
-            index = ins.index(self)
-            ins[index] = None
+        if sink: sink.ins.remove(self)
 
     def disconnect(self):
         """Disconnect stream from unit."""
@@ -438,9 +432,11 @@ class StreamSequence:
         return stream
 
     def remove(self, stream):
-        self._undock(stream)
-        missing_stream = self._create_missing_stream()
-        self.replace(stream, missing_stream)
+        if self._fixed_size:
+            self.replace(stream, self._create_missing_stream())
+        else:
+            self._undock(stream)
+            self._streams.remove(stream)
         
     def clear(self):
         if self._fixed_size:
@@ -474,7 +470,7 @@ class StreamSequence:
 
 class AbstractInlets(StreamSequence):
     """Create an Inlets object which serves as input streams for a unit."""
-    __slots__ = ('_sink', '_fixed_size')
+    __slots__ = ('_sink',)
     
     def __init__(self, sink, size, streams, thermo, fixed_size, stacklevel):
         self._sink = sink
