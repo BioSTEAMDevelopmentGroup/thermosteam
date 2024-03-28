@@ -1844,10 +1844,7 @@ class ProcessSpecification:
             else: i.converge() # Must be a system
             
     def compile_path(self, unit):
-        upstream_units = unit.get_upstream_units()
-        # For upstream units, recycle loops will take care of it.
-        impacted_units = [i for i in self.impacted_units if i not in upstream_units]
-        self.path = unit.path_from(impacted_units, system=unit._system) if impacted_units else ()
+        self.path = unit.path_from(self.impacted_units, system=unit._system) if self.impacted_units else ()
         
     def create_temporary_connections(self, unit):
         # Temporary connections are created first than the path because 
@@ -1855,11 +1852,9 @@ class ProcessSpecification:
         # such that the path is incorrect.
         impacted_units = self.impacted_units
         if impacted_units:
-            downstream_units = unit.get_downstream_units()
             upstream_units = unit.get_upstream_units()
             for other in impacted_units:
-                if other in upstream_units or other not in downstream_units:
-                    temporary_connection(unit, other)
+                if other not in upstream_units: temporary_connection(unit, other)
             
     def __repr__(self):
         return f"{type(self).__name__}(f={display_asfunctor(self.f)}, args={self.args}, impacted_units={self.impacted_units})"
@@ -2257,9 +2252,9 @@ class Network:
             recycle_ends.update(disjunction_streams)
             recycle_ends.update(network.get_all_recycles())
             recycle_ends.update(tmo.utils.products_from_units(network.units))
-            network.add_interaction_units()
-            network.sort(recycle_ends)
+            # network.sort(recycle_ends)
             network.reduce_recycles()
+            network.add_interaction_units()
         return network
     
     @classmethod
@@ -2312,11 +2307,12 @@ class Network:
                 sink = sinks.pop()
                 if len(sink.outs) == 1:
                     self.recycle = sink.outs[0]
-            sources = set([i.source for i in recycle])
-            if len(sources) == 1:
-                source = sources.pop()
-                if len(source.ins) == 1:
-                    self.recycle = source.ins[0]
+            else:
+                sources = set([i.source for i in recycle])
+                if len(sources) == 1:
+                    source = sources.pop()
+                    if len(source.ins) == 1:
+                        self.recycle = source.ins[0]
     
     def add_interaction_units(self, excluded=None):
         isa = isinstance

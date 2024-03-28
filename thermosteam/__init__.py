@@ -55,7 +55,6 @@ from ._thermal_condition import ThermalCondition
 from ._thermo import Thermo, IdealThermo
 from ._settings import settings, ProcessSettings
 from ._thermo_data import ThermoData
-from ._preferences import preferences
 from . import (
     indexer,
     reaction,
@@ -70,6 +69,7 @@ from .base import functor
 from .reaction import *
 from .equilibrium import * 
 from .mixture import *
+from ._preferences import preferences
 
 __all__ = ('Chemical', 'ChemicalData', 'Chemicals', 'CompiledChemicals', 'Thermo', 
            'IdealThermo', 'Stream', 'MultiStream', 'Heat', 'Power', 'ThermalCondition', 'ProcessSettings',
