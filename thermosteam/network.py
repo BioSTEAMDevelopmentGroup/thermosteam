@@ -2252,8 +2252,8 @@ class Network:
             recycle_ends.update(disjunction_streams)
             recycle_ends.update(network.get_all_recycles())
             recycle_ends.update(tmo.utils.products_from_units(network.units))
-            # network.sort(recycle_ends)
             network.reduce_recycles()
+            network.sort(recycle_ends)
             network.add_interaction_units()
         return network
     
