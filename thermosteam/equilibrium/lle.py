@@ -172,14 +172,24 @@ class LLE(Equilibrium, phases='lL'):
         xtol=1e-6, maxiter=20, checkiter=False,
         checkconvergence=False, convergenceiter=5,
     )
+    default_composition_cache_tolerance = 1e-5
+    default_temperature_cache_tolerance = 1e-3
     
     def __init__(self, imol=None, thermal_condition=None, thermo=None,
-                 composition_cache_tolerance=1e-5,
-                 temperature_cache_tolerance=1e-3,
+                 composition_cache_tolerance=None,
+                 temperature_cache_tolerance=None,
                  method=None):
         super().__init__(imol, thermal_condition, thermo)
-        self.composition_cache_tolerance = composition_cache_tolerance
-        self.temperature_cache_tolerance = temperature_cache_tolerance
+        self.composition_cache_tolerance = (
+            self.default_composition_cache_tolerance 
+            if composition_cache_tolerance  is None else 
+            composition_cache_tolerance 
+        )
+        self.temperature_cache_tolerance = (
+            self.default_temperature_cache_tolerance 
+            if temperature_cache_tolerance is None else 
+            temperature_cache_tolerance
+        )
         self.method = self.default_method if method is None else method
         self._lle_chemicals = None
         self._K = None

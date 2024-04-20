@@ -8,7 +8,7 @@
 """
 """
 import pickle
-from . other import getfields, setfields
+from .misc import getfields, setfields
 
 __all__ = ('save', 'load', 'cucumber',)
 
