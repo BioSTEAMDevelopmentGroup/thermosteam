@@ -200,6 +200,9 @@ class AbstractMissingStream:
     __slots__ = ('_source', '_sink')
     line = 'Stream'
     ID = 'missing stream'
+    disconnect_source = AbstractStream.disconnect_source
+    disconnect_sink = AbstractStream.disconnect_sink
+    disconnect = AbstractStream.disconnect
     
     def __init__(self, source=None, sink=None):
         self._source = source
