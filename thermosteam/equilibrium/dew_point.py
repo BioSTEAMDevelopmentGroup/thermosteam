@@ -31,7 +31,9 @@ def x_iter(x, x_gamma, T, P, f_gamma, gamma_args):
     except: return x
     if (x < 0).any(): return x
     mask = x > 1e3
-    if mask.any(): x[mask] = 1e3 +  np.log(x[mask] / 1e3) # Avoid crazy numbers
+    if mask.any(): x[mask] = 1e3 +  np.log(x[mask] - 1e3) # Avoid crazy numbers
+    mask = x > 1e5
+    if mask.any(): x[mask] = 1e5
     return x
 
 # @njit(cache=True)

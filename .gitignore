@@ -1,6 +1,7 @@
 build
 dist
 thermosteam.egg-info
+thermosteam/preferences.yaml
 Ethanol-Water Property Package
 **/__pycache__
 *.pyc

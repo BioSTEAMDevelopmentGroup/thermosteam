@@ -1134,6 +1134,9 @@ class ReactionSet:
         X_index = [i._X_index for i in reactions]
         self._X_index = tuple(X_index) if self._phases else np.array(X_index)
         
+    def __iter__(self):
+        for i in range(self._X.size): yield ReactionItem(self, i)
+        
     def __getitem__(self, index):
         stoichiometry = self._stoichiometry[index]
         if stoichiometry.__class__ is list:
@@ -1396,6 +1399,9 @@ class ParallelReaction(ReactionSet):
     
     """
     __slots__ = ()
+    
+    def __add__(self, other):
+        return self.__class__([i + j for i, j in zip(self, other)])
     
     def _reaction(self, material_array):
         reacted = self._X * np.array([material_array[i] for i in self._X_index], float)
