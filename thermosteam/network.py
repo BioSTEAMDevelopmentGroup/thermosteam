@@ -1174,10 +1174,7 @@ class AbstractUnit:
         return auxiliary_units
 
     def _unit_auxlets(self, N_streams, streams, thermo):
-        if streams is None:
-            MissingStream = self.MissingStream
-            return [self.auxlet(MissingStream()) for i in range(N_streams)]
-        elif streams == ():
+        if streams is None or streams == ():
             Stream = self.Stream
             return [self.auxlet(Stream(None, thermo=thermo)) for i in range(N_streams)]
         elif isinstance(streams, (tmo.AbstractStream, tmo.AbstractMissingStream)) or streams.__class__ is str:
@@ -1229,11 +1226,13 @@ class AbstractUnit:
         """
         Stream = self.Stream
         if thermo is None: thermo = self.thermo
-        if stream is None: stream = Stream(None, thermo=thermo)
-        if isinstance(stream, str): 
+        if stream is None: 
+            stream = Stream(None, thermo=thermo)
+            stream._sink = stream._source = self
+        elif isinstance(stream, str): 
             stream = Stream('.' + stream, thermo=thermo)
             stream._source = stream._sink = self
-        if self is stream._source and stream in self._outs:
+        elif self is stream._source and stream in self._outs:
             port = OutletPort.from_outlet(stream)
             stream = self.SuperpositionOutlet(port)
             self.auxouts[port.index] = stream
