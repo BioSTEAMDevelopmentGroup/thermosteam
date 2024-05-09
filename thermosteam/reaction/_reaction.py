@@ -462,8 +462,7 @@ class Reaction:
                     X_net = self.X_net()
                     for ID, X in X_net.items():
                         if X > 1.: RuntimeError(f"conversion of '{ID}' is over 100%")
-                    if values.ndim == 2:
-                        negative_index = values.negative_keys()
+                    negative_index = values.negative_keys()
                     chemicals = self.chemicals.tuple
                     IDs = [chemicals[i].ID for i in negative_index]
                     if len(IDs) == 1: IDs = repr(IDs[0])
@@ -694,6 +693,9 @@ class Reaction:
     
     def _reaction(self, material_array):
         material_array += material_array[self._X_index] * self.X * self._stoichiometry
+    
+    def _conversion(self, material_array):
+        return material_array[self._X_index] * self.X * self._stoichiometry
     
     def X_net(self, indexer=False):
         """Return net reaction conversion of reactants as a dictionary or
@@ -1115,6 +1117,7 @@ class ReactionSet:
     _get_stoichiometry_by_wt = Reaction._get_stoichiometry_by_wt
     force_reaction = Reaction.force_reaction
     adiabatic_reaction = Reaction.adiabatic_reaction
+    reaction_chemicals = Reaction.reaction_chemicals
     __call__ = Reaction.__call__
     
     def __init__(self, reactions):
@@ -1195,18 +1198,6 @@ class ReactionSet:
         self._chemicals = chemicals
         self._stoichiometry = new_stoichiometry
         self._X_index = X_index
-    
-    @property
-    def reaction_chemicals(self):
-        """Return all chemicals involved in the reaction."""
-        if self._phases:
-            keys = []
-            for i in self._stoichiometry: keys.extend(i.nonzero_keys())
-            keys = sorted(set(keys))
-        else:
-            keys = sorted(self._stoichiometry.nonzero_keys())
-        chemicals = self._chemicals
-        return [chemicals[i] for i in keys]
     
     @property
     def basis(self):
@@ -1408,6 +1399,13 @@ class ParallelReaction(ReactionSet):
         for X, stoichiometry in zip(reacted, self._stoichiometry):
             material_array += X * stoichiometry
 
+    def _conversion(self, material_array):
+        reacted = self._X * np.array([material_array[i] for i in self._X_index], float)
+        conversion = 0 * material_array
+        for X, stoichiometry in zip(reacted, self._stoichiometry):
+            conversion += X * stoichiometry
+        return conversion
+
     def reduce(self):
         """
         Return a new Parallel reaction object that combines reaction 
@@ -1466,6 +1464,12 @@ class SeriesReaction(ReactionSet):
     def _reaction(self, material_array):
         for i, j, k in zip(self._X_index, self.X, self._stoichiometry):
             material_array += material_array[i] * j * k
+
+    def _conversion(self, material_array):
+        final = material_array.copy()
+        for i, j, k in zip(self._X_index, self.X, self._stoichiometry):
+            final += final[i] * j * k
+        return final - material_array
 
     def X_net(self, indexer=False):
         """Return net reaction conversion of reactants as a dictionary or
@@ -1610,7 +1614,15 @@ class ReactionSystem:
         for i in self._reactions: 
             if i._basis != basis: raise RuntimeError('not all reactions have the same basis')
             i._reaction(material)
-        
+    
+    def _conversion(self, material):
+        basis = self._basis
+        final = material.copy()
+        for i in self._reactions: 
+            if i._basis != basis: raise RuntimeError('not all reactions have the same basis')
+            i._reaction(final)    
+        return final - material
+    
     def X_net(self, indexer=False):
         """Return net reaction conversion of reactants as a dictionary or
         a ChemicalIndexer if indexer is True."""

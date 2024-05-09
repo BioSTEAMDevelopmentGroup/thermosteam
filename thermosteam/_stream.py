@@ -372,10 +372,13 @@ class Stream(AbstractStream):
 
     def _get_decoupled_variable(self, variable): pass
 
-    def _update_decoupled_variable(self, variable, value):
+    def _update_decoupled_variable(self, variable, value, index=None):
         if variable == 'material': 
             value[value < 0] = 0
-            self.mol[:] = value
+            if index is None:
+                self.mol[:] = value
+            else:
+                self.mol[index] = value
         else:
             raise NotImplementedError(f'variable {variable!r} cannot be updated')
     
