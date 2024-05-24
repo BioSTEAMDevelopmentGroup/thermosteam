@@ -229,7 +229,7 @@ def test_reactive_phase_equilibrium():
          3.010149544370034]
     )
     assert_allclose(
-        stream.imol[''], 
+        stream.imol['l'], 
         [0.1664395399566762,
          0.6657581598267048,
          0.6669118843585862,
@@ -264,4 +264,5 @@ if __name__ == '__main__':
     test_reaction()
     test_reaction_enthalpy_balance()
     test_reaction_enthalpy_with_phases()
+    test_reactive_phase_equilibrium()
     test_repr()
