@@ -1616,6 +1616,9 @@ class ReactionSystem:
                     Biomass     0.0437
     
     """
+    kinetics = Reaction.kinetics
+    _kinetics = Reaction._kinetics
+    
     __slots__ = ('_reactions',
                  '_basis',
                  '_chemicals',
