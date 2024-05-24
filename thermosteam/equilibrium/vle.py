@@ -46,7 +46,10 @@ def xV_iter(xVlogK, pcf_Psat_over_P, T, P,
     xVlogK = xVlogK.copy()
     xV = xVlogK[:-n]
     Ks = np.exp(xVlogK[-n:])
-    x, y = xy(xV, Ks)
+    try:
+        x, y = xy(xV, Ks)
+    except:
+        breakpoint()
     Ks[:] = pcf_Psat_over_P * f_gamma(x, T, *gamma_args) / f_phi(y, T, P)
     V = binary.solve_phase_fraction_Rashford_Rice(z, Ks, xV[-1], z_light, z_heavy)
     update_xV(xV, V, Ks, z)
@@ -1290,22 +1293,23 @@ class VLE(Equilibrium, phases='lg'):
         N = self._N
         z = self._z
         Ks = pcf_Psat_over_P.copy()
+        n = z.size
         if N > 2 or self._z_light or self._z_heavy:
             f = xV_iter
             args = (pcf_Psat_over_P, T, P, z, self._z_light, 
-                    self._z_heavy, gamma.f, gamma.args, self._phi, N)
+                    self._z_heavy, gamma.f, gamma.args, self._phi, n)
         elif N == 2:
             f = xV_iter_2n
-            args = (pcf_Psat_over_P, T, P, z, gamma.f, gamma.args, self._phi, N)
+            args = (pcf_Psat_over_P, T, P, z, gamma.f, gamma.args, self._phi, n)
         xVlogK = np.zeros(2*x.size + 1)
-        xVlogK[:N] = x
-        xVlogK[N] = self._V
-        xVlogK[-N:] = np.log(Ks)
+        xVlogK[:n] = x
+        xVlogK[n] = self._V
+        xVlogK[-n:] = np.log(Ks)
         xVlogK = flx.aitken(f, xVlogK, self.x_tol, args, checkiter=False, 
                         checkconvergence=False, convergenceiter=5,
-                        maxiter=self.maxiter, subset=N)
-        x = xVlogK[:N]
-        self._V = V = xVlogK[N]
+                        maxiter=self.maxiter, subset=n)
+        x = xVlogK[:n]
+        self._V = V = xVlogK[n]
         x[x < 1e-32] = 1e-32
         self._x = x = fn.normalize(x)
         if V == 0:
@@ -1373,22 +1377,22 @@ class VLE(Equilibrium, phases='lg'):
         z = self._z
         Ks = pcf_Psat_over_P.copy()
         f = xV_reactive_iter
-        N = self._N
         index = self._index
+        n = z.size
         args = (pcf_Psat_over_P, T, P, z, self._z_light, self._z_heavy, 
-                gamma.f, gamma.args, self._phi, N,
+                gamma.f, gamma.args, self._phi, n,
                 gas_reaction, liquid_reaction, index)
         xVlogK = np.zeros(2*x.size + 1)
-        xVlogK[:N] = x
-        xVlogK[N] = self._V
-        xVlogK[-N:] = np.log(Ks)
+        xVlogK[:n] = x
+        xVlogK[n] = self._V
+        xVlogK[-n:] = np.log(Ks)
         xVlogK = flx.aitken(
             f, xVlogK, self.x_tol, args, checkiter=False, 
             checkconvergence=False, convergenceiter=5,
             maxiter=self.maxiter
         )
-        x = xVlogK[:N]
-        self._V = V = xVlogK[N]
+        x = xVlogK[:n]
+        self._V = V = xVlogK[n]
         x[x < 1e-32] = 1e-32
         self._x = x = fn.normalize(x)
         if V == 0:

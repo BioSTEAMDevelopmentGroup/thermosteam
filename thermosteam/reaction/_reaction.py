@@ -1092,6 +1092,8 @@ class ReactionItem(Reaction):
         
     """
     __slots__ = ('_index', '_parent')
+    kinetics = Reaction.kinetics
+    _kinetics = Reaction._kinetics
     phases = MaterialIndexer.phases
     
     def __init__(self, rxnset, index):
@@ -1154,6 +1156,8 @@ class ReactionSet:
     __slots__ = (*Reaction.__slots__, '_parent_index')
     copy = Reaction.copy
     phases = MaterialIndexer.phases
+    kinetics = Reaction.kinetics
+    _kinetics = Reaction._kinetics
     _get_stoichiometry_by_mol = Reaction._get_stoichiometry_by_mol
     _get_stoichiometry_by_wt = Reaction._get_stoichiometry_by_wt
     force_reaction = Reaction.force_reaction
