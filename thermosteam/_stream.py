@@ -41,6 +41,7 @@ mol_units = indexer.ChemicalMolarFlowIndexer.units
 mass_units = indexer.ChemicalMassFlowIndexer.units
 vol_units = indexer.ChemicalVolumetricFlowIndexer.units
 
+
 class StreamData:
     __slots__ = ('_imol', '_T', '_P', '_phases')
     
@@ -49,8 +50,24 @@ class StreamData:
         self._T = thermal_condition._T
         self._P = thermal_condition._P
         self._phases = phases
-        
     
+        
+class TemporaryPhase:
+    __slots__ = ('stream', 'original', 'temporary')
+    
+    def __init__(self, stream, original, temporary):
+        self.stream = stream
+        self.original = original
+        self.temporary = temporary
+        
+    def __enter__(self):
+        self.stream._phase._phase = self.temporary
+    
+    def __exit__(self, type, exception, traceback):
+        self.stream._phase._phase = self.original
+        if exception: raise exception
+   
+
 # %%
 
 @utils.units_of_measure(UofM.stream_units_of_measure)
@@ -335,6 +352,9 @@ class Stream(AbstractStream):
             data = self._imol.data
             self.phases = [j for i, j in enumerate(self.phases) if data[i].any()]
 
+    def temporary_phase(self, phase):
+        return TemporaryPhase(self, self.phase, phase)
+
     @classmethod
     def from_data(cls, data, ID=None, price=0., characterization_factors=None, thermo=None):
         self = cls.__new__(cls)
@@ -347,6 +367,12 @@ class Stream(AbstractStream):
         self.set_data(data)
         return self
 
+    def __len__(self):
+        return 1
+    
+    def __iter__(self):
+        yield self
+
     def __getitem__(self, key):
         phase = self.phase
         if key.lower() == phase.lower(): return self
@@ -355,6 +381,7 @@ class Stream(AbstractStream):
     def __reduce__(self):
         return self.from_data, (self.get_data(), self._ID, self._price, self.characterization_factors, self._thermo)
 
+    # Phenomena-oriented simulation
     def equation(self, variable, f=None):
         if f is None: return lambda f: self.equation(variable, f)
         equations = self.equations
@@ -369,6 +396,14 @@ class Stream(AbstractStream):
             return [i() for i in equations[variable]]
         else:
             return []
+
+    def _update_energy_departure_coefficient(self, coefficients):
+        source = self.source
+        if source is None: return
+        coeff = source._get_energy_departure_coefficient(self)
+        if coeff is None: return
+        key, value = coeff
+        coefficients[key] = value
 
     def _get_decoupled_variable(self, variable): pass
 

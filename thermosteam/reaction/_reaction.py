@@ -17,7 +17,7 @@ from . import (
     _parse as prs,
     _xparse as xprs,
 )
-from ..utils import chemicals_user
+from ..utils import chemicals_user, AbstractMethod
 from .._phase import NoPhase, phase_tuple
 from ..indexer import ChemicalIndexer, MaterialIndexer
 from ..exceptions import InfeasibleRegion
@@ -97,7 +97,7 @@ def as_material_array(material, basis, phases, chemicals):
         return SparseVector(material), None, material
 
 
-# %%
+# %% Stoichiometric reactions
 
 @chemicals_user
 class Reaction:
@@ -247,13 +247,16 @@ class Reaction:
     Glucose + O2 -> Ethanol + CO2  Glucose    35.00
     
     """
+    _kinetics = AbstractMethod
     phases = MaterialIndexer.phases
-    __slots__ = ('_basis',
-                 '_phases',
-                 '_chemicals',
-                 '_X_index', 
-                 '_stoichiometry', 
-                 '_X')
+    __slots__ = (
+        '_basis',
+        '_phases',
+        '_chemicals',
+        '_X_index', 
+        '_stoichiometry', 
+        '_X'
+    )
     
     def __init__(self, reaction, reactant=None, X=1., 
                  chemicals=None, basis='mol', *,
@@ -448,10 +451,48 @@ class Reaction:
         self.X = self.X - rxn.X
         return self
     
-    def __call__(self, material):
+    def kinetics(self, material, time=None, T=None, P=None, phase=None):
+        if isinstance(material, tmo.Stream):
+            try:
+                stream = self._stream
+            except:
+                if self._chemicals is material.chemicals:
+                    self._stream = stream = material.copy()
+                else:
+                    raise ValueError('incompatible chemicals for kinetics')
+            stream.copy_like(material)
+            if T is not None: stream.T = T
+            if P is not None: stream.P = P
+            if phase is not None: stream.phase = phase
+        else:
+            try:
+                stream = self._stream
+            except:
+                thermo = tmo.settings.get_thermo() 
+                if self._chemicals is thermo.chemicals:
+                    self._stream = stream = tmo.Stream()
+                else:
+                    raise ValueError('incompatible chemicals for kinetics')
+            stream.imol.data[:] = material
+            stream.T = T
+            stream.P = P
+            stream.phase = phase
+        self._kinetics(stream, time)
+    
+    def conversion(self, material, time=None, T=None, P=None, phase=None):
         values, config, original = as_material_array(
             material, self._basis, self._phases, self._chemicals
         )
+        if self._kinetics: self.kinetics(material, time, T, P, phase)
+        conversion = self._conversion(values)
+        if config: material._imol.reset_chemicals(*config)
+        return conversion
+    
+    def __call__(self, material, time=None, T=None, P=None, phase=None):
+        values, config, original = as_material_array(
+            material, self._basis, self._phases, self._chemicals
+        )
+        if self._kinetics: self.kinetics(material, time, T, P, phase)
         self._reaction(values)
         if tmo.reaction.CHECK_FEASIBILITY:
             has_negatives = values.has_negatives()
@@ -569,7 +610,7 @@ class Reaction:
                 raise ValueError("product yield or reactant demand is above the maximum theoretical")
             self.X = X
     
-    def adiabatic_reaction(self, stream):
+    def adiabatic_reaction(self, stream, Q=0):
         """
         React stream material adiabatically, accounting for the change in enthalpy
         due to the heat of reaction.
@@ -687,7 +728,7 @@ class Reaction:
         """
         if not isinstance(stream, tmo.Stream):
             raise ValueError(f"stream must be a Stream object, not a '{type(stream).__name__}' object")
-        Hnet = stream.Hnet
+        Hnet = stream.Hnet + Q
         self(stream)
         stream.H = Hnet - stream.Hf
     

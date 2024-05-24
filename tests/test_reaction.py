@@ -214,6 +214,28 @@ def test_reaction_enthalpy_with_phases():
                               correct_atomic_balance=True)
     assert_allclose(combustion.dH, -2787650.3239119546, rtol=1e-3)
     
+def test_reactive_phase_equilibrium():
+    tmo.settings.set_thermo(['EthylLactate', 'LacticAcid', 'H2O', 'Ethanol'], cache=True)
+    rxn = tmo.Reaction('LacticAcid + Ethanol -> H2O + EthylLactate', reactant='LacticAcid', X=0.2)
+    stream = tmo.Stream(
+        H2O=1, Ethanol=5, LacticAcid=1
+    )
+    stream.vle(T=360, P=101325, liquid_reaction=rxn)
+    assert_allclose(
+        stream.imol['g'], 
+        [0.0,
+         0.1678023002166189, 
+         0.4995276555980901, 
+         3.010149544370034]
+    )
+    assert_allclose(
+        stream.imol[''], 
+        [0.1664395399566762,
+         0.6657581598267048,
+         0.6669118843585862,
+         1.8234109156732896]
+    )
+    
 def test_repr():
     cal2joule = 4.184
     Glucan = tmo.Chemical('Glucan', search_db=False, formula='C6H10O5', Hf=-233200*cal2joule, phase='s', default=True)
