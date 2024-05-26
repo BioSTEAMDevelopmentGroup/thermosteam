@@ -1425,9 +1425,7 @@ class VLE(Equilibrium, phases='lg'):
         self._F_mol_vle = F_mol_vle = mol_vle.sum()
         self._F_mol = F_mol = F_mol_vle + F_mol_light + F_mol_heavy
         self._z = mol_vle / F_mol
-        try: self._z_light = z_light = F_mol_light / F_mol
-        except:
-            breakpoint()
+        self._z_light = z_light = F_mol_light / F_mol
         self._z_heavy = z_heavy = F_mol_heavy / F_mol
         self._z_norm = mol_vle / F_mol_vle
         N = len(index)
