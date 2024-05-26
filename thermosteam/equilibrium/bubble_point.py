@@ -328,7 +328,6 @@ class BubblePoint:
             f = self._P_error
             P_guess, y = self._Py_ideal(z_Psat_gamma)
             args = (T, z_Psat_gamma, Psats, y)
-            breakpoint()
             try:
                 P = flx.aitken_secant(f, P_guess, P_guess-1, self.P_tol, 1e-9,
                                       args, checkiter=False)
