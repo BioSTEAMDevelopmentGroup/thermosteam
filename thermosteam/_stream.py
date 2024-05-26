@@ -27,7 +27,6 @@ if TYPE_CHECKING:
     from .base import SparseVector, SparseArray
     from numpy.typing import NDArray
     from typing import Optional, Sequence, Callable
-    import biosteam as bst
 # from .constants import g
 
 MaterialIndexer = tmo.indexer.MaterialIndexer
@@ -274,7 +273,6 @@ class Stream(AbstractStream):
     """
     __slots__ = (
         '_imol', '_thermal_condition', '_streams',
-        '_bubble_point_cache', '_dew_point_cache',
         '_vle_cache', '_lle_cache', '_sle_cache',
         '_price', '_property_cache_key',
         '_property_cache', 'characterization_factors', 'equations',
@@ -767,8 +765,6 @@ class Stream(AbstractStream):
 
     def reset_cache(self):
         """Reset cache regarding equilibrium methods."""
-        self._bubble_point_cache = eq.BubblePointCache()
-        self._dew_point_cache = eq.DewPointCache()
         self._property_cache_key = None, None
         self._property_cache = {}
 
@@ -1965,8 +1961,6 @@ class Stream(AbstractStream):
         new._thermal_condition = self._thermal_condition
         new._property_cache = self._property_cache
         new._property_cache_key = self._property_cache_key
-        new._bubble_point_cache = self._bubble_point_cache
-        new._dew_point_cache = self._dew_point_cache
         new.equations = self.equations
         new.characterization_factors = self.characterization_factors
         return new
@@ -2022,9 +2016,7 @@ class Stream(AbstractStream):
         imol = self.imol
         vle = eq.VLE(imol,
                      self._thermal_condition,
-                     self._thermo, 
-                     self._bubble_point_cache,
-                     self._dew_point_cache)
+                     self._thermo)
         lle = eq.LLE(imol,
                      self._thermal_condition,
                      self._thermo)
@@ -2094,9 +2086,7 @@ class Stream(AbstractStream):
         BubblePoint([Water, Ethanol])
         
         """
-        chemicals = self.chemicals[IDs] if IDs else self.vle_chemicals
-        bp = self._bubble_point_cache(chemicals, self._thermo)
-        return bp
+        return eq.BubblePoint(self.chemicals[IDs] if IDs else self.vle_chemicals, self._thermo)
     
     def get_dew_point(self, IDs: Optional[Sequence[str]]=None):
         """
@@ -2116,9 +2106,7 @@ class Stream(AbstractStream):
         DewPoint([Water, Ethanol])
         
         """
-        chemicals = self.chemicals[IDs] if IDs else self.vle_chemicals
-        dp = self._dew_point_cache(chemicals, self._thermo)
-        return dp
+        return eq.DewPoint(self.chemicals[IDs] if IDs else self.vle_chemicals, self._thermo)
     
     def bubble_point_at_T(self, T: Optional[float]=None, IDs: Optional[Sequence[str]]=None):
         """
@@ -2502,9 +2490,7 @@ class Stream(AbstractStream):
             self._streams = {}
             self._vle_cache = eq.VLECache(self._imol,
                                           self._thermal_condition,
-                                          self._thermo, 
-                                          self._bubble_point_cache,
-                                          self._dew_point_cache)
+                                          self._thermo)
             self._lle_cache = eq.LLECache(self._imol,
                                           self._thermal_condition,
                                           self._thermo)

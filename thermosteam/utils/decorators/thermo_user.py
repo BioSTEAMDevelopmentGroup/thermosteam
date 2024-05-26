@@ -19,7 +19,12 @@ def thermo_user(cls):
     return cls
     
 def _load_thermo(self, thermo):
-    self._thermo = thermo = tmo.settings.get_default_thermo(thermo)
+    try:
+        self._thermo = thermo = tmo.settings.get_default_thermo(thermo)
+    except ValueError:
+        self._thermo = thermo = tmo.settings.thermo.subset(
+            tmo.settings.get_default_chemicals(thermo)
+        )
     return thermo
 
 @property

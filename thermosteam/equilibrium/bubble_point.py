@@ -13,11 +13,10 @@ from .fugacity_coefficients import IdealFugacityCoefficients
 from .domain import vle_domain
 from ..exceptions import InfeasibleRegion
 from .. import functional as fn
-from ..utils import fill_like, Cache
 from .._settings import settings
 
 __all__ = (
-    'BubblePoint', 'BubblePointValues', 'BubblePointCache',
+    'BubblePoint', 'BubblePointValues',
     'BubblePointBeta'
 )
 
@@ -52,6 +51,22 @@ class BubblePointValues:
         
     def __repr__(self):
         return f"{type(self).__name__}(T={self.T:.2f}, P={self.P:.0f}, IDs={self.IDs}, z={self.z}, y={self.y})"
+
+
+class ReactiveBubblePointValues:
+    __slots__ = ('T', 'P', 'IDs', 'z0', 'dz', 'y', 'x')
+    
+    def __init__(self, T, P, IDs, z0, dz, y, x):
+        self.T = T
+        self.P = P
+        self.IDs = IDs
+        self.z0 = z0
+        self.dz = dz
+        self.y = y
+        self.x = x
+        
+    def __repr__(self):
+        return f"{type(self).__name__}(T={self.T:.2f}, P={self.P:.0f}, IDs={self.IDs}, z0={self.z0}, dz={self.dz}, y={self.y}, x={self.x})"
 
 
 # %% Bubble point calculation
@@ -90,15 +105,15 @@ class BubblePoint:
     _cached = {}
     T_tol = 1e-9
     P_tol = 1e-3
-    def __init__(self, chemicals=(), thermo=None):
+    def __new__(cls, chemicals=(), thermo=None):
         thermo = settings.get_default_thermo(thermo)
         chemicals = tuple(chemicals)
         key = (chemicals, thermo.Gamma, thermo.Phi, thermo.PCF)
-        cached = self._cached
+        cached = cls._cached
         if key in cached:
-            other = cached[key]
-            fill_like(self, other, self.__slots__)
+            return cached[key]
         else:
+            self = super().__new__(cls)
             self.IDs = tuple([i.ID for i in chemicals])
             self.gamma = thermo.Gamma(chemicals)
             self.phi = thermo.Phi(chemicals)
@@ -111,6 +126,7 @@ class BubblePoint:
             self.Pmax = max([i(Tmax) for i in Psats])
             self.chemicals = chemicals
             cached[key] = self
+            return self
     
     def _T_error(self, T, P, z_over_P, z_norm, y):
         if T <= 0: raise InfeasibleRegion('negative temperature')
@@ -128,6 +144,29 @@ class BubblePoint:
         y[:] = solve_y(y_phi, self.phi, T, P, y)
         return 1. - y.sum()
         
+    def _T_error_reactive(self, T, P, z, dz, y, x, liquid_reaction):
+        if T <= 0: raise InfeasibleRegion('negative temperature')
+        dz[:] = liquid_reaction.conversion(z, T, P, 'l')
+        x[:] = z + dz
+        x /= x.sum()
+        Psats = np.array([i(T) for i in self.Psats], dtype=float)
+        y_phi =  (x / P
+                  * Psats
+                  * self.gamma(x, T) 
+                  * self.pcf(T, P, Psats))
+        y[:] = solve_y(y_phi, self.phi, T, P, y)
+        return 1. - y.sum()
+    
+    def _P_error_reactive(self, P, T, Psats, z, dz, y, x, liquid_reaction):
+        if P <= 0: raise InfeasibleRegion('negative pressure')
+        dz[:] = liquid_reaction.conversion(z, T, P, 'l')
+        x[:] = z + dz
+        x /= x.sum()
+        z_Psat_gamma = x * Psats * self.gamma(x, T)
+        y_phi = z_Psat_gamma * self.pcf(T, P, Psats) / P
+        y[:] = solve_y(y_phi, self.phi, T, P, y)
+        return 1. - y.sum()
+    
     def _T_error_ideal(self, T, z_over_P, y):
         y[:] = z_over_P * np.array([i(T) for i in self.Psats], dtype=float)
         return 1 - y.sum()
@@ -153,18 +192,21 @@ class BubblePoint:
         y = z_Psat_gamma_pcf / P
         return P, y
     
-    def __call__(self, z, *, T=None, P=None):
+    def __call__(self, z, *, T=None, P=None, liquid_reaction=None):
         z = np.asarray(z, float)
         if T:
             if P: raise ValueError("may specify either T or P, not both")
-            P, y = self.solve_Py(z, T)
+            P, *args = self.solve_Py(z, T, liquid_reaction)
         elif P:
-            T, y = self.solve_Ty(z, P)
+            T, *args = self.solve_Ty(z, P, liquid_reaction)
         else:
             raise ValueError("must specify either T or P")
-        return BubblePointValues(T, P, self.IDs, z, y)
+        if liquid_reaction:
+            return ReactiveBubblePointValues(T, P, self.IDs, z, *args)
+        else:
+            return BubblePointValues(T, P, self.IDs, z, *args)
     
-    def solve_Ty(self, z, P):
+    def solve_Ty(self, z, P, liquid_reaction=None):
         """
         Bubble point at given composition and pressure.
 
@@ -201,7 +243,8 @@ class BubblePoint:
             chemical = self.chemicals[fn.first_true_index(positives)]
             T = chemical.Tsat(P, check_validity=False) if P <= chemical.Pc else chemical.Tc
             y = z.copy()
-        else:
+            return T, fn.normalize(y)
+        elif liquid_reaction is None:
             f = self._T_error
             z_norm = z / z.sum()
             z_over_P = z/P
@@ -217,9 +260,28 @@ class BubblePoint:
                                          f(Tmin, *args), f(Tmax, *args),
                                          T_guess, self.T_tol, 5e-12, args, 
                                          checkiter=False, checkbounds=False)
-        return T, fn.normalize(y)
+            return T, fn.normalize(y)
+        else:
+            f = self._T_error_reactive
+            z_norm = z / z.sum()
+            x = z_norm.copy()
+            dz = z_norm.copy()
+            z_over_P = z / P
+            T_guess, y = self._Ty_ideal(z_over_P)
+            args = (P, z_norm, dz, y, x, liquid_reaction)
+            try:
+                T = flx.aitken_secant(f, T_guess, T_guess + 1e-3,
+                                      self.T_tol, 5e-12, args,
+                                      checkiter=False)
+            except RuntimeError:
+                Tmin = self.Tmin; Tmax = self.Tmax
+                T = flx.IQ_interpolation(f, Tmin, Tmax,
+                                         f(Tmin, *args), f(Tmax, *args),
+                                         T_guess, self.T_tol, 5e-12, args, 
+                                         checkiter=False, checkbounds=False)
+            return T, dz, fn.normalize(y), x
     
-    def solve_Py(self, z, T):
+    def solve_Py(self, z, T, liquid_reaction=None):
         """
         Bubble point at given composition and temperature.
 
@@ -256,15 +318,17 @@ class BubblePoint:
             chemical = self.chemicals[fn.first_true_index(positives)]
             P = chemical.Psat(T) if T <= chemical.Tc else chemical.Pc
             y = z.copy()
-        else:
+            return P, fn.normalize(y)
+        elif liquid_reaction is None:
             if T > self.Tmax: T = self.Tmax
             elif T < self.Tmin: T = self.Tmin
-            Psat = np.array([i(T) for i in self.Psats])
+            Psats = np.array([i(T) for i in self.Psats])
             z_norm = z / z.sum()
-            z_Psat_gamma = z * Psat * self.gamma(z_norm, T)
+            z_Psat_gamma = z_norm * Psats * self.gamma(z_norm, T)
             f = self._P_error
             P_guess, y = self._Py_ideal(z_Psat_gamma)
-            args = (T, z_Psat_gamma, Psat, y)
+            args = (T, z_Psat_gamma, Psats, y)
+            breakpoint()
             try:
                 P = flx.aitken_secant(f, P_guess, P_guess-1, self.P_tol, 1e-9,
                                       args, checkiter=False)
@@ -274,7 +338,26 @@ class BubblePoint:
                                          f(Pmin, *args), f(Pmax, *args),
                                          P_guess, self.P_tol, 5e-12, args,
                                          checkiter=False, checkbounds=False)
-        return P, fn.normalize(y)
+            return P, fn.normalize(y)
+        else:
+            f = self._P_error_reactive
+            z_norm = z / z.sum()
+            Psats = np.array([i(T) for i in self.Psats])
+            x = z_norm.copy()
+            dz = z_norm.copy()
+            z_Psat_gamma = z * Psats * self.gamma(z_norm, T)
+            P_guess, y = self._Py_ideal(z_Psat_gamma)
+            args = (T, Psats, z_norm, dz, y, x, liquid_reaction)
+            try:
+                P = flx.aitken_secant(f, P_guess, P_guess-1, self.P_tol, 1e-9,
+                                      args, checkiter=False)
+            except RuntimeError:
+                Pmin = self.Pmin; Pmax = self.Pmax
+                P = flx.IQ_interpolation(f, Pmin, Pmax,
+                                         f(Pmin, *args), f(Pmax, *args),
+                                         P_guess, self.P_tol, 5e-12, args,
+                                         checkiter=False, checkbounds=False)
+            return P, dz, fn.normalize(y), x
     
     def __repr__(self):
         chemicals = ", ".join([i.ID for i in self.chemicals])
@@ -318,7 +401,7 @@ class BubblePointBeta:
     
     __call__ = BubblePoint.__call__
     
-    def solve_Ty(self, z, P):
+    def solve_Ty(self, z, P, liquid_reaction=None):
         """
         Bubble point at given composition and pressure.
 
@@ -360,7 +443,7 @@ class BubblePointBeta:
             T = results.T
         return T, fn.normalize(y)
     
-    def solve_Py(self, z, T):
+    def solve_Py(self, z, T, liquid_reaction=None):
         """
         Bubble point at given composition and temperature.
 
@@ -405,7 +488,4 @@ class BubblePointBeta:
     def __repr__(self):
         chemicals = ", ".join([i.ID for i in self.chemicals])
         return f"{type(self).__name__}([{chemicals}])"
-    
-class BubblePointCache(Cache): load = BubblePoint
-del Cache
     

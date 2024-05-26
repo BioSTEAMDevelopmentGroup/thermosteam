@@ -361,9 +361,7 @@ class MultiStream(Stream):
             self._streams = {}
         self._vle_cache = eq.VLECache(self._imol,
                                       self._thermal_condition, 
-                                      self._thermo,
-                                      self._bubble_point_cache,
-                                      self._dew_point_cache)
+                                      self._thermo)
         self._lle_cache = eq.LLECache(self._imol,
                                       self._thermal_condition, 
                                       self._thermo)
@@ -381,8 +379,6 @@ class MultiStream(Stream):
             stream._imol = self._imol.get_phase(phase)
             stream._thermal_condition = self._thermal_condition
             stream._thermo = self._thermo
-            stream._bubble_point_cache =  self._bubble_point_cache
-            stream._dew_point_cache = self._dew_point_cache
             stream._property_cache = {}
             stream.characterization_factors = {}
             stream._property_cache_key = None, None
