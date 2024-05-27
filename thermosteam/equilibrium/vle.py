@@ -1382,6 +1382,7 @@ class VLE(Equilibrium, phases='lg'):
         self._liquid_mol = liquid_mol = imol['l']
         self._vapor_mol = vapor_mol = imol['g']
         mol = liquid_mol + vapor_mol
+        if not mol.any(): raise NoEquilibrium('no chemicals to perform equilibrium')
         nonzero = set(mol.nonzero_keys())
         if gas_reaction:
             nonzero.update(
@@ -1401,7 +1402,7 @@ class VLE(Equilibrium, phases='lg'):
             eq_chems = chemicals.tuple
             eq_chems = [eq_chems[i] for i in index]
             reset = True     
-            self._nonzero = set(nonzero)
+            self._nonzero = nonzero
             self._index = index
             if gas_reaction and [i.ID for i in eq_chems] != [i.ID for i in gas_reaction.chemicals]:
                 gas_reaction.reset_thermo(gas_reaction.thermo.subset(eq_chems))
@@ -1409,7 +1410,6 @@ class VLE(Equilibrium, phases='lg'):
                 liquid_reaction.reset_thermo(liquid_reaction.thermo.subset(eq_chems))
         
         # Get overall composition
-        if not mol.any(): raise NoEquilibrium('no chemicals to perform equilibrium')
         self._F_mass = (chemicals.MW * mol).sum()
         self._mol_vle = mol_vle = mol[index]
 
@@ -1420,6 +1420,7 @@ class VLE(Equilibrium, phases='lg'):
         vapor_mol[LNK_index] = light_mol = mol[LNK_index]
         liquid_mol[LNK_index] = 0
         liquid_mol[HNK_index] = heavy_mol = mol[HNK_index]
+        if not mol_vle.any(): raise NoEquilibrium('no chemicals to perform equilibrium')
         self._F_mol_light = F_mol_light = light_mol.sum()
         self._F_mol_heavy = F_mol_heavy = (heavy_mol * chemicals._heavy_solutes).sum()
         self._F_mol_vle = F_mol_vle = mol_vle.sum()
