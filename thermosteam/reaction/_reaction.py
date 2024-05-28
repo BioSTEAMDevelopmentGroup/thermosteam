@@ -479,8 +479,8 @@ class Reaction:
             except:
                 self._stream = stream = tmo.Stream(thermo=self._thermo)
             stream.imol.data[:] = material
-            stream.T = T
-            stream.P = P
+            if P is not None: stream.T = T
+            if P is not None: stream.P = P
             stream.phase = phase
         return stream
     
