@@ -66,6 +66,16 @@ class TemporaryPhase:
         self.stream._phase._phase = self.original
         if exception: raise exception
    
+class Equations:
+    __slots__ = ('material', 'energy')
+    
+    def __init__(self):
+        self.material = []
+        self.energy = []
+
+    def __repr__(self):
+        return f"{type(self).__name__}(material={self.material.__name__}(), energy={self.energy.__name__}())"
+
 
 # %%
 
@@ -275,7 +285,8 @@ class Stream(AbstractStream):
         '_imol', '_thermal_condition', '_streams',
         '_vle_cache', '_lle_cache', '_sle_cache',
         '_price', '_property_cache_key',
-        '_property_cache', 'characterization_factors', 'equations',
+        '_property_cache', 'characterization_factors',
+        'equations',
         '_original',
         # '_velocity', '_height'
     )
@@ -306,7 +317,7 @@ class Stream(AbstractStream):
                  vlle: Optional[bool]=False,
                  # velocity=0., height=0.,
                  **chemical_flows:float):
-        self.equations: dict[str, list[Callable]] = {} 
+        self.equations: list[Callable] = Equations()
         #: Characterization factors for life cycle assessment [impact/kg].
         self.characterization_factors: dict[str, float] = {} if characterization_factors is None else {}
         self._thermal_condition = tmo.ThermalCondition(T, P)
@@ -380,20 +391,22 @@ class Stream(AbstractStream):
         return self.from_data, (self.get_data(), self._ID, self._price, self.characterization_factors, self._thermo)
 
     # Phenomena-oriented simulation
-    def equation(self, variable, f=None):
-        if f is None: return lambda f: self.equation(variable, f)
-        equations = self.equations
-        if variable in equations:
-            equations[variable].append(f)
-        else:
-            equations[variable] = [f]
+    @property
+    def material_equations(self):
+        return self.equations.material
+    @property
+    def energy_equations(self):
+        return self.equations.energy
+    
+    def material_balance(self, f=None):
+        self.material_equations.append(f)
+        return f
             
-    def _create_linear_equations(self, variable):
-        equations = self.equations
-        if variable in equations:
-            return [i() for i in equations[variable]]
-        else:
-            return []
+    def _create_material_balance_equations(self):
+        return [i() for i in self.material_equations]
+
+    def _create_energy_departure_equations(self):
+        return [i() for i in self.energy_equations]
 
     def _update_energy_departure_coefficient(self, coefficients):
         source = self.source
@@ -403,18 +416,13 @@ class Stream(AbstractStream):
         key, value = coeff
         coefficients[key] = value
 
-    def _get_decoupled_variable(self, variable): pass
-
-    def _update_decoupled_variable(self, variable, value, index=None):
-        if variable == 'material': 
-            value[value < 0] = 0
-            if index is None:
-                self.mol[:] = value
-            else:
-                self.mol[index] = value
+    def _update_material_flows(self, value, index=None):
+        value[value < 0] = 0
+        if index is None:
+            self.mol[:] = value
         else:
-            raise NotImplementedError(f'variable {variable!r} cannot be updated')
-    
+            self.mol[index] = value
+        
     def scale(self, scale):
         """
         Multiply flow rate by given scale.
@@ -1880,7 +1888,7 @@ class Stream(AbstractStream):
         """
         cls = self.__class__
         new = cls.__new__(cls)
-        new.equations = {}
+        new.equations = Equations()
         new._sink = new._source = None
         new.characterization_factors = {}
         new._thermo = thermo or self._thermo
@@ -1923,7 +1931,7 @@ class Stream(AbstractStream):
         imol.data = self._imol.data
         new._thermal_condition = self._thermal_condition.copy()
         new.reset_cache()
-        new.equations = {}
+        new.equations = Equations()
         new.characterization_factors = {}
         return new
     
