@@ -489,14 +489,17 @@ class Reaction:
     
     def conversion_bounds(self, material):
         material, *_ = as_material_array(material, self._basis, self._phases, self.chemicals)
-        X = -material / (material[self._X_index] * self._stoichiometry)
-        stoichiometry = self.stoichiometry
-        return X[stoichiometry > 0].max(), X[stoichiometry < 0].min()
+        stoichiometry = self._stoichiometry
+        conversion = -material / stoichiometry
+        bounds = (
+            conversion[stoichiometry < 0].min(), # Amount reacted per reactant basis
+            conversion[stoichiometry > 0].max(), # Amount produced per reactant basis
+        )
+        return bounds
     
-    def _equilibrium_objective(self, X, data):
+    def _equilibrium_objective(self, conversion, data):
         stream = self._stream
-        self.X = X
-        self._reaction(stream.mol)
+        stream.mol += conversion * self._stoichiometry
         rate = self._rate(stream)
         stream.set_data(data)
         return rate
@@ -506,7 +509,8 @@ class Reaction:
         initial_condition = stream.get_data()
         f = self._equilibrium_objective
         args = (initial_condition,)
-        self.X = flx.IQ_interpolation(f, *self.conversion_bounds(stream), args=args)
+        conversion = flx.IQ_interpolation(f, *self.conversion_bounds(stream), args=args)
+        return conversion * self._stoichiometry
     
     def conversion(self, material, T=None, P=None, phase=None, time=None, kinetics=None):
         values, config, original = as_material_array(
@@ -514,10 +518,11 @@ class Reaction:
         )
         if kinetics or (kinetics is None and self._rate):
             if time is None or time == np.inf: 
-                self.equilibrium(material, T, P, phase)
+                conversion = self.equilibrium(material, T, P, phase)
             else:
                 raise NotImplementedError('kinetic integration not yet implemented')
-        conversion = self._conversion(values)
+        else:
+            conversion = self._conversion(values)
         if config: material._imol.reset_chemicals(*config)
         return conversion
     
@@ -527,10 +532,11 @@ class Reaction:
         )
         if kinetics or (kinetics is None and self._rate):
             if time is None or time == np.inf: 
-                self.equilibrium(material, T, P, phase)
+                values += self.equilibrium(material, T, P, phase)
             else:
                 raise NotImplementedError('kinetic integration not yet implemented')
-        self._reaction(values)
+        else:
+            self._reaction(values)
         if tmo.reaction.CHECK_FEASIBILITY:
             has_negatives = values.has_negatives()
             if has_negatives:
@@ -544,7 +550,10 @@ class Reaction:
                     chemicals = self.chemicals.tuple
                     IDs = [chemicals[i].ID for i in negative_index]
                     if len(IDs) == 1: IDs = repr(IDs[0])
-                    raise InfeasibleRegion(f'conversion of {IDs} is over 100%; reaction conversion')
+                    try:
+                        raise InfeasibleRegion(f'conversion of {IDs} is over 100%; reaction conversion')
+                    except:
+                        breakpoint()
                 else:
                     values[negative_index] = 0.
         else:
