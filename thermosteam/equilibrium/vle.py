@@ -73,6 +73,7 @@ def xV_iter(
     Ks[:] = pcf_Psat_over_P * f_gamma(x, T, *gamma_args) / f_phi(y, T, P)
     V = binary.solve_phase_fraction_Rashford_Rice(z, Ks, xV[-1], z_light, z_heavy)
     update_xV(xV, V, Ks, z)
+    Ks[Ks < 1e-16] = 1e-16
     xVlogK[-n:] = np.log(Ks)
     return xVlogK
 

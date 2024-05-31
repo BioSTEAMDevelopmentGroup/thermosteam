@@ -411,6 +411,8 @@ class Stream(AbstractStream):
     def _update_energy_departure_coefficient(self, coefficients):
         source = self.source
         if source is None: return
+        if not source._get_energy_departure_coefficient:
+            raise NotImplementedError(f'{source!r} has no method `_get_energy_departure_coefficient`')
         coeff = source._get_energy_departure_coefficient(self)
         if coeff is None: return
         key, value = coeff
