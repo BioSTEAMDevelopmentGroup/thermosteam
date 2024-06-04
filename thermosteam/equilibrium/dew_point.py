@@ -151,9 +151,9 @@ class DewPoint:
         x[:] = self._solve_x(x_gamma, T, P, x)
         return 1 - x.sum()
     
-    def _T_error_reactive(self, T, P, z, dz, y, x, gas_reaction):
+    def _T_error_reactive(self, T, P, z, dz, y, x, gas_conversion):
         if T <= 0: raise InfeasibleRegion('negative temperature')
-        dz[:] = gas_reaction.conversion(z, T, P, 'g')
+        dz[:] = gas_conversion(z, T, P, 'g')
         y[:] = z + dz
         y /= y.sum()
         Psats = np.array([i(T) for i in self.Psats])
@@ -176,9 +176,9 @@ class DewPoint:
         x[:] = self._solve_x(x_gamma, T, P, x)
         return 1 - x.sum()
     
-    def _P_error_reactive(self, P, T, Psats, z, dz, y, x, gas_reaction):
+    def _P_error_reactive(self, P, T, Psats, z, dz, y, x, gas_conversion):
         if P <= 0: raise InfeasibleRegion('negative pressure')
-        dz[:] = gas_reaction.conversion(z, T, P, 'g')
+        dz[:] = gas_conversion(z, T, P, 'g')
         y[:] = z + dz
         y /= y.sum()
         x_gamma = y / Psats * P * self.phi(y, T, P) / self.pcf(T, P, Psats)
@@ -205,21 +205,21 @@ class DewPoint:
         x = z_over_Psats * P
         return P, x
     
-    def __call__(self, z, *, T=None, P=None, gas_reaction=None):
+    def __call__(self, z, *, T=None, P=None, gas_conversion=None):
         z = np.asarray(z, float)
         if T:
             if P: raise ValueError("may specify either T or P, not both")
-            P, *args = self.solve_Px(z, T, gas_reaction)
+            P, *args = self.solve_Px(z, T, gas_conversion)
         elif P:
-            T, *args = self.solve_Tx(z, P, gas_reaction)
+            T, *args = self.solve_Tx(z, P, gas_conversion)
         else:
             raise ValueError("must specify either T or P")
-        if gas_reaction:
+        if gas_conversion:
             return ReactiveDewPointValues(T, P, self.IDs, z, *args)
         else:
             return DewPointValues(T, P, self.IDs, z, *args)
     
-    def solve_Tx(self, z, P, gas_reaction=None):
+    def solve_Tx(self, z, P, gas_conversion=None):
         """
         Dew point given composition and pressure.
 
@@ -257,7 +257,7 @@ class DewPoint:
             T = chemical.Tsat(P, check_validity=False) if P <= chemical.Pc else chemical.Tc
             x = z.copy()
             return T, fn.normalize(x)
-        elif gas_reaction is None:
+        elif gas_conversion is None:
             f = self._T_error
             z_norm = z/z.sum()
             zP = z * P
@@ -282,7 +282,7 @@ class DewPoint:
             dz = z_norm.copy()
             zP = z * P
             T_guess, y = self._Tx_ideal(zP)
-            args = (P, z_norm, dz, y, x, gas_reaction)
+            args = (P, z_norm, dz, y, x, gas_conversion)
             try:
                 T = flx.aitken_secant(f, T_guess, T_guess + 1e-3,
                                       self.T_tol, 5e-12, args,
@@ -295,7 +295,7 @@ class DewPoint:
                                          checkiter=False, checkbounds=False)
             return T, dz, fn.normalize(y), x
     
-    def solve_Px(self, z, T, gas_reaction=None):
+    def solve_Px(self, z, T, gas_conversion=None):
         """
         Dew point given composition and temperature.
 
@@ -333,7 +333,7 @@ class DewPoint:
             P = chemical.Psat(T) if T <= chemical.Tc else chemical.Pc
             x = z.copy()
             return P, fn.normalize(x)
-        elif gas_reaction is None:
+        elif gas_conversion is None:
             z_norm = z / z.sum()
             Psats = np.array([i(T) for i in self.Psats], dtype=float)
             z_over_Psats = z / Psats
@@ -359,7 +359,7 @@ class DewPoint:
             Psats = np.array([i(T) for i in self.Psats], dtype=float)
             z_over_Psats = z / Psats
             P_guess, x = self._Px_ideal(z_over_Psats)
-            args = (T, Psats, z_norm, dz, y, x, gas_reaction)
+            args = (T, Psats, z_norm, dz, y, x, gas_conversion)
             try:
                 P = flx.aitken_secant(f, P_guess, P_guess-1, self.P_tol, 1e-9,
                                       args, checkiter=False)

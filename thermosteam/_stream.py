@@ -60,12 +60,39 @@ class TemporaryPhase:
         self.temporary = temporary
         
     def __enter__(self):
-        self.stream._phase._phase = self.temporary
+        stream = self.stream
+        stream._phase._phase = self.temporary
+        return stream
     
     def __exit__(self, type, exception, traceback):
         self.stream._phase._phase = self.original
         if exception: raise exception
    
+    
+class TemporaryStream:
+    __slots__ = ('stream', 'data', 'flow', 'T', 'P', 'phase')
+    
+    def __init__(self, stream, flow, T, P, phase):
+        self.stream = stream
+        self.data = stream.get_data()
+        self.flow = flow
+        self.T = T
+        self.P = P
+        self.phase = phase
+        
+    def __enter__(self):
+        stream = self.stream
+        self.data = stream.get_data()
+        if self.flow is not None: stream.imol.data[:] = self.flow
+        if self.T is not None: stream.T = self.T
+        if self.P is not None: stream.P = self.P
+        return stream
+    
+    def __exit__(self, type, exception, traceback):
+        self.stream.set_data(self.data)
+        if exception: raise exception
+   
+    
 class Equations:
     __slots__ = ('material', 'energy')
     
@@ -360,6 +387,9 @@ class Stream(AbstractStream):
             self.vlle(T, P)
             data = self._imol.data
             self.phases = [j for i, j in enumerate(self.phases) if data[i].any()]
+
+    def temporary(self, flow=None, T=None, P=None, phase=None):
+        return TemporaryStream(self, flow, T, P, phase)
 
     def temporary_phase(self, phase):
         return TemporaryPhase(self, self.phase, phase)

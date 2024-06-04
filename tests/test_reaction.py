@@ -223,7 +223,7 @@ def test_reactive_phase_equilibrium_no_kinetics():
     stream = tmo.Stream(
         H2O=1, Ethanol=5, LacticAcid=1
     )
-    stream.vle(T=360, P=101325, liquid_reaction=rxn)
+    stream.vle(T=360, P=101325, liquid_conversion=rxn)
     assert_allclose(
         stream.imol['g'], 
         [0.0,
@@ -239,7 +239,7 @@ def test_reactive_phase_equilibrium_no_kinetics():
          1.8234109156732896]
     )
     
-    stream.vle(T=340, P=101325, liquid_reaction=rxn)
+    stream.vle(T=340, P=101325, liquid_conversion=rxn)
     assert_allclose(
         stream.imol['l'], 
         stream.mol
@@ -248,7 +248,7 @@ def test_reactive_phase_equilibrium_no_kinetics():
         stream.imol['g'], 
         0
     )
-    stream.vle(T=450, P=101325, liquid_reaction=rxn)
+    stream.vle(T=450, P=101325, liquid_conversion=rxn)
     assert_allclose(
         stream.imol['g'], 
         stream.mol
@@ -297,7 +297,7 @@ def test_reactive_phase_equilibrium_with_kinetics():
     )
     T = 360
     P = 101325
-    stream.vle(T=T, P=P, liquid_reaction=rxn)
+    stream.vle(T=T, P=P, liquid_conversion=rxn)
     assert_allclose(
         stream.imol['l'],
         [0.026722998037919946,
@@ -321,7 +321,7 @@ def test_reactive_phase_equilibrium_with_kinetics():
     stream = tmo.Stream(
         H2O=2, Ethanol=5, LacticAcid=1, T=T,
     )
-    stream.vle(V=V, P=P, liquid_reaction=rxn)
+    stream.vle(V=V, P=P, liquid_conversion=rxn)
     assert_allclose(
         stream.imol['l'],
         [0.026426291229780553,
@@ -343,7 +343,7 @@ def test_reactive_phase_equilibrium_with_kinetics():
     stream = tmo.Stream(
         H2O=2, Ethanol=5, LacticAcid=1, T=T,
     )
-    stream.vle(V=V, T=T, liquid_reaction=rxn)
+    stream.vle(V=V, T=T, liquid_conversion=rxn)
     assert_allclose(
         stream.imol['l'],
         [0.026556271540719167,
@@ -362,7 +362,7 @@ def test_reactive_phase_equilibrium_with_kinetics():
     stream = tmo.Stream(
         H2O=2, Ethanol=5, LacticAcid=1, T=T,
     )
-    stream.vle(H=H, P=P, liquid_reaction=rxn)
+    stream.vle(H=H, P=P, liquid_conversion=rxn)
     assert_allclose(
         stream.imol['l'],
         [0.026722998039327987,

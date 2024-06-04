@@ -28,7 +28,7 @@ __all__ = (
     'Reaction', 'ReactionItem', 'ReactionSet', 
     'ParallelReaction', 'SeriesReaction', 'ReactionSystem',
     'Rxn', 'RxnS', 'RxnI', 'PRxn', 'SRxn', 'RxnSys',
-    'KineticReaction',
+    'KineticReaction', 'KineticConversion',
     'KRxn',
 )
 
@@ -102,6 +102,25 @@ def as_material_array(material, basis, phases, chemicals):
 
 # %% Extent of reaction (stoichiometric)
 
+class Conversion:
+    __slots__ = ('reaction', 'index')
+    
+    def __init__(self, reaction):
+        self.reaction = reaction
+        self.index = None
+        
+    def set_chemicals(self, chemicals):
+        self.index = self.reaction.chemicals.indices([i.ID for i in chemicals])
+        
+    def __call__(self, material=None, T=None, P=None, phase=None):
+        if self.index is None:
+            return self.reaction.conversion(material)
+        else:
+            flow = SparseVector.from_size(self.reaction.chemicals.size)
+            flow[self.index] = material
+            return self.reaction.conversion(material)
+
+
 @chemicals_user
 class Reaction:
     """
@@ -121,7 +140,7 @@ class Reaction:
         Reactant conversion (fraction). Defaults to 1.
     chemicals : Chemicals, optional
         Chemicals corresponding to each entry in the stoichiometry array. 
-        Defaults to settings.chemicals
+        Defaults to settings.chemicals.
     basis: {'mol', 'wt'}, optional
         Basis of reaction. Defaults to 'mol'.
     
@@ -463,6 +482,9 @@ class Reaction:
         conversion = self._conversion(values)
         if config: material._imol.reset_chemicals(*config)
         return conversion
+    
+    def conversion_handle(self, stream):
+        return Conversion(self)
     
     def __call__(self, material, T=None, P=None, phase=None, time=None):
         values, config, original = as_material_array(
@@ -1724,7 +1746,29 @@ class ReactionSystem:
 
 # %% Kinetic reactions (stoichiometric)
 
-@thermo_user
+class KineticConversion:
+    __slots__ = ('reaction', 'stream', 'index')
+    
+    def __init__(self, reaction, stream):
+        self.reaction = reaction
+        self.stream = stream
+        self.index = None
+        
+    def set_chemicals(self, chemicals):
+        self.index = self.stream.chemicals.indices([i.ID for i in chemicals])
+        
+    def __call__(self, material=None, T=None, P=None, phase=None):
+        if self.index is None:
+            with self.stream.temporary(material, T, P, phase) as stream:
+                return self.reaction.conversion(stream)
+        else:
+            flow = SparseVector.from_size(self.stream.chemicals.size)
+            flow[self.index] = material
+            with self.stream.temporary(flow, T, P, phase) as stream:
+                return self.reaction.conversion(stream)[self.index]
+
+
+@chemicals_user
 class KineticReaction:
     """
     Create an abstract KineticReaction object which defines a stoichiometric 
@@ -1741,8 +1785,9 @@ class KineticReaction:
                A dictionary of stoichiometric coefficients or a stoichiometric
                equation written as:
                i1 R1 + ... + in Rn -> j1 P1 + ... + jm Pm
-    thermo : Thermo, optional
-        Thermodynamic property package. Defaults to settings.thermo.
+    chemicals : Chemicals, optional
+        Chemicals corresponding to each entry in the stoichiometry array. 
+        Defaults to settings.chemicals.
     
     Other Parameters
     ----------------
@@ -1758,17 +1803,13 @@ class KineticReaction:
     
     Notes
     -----
-    A reaction object can react either a stream or an array. When a stream
-    is passed, it reacts either the mol or mass flow rate according to
-    the basis of the reaction object. When an array is passed, the array
-    elements are reacted regardless of what basis they are associated with.
+    A reaction object can react only a stream object (not an array).
     
     """
     rate = AbstractMethod
     volume = AbstractMethod
     phases = MaterialIndexer.phases
     __slots__ = (
-        '_stream',
         '_phases',
         '_thermo', 
         '_stoichiometry', 
@@ -1781,6 +1822,7 @@ class KineticReaction:
     istoichiometry = Reaction.istoichiometry
     stoichiometry = Reaction.stoichiometry
     reaction_chemicals = Reaction.reaction_chemicals
+    reset_chemicals = Reaction.reset_chemicals
     MWs = Reaction.MWs
     dH = Reaction.dH
     _rescale = Reaction._rescale
@@ -1794,14 +1836,12 @@ class KineticReaction:
     correct_mass_balance = Reaction.correct_mass_balance
     show = _ipython_display_ = Reaction.show
     
-    def __init__(self, reaction, thermo=None, reactant=None, *,
+    def __init__(self, reaction, chemicals=None, reactant=None, *,
                  phases=None,
                  check_mass_balance=False,
                  check_atomic_balance=False,
                  correct_atomic_balance=False):
-        thermo = self._load_thermo(thermo)
-        self._stream = tmo.Stream(thermo=thermo)
-        chemicals = thermo.chemicals
+        chemicals = self._load_chemicals(chemicals)
         if reaction:
             self._phases = phases = phase_tuple(phases) if phases else xprs.get_phases(reaction)
             if phases:
@@ -1830,61 +1870,7 @@ class KineticReaction:
             self._stoichiometry = SparseVector.from_size(chemicals.size)
         self._rescale()
     
-    def reset_thermo(self, thermo):
-        if self._thermo is thermo: return
-        old_chemicals = self._thermo.chemicals
-        chemicals = thermo.chemicals
-        self._thermo = thermo
-        if old_chemicals is chemicals: return
-        phases = self.phases
-        stoichiometry = self._stoichiometry
-        reactant = self.reactant
-        if phases:
-            M, N = stoichiometry.shape
-            new_stoichiometry = SparseArray.from_shape([M, chemicals.size])
-            IDs = old_chemicals.IDs
-            for (i, j), k in stoichiometry.nonzero_items():
-                new_stoichiometry[i, chemicals.index(IDs[j])] = k
-            phase, reactant = reactant
-            reactant_index = phases.index(phase), chemicals.index(reactant)
-        else:
-            new_stoichiometry = SparseVector.from_size(chemicals.size)
-            IDs = old_chemicals.IDs
-            for i, j in stoichiometry.nonzero_items():
-                new_stoichiometry[chemicals.index(IDs[i])] = j
-            reactant_index = chemicals.index(reactant)
-        self._stoichiometry = new_stoichiometry
-        self._stream = tmo.Stream(thermo)
-        self._reactant_index = reactant_index
-    
-    def _get_stream(self, material, T=None, P=None, phase=None):
-        if isinstance(material, tmo.Stream):
-            try:
-                stream = self._stream
-            except:
-                if self._thermo is material._thermo:
-                    self._stream = stream = material.copy()
-                elif self.chemicals is material.chemicals:
-                    self._stream = stream = tmo.Stream(thermo=self._thermo)
-                else:
-                    raise ValueError('incompatible chemicals for kinetics')
-            stream.copy_like(material)
-            if T is not None: stream.T = T
-            if P is not None: stream.P = P
-            if phase is not None: stream.phase = phase
-        else:
-            try:
-                stream = self._stream
-            except:
-                self._stream = stream = tmo.Stream(thermo=self._thermo)
-            stream.imol.data[:] = material
-            if P is not None: stream.T = T
-            if P is not None: stream.P = P
-            stream.phase = phase
-        return stream
-    
     def conversion_bounds(self, material):
-        material, *_ = as_material_array(material, self._basis, self._phases, self.chemicals)
         stoichiometry = self._stoichiometry
         conversion = -material / stoichiometry
         bounds = (
@@ -1900,37 +1886,44 @@ class KineticReaction:
         stream.set_data(data)
         return rate
     
-    def equilibrium(self, material, T, P, phase):
-        stream = self._get_stream(material, T, P, phase)
+    def equilibrium(self, stream):
         initial_condition = stream.get_data()
         f = self._equilibrium_objective
         args = (initial_condition,)
-        conversion = flx.IQ_interpolation(f, *self.conversion_bounds(stream), args=args)
+        conversion = flx.IQ_interpolation(f, *self.conversion_bounds(stream.imol.data), args=args)
         return conversion * self._stoichiometry
     
-    def conversion(self, material, T=None, P=None, phase=None, time=None):
-        values, config, original = as_material_array(
-            material, self._basis, self._phases, self.chemicals
-        )
-        if time is None and self.volume: # Ideal continuous stirred tank CSTR
-            stream = self._get_stream(material, T, P, phase)
-            conversion = self.volume(stream) * self.rate(stream)
-        elif time is None: # Instantaneous reaction
-            conversion = self.equilibrium(material, T, P, phase)
-        else: # Plug flow reaction (PFR)
-            raise NotImplementedError('kinetic integration not yet implemented')
-        if config: material._imol.reset_chemicals(*config)
+    def conversion_handle(self, stream):
+        return KineticConversion(self, stream)
+    
+    def _rate(self, stream):
+        conversion = self.volume(stream) * self.rate(stream)
+        mol = stream.mol
+        excess = mol + conversion
+        mask = excess < 0        
+        if excess[mask].any() and (mol[mask] > 0).all():
+            x = (-mol[mask] / conversion[mask]).min()
+            conversion *= x
+            assert 0 <= x <= 1
         return conversion
     
-    def __call__(self, material, T=None, P=None, phase=None, time=None):
-        values, config, original = as_material_array(
-            material, self._basis, self._phases, self.chemicals
-        )
+    def conversion(self, stream, time=None):
+        if stream.chemicals is not self.chemicals: self.reset_chemicals(stream.chemicals)
         if time is None and self.volume: # Ideal continuous stirred tank CSTR
-            stream = self._get_stream(material, T, P, phase)
-            values += self.volume(stream) * self.rate(stream)
+            conversion = self._rate(stream)
         elif time is None: # Instantaneous reaction
-            values += self.equilibrium(material, T, P, phase)
+            conversion = self.equilibrium(stream)
+        else: # Plug flow reaction (PFR)
+            raise NotImplementedError('kinetic integration not yet implemented')
+        return conversion
+    
+    def __call__(self, stream, time=None):
+        if stream.chemicals is not self.chemicals: self.reset_chemicals(stream.chemicals)
+        values = stream.imol.data
+        if time is None and self.volume: # Ideal continuous stirred tank CSTR
+            values += self._rate(stream)
+        elif time is None: # Instantaneous reaction
+            values += self.equilibrium(stream)
         else: # Plug flow reaction (PFR)
             raise NotImplementedError('kinetic integration not yet implemented')
         if tmo.reaction.CHECK_FEASIBILITY:
@@ -1948,8 +1941,6 @@ class KineticReaction:
                     values[negative_index] = 0.
         else:
             fn.remove_negligible_negative_values(values)
-        if original is not None: original[:] = values
-        if config: material._imol.reset_chemicals(*config)
     
     def to_df(self, index=None):
         columns = ['Stoichiometry (by mol)', 'Reactant']

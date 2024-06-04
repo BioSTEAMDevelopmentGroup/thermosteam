@@ -144,9 +144,9 @@ class BubblePoint:
         y[:] = solve_y(y_phi, self.phi, T, P, y)
         return 1. - y.sum()
         
-    def _T_error_reactive(self, T, P, z, dz, y, x, liquid_reaction):
+    def _T_error_reactive(self, T, P, z, dz, y, x, liquid_conversion):
         if T <= 0: raise InfeasibleRegion('negative temperature')
-        dz[:] = liquid_reaction.conversion(z, T, P, 'l')
+        dz[:] = liquid_conversion(z, T, P, 'l')
         x[:] = z + dz
         x /= x.sum()
         Psats = np.array([i(T) for i in self.Psats], dtype=float)
@@ -157,9 +157,9 @@ class BubblePoint:
         y[:] = solve_y(y_phi, self.phi, T, P, y)
         return 1. - y.sum()
     
-    def _P_error_reactive(self, P, T, Psats, z, dz, y, x, liquid_reaction):
+    def _P_error_reactive(self, P, T, Psats, z, dz, y, x, liquid_conversion):
         if P <= 0: raise InfeasibleRegion('negative pressure')
-        dz[:] = liquid_reaction.conversion(z, T, P, 'l')
+        dz[:] = liquid_conversion(z, T, P, 'l')
         x[:] = z + dz
         x /= x.sum()
         z_Psat_gamma = x * Psats * self.gamma(x, T)
@@ -192,21 +192,21 @@ class BubblePoint:
         y = z_Psat_gamma_pcf / P
         return P, y
     
-    def __call__(self, z, *, T=None, P=None, liquid_reaction=None):
+    def __call__(self, z, *, T=None, P=None, liquid_conversion=None):
         z = np.asarray(z, float)
         if T:
             if P: raise ValueError("may specify either T or P, not both")
-            P, *args = self.solve_Py(z, T, liquid_reaction)
+            P, *args = self.solve_Py(z, T, liquid_conversion)
         elif P:
-            T, *args = self.solve_Ty(z, P, liquid_reaction)
+            T, *args = self.solve_Ty(z, P, liquid_conversion)
         else:
             raise ValueError("must specify either T or P")
-        if liquid_reaction:
+        if liquid_conversion:
             return ReactiveBubblePointValues(T, P, self.IDs, z, *args)
         else:
             return BubblePointValues(T, P, self.IDs, z, *args)
     
-    def solve_Ty(self, z, P, liquid_reaction=None):
+    def solve_Ty(self, z, P, liquid_conversion=None):
         """
         Bubble point at given composition and pressure.
 
@@ -244,7 +244,7 @@ class BubblePoint:
             T = chemical.Tsat(P, check_validity=False) if P <= chemical.Pc else chemical.Tc
             y = z.copy()
             return T, fn.normalize(y)
-        elif liquid_reaction is None:
+        elif liquid_conversion is None:
             f = self._T_error
             z_norm = z / z.sum()
             z_over_P = z/P
@@ -268,7 +268,7 @@ class BubblePoint:
             dz = z_norm.copy()
             z_over_P = z / P
             T_guess, y = self._Ty_ideal(z_over_P)
-            args = (P, z_norm, dz, y, x, liquid_reaction)
+            args = (P, z_norm, dz, y, x, liquid_conversion)
             try:
                 T = flx.aitken_secant(f, T_guess, T_guess + 1e-3,
                                       self.T_tol, 5e-12, args,
@@ -281,7 +281,7 @@ class BubblePoint:
                                          checkiter=False, checkbounds=False)
             return T, dz, fn.normalize(y), x
     
-    def solve_Py(self, z, T, liquid_reaction=None):
+    def solve_Py(self, z, T, liquid_conversion=None):
         """
         Bubble point at given composition and temperature.
 
@@ -319,7 +319,7 @@ class BubblePoint:
             P = chemical.Psat(T) if T <= chemical.Tc else chemical.Pc
             y = z.copy()
             return P, fn.normalize(y)
-        elif liquid_reaction is None:
+        elif liquid_conversion is None:
             if T > self.Tmax: T = self.Tmax
             elif T < self.Tmin: T = self.Tmin
             Psats = np.array([i(T) for i in self.Psats])
@@ -346,7 +346,7 @@ class BubblePoint:
             dz = z_norm.copy()
             z_Psat_gamma = z * Psats * self.gamma(z_norm, T)
             P_guess, y = self._Py_ideal(z_Psat_gamma)
-            args = (T, Psats, z_norm, dz, y, x, liquid_reaction)
+            args = (T, Psats, z_norm, dz, y, x, liquid_conversion)
             try:
                 P = flx.aitken_secant(f, P_guess, P_guess-1, self.P_tol, 1e-9,
                                       args, checkiter=False)
@@ -400,7 +400,7 @@ class BubblePointBeta:
     
     __call__ = BubblePoint.__call__
     
-    def solve_Ty(self, z, P, liquid_reaction=None):
+    def solve_Ty(self, z, P, liquid_conversion=None):
         """
         Bubble point at given composition and pressure.
 
@@ -442,7 +442,7 @@ class BubblePointBeta:
             T = results.T
         return T, fn.normalize(y)
     
-    def solve_Py(self, z, T, liquid_reaction=None):
+    def solve_Py(self, z, T, liquid_conversion=None):
         """
         Bubble point at given composition and temperature.
 
