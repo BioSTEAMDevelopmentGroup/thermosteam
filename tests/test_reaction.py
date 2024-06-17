@@ -278,7 +278,7 @@ def test_reactive_phase_equilibrium_with_kinetics():
             LaEt, La, H2O, EtOH = stream.mol / stream.F_mol
             return 3600 * (kf * La * EtOH - kr * LaEt * H2O) # kmol / kg-catalyst / hr
     
-    rxn = Esterification('LacticAcid + Ethanol -> H2O + EthylLactate')
+    rxn = Esterification('LacticAcid + Ethanol -> H2O + EthylLactate', reactant='LacticAcid')
     stream = tmo.Stream(
         H2O=2, Ethanol=5, LacticAcid=1, T=355,
     )
@@ -286,9 +286,9 @@ def test_reactive_phase_equilibrium_with_kinetics():
     assert_allclose(
         stream.mol,
         [0.0015876828181456534,
-         1.0015876828181456,
+         0.9984123171818543,
          2.001587682818146,
-         5.001587682818146],
+         4.998412317181854],
         atol=1e-3,
         rtol=1e-3,
     )
@@ -300,19 +300,16 @@ def test_reactive_phase_equilibrium_with_kinetics():
     stream.vle(T=T, P=P, liquid_conversion=rxn)
     assert_allclose(
         stream.imol['l'],
-        [0.026722998037919946,
-         1.02672299803792,
-         0.9054900513291582,
-         1.9033162674693367],
+        [0.026512250430257022,
+         0.9451332614822996,
+         0.8872670426652305,
+         1.7832800372000892],
         rtol=1e-3,
         atol=1e-3,
     )
     assert_allclose(
         stream.imol['g'],
-        [0.0,
-         0.0, 
-         1.1212329467087616, 
-         3.1234067305685835],
+        [0.0, 0.028354488087443397, 1.1392452077650264, 3.1902077123696535],
         rtol=1e-3,
         atol=1e-3,
     )
@@ -324,19 +321,16 @@ def test_reactive_phase_equilibrium_with_kinetics():
     stream.vle(V=V, P=P, liquid_conversion=rxn)
     assert_allclose(
         stream.imol['l'],
-        [0.026426291229780553,
-         1.0264262912297806,
-         0.9176810961603543,
-         1.932662367552195],
+        [0.0265122504353963,
+         0.9451332614841681,
+         0.8872670426420364,
+         1.7832800356800504],
         rtol=1e-3,
         atol=1e-3,
     )
     assert_allclose(
         stream.imol['g'],
-        [0.0, 
-         0.0,
-         1.1087451950694263, 
-         3.0937639236775856],
+        [0.0, 0.028354488080435617, 1.13924520779336, 3.1902077138845533],
         rtol=1e-3,
         atol=1e-3,
     )
@@ -346,16 +340,16 @@ def test_reactive_phase_equilibrium_with_kinetics():
     stream.vle(V=V, T=T, liquid_conversion=rxn)
     assert_allclose(
         stream.imol['l'],
-        [0.026556271540719167,
-         1.0265562715407193,
-         0.9176843861342889,
-         1.9328505665839004],
+        [0.026512250408482565,
+         0.9451332615716925,
+         0.8872670442912585,
+         1.7832800377855502],
         rtol=1e-3,
         atol=1e-3,
     )
     assert_allclose(
         stream.imol['g'],
-        [0.0, 0.0, 1.1088718854064301, 3.0937057049568186],
+        [0.0, 0.02835448801982482, 1.1392452061172242, 3.190207711805967],
         rtol=1e-3,
         atol=1e-3,
     )
@@ -365,19 +359,19 @@ def test_reactive_phase_equilibrium_with_kinetics():
     stream.vle(H=H, P=P, liquid_conversion=rxn)
     assert_allclose(
         stream.imol['l'],
-        [0.026722998039327987,
-         1.026722997950048,
-         0.90549005089524, 
-         1.9033162679063462],
+        [0.026512250412710874,
+         0.945133261339238,
+         0.8872670433265364,
+         1.7832800367594983],
         rtol=1e-3,
         atol=1e-3,
     )
     assert_allclose(
         stream.imol['g'],
-        [2.3858290549839817e-12,
-         9.166582118983998e-11,
-         1.1212329471464737,
-         3.1234067301353674],
+        [4.9752893699702054e-12,
+         0.0283544882430759,
+         1.1392452070911496,
+         3.190207712822816],
         rtol=1e-3,
         atol=1e-3,
     )

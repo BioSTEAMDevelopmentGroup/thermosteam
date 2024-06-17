@@ -67,12 +67,16 @@ def xV_iter(
     V = xV[n]
     Ks = np.exp(xVlogK[-n:])
     x, y = xy(xV, Ks)
+    Ks[:] = pcf_Psat_over_P * f_gamma(x, T, *gamma_args) / f_phi(y, T, P)
     if gas_conversion: 
         z = z + gas_conversion(material=y * V, T=T, P=P, phase='g')
+        z[z <= 0] = 1e-16
+        z /= z.sum()
     if liquid_conversion:
         z = z + liquid_conversion(material=x * (1 - V), T=T, P=P, phase='l')
-    Ks[:] = pcf_Psat_over_P * f_gamma(x, T, *gamma_args) / f_phi(y, T, P)
-    V = binary.solve_phase_fraction_Rashford_Rice(z, Ks, xV[-1], z_light, z_heavy)
+        z[z <= 0] = 1e-16
+        z /= z.sum()
+    V = binary.solve_phase_fraction_Rashford_Rice(z, Ks, V, z_light, z_heavy)
     update_xV(xV, V, Ks, z)
     Ks[Ks < 1e-16] = 1e-16
     xVlogK[-n:] = np.log(Ks)
@@ -1359,6 +1363,7 @@ class VLE(Equilibrium, phases='lg'):
         xVlogK = np.zeros(2*x.size + 1)
         xVlogK[:n] = x
         xVlogK[n] = self._V
+        Ks[Ks < 1e-16] = 1e-16
         xVlogK[-n:] = np.log(Ks)
         xVlogK = flx.aitken(
             f, xVlogK, self.x_tol, args, checkiter=False, 

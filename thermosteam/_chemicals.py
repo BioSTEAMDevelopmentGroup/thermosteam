@@ -231,6 +231,7 @@ class Chemicals:
         setattr(self, '__class__', CompiledChemicals)
         try: self._compile(chemicals, skip_checks)
         except Exception as error:
+            raise error
             setattr(self, '__class__', Chemicals)
             setattr(self, '__dict__', {i.ID: i for i in chemicals})
             raise error

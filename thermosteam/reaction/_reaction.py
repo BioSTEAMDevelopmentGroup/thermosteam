@@ -1879,8 +1879,7 @@ class KineticReaction:
         )
         return bounds
     
-    def _equilibrium_objective(self, conversion, data):
-        stream = self._stream
+    def _equilibrium_objective(self, conversion, stream, data):
         stream.mol += conversion * self._stoichiometry
         rate = self.rate(stream)
         stream.set_data(data)
@@ -1889,9 +1888,9 @@ class KineticReaction:
     def equilibrium(self, stream):
         initial_condition = stream.get_data()
         f = self._equilibrium_objective
-        args = (initial_condition,)
-        conversion = flx.IQ_interpolation(f, *self.conversion_bounds(stream.imol.data), args=args)
-        return conversion * self._stoichiometry
+        args = (stream, initial_condition)
+        conversion = flx.IQ_interpolation(f, *self.conversion_bounds(stream.imol.data), xtol=1e-16, args=args)
+        return conversion
     
     def conversion_handle(self, stream):
         return KineticConversion(self, stream)
@@ -1899,12 +1898,19 @@ class KineticReaction:
     def _rate(self, stream):
         conversion = self.volume(stream) * self.rate(stream)
         mol = stream.mol
-        excess = mol + conversion
-        mask = excess < 0        
-        if excess[mask].any() and (mol[mask] > 0).all():
-            x = (-mol[mask] / conversion[mask]).min()
-            conversion *= x
-            assert 0 <= x <= 1
+        full_conversion = conversion * self._stoichiometry
+        new_mol = mol + full_conversion
+        mask = new_mol < 0
+        if mask.any(): conversion = (1 - 1e-12) * (-mol[mask] / full_conversion[mask]).min() * conversion
+        # conversion_eq = self.equilibrium(stream)
+        # if conversion * conversion_eq < 0:
+        #     mol = stream.mol
+        #     full_conversion = conversion * self._stoichiometry
+        #     new_mol = mol + full_conversion
+        #     mask = new_mol < 0
+        #     if mask.any(): conversion = (1 - 1e-12) * (-mol[mask] / full_conversion[mask]).min() * conversion
+        # elif conversion_eq == 0 or conversion / conversion_eq > 1:
+        #     conversion = conversion_eq
         return conversion
     
     def conversion(self, stream, time=None):
@@ -1915,15 +1921,15 @@ class KineticReaction:
             conversion = self.equilibrium(stream)
         else: # Plug flow reaction (PFR)
             raise NotImplementedError('kinetic integration not yet implemented')
-        return conversion
+        return conversion * self._stoichiometry
     
     def __call__(self, stream, time=None):
         if stream.chemicals is not self.chemicals: self.reset_chemicals(stream.chemicals)
         values = stream.imol.data
         if time is None and self.volume: # Ideal continuous stirred tank CSTR
-            values += self._rate(stream)
+            values += self._rate(stream) * self._stoichiometry
         elif time is None: # Instantaneous reaction
-            values += self.equilibrium(stream)
+            values += self.equilibrium(stream) * self._stoichiometry
         else: # Plug flow reaction (PFR)
             raise NotImplementedError('kinetic integration not yet implemented')
         if tmo.reaction.CHECK_FEASIBILITY:

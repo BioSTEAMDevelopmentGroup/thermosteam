@@ -619,7 +619,8 @@ class Chemical:
 
     @classmethod
     def blank(cls, ID, CAS=None, phase_ref=None, phase=None,
-              formula=None, aliases=None, synonyms=None, free_energies=True, **data):
+              formula=None, aliases=None, synonyms=None, free_energies=True, 
+              atoms=None, **data):
         """
         Return a new Chemical object without any thermodynamic models or data 
         (unless provided).
@@ -698,6 +699,7 @@ class Chemical:
         self._CAS = CAS or ID
         for i,j in data.items(): setfield(self, '_' + i , j)
         if formula: self.formula = formula
+        if atoms: self.atoms = atoms
         self._eos = create_eos(self.EOS_default, self._Tc, self._Pc, self._omega)
         TDependentProperty.RAISE_PROPERTY_CALCULATION_ERROR = False
         self._estimate_missing_properties(None)
@@ -959,6 +961,8 @@ class Chemical:
         return self._formula
     @formula.setter
     def formula(self, formula):
+        if isinstance(formula, dict):
+            formula = ''.join([f'{j}{i}' for i, j in formula.items()])
         self._formula = str(formula)
         self._MW = compute_molecular_weight(self.atoms)
         if self._Hf: self.reset_combustion_data()
