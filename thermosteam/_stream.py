@@ -2659,7 +2659,10 @@ class Stream(AbstractStream):
                 total_flow = flow_array.sum()
                 index.append((f"{phase} [{flow_units}]", ''))
                 data.append(f"{total_flow:{flow_notation}}")
-                comp_array = 100 * flow_array / total_flow
+                if total_flow == 0:
+                    comp_array = flow_array
+                else:
+                    comp_array = 100 * flow_array / total_flow
                 for i, (ID, comp) in enumerate(zip(all_IDs, comp_array)):
                     if not comp: continue
                     if i >= N_max:
