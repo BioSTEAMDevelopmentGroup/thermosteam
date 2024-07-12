@@ -17,16 +17,20 @@ from . import (
     _parse as prs,
     _xparse as xprs,
 )
-from ..utils import chemicals_user
+from ..utils import chemicals_user, thermo_user, AbstractMethod
 from .._phase import NoPhase, phase_tuple
 from ..indexer import ChemicalIndexer, MaterialIndexer
 from ..exceptions import InfeasibleRegion
 import numpy as np
 import pandas as pd
 
-__all__ = ('Reaction', 'ReactionItem', 'ReactionSet', 
-           'ParallelReaction', 'SeriesReaction', 'ReactionSystem',
-           'Rxn', 'RxnS', 'RxnI', 'PRxn', 'SRxn', 'RxnSys')
+__all__ = (
+    'Reaction', 'ReactionItem', 'ReactionSet', 
+    'ParallelReaction', 'SeriesReaction', 'ReactionSystem',
+    'Rxn', 'RxnS', 'RxnI', 'PRxn', 'SRxn', 'RxnSys',
+    'KineticReaction', 'KineticConversion',
+    'KRxn',
+)
 
 def get_stoichiometric_string(stoichiometry, phases, chemicals):
     if phases:
@@ -96,8 +100,26 @@ def as_material_array(material, basis, phases, chemicals):
     else:
         return SparseVector(material), None, material
 
+# %% Extent of reaction (stoichiometric)
 
-# %%
+class Conversion:
+    __slots__ = ('reaction', 'index')
+    
+    def __init__(self, reaction):
+        self.reaction = reaction
+        self.index = None
+        
+    def set_chemicals(self, chemicals):
+        self.index = self.reaction.chemicals.indices([i.ID for i in chemicals])
+        
+    def __call__(self, material=None, T=None, P=None, phase=None):
+        if self.index is None:
+            return self.reaction.conversion(material)
+        else:
+            flow = SparseVector.from_size(self.reaction.chemicals.size)
+            flow[self.index] = material
+            return self.reaction.conversion(material)
+
 
 @chemicals_user
 class Reaction:
@@ -118,7 +140,7 @@ class Reaction:
         Reactant conversion (fraction). Defaults to 1.
     chemicals : Chemicals, optional
         Chemicals corresponding to each entry in the stoichiometry array. 
-        Defaults to settings.chemicals
+        Defaults to settings.chemicals.
     basis: {'mol', 'wt'}, optional
         Basis of reaction. Defaults to 'mol'.
     
@@ -247,13 +269,17 @@ class Reaction:
     Glucose + O2 -> Ethanol + CO2  Glucose    35.00
     
     """
+    _rate = AbstractMethod
     phases = MaterialIndexer.phases
-    __slots__ = ('_basis',
-                 '_phases',
-                 '_chemicals',
-                 '_X_index', 
-                 '_stoichiometry', 
-                 '_X')
+    __slots__ = (
+        '_stream',
+        '_basis',
+        '_phases',
+        '_chemicals',
+        '_reactant_index', 
+        '_stoichiometry', 
+        '_X'
+    )
     
     def __init__(self, reaction, reactant=None, X=1., 
                  chemicals=None, basis='mol', *,
@@ -280,21 +306,21 @@ class Reaction:
                     else:
                         raise ValueError('must pass reactant when multiple reactants are involved')
                 else:
-                    reactant_index = self._chemicals.index(reactant)
+                    reactant_index = chemicals.index(reactant)
                 for phase_index, x in enumerate(stoichiometry[:, reactant_index]):
                     if x: break
-                self._X_index = (phase_index, reactant_index)
+                self._reactant_index = (phase_index, reactant_index)
             else:
                 self._stoichiometry = prs.get_stoichiometric_array(reaction, chemicals)
                 if reactant is None:
                     reactants_index, = self._stoichiometry.negative_index()
                     N_reactants = len(reactants_index)
                     if N_reactants == 1:
-                        self._X_index = reactants_index[0]
+                        self._reactant_index = reactants_index[0]
                     else:
                         raise ValueError('must pass reactant when multiple reactants are involved')
                 else:
-                    self._X_index = self._chemicals.index(reactant)
+                    self._reactant_index = chemicals.index(reactant)
             self._rescale()
             if correct_atomic_balance:
                 self.correct_atomic_balance()
@@ -308,7 +334,7 @@ class Reaction:
         else:
             self._phases = ()
             self._stoichiometry = SparseVector.from_size(chemicals.size)
-            self._X_index = self._chemicals.index(reactant)
+            self._reactant_index = chemicals.index(reactant)
     
     def backwards(self, reactant=None, X=None):
         new = self.copy()
@@ -317,18 +343,18 @@ class Reaction:
                 _, reactants_index = new._stoichiometry.positive_index()
                 N_reactants = len(reactants_index)
                 if N_reactants == 1:
-                    new._X_index = reactants_index[0]
+                    new._reactant_index = reactants_index[0]
                 else:
                     raise ValueError('must pass reactant when multiple reactants are involved')
             else:
                 reactants_index, = new._stoichiometry.positive_index()
                 N_reactants = len(reactants_index)
                 if N_reactants == 1:
-                    self._X_index = reactants_index[0]
+                    self._reactant_index = reactants_index[0]
                 else:
                     raise ValueError('must pass reactant when multiple reactants are involved')
         else:
-            new._X_index = new._chemicals.index(reactant)
+            new._reactant_index = new.chemicals.index(reactant)
         if X is not None: new.X = X
         new._rescale()
         return new
@@ -337,7 +363,7 @@ class Reaction:
     def reaction_chemicals(self):
         """Return all chemicals involved in the reaction."""
         keys = sorted(self._stoichiometry.nonzero_keys())
-        chemicals = self._chemicals
+        chemicals = self.chemicals
         return [chemicals[i] for i in keys]
     
     def reset_chemicals(self, chemicals):
@@ -348,20 +374,21 @@ class Reaction:
         if phases:
             M, N = stoichiometry.shape
             new_stoichiometry = SparseArray.from_shape([M, chemicals.size])
-            IDs = self._chemicals.IDs
+            IDs = self.chemicals.IDs
             for (i, j), k in stoichiometry.nonzero_items():
                 new_stoichiometry[i, chemicals.index(IDs[j])] = k
             phase, reactant = reactant
-            X_index = phases.index(phase), chemicals.index(reactant)
+            reactant_index = phases.index(phase), chemicals.index(reactant)
         else:
             new_stoichiometry = SparseVector.from_size(chemicals.size)
-            IDs = self._chemicals.IDs
+            IDs = self.chemicals.IDs
             for i, j in stoichiometry.nonzero_items():
                 new_stoichiometry[chemicals.index(IDs[i])] = j
-            X_index = chemicals.index(reactant)
+            reactant_index = chemicals.index(reactant)
         self._chemicals = chemicals
         self._stoichiometry = new_stoichiometry
-        self._X_index = X_index
+        self._reactant_index = reactant_index
+        if hasattr(self, '_stream'): del self._stream
     
     def copy(self, basis=None):
         """Return copy of Reaction object."""
@@ -369,7 +396,7 @@ class Reaction:
         copy._basis = self._basis
         copy._phases = self._phases
         copy._stoichiometry = self._stoichiometry.copy()
-        copy._X_index = self._X_index
+        copy._reactant_index = self._reactant_index
         copy._chemicals = self._chemicals
         copy._X = self._X
         if basis: set_reaction_basis(copy, basis)
@@ -380,13 +407,13 @@ class Reaction:
         return bool(self.X and self.stoichiometry.any())
     
     def _math_compatible_reaction(self, rxn, copy=True):
-        basis = self.basis
+        basis = self._basis
         if copy or basis != rxn._basis: rxn = rxn.copy(basis)
-        if self._chemicals is not rxn._chemicals:
+        if self.chemicals is not rxn.chemicals:
             raise ValueError('chemicals must be the same to add/subtract reactions')
         if self._phases != rxn._phases:
             raise ValueError('phases must be the same to add/subtract reactions')
-        if self._X_index != rxn._X_index:
+        if self._reactant_index != rxn._reactant_index:
             raise ValueError('reactants must be the same to add/subtract reactions')
         return rxn
     
@@ -397,7 +424,7 @@ class Reaction:
         if rxn == 0 or rxn is None or not rxn.has_reaction(): return self.copy()
         rxn = self._math_compatible_reaction(rxn)
         stoichiometry = self._stoichiometry * self.X + rxn._stoichiometry * rxn.X
-        rxn._stoichiometry = stoichiometry / -(stoichiometry[rxn._X_index])
+        rxn._stoichiometry = stoichiometry / -(stoichiometry[rxn._reactant_index])
         rxn.X = self.X + rxn.X
         return rxn
     
@@ -405,7 +432,7 @@ class Reaction:
         if rxn == 0 or rxn is None or not rxn.has_reaction(): return self
         rxn = self._math_compatible_reaction(rxn, copy=False)
         stoichiometry = self._stoichiometry * self.X + rxn._stoichiometry * rxn.X
-        self._stoichiometry = stoichiometry / -(stoichiometry[self._X_index])
+        self._stoichiometry = stoichiometry / -(stoichiometry[self._reactant_index])
         self.X = self.X + rxn.X
         return self
     
@@ -436,7 +463,7 @@ class Reaction:
         if rxn == 0 or rxn is None or not rxn.has_reaction(): return self
         rxn = self._math_compatible_reaction(rxn)
         stoichiometry = self._stoichiometry*self.X - rxn._stoichiometry*rxn.X
-        rxn._stoichiometry = stoichiometry/-(stoichiometry[rxn._X_index])
+        rxn._stoichiometry = stoichiometry/-(stoichiometry[rxn._reactant_index])
         rxn.X = self.X - rxn.X
         return rxn
     
@@ -444,13 +471,24 @@ class Reaction:
         if rxn == 0 or rxn is None or not rxn.has_reaction(): return self
         rxn = self._math_compatible_reaction(rxn, copy=False)
         stoichiometry = self._stoichiometry*self.X + rxn._stoichiometry*rxn.X
-        self._stoichiometry = stoichiometry/-(stoichiometry[self._X_index])
+        self._stoichiometry = stoichiometry/-(stoichiometry[self._reactant_index])
         self.X = self.X - rxn.X
         return self
     
-    def __call__(self, material):
+    def conversion(self, material, T=None, P=None, phase=None, time=None):
         values, config, original = as_material_array(
-            material, self._basis, self._phases, self._chemicals
+            material, self._basis, self._phases, self.chemicals
+        )
+        conversion = self._conversion(values)
+        if config: material._imol.reset_chemicals(*config)
+        return conversion
+    
+    def conversion_handle(self, stream):
+        return Conversion(self)
+    
+    def __call__(self, material, T=None, P=None, phase=None, time=None):
+        values, config, original = as_material_array(
+            material, self._basis, self._phases, self.chemicals
         )
         self._reaction(values)
         if tmo.reaction.CHECK_FEASIBILITY:
@@ -462,8 +500,7 @@ class Reaction:
                     X_net = self.X_net()
                     for ID, X in X_net.items():
                         if X > 1.: RuntimeError(f"conversion of '{ID}' is over 100%")
-                    if values.ndim == 2:
-                        negative_index = values.negative_keys()
+                    negative_index = values.negative_keys()
                     chemicals = self.chemicals.tuple
                     IDs = [chemicals[i].ID for i in negative_index]
                     if len(IDs) == 1: IDs = repr(IDs[0])
@@ -478,7 +515,7 @@ class Reaction:
     def force_reaction(self, material):
         """React material ignoring feasibility checks."""
         values, config, original = as_material_array(
-            material, self._basis, self._phases, self._chemicals
+            material, self._basis, self._phases, self.chemicals
         )
         self._reaction(values)
         fn.remove_negligible_negative_values(values)
@@ -533,15 +570,15 @@ class Reaction:
         stoichiometry = self._stoichiometry
         if stoichiometry.ndim == 2: 
             stoichiometry = stoichiometry.sum(axis=0)
-            reactant_index = self._X_index[1]
+            reactant_index = self._reactant_index[1]
         else:
-            reactant_index = self._X_index
-        product_index = self._chemicals.index(product)
+            reactant_index = self._reactant_index
+        product_index = self.chemicals.index(product)
         product_coefficient = stoichiometry[product_index]
         if product_yield is None:
             product_yield = product_coefficient * self.X
-            if basis and self.basis != basis:
-                chemicals_tuple = self._chemicals.tuple
+            if basis and self._basis != basis:
+                chemicals_tuple = self.chemicals.tuple
                 MW_reactant = chemicals_tuple[reactant_index].MW
                 MW_product = chemicals_tuple[product_index].MW
                 if basis == 'wt':
@@ -555,8 +592,8 @@ class Reaction:
             return product_yield
         else:
             X = product_yield / product_coefficient
-            if basis and self.basis != basis:
-                chemicals_tuple = self._chemicals.tuple
+            if basis and self._basis != basis:
+                chemicals_tuple = self.chemicals.tuple
                 MW_reactant = chemicals_tuple[reactant_index].MW
                 MW_product = chemicals_tuple[product_index].MW
                 if basis == 'wt':
@@ -570,7 +607,7 @@ class Reaction:
                 raise ValueError("product yield or reactant demand is above the maximum theoretical")
             self.X = X
     
-    def adiabatic_reaction(self, stream):
+    def adiabatic_reaction(self, stream, Q=0):
         """
         React stream material adiabatically, accounting for the change in enthalpy
         due to the heat of reaction.
@@ -688,12 +725,15 @@ class Reaction:
         """
         if not isinstance(stream, tmo.Stream):
             raise ValueError(f"stream must be a Stream object, not a '{type(stream).__name__}' object")
-        Hnet = stream.Hnet
+        Hnet = stream.Hnet + Q
         self(stream)
         stream.H = Hnet - stream.Hf
     
     def _reaction(self, material_array):
-        material_array += material_array[self._X_index] * self.X * self._stoichiometry
+        material_array += material_array[self._reactant_index] * self.X * self._stoichiometry
+    
+    def _conversion(self, material_array):
+        return material_array[self._reactant_index] * self.X * self._stoichiometry
     
     def X_net(self, indexer=False):
         """Return net reaction conversion of reactants as a dictionary or
@@ -720,7 +760,7 @@ class Reaction:
         * The basis of the reaction (by mol or by wt)
 
         """
-        chemicals = self._chemicals
+        chemicals = self.chemicals
         stoichiometry = self._stoichiometry.to_array()
         phases = self.phases
         Hfs = chemicals.Hf
@@ -755,7 +795,7 @@ class Reaction:
                             raise RuntimeError(f"invalid reference phase '{phase_ref}'")
             Hfs = Hfs + H_latent
         if self._basis == 'wt': Hfs = Hfs / self.MWs
-        return self.X * (Hfs * stoichiometry).sum()
+        return self._X * (Hfs * stoichiometry).sum()
     
     @property
     def X(self):
@@ -775,27 +815,27 @@ class Reaction:
         stoichiometry = self._stoichiometry
         if stoichiometry.ndim == 1:
             return tmo.indexer.ChemicalIndexer.from_data(self._stoichiometry,
-                                                         chemicals=self._chemicals,
+                                                         chemicals=self.chemicals,
                                                          check_data=False)
         else:
             return tmo.indexer.MaterialIndexer.from_data(self._stoichiometry,
                                                          phases=self._phases,
-                                                         chemicals=self._chemicals,
+                                                         chemicals=self.chemicals,
                                                          check_data=False)
     
     @property
     def reactant(self):
         """[str] Reactant associated to conversion."""
         if self._phases:
-            phase_index, chemical_index = self._X_index
-            return self._phases[phase_index], self._chemicals.IDs[chemical_index]
+            phase_index, chemical_index = self._reactant_index
+            return self._phases[phase_index], self.chemicals.IDs[chemical_index]
         else:
-            return self._chemicals.IDs[self._X_index] 
+            return self.chemicals.IDs[self._reactant_index] 
 
     @property
     def MWs(self):
         """[1d array] Molecular weights of all chemicals [g/mol]."""
-        return self._chemicals.MW
+        return self.chemicals.MW
 
     @property
     def basis(self):
@@ -860,7 +900,7 @@ class Reaction:
         if variable:
             index = self.chemicals.get_index(variable)
         else:
-            index = self._X_index
+            index = self._reactant_index
         stoichiometry_by_wt = self._get_stoichiometry_by_wt()
         if self.phases: 
             stoichiometry_by_wt = stoichiometry_by_wt.sum(0)
@@ -955,7 +995,7 @@ class Reaction:
             constants = set(constants)
             constant_index = chemicals.indices(constants)
         else:
-            constant_index = [self._X_index[1] if phases else self._X_index]
+            constant_index = [self._reactant_index[1] if phases else self._reactant_index]
         chemical_index, = np.where(stoichiometry_by_mol)
         chemical_index = np.setdiff1d(chemical_index, constant_index)
         formula_array = chemicals.formula_array
@@ -992,13 +1032,13 @@ class Reaction:
     
     def _rescale(self):
         """Scale stoichiometry to a per reactant basis."""
-        new_scale = -self._stoichiometry[self._X_index]
+        new_scale = -self._stoichiometry[self._reactant_index]
         if new_scale == 0.:
             raise RuntimeError(f"reactant '{self.reactant}' does not participate in stoichiometric reaction")
         self._stoichiometry /= new_scale
     
     def to_df(self, index=None):
-        columns = [f'Stoichiometry (by {self.basis})', 'Reactant', 'Conversion [%]']
+        columns = [f'Stoichiometry (by {self._basis})', 'Reactant', 'Conversion [%]']
         stoichiometry = get_stoichiometric_string(self.stoichiometry, self.phases, self.chemicals)
         reactant = self.reactant
         if self.phases: 
@@ -1011,10 +1051,10 @@ class Reaction:
     
     def __repr__(self):
         reaction = get_stoichiometric_string(self.stoichiometry, self.phases, self.chemicals)
-        return f"{type(self).__name__}('{reaction}', reactant='{self.reactant}', X={self.X:.3g}, basis={repr(self.basis)})"
+        return f"{type(self).__name__}('{reaction}', reactant='{self.reactant}', X={self.X:.3g}, basis={repr(self._basis)})"
     
     def _info(self):
-        info = f"{type(self).__name__} (by {self.basis}):"
+        info = f"{type(self).__name__} (by {self._basis}):"
         rxn = get_stoichiometric_string(self.stoichiometry, self.phases, self.chemicals)
         if self.phases:
             phase, ID = self.reactant
@@ -1049,7 +1089,6 @@ class ReactionItem(Reaction):
         
     """
     __slots__ = ('_index', '_parent')
-    phases = MaterialIndexer.phases
     
     def __init__(self, rxnset, index):
         self._stoichiometry = rxnset._stoichiometry[index]
@@ -1057,7 +1096,7 @@ class ReactionItem(Reaction):
         self._basis = rxnset._basis
         self._X = rxnset._X
         self._chemicals = rxnset._chemicals
-        self._X_index = rxnset._X_index[index]
+        self._reactant_index = rxnset._reactant_index[index]
         self._index = index
         self._parent = rxnset
     
@@ -1067,7 +1106,7 @@ class ReactionItem(Reaction):
         parent.reset_chemicals(chemicals)
         index = self._index
         self._stoichiometry = parent._stoichiometry[index]
-        self._X_index = parent._X_index[index]
+        self._reactant_index = parent._reactant_index[index]
         self._chemicals = chemicals
     
     @property
@@ -1084,8 +1123,9 @@ class ReactionItem(Reaction):
         copy._basis = self._basis
         copy._phases = self._phases
         copy._stoichiometry = self._stoichiometry.copy()
-        copy._X_index = self._X_index
+        copy._reactant_index = self._reactant_index
         copy._chemicals = self._chemicals
+        copy.chemicals = self.chemicals
         copy._X = self.X
         if basis: set_reaction_basis(copy, basis)
         return copy
@@ -1099,6 +1139,7 @@ class ReactionItem(Reaction):
         self._X[self._index] = X
         
 
+@chemicals_user
 class ReactionSet:
     """
     Create a ReactionSet that contains all reactions and conversions as an array.
@@ -1115,6 +1156,7 @@ class ReactionSet:
     _get_stoichiometry_by_wt = Reaction._get_stoichiometry_by_wt
     force_reaction = Reaction.force_reaction
     adiabatic_reaction = Reaction.adiabatic_reaction
+    reaction_chemicals = Reaction.reaction_chemicals
     __call__ = Reaction.__call__
     
     def __init__(self, reactions):
@@ -1123,16 +1165,19 @@ class ReactionSet:
         if len(phases_set) > 1:
             raise ValueError('all reactions must implement the same phases')
         self._phases, = phases_set
-        chemicals = {i.chemicals for i in reactions}
-        try: self._chemicals, = chemicals
+        try: chemicals, = {i.chemicals for i in reactions}
         except: raise ValueError('all reactions must have the same chemicals')
-        basis = {i.basis for i in reactions}
+        self._chemicals = chemicals
+        basis = {i._basis for i in reactions}
         try: self._basis, = basis
         except: raise ValueError('all reactions must have the same basis')
         self._stoichiometry = [i._stoichiometry for i in reactions]
         self._X = np.array([i.X for i in reactions])
-        X_index = [i._X_index for i in reactions]
-        self._X_index = tuple(X_index) if self._phases else np.array(X_index)
+        reactant_index = [i._reactant_index for i in reactions]
+        self._reactant_index = tuple(reactant_index) if self._phases else np.array(reactant_index)
+    
+    def equilibrium(self, material, T, P, phase):
+        raise NotImplementedError('equilibrium of reaction sets not implemented in BioSTEAM (yet)')
         
     def __iter__(self):
         for i in range(self._X.size): yield ReactionItem(self, i)
@@ -1145,7 +1190,7 @@ class ReactionSet:
             rxnset._phases = self._phases
             rxnset._stoichiometry = stoichiometry
             rxnset._X = self._X[index]
-            rxnset._X_index = self._X_index[index]
+            rxnset._reactant_index = self._reactant_index[index]
             rxnset._chemicals = self._chemicals
             rxnset._parent_index = (self, index)
             return rxnset
@@ -1155,7 +1200,7 @@ class ReactionSet:
     def _rescale(self):
         """Scale stoichiometry to a per reactant basis."""
         stoichiometry = self._stoichiometry
-        for i, index in enumerate(self._X_index): 
+        for i, index in enumerate(self._reactant_index): 
             row = stoichiometry[i]
             row /= -row[index]
     
@@ -1165,8 +1210,8 @@ class ReactionSet:
             parent, index = self._parent_index
             parent.reset_chemicals(chemicals)
             self._stoichiometry = parent._stoichiometry[index]
-            self._X_index = parent._X_index[index]
-            self._chemicals = parent._chemicals
+            self._reactant_index = parent._reactant_index[index]
+            self._chemicals = chemicals
             return
         phases = self.phases
         stoichiometry = self._stoichiometry
@@ -1177,36 +1222,24 @@ class ReactionSet:
                 A, B = stoic.shape
                 new_stoic = SparseArray.from_shape([A, chemicals.size])
                 new_stoichiometry.append(new_stoic)
-                IDs = self._chemicals.IDs
+                IDs = self.chemicals.IDs
                 for i in range(A):
                     for j in range(B):
                         value = stoic[i, j]
                         if value: new_stoic[i, chemicals.index(IDs[j])] = value
-            X_index = [(phases.index(i), chemicals.index(j)) for i, j in reactants]
+            reactant_index = [(phases.index(i), chemicals.index(j)) for i, j in reactants]
         else:
             A, B = np.array(stoichiometry).shape
             new_stoichiometry = SparseArray.from_shape([A, chemicals.size])
-            IDs = self._chemicals.IDs
+            IDs = self.chemicals.IDs
             for i in range(A):
                 for j in range(B):
                     value = stoichiometry[i, j]
                     if value: new_stoichiometry[i, chemicals.index(IDs[j])] = value
-            X_index = [chemicals.index(i) for i in reactants]
+            reactant_index = [chemicals.index(i) for i in reactants]
         self._chemicals = chemicals
         self._stoichiometry = new_stoichiometry
-        self._X_index = X_index
-    
-    @property
-    def reaction_chemicals(self):
-        """Return all chemicals involved in the reaction."""
-        if self._phases:
-            keys = []
-            for i in self._stoichiometry: keys.extend(i.nonzero_keys())
-            keys = sorted(set(keys))
-        else:
-            keys = sorted(self._stoichiometry.nonzero_keys())
-        chemicals = self._chemicals
-        return [chemicals[i] for i in keys]
+        self._reactant_index = reactant_index
     
     @property
     def basis(self):
@@ -1226,10 +1259,6 @@ class ReactionSet:
         if X is not self._X: self._X[:] = X
     
     @property
-    def chemicals(self):
-        """[Chemicals] Chemicals corresponing to each entry in the stoichiometry array."""
-        return self._chemicals
-    @property
     def stoichiometry(self):
         """[2d array] Stoichiometry coefficients."""
         return self._stoichiometry
@@ -1237,22 +1266,22 @@ class ReactionSet:
     @property
     def reactants(self):
         """tuple[str] Reactants associated to conversion."""
-        IDs = self._chemicals.IDs
+        IDs = self.chemicals.IDs
         phases = self._phases
-        X_index = self._X_index
+        reactant_index = self._reactant_index
         if phases:
-            return tuple([(phases[i], IDs[j]) for i,j in X_index])
+            return tuple([(phases[i], IDs[j]) for i,j in reactant_index])
         else:
-            return tuple([IDs[i] for i in X_index])
+            return tuple([IDs[i] for i in reactant_index])
     
     @property
     def MWs(self):
         """[2d array] Molecular weights of all chemicals."""
-        return self._chemicals.MW[np.newaxis, :]
+        return self.chemicals.MW[np.newaxis, :]
     
     def to_df(self, index=None):
-        columns = [f'Stoichiometry (by {self.basis})', 'Reactant', 'Conversion [%]']
-        chemicals = self._chemicals
+        columns = [f'Stoichiometry (by {self._basis})', 'Reactant', 'Conversion [%]']
+        chemicals = self.chemicals
         phases = self._phases
         rxns = [get_stoichiometric_string(i, phases, chemicals) for i in self._stoichiometry]
         cmps = [ID + ',' + phase for phase, ID in self.reactants] if phases else self.reactants
@@ -1269,8 +1298,8 @@ class ReactionSet:
         return f"{type(self).__name__}([{', '.join([repr(i).replace('ReactionItem', 'Reaction') for i in self])}])"
     
     def _info(self, index_name='index'):
-        info = f"{type(self).__name__} (by {self.basis}):"
-        chemicals = self._chemicals
+        info = f"{type(self).__name__} (by {self._basis}):"
+        chemicals = self.chemicals
         phases = self._phases
         length = len
         string = str
@@ -1404,17 +1433,24 @@ class ParallelReaction(ReactionSet):
         return self.__class__([i + j for i, j in zip(self, other)])
     
     def _reaction(self, material_array):
-        reacted = self._X * np.array([material_array[i] for i in self._X_index], float)
+        reacted = self._X * np.array([material_array[i] for i in self._reactant_index], float)
         for X, stoichiometry in zip(reacted, self._stoichiometry):
             material_array += X * stoichiometry
+
+    def _conversion(self, material_array):
+        reacted = self._X * np.array([material_array[i] for i in self._reactant_index], float)
+        conversion = 0 * material_array
+        for X, stoichiometry in zip(reacted, self._stoichiometry):
+            conversion += X * stoichiometry
+        return conversion
 
     def reduce(self):
         """
         Return a new Parallel reaction object that combines reaction 
         with the same reactant together, reducing the number of reactions.
         """
-        rxn_dict = {i: [] for i in set(self._X_index)}
-        for i in self: rxn_dict[i._X_index].append(i)
+        rxn_dict = {i: [] for i in set(self._reactant_index)}
+        for i in self: rxn_dict[i._reactant_index].append(i)
         for key, rxns in rxn_dict.items():
             rxn, *rxns = rxns
             rxn = rxn.copy()
@@ -1464,8 +1500,14 @@ class SeriesReaction(ReactionSet):
                         'ParallelReaction objects are reducible')
 
     def _reaction(self, material_array):
-        for i, j, k in zip(self._X_index, self.X, self._stoichiometry):
+        for i, j, k in zip(self._reactant_index, self.X, self._stoichiometry):
             material_array += material_array[i] * j * k
+
+    def _conversion(self, material_array):
+        final = material_array.copy()
+        for i, j, k in zip(self._reactant_index, self.X, self._stoichiometry):
+            final += final[i] * j * k
+        return final - material_array
 
     def X_net(self, indexer=False):
         """Return net reaction conversion of reactants as a dictionary or
@@ -1483,6 +1525,8 @@ class SeriesReaction(ReactionSet):
         else:
             return X_net
 
+
+@chemicals_user
 class ReactionSystem:
     """
     Create a ReactionSystem object that can react a stream across a series of
@@ -1567,6 +1611,7 @@ class ReactionSystem:
                     Biomass     0.0437
     
     """
+    
     __slots__ = ('_reactions',
                  '_basis',
                  '_chemicals',
@@ -1577,16 +1622,19 @@ class ReactionSystem:
         self._reactions = reactions
         try: self._phases, = set([i._phases for i in reactions])
         except: raise ValueError('all reactions must have the same phases')
-        try: self._chemicals, = set([i._chemicals for i in reactions])
+        try: chemicals, = set([i.chemicals for i in reactions])
         except: raise ValueError('all reactions must have the same chemicals')
+        self._chemicals = chemicals
         try: self._basis, = set([i._basis for i in reactions])
         except: raise ValueError('all reactions must have the same basis')
         
     force_reaction = Reaction.force_reaction
     adiabatic_reaction = Reaction.adiabatic_reaction
-    chemicals = Reaction.chemicals
     __call__ = Reaction.__call__
     show = Reaction.show
+    
+    def equilibrium(self, material, T, P, phase):
+        raise NotImplementedError('equilibrium of reaction systems not implemented in BioSTEAM (yet)')
     
     def __iter__(self):
         return iter(self.reactions)
@@ -1610,7 +1658,15 @@ class ReactionSystem:
         for i in self._reactions: 
             if i._basis != basis: raise RuntimeError('not all reactions have the same basis')
             i._reaction(material)
-        
+    
+    def _conversion(self, material):
+        basis = self._basis
+        final = material.copy()
+        for i in self._reactions: 
+            if i._basis != basis: raise RuntimeError('not all reactions have the same basis')
+            i._reaction(final)    
+        return final - material
+    
     def X_net(self, indexer=False):
         """Return net reaction conversion of reactants as a dictionary or
         a ChemicalIndexer if indexer is True."""
@@ -1622,7 +1678,7 @@ class ReactionSystem:
                 else:
                     X_net[i] = j
         if indexer:
-            chemicals = self._chemicals
+            chemicals = self.chemicals
             data = chemicals.kwarray(X_net)
             return ChemicalIndexer.from_data(data, NoPhase, chemicals, False)
         else:
@@ -1643,7 +1699,7 @@ class ReactionSystem:
         
         """
         values, config, original = as_material_array(
-            material, self._basis, self._phases, self._chemicals
+            material, self._basis, self._phases, self.chemicals
         )
         preconverted_material = values if original else values.copy()
         reactions = self.reactions
@@ -1658,16 +1714,13 @@ class ReactionSystem:
                     if i == subindex: break
                     rxn(preconverted_material)
             reaction = reaction[subindex]
-            X_index = reaction._X_index
-            return reaction.X * preconverted_material[X_index]
+            return reaction.X * preconverted_material[reaction._reactant_index]
         elif isinstance(reaction, SeriesReaction):
             raise ValueError('must pass subindex if the index refers to a SeriesReaction object')
         elif isinstance(reaction, ParallelReaction):
-            X_index = reaction._X_index
-            return (reaction.X * preconverted_material[X_index]).sum()
+            return (reaction.X * preconverted_material[reaction._reactant_index]).sum()
         else:
-            X_index = reaction._X_index
-            return reaction.X * preconverted_material[X_index]
+            return reaction.X * preconverted_material[reaction._reactant_index]
         
         
     def __repr__(self):
@@ -1690,10 +1743,251 @@ class ReactionSystem:
         
     _ipython_display_ = show = Reaction.show
 
-# Short-hand conventions
+
+# %% Kinetic reactions (stoichiometric)
+
+class KineticConversion:
+    __slots__ = ('reaction', 'stream', 'index')
+    
+    def __init__(self, reaction, stream):
+        self.reaction = reaction
+        self.stream = stream
+        self.index = None
+        
+    def set_chemicals(self, chemicals):
+        self.index = self.stream.chemicals.indices([i.ID for i in chemicals])
+        
+    def __call__(self, material=None, T=None, P=None, phase=None):
+        if self.index is None:
+            with self.stream.temporary(material, T, P, phase) as stream:
+                return self.reaction.conversion(stream)
+        else:
+            flow = SparseVector.from_size(self.stream.chemicals.size)
+            flow[self.index] = material
+            with self.stream.temporary(flow, T, P, phase) as stream:
+                return self.reaction.conversion(stream)[self.index]
+
+
+@chemicals_user
+class KineticReaction:
+    """
+    Create an abstract KineticReaction object which defines a stoichiometric 
+    reaction. Child classes must implement a `rate(stream)` method that accepts 
+    a stream and returns the reaction rate in kmol/m3/hr and a `volume(stream)` 
+    method that accepts the same stream and returns the reactive volume in m3. 
+    The units of `volume` need not be m3 so long as it is consistent in both 
+    the rate and volume methods. For example, the reaction rate may be given 
+    in 1/hr and the volume in kmol.
+    
+    Parameters
+    ----------
+    reaction : dict or str
+               A dictionary of stoichiometric coefficients or a stoichiometric
+               equation written as:
+               i1 R1 + ... + in Rn -> j1 P1 + ... + jm Pm
+    chemicals : Chemicals, optional
+        Chemicals corresponding to each entry in the stoichiometry array. 
+        Defaults to settings.chemicals.
+    
+    Other Parameters
+    ----------------
+    check_mass_balance=False: bool
+        Whether to check if mass is not created or destroyed.
+    correct_mass_balance=False: bool
+        Whether to make sure mass is not created or destroyed by varying the 
+        reactant stoichiometric coefficient.
+    check_atomic_balance=False: bool
+        Whether to check if stoichiometric balance by atoms cancel out.
+    correct_atomic_balance=False: bool
+        Whether to correct the stoichiometry according to the atomic balance.
+    
+    Notes
+    -----
+    A reaction object can react only a stream object (not an array).
+    
+    """
+    rate = AbstractMethod
+    volume = AbstractMethod
+    phases = MaterialIndexer.phases
+    __slots__ = (
+        '_phases',
+        '_thermo', 
+        '_stoichiometry', 
+        '_reactant_index',
+    )
+    
+    _basis = 'mol'
+    _X = 1
+    reactant = Reaction.reactant
+    istoichiometry = Reaction.istoichiometry
+    stoichiometry = Reaction.stoichiometry
+    reaction_chemicals = Reaction.reaction_chemicals
+    reset_chemicals = Reaction.reset_chemicals
+    MWs = Reaction.MWs
+    dH = Reaction.dH
+    _rescale = Reaction._rescale
+    _get_stoichiometry_by_wt = Reaction._get_stoichiometry_by_wt
+    _get_stoichiometry_by_mol = Reaction._get_stoichiometry_by_mol
+    mass_balance_error = Reaction.mass_balance_error
+    atomic_balance_error = Reaction.atomic_balance_error
+    check_mass_balance = Reaction.check_mass_balance
+    check_atomic_balance = Reaction.check_atomic_balance
+    correct_atomic_balance = Reaction.correct_atomic_balance
+    correct_mass_balance = Reaction.correct_mass_balance
+    show = _ipython_display_ = Reaction.show
+    
+    def __init__(self, reaction, chemicals=None, reactant=None, *,
+                 phases=None,
+                 check_mass_balance=False,
+                 check_atomic_balance=False,
+                 correct_atomic_balance=False):
+        chemicals = self._load_chemicals(chemicals)
+        if reaction:
+            self._phases = phases = phase_tuple(phases) if phases else xprs.get_phases(reaction)
+            if phases:
+                self._stoichiometry = stoichiometry = xprs.get_stoichiometric_array(reaction, phases, chemicals)
+                if reactant is None:
+                    reactant_index = next(iter(stoichiometry.nonzero_keys()))
+                else:
+                    reactant_index = chemicals.index(reactant)
+                for phase_index, x in enumerate(stoichiometry[:, reactant_index]):
+                    if x: break
+                self._reactant_index = (phase_index, reactant_index)
+            else:
+                self._stoichiometry = stoichiometry = prs.get_stoichiometric_array(reaction, chemicals)
+                if reactant is None:
+                    self._reactant_index = next(iter(stoichiometry.nonzero_keys()))
+                else:
+                    self._reactant_index = chemicals.index(reactant)
+            if check_mass_balance:
+                self.check_mass_balance()
+            if correct_atomic_balance:
+                self.correct_atomic_balance()
+            elif check_atomic_balance:
+                self.check_atomic_balance()
+        else:
+            self._phases = ()
+            self._stoichiometry = SparseVector.from_size(chemicals.size)
+        self._rescale()
+    
+    def conversion_bounds(self, material):
+        stoichiometry = self._stoichiometry
+        conversion = -material / stoichiometry
+        bounds = (
+            conversion[stoichiometry < 0].min(), # Amount reacted per reactant basis
+            conversion[stoichiometry > 0].max(), # Amount produced per reactant basis
+        )
+        return bounds
+    
+    def _equilibrium_objective(self, conversion, stream, data):
+        stream.mol += conversion * self._stoichiometry
+        rate = self.rate(stream)
+        stream.set_data(data)
+        return rate
+    
+    def equilibrium(self, stream):
+        initial_condition = stream.get_data()
+        f = self._equilibrium_objective
+        args = (stream, initial_condition)
+        conversion = flx.IQ_interpolation(f, *self.conversion_bounds(stream.imol.data), xtol=1e-16, args=args)
+        return conversion
+    
+    def conversion_handle(self, stream):
+        return KineticConversion(self, stream)
+    
+    def _rate(self, stream):
+        conversion = self.volume(stream) * self.rate(stream)
+        mol = stream.mol
+        full_conversion = conversion * self._stoichiometry
+        new_mol = mol + full_conversion
+        mask = new_mol < 0
+        if mask.any(): conversion = (1 - 1e-12) * (-mol[mask] / full_conversion[mask]).min() * conversion
+        # conversion_eq = self.equilibrium(stream)
+        # if conversion * conversion_eq < 0:
+        #     mol = stream.mol
+        #     full_conversion = conversion * self._stoichiometry
+        #     new_mol = mol + full_conversion
+        #     mask = new_mol < 0
+        #     if mask.any(): conversion = (1 - 1e-12) * (-mol[mask] / full_conversion[mask]).min() * conversion
+        # elif conversion_eq == 0 or conversion / conversion_eq > 1:
+        #     conversion = conversion_eq
+        return conversion
+    
+    def conversion(self, stream, time=None):
+        if stream.chemicals is not self.chemicals: self.reset_chemicals(stream.chemicals)
+        if time is None and self.volume: # Ideal continuous stirred tank CSTR
+            conversion = self._rate(stream)
+        elif time is None: # Instantaneous reaction
+            conversion = self.equilibrium(stream)
+        else: # Plug flow reaction (PFR)
+            raise NotImplementedError('kinetic integration not yet implemented')
+        return conversion * self._stoichiometry
+    
+    def __call__(self, stream, time=None):
+        if stream.chemicals is not self.chemicals: self.reset_chemicals(stream.chemicals)
+        values = stream.imol.data
+        if time is None and self.volume: # Ideal continuous stirred tank CSTR
+            values += self._rate(stream) * self._stoichiometry
+        elif time is None: # Instantaneous reaction
+            values += self.equilibrium(stream) * self._stoichiometry
+        else: # Plug flow reaction (PFR)
+            raise NotImplementedError('kinetic integration not yet implemented')
+        if tmo.reaction.CHECK_FEASIBILITY:
+            has_negatives = values.has_negatives()
+            if has_negatives:
+                negative_index = values.negative_index()
+                negative_values = values[negative_index]
+                if negative_values.sum() < -1e-12:
+                    negative_index = values.negative_keys()
+                    chemicals = self.chemicals.tuple
+                    IDs = [chemicals[i].ID for i in negative_index]
+                    if len(IDs) == 1: IDs = repr(IDs[0])
+                    raise InfeasibleRegion(f'conversion of {IDs} is over 100%; reaction conversion')
+                else:
+                    values[negative_index] = 0.
+        else:
+            fn.remove_negligible_negative_values(values)
+    
+    def to_df(self, index=None):
+        columns = ['Stoichiometry (by mol)', 'Reactant']
+        stoichiometry = get_stoichiometric_string(self.stoichiometry, self.phases, self.chemicals)
+        reactant = self.reactant
+        if self.phases: 
+            phase, reactant = reactant
+            reactant += ',' + phase
+        df = pd.DataFrame(data=[[stoichiometry, reactant]], columns=columns, index=[index] if index else None)
+        df.index.name = 'Reaction'
+        return df
+    
+    def __repr__(self):
+        reaction = get_stoichiometric_string(self.stoichiometry, self.phases, self.chemicals)
+        return f"{type(self).__name__}('{reaction}', reactant='{self.reactant}')"
+    
+    def _info(self):
+        info = f"{type(self).__name__} (by mol):"
+        rxn = get_stoichiometric_string(self.stoichiometry, self.phases, self.chemicals)
+        if self.phases:
+            phase, ID = self.reactant
+            cmp = ID + ',' + phase
+        else:
+            cmp = self.reactant
+        lrxn = len(rxn)
+        maxrxnlen = max([13, lrxn]) + 2
+        info += "\nstoichiometry" + " "*(maxrxnlen - 13) + "reactant" 
+        rxn_spaces = " "*(maxrxnlen - lrxn)
+        info += f"\n{rxn}{rxn_spaces}{cmp}"
+        return info
+
+
+# %% Short-hand conventions
+
+# Extent of reaction
 Rxn = Reaction
 RxnI = ReactionItem
 RxnS = ReactionSet
 PRxn = ParallelReaction
 SRxn = SeriesReaction
 RxnSys = ReactionSystem
+
+# Kinetics
+KRxn = KineticReaction

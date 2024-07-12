@@ -12,11 +12,10 @@ import flexsolve as flx
 from numba import njit
 from .. import functional as fn
 from ..exceptions import InfeasibleRegion
-from ..utils import fill_like, Cache
 from .._settings import settings
 from .domain import vle_domain
 
-__all__ = ('DewPoint', 'DewPointCache')
+__all__ = ('DewPoint',)
 
 # %% Solvers
 
@@ -62,6 +61,22 @@ class DewPointValues:
         return f"{type(self).__name__}(T={self.T:.2f}, P={self.P:.0f}, IDs={self.IDs}, z={self.z}, x={self.x})"
 
 
+class ReactiveDewPointValues:
+    __slots__ = ('T', 'P', 'IDs', 'z0', 'dz', 'y', 'x')
+    
+    def __init__(self, T, P, IDs, z0, dz, y, x):
+        self.T = T
+        self.P = P
+        self.IDs = IDs
+        self.z0 = z0
+        self.dz = dz
+        self.y = y
+        self.x = x
+        
+    def __repr__(self):
+        return f"{type(self).__name__}(T={self.T:.2f}, P={self.P:.0f}, IDs={self.IDs}, z0={self.z0}, dz={self.dz}, y={self.y}, x={self.x})"
+
+
 # %% Dew point calculation
 
 class DewPoint:
@@ -99,15 +114,15 @@ class DewPoint:
     _cached = {}
     T_tol = 1e-9
     P_tol = 1e-3
-    def __init__(self, chemicals=(), thermo=None):
+    def __new__(cls, chemicals=(), thermo=None):
         thermo = settings.get_default_thermo(thermo)
         chemicals = tuple(chemicals)
         key = (chemicals, thermo.Gamma, thermo.Phi, thermo.PCF)
-        cached = self._cached
+        cached = cls._cached
         if key in cached:
-            other = cached[key]
-            fill_like(self, other, self.__slots__)
+            return cached[key]
         else:
+            self = super().__new__(cls)
             self.IDs = tuple([i.ID for i in chemicals])
             self.gamma = thermo.Gamma(chemicals)
             self.phi = thermo.Phi(chemicals)
@@ -120,6 +135,7 @@ class DewPoint:
             self.Pmax = max([i(Tmax) for i in Psats])
             self.chemicals = chemicals
             cached[key] = self
+            return self
     
     def _solve_x(self, x_gamma, T, P, x):
         gamma = self.gamma
@@ -135,6 +151,19 @@ class DewPoint:
         x[:] = self._solve_x(x_gamma, T, P, x)
         return 1 - x.sum()
     
+    def _T_error_reactive(self, T, P, z, dz, y, x, gas_conversion):
+        if T <= 0: raise InfeasibleRegion('negative temperature')
+        dz[:] = gas_conversion(z, T, P, 'g')
+        y[:] = z + dz
+        y /= y.sum()
+        Psats = np.array([i(T) for i in self.Psats])
+        Psats[Psats < 1e-16] = 1e-16 # Prevent floating point error
+        phi = self.phi(y, T, P)
+        pcf = self.pcf(T, P, Psats)
+        x_gamma = phi * y * P / Psats / pcf
+        x[:] = self._solve_x(x_gamma, T, P, x)
+        return 1 - x.sum()
+    
     def _T_error_ideal(self, T, zP, x):
         Psats = np.array([i(T) for i in self.Psats])
         Psats[Psats < 1e-16] = 1e-16 # Prevent floating point error
@@ -144,6 +173,15 @@ class DewPoint:
     def _P_error(self, P, T, z_norm, z_over_Psats, Psats, x):
         if P <= 0: raise InfeasibleRegion('negative pressure')
         x_gamma = z_over_Psats * P * self.phi(z_norm, T, P) / self.pcf(T, P, Psats)
+        x[:] = self._solve_x(x_gamma, T, P, x)
+        return 1 - x.sum()
+    
+    def _P_error_reactive(self, P, T, Psats, z, dz, y, x, gas_conversion):
+        if P <= 0: raise InfeasibleRegion('negative pressure')
+        dz[:] = gas_conversion(z, T, P, 'g')
+        y[:] = z + dz
+        y /= y.sum()
+        x_gamma = y / Psats * P * self.phi(y, T, P) / self.pcf(T, P, Psats)
         x[:] = self._solve_x(x_gamma, T, P, x)
         return 1 - x.sum()
     
@@ -167,18 +205,21 @@ class DewPoint:
         x = z_over_Psats * P
         return P, x
     
-    def __call__(self, z, *, T=None, P=None):
+    def __call__(self, z, *, T=None, P=None, gas_conversion=None):
         z = np.asarray(z, float)
         if T:
             if P: raise ValueError("may specify either T or P, not both")
-            P, x = self.solve_Px(z, T)
+            P, *args = self.solve_Px(z, T, gas_conversion)
         elif P:
-            T, x = self.solve_Tx(z, P)
+            T, *args = self.solve_Tx(z, P, gas_conversion)
         else:
             raise ValueError("must specify either T or P")
-        return DewPointValues(T, P, self.IDs, z, x)
+        if gas_conversion:
+            return ReactiveDewPointValues(T, P, self.IDs, z, *args)
+        else:
+            return DewPointValues(T, P, self.IDs, z, *args)
     
-    def solve_Tx(self, z, P):
+    def solve_Tx(self, z, P, gas_conversion=None):
         """
         Dew point given composition and pressure.
 
@@ -215,7 +256,8 @@ class DewPoint:
             chemical = self.chemicals[fn.first_true_index(positives)]
             T = chemical.Tsat(P, check_validity=False) if P <= chemical.Pc else chemical.Tc
             x = z.copy()
-        else:
+            return T, fn.normalize(x)
+        elif gas_conversion is None:
             f = self._T_error
             z_norm = z/z.sum()
             zP = z * P
@@ -230,11 +272,30 @@ class DewPoint:
                 Tmax = self.Tmax
                 T = flx.IQ_interpolation(f, Tmin, Tmax,
                                          f(Tmin, *args), f(Tmax, *args),
-                                         T_guess, 1e-9, 5e-12, args,
+                                         T_guess, self.T_tol, 5e-12, args,
                                          checkiter=False, checkbounds=False)
-        return T, fn.normalize(x)
+            return T, fn.normalize(x)
+        else:
+            f = self._T_error_reactive
+            z_norm = z / z.sum()
+            x = z_norm.copy()
+            dz = z_norm.copy()
+            zP = z * P
+            T_guess, y = self._Tx_ideal(zP)
+            args = (P, z_norm, dz, y, x, gas_conversion)
+            try:
+                T = flx.aitken_secant(f, T_guess, T_guess + 1e-3,
+                                      self.T_tol, 5e-12, args,
+                                      checkiter=False)
+            except RuntimeError:
+                Tmin = self.Tmin; Tmax = self.Tmax
+                T = flx.IQ_interpolation(f, Tmin, Tmax,
+                                         f(Tmin, *args), f(Tmax, *args),
+                                         T_guess, self.T_tol, 5e-12, args, 
+                                         checkiter=False, checkbounds=False)
+            return T, dz, fn.normalize(y), x
     
-    def solve_Px(self, z, T):
+    def solve_Px(self, z, T, gas_conversion=None):
         """
         Dew point given composition and temperature.
 
@@ -271,10 +332,11 @@ class DewPoint:
             chemical = self.chemicals[fn.first_true_index(z)]
             P = chemical.Psat(T) if T <= chemical.Tc else chemical.Pc
             x = z.copy()
-        else:
-            z_norm = z/z.sum()
+            return P, fn.normalize(x)
+        elif gas_conversion is None:
+            z_norm = z / z.sum()
             Psats = np.array([i(T) for i in self.Psats], dtype=float)
-            z_over_Psats = z/Psats
+            z_over_Psats = z / Psats
             P_guess, x = self._Px_ideal(z_over_Psats)
             args = (T, z_norm, z_over_Psats, Psats, x)
             f = self._P_error
@@ -288,11 +350,28 @@ class DewPoint:
                                          f(Pmin, *args), f(Pmax, *args),
                                          P_guess, self.P_tol, 5e-12, args,
                                          checkiter=False, checkbounds=False)
-        return P, fn.normalize(x)
+            return P, fn.normalize(x)
+        else:
+            f = self._P_error_reactive
+            z_norm = z / z.sum()
+            y = z_norm.copy()
+            dz = z_norm.copy()
+            Psats = np.array([i(T) for i in self.Psats], dtype=float)
+            z_over_Psats = z / Psats
+            P_guess, x = self._Px_ideal(z_over_Psats)
+            args = (T, Psats, z_norm, dz, y, x, gas_conversion)
+            try:
+                P = flx.aitken_secant(f, P_guess, P_guess-1, self.P_tol, 1e-9,
+                                      args, checkiter=False)
+            except RuntimeError:
+                Pmin = self.Pmin; Pmax = self.Pmax
+                P = flx.IQ_interpolation(f, Pmin, Pmax,
+                                         f(Pmin, *args), f(Pmax, *args),
+                                         P_guess, self.P_tol, 5e-12, args,
+                                         checkiter=False, checkbounds=False)
+            return P, dz, fn.normalize(y), x
     
     def __repr__(self):
         chemicals = ", ".join([i.ID for i in self.chemicals])
         return f"{type(self).__name__}([{chemicals}])"
     
-class DewPointCache(Cache): load = DewPoint
-del Cache

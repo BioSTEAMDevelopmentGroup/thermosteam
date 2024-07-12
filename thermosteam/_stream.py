@@ -27,7 +27,6 @@ if TYPE_CHECKING:
     from .base import SparseVector, SparseArray
     from numpy.typing import NDArray
     from typing import Optional, Sequence, Callable
-    import biosteam as bst
 # from .constants import g
 
 MaterialIndexer = tmo.indexer.MaterialIndexer
@@ -41,6 +40,7 @@ mol_units = indexer.ChemicalMolarFlowIndexer.units
 mass_units = indexer.ChemicalMassFlowIndexer.units
 vol_units = indexer.ChemicalVolumetricFlowIndexer.units
 
+
 class StreamData:
     __slots__ = ('_imol', '_T', '_P', '_phases')
     
@@ -49,8 +49,61 @@ class StreamData:
         self._T = thermal_condition._T
         self._P = thermal_condition._P
         self._phases = phases
-        
     
+        
+class TemporaryPhase:
+    __slots__ = ('stream', 'original', 'temporary')
+    
+    def __init__(self, stream, original, temporary):
+        self.stream = stream
+        self.original = original
+        self.temporary = temporary
+        
+    def __enter__(self):
+        stream = self.stream
+        stream._phase._phase = self.temporary
+        return stream
+    
+    def __exit__(self, type, exception, traceback):
+        self.stream._phase._phase = self.original
+        if exception: raise exception
+   
+    
+class TemporaryStream:
+    __slots__ = ('stream', 'data', 'flow', 'T', 'P', 'phase')
+    
+    def __init__(self, stream, flow, T, P, phase):
+        self.stream = stream
+        self.data = stream.get_data()
+        self.flow = flow
+        self.T = T
+        self.P = P
+        self.phase = phase
+        
+    def __enter__(self):
+        stream = self.stream
+        self.data = stream.get_data()
+        if self.flow is not None: stream.imol.data[:] = self.flow
+        if self.T is not None: stream.T = self.T
+        if self.P is not None: stream.P = self.P
+        return stream
+    
+    def __exit__(self, type, exception, traceback):
+        self.stream.set_data(self.data)
+        if exception: raise exception
+   
+    
+class Equations:
+    __slots__ = ('material', 'energy')
+    
+    def __init__(self):
+        self.material = []
+        self.energy = []
+
+    def __repr__(self):
+        return f"{type(self).__name__}(material={self.material.__name__}(), energy={self.energy.__name__}())"
+
+
 # %%
 
 @utils.units_of_measure(UofM.stream_units_of_measure)
@@ -257,10 +310,10 @@ class Stream(AbstractStream):
     """
     __slots__ = (
         '_imol', '_thermal_condition', '_streams',
-        '_bubble_point_cache', '_dew_point_cache',
         '_vle_cache', '_lle_cache', '_sle_cache',
         '_price', '_property_cache_key',
-        '_property_cache', 'characterization_factors', 'equations',
+        '_property_cache', 'characterization_factors',
+        'equations',
         '_original',
         # '_velocity', '_height'
     )
@@ -291,7 +344,7 @@ class Stream(AbstractStream):
                  vlle: Optional[bool]=False,
                  # velocity=0., height=0.,
                  **chemical_flows:float):
-        self.equations: dict[str, list[Callable]] = {} 
+        self.equations: list[Callable] = Equations()
         #: Characterization factors for life cycle assessment [impact/kg].
         self.characterization_factors: dict[str, float] = {} if characterization_factors is None else {}
         self._thermal_condition = tmo.ThermalCondition(T, P)
@@ -335,6 +388,12 @@ class Stream(AbstractStream):
             data = self._imol.data
             self.phases = [j for i, j in enumerate(self.phases) if data[i].any()]
 
+    def temporary(self, flow=None, T=None, P=None, phase=None):
+        return TemporaryStream(self, flow, T, P, phase)
+
+    def temporary_phase(self, phase):
+        return TemporaryPhase(self, self.phase, phase)
+
     @classmethod
     def from_data(cls, data, ID=None, price=0., characterization_factors=None, thermo=None):
         self = cls.__new__(cls)
@@ -347,6 +406,12 @@ class Stream(AbstractStream):
         self.set_data(data)
         return self
 
+    def __len__(self):
+        return 1
+    
+    def __iter__(self):
+        yield self
+
     def __getitem__(self, key):
         phase = self.phase
         if key.lower() == phase.lower(): return self
@@ -355,30 +420,41 @@ class Stream(AbstractStream):
     def __reduce__(self):
         return self.from_data, (self.get_data(), self._ID, self._price, self.characterization_factors, self._thermo)
 
-    def equation(self, variable, f=None):
-        if f is None: return lambda f: self.equation(variable, f)
-        equations = self.equations
-        if variable in equations:
-            equations[variable].append(f)
-        else:
-            equations[variable] = [f]
+    # Phenomena-oriented simulation
+    @property
+    def material_equations(self):
+        return self.equations.material
+    @property
+    def energy_equations(self):
+        return self.equations.energy
+    
+    def material_balance(self, f=None):
+        self.material_equations.append(f)
+        return f
             
-    def _create_linear_equations(self, variable):
-        equations = self.equations
-        if variable in equations:
-            return [i() for i in equations[variable]]
-        else:
-            return []
+    def _create_material_balance_equations(self):
+        return [i() for i in self.material_equations]
 
-    def _get_decoupled_variable(self, variable): pass
+    def _create_energy_departure_equations(self):
+        return [i() for i in self.energy_equations]
 
-    def _update_decoupled_variable(self, variable, value):
-        if variable == 'material': 
-            value[value < 0] = 0
+    def _update_energy_departure_coefficient(self, coefficients):
+        source = self.source
+        if source is None: return
+        if not source._get_energy_departure_coefficient:
+            raise NotImplementedError(f'{source!r} has no method `_get_energy_departure_coefficient`')
+        coeff = source._get_energy_departure_coefficient(self)
+        if coeff is None: return
+        key, value = coeff
+        coefficients[key] = value
+
+    def _update_material_flows(self, value, index=None):
+        value[value < 0] = 0
+        if index is None:
             self.mol[:] = value
         else:
-            raise NotImplementedError(f'variable {variable!r} cannot be updated')
-    
+            self.mol[index] = value
+        
     def scale(self, scale):
         """
         Multiply flow rate by given scale.
@@ -729,8 +805,6 @@ class Stream(AbstractStream):
 
     def reset_cache(self):
         """Reset cache regarding equilibrium methods."""
-        self._bubble_point_cache = eq.BubblePointCache()
-        self._dew_point_cache = eq.DewPointCache()
         self._property_cache_key = None, None
         self._property_cache = {}
 
@@ -1846,7 +1920,7 @@ class Stream(AbstractStream):
         """
         cls = self.__class__
         new = cls.__new__(cls)
-        new.equations = {}
+        new.equations = Equations()
         new._sink = new._source = None
         new.characterization_factors = {}
         new._thermo = thermo or self._thermo
@@ -1889,7 +1963,7 @@ class Stream(AbstractStream):
         imol.data = self._imol.data
         new._thermal_condition = self._thermal_condition.copy()
         new.reset_cache()
-        new.equations = {}
+        new.equations = Equations()
         new.characterization_factors = {}
         return new
     
@@ -1927,8 +2001,6 @@ class Stream(AbstractStream):
         new._thermal_condition = self._thermal_condition
         new._property_cache = self._property_cache
         new._property_cache_key = self._property_cache_key
-        new._bubble_point_cache = self._bubble_point_cache
-        new._dew_point_cache = self._dew_point_cache
         new.equations = self.equations
         new.characterization_factors = self.characterization_factors
         return new
@@ -1984,9 +2056,7 @@ class Stream(AbstractStream):
         imol = self.imol
         vle = eq.VLE(imol,
                      self._thermal_condition,
-                     self._thermo, 
-                     self._bubble_point_cache,
-                     self._dew_point_cache)
+                     self._thermo)
         lle = eq.LLE(imol,
                      self._thermal_condition,
                      self._thermo)
@@ -2056,9 +2126,7 @@ class Stream(AbstractStream):
         BubblePoint([Water, Ethanol])
         
         """
-        chemicals = self.chemicals[IDs] if IDs else self.vle_chemicals
-        bp = self._bubble_point_cache(chemicals, self._thermo)
-        return bp
+        return eq.BubblePoint(self.chemicals[IDs] if IDs else self.vle_chemicals, self._thermo)
     
     def get_dew_point(self, IDs: Optional[Sequence[str]]=None):
         """
@@ -2078,9 +2146,7 @@ class Stream(AbstractStream):
         DewPoint([Water, Ethanol])
         
         """
-        chemicals = self.chemicals[IDs] if IDs else self.vle_chemicals
-        dp = self._dew_point_cache(chemicals, self._thermo)
-        return dp
+        return eq.DewPoint(self.chemicals[IDs] if IDs else self.vle_chemicals, self._thermo)
     
     def bubble_point_at_T(self, T: Optional[float]=None, IDs: Optional[Sequence[str]]=None):
         """
@@ -2464,9 +2530,7 @@ class Stream(AbstractStream):
             self._streams = {}
             self._vle_cache = eq.VLECache(self._imol,
                                           self._thermal_condition,
-                                          self._thermo, 
-                                          self._bubble_point_cache,
-                                          self._dew_point_cache)
+                                          self._thermo)
             self._lle_cache = eq.LLECache(self._imol,
                                           self._thermal_condition,
                                           self._thermo)
@@ -2595,7 +2659,10 @@ class Stream(AbstractStream):
                 total_flow = flow_array.sum()
                 index.append((f"{phase} [{flow_units}]", ''))
                 data.append(f"{total_flow:{flow_notation}}")
-                comp_array = 100 * flow_array / total_flow
+                if total_flow == 0:
+                    comp_array = flow_array
+                else:
+                    comp_array = 100 * flow_array / total_flow
                 for i, (ID, comp) in enumerate(zip(all_IDs, comp_array)):
                     if not comp: continue
                     if i >= N_max:

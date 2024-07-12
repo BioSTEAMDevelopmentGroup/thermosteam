@@ -627,9 +627,9 @@ class SparseArray:
         return [i for i, j in enumerate(self.rows) if j.set]
     
     def nonzero_keys(self):
-        keys = set()
-        for i in self.rows: keys.update(i.set)
-        return keys
+        keys = []
+        for i in self.rows: keys.extend(i.set)
+        return set(keys)
     
     def positive_index(self):
         if self.dtype is bool: return self.nonzero_index()

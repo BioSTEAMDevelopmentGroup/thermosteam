@@ -307,6 +307,6 @@ preferences: DisplayPreferences = DisplayPreferences()
 
 if os.environ.get("FILTER_WARNINGS"):
     from warnings import filterwarnings; filterwarnings('ignore')
-# if not os.environ.get("DISABLE_PREFERENCES") == "1":
-#     try: preferences.autoload()
-#     except: pass 
+if not os.environ.get("DISABLE_PREFERENCES") == "1":
+    try: preferences.autoload()
+    except: pass 

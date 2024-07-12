@@ -200,6 +200,9 @@ class AbstractMissingStream:
     __slots__ = ('_source', '_sink')
     line = 'Stream'
     ID = 'missing stream'
+    disconnect_source = AbstractStream.disconnect_source
+    disconnect_sink = AbstractStream.disconnect_sink
+    disconnect = AbstractStream.disconnect
     
     def __init__(self, source=None, sink=None):
         self._source = source
@@ -883,10 +886,6 @@ def _superposition(cls, parent, port):
     for name in (*parent.__dict__, *AbstractStream.__slots__):
         if name in excluded: continue
         setattr(cls, name, superposition_property(name))
-    
-    for name in ('_source', '_sink'):
-        if name in excluded: continue
-        setattr(cls, name, superposition_property(name))
     return cls
 
 def superposition(parent, port):
@@ -1170,18 +1169,24 @@ class AbstractUnit:
             )
         return auxiliary_units
 
-    def _unit_auxlets(self, N_streams, streams, thermo):
-        if streams is None:
-            MissingStream = self.MissingStream
-            return [self.auxlet(MissingStream()) for i in range(N_streams)]
-        elif streams == ():
+    def _unit_auxins(self, N_streams, streams, thermo):
+        if streams is None or streams == ():
             Stream = self.Stream
-            return [self.auxlet(Stream(None, thermo=thermo)) for i in range(N_streams)]
+            return [self.auxin(Stream(None, thermo=thermo)) for i in range(N_streams)]
         elif isinstance(streams, (tmo.AbstractStream, tmo.AbstractMissingStream)) or streams.__class__ is str:
-            return self.auxlet(streams, thermo=thermo)
+            return self.auxin(streams, thermo=thermo)
         else:
-            return [self.auxlet(i, thermo=thermo) for i in streams]
+            return [self.auxin(i, thermo=thermo) for i in streams]
 
+    def _unit_auxouts(self, N_streams, streams, thermo):
+        if streams is None or streams == ():
+            Stream = self.Stream
+            return [self.auxout(Stream(None, thermo=thermo)) for i in range(N_streams)]
+        elif isinstance(streams, (tmo.AbstractStream, tmo.AbstractMissingStream)) or streams.__class__ is str:
+            return self.auxout(streams, thermo=thermo)
+        else:
+            return [self.auxout(i, thermo=thermo) for i in streams]
+    
     def auxiliary(
             self, name, cls, ins=None, outs=(), thermo=None,
             **kwargs
@@ -1203,8 +1208,8 @@ class AbstractUnit:
         auxunit.owner = self # Avoids property package checks
         auxunit.__init__(
             '.' + name, 
-            self._unit_auxlets(cls._N_ins, ins, thermo), 
-            self._unit_auxlets(cls._N_outs, outs, thermo),
+            self._unit_auxins(cls._N_ins, ins, thermo), 
+            self._unit_auxouts(cls._N_outs, outs, thermo),
             thermo, 
             **kwargs
         )
@@ -1226,11 +1231,13 @@ class AbstractUnit:
         """
         Stream = self.Stream
         if thermo is None: thermo = self.thermo
-        if stream is None: stream = Stream(None, thermo=thermo)
-        if isinstance(stream, str): 
+        if stream is None: 
+            stream = Stream(None, thermo=thermo)
+            stream._sink = stream._source = self
+        elif isinstance(stream, str): 
             stream = Stream('.' + stream, thermo=thermo)
             stream._source = stream._sink = self
-        if self is stream._source and stream in self._outs:
+        elif self is stream._source and stream in self._outs:
             port = OutletPort.from_outlet(stream)
             stream = self.SuperpositionOutlet(port)
             self.auxouts[port.index] = stream
@@ -1238,6 +1245,67 @@ class AbstractUnit:
             port = InletPort.from_inlet(stream)
             stream = self.SuperpositionInlet(port)
             self.auxins[port.index] = stream
+        else:
+            if stream._source is None: stream._source = self
+            if stream._sink is None: stream._sink = self
+        return stream
+
+    def auxin(self, stream: AbstractStream, thermo=None):
+        """
+        Define auxiliary unit inlet. This method has two
+        behaviors:
+
+        * If the stream is not connected to this unit, define the Stream 
+          object's source to be this unit without actually connecting it to this unit.
+
+        * If the stream is already connected to this unit, return a superposition
+          stream which can be connected to auxiliary units without being disconnected
+          from this unit.
+
+        """
+        Stream = self.Stream
+        if thermo is None: thermo = self.thermo
+        if stream is None: 
+            stream = Stream(None, thermo=thermo)
+            stream._sink = stream._source = self
+        elif isinstance(stream, str): 
+            stream = Stream('.' + stream, thermo=thermo)
+            stream._source = stream._sink = self
+        elif self is stream._sink and stream in self._ins:
+            port = InletPort.from_inlet(stream)
+            stream = self.SuperpositionInlet(port)
+            self.auxins[port.index] = stream
+        else:
+            if stream._source is None: stream._source = self
+            if stream._sink is None: stream._sink = self
+        return stream
+
+    def auxout(self, stream: AbstractStream, thermo=None):
+        """
+        Define auxiliary unit outlet. This method has two
+        behaviors:
+
+        * If the stream is not connected to this unit, define the Stream 
+          object's source or sink to be this unit without actually connecting 
+          it to this unit.
+
+        * If the stream is already connected to this unit, return a superposition
+          stream which can be connected to auxiliary units without being disconnected
+          from this unit. 
+
+        """
+        Stream = self.Stream
+        if thermo is None: thermo = self.thermo
+        if stream is None: 
+            stream = Stream(None, thermo=thermo)
+            stream._sink = stream._source = self
+        elif isinstance(stream, str): 
+            stream = Stream('.' + stream, thermo=thermo)
+            stream._source = stream._sink = self
+        elif self is stream._source and stream in self._outs:
+            port = OutletPort.from_outlet(stream)
+            stream = self.SuperpositionOutlet(port)
+            self.auxouts[port.index] = stream
         else:
             if stream._source is None: stream._source = self
             if stream._sink is None: stream._sink = self
