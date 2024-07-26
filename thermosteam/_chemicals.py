@@ -868,7 +868,57 @@ class CompiledChemicals(Chemicals):
         IDs, data = zip(*ID_data.items())
         indexer[IDs] = data
         return indexer
-
+    
+    def split(self, IDs, data):
+        """
+        Return an array with entries that correspond to the ordered chemical IDs.
+        
+        Parameters
+        ----------
+        IDs : iterable
+            Compound IDs.
+        data : array_like
+            Data corresponding to IDs.
+            
+        Examples
+        --------
+        >>> from thermosteam import CompiledChemicals
+        >>> chemicals = CompiledChemicals(['Water', 'Ethanol'], cache=True)
+        >>> chemicals.split(['Water'], [1])
+        array([1., 0.])
+        
+        """
+        array =  np.zeros(self.size) 
+        index, kind = self._get_index_and_kind(tuple(IDs))
+        if kind == 0 or kind == 3:
+            array[index] = data
+        elif kind == 1:
+            array[index] = data
+        elif kind == 2:
+            for i, j in zip(index, data): array[i] = j
+        else:
+            raise IndexError('unknown error')
+        return array
+    
+    def kwsplit(self, ID_data):
+        """
+        Return an array with entries that correspond to the ordered chemical IDs.
+        
+        Parameters
+        ----------
+        ID_data : dict[str, float]
+            ID-data pairs.
+            
+        Examples
+        --------
+        >>> from thermosteam import CompiledChemicals
+        >>> chemicals = CompiledChemicals(['Water', 'Ethanol'], cache=True)
+        >>> chemicals.kwsplit(dict(Water=1))
+        array([1., 0.])
+        
+        """
+        return self.split(*zip(*ID_data.items()))
+    
     def isplit(self, split, order=None):
         """
         Create a SplitIndexer object that represents chemical splits.
