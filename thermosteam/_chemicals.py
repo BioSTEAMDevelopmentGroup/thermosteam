@@ -489,6 +489,14 @@ class CompiledChemicals(Chemicals):
         """All defined chemical groups."""
         return frozenset(self._group_mol_compositions)
     
+    def chemical_group_members(self, name) -> list[str]:
+        index = self._index
+        if name in index:
+            IDs = self.IDs
+            return [IDs[i] for i in index[name]]
+        else:
+            raise ValueError(f"chemical group '{name}' does not exist")
+    
     def refresh_constants(self):
         """
         Refresh constant arrays according to their chemical values,
@@ -536,7 +544,8 @@ class CompiledChemicals(Chemicals):
             raise RuntimeError(
                 f"{chemical} is missing key thermodynamic properties ({missing}); "
                 "use the `<Chemical>.get_missing_properties()` to check "
-                "all missing properties")
+                "all missing properties"
+            )
         IDs = tuple_([i.ID for i in chemicals])
         CAS = tuple_([i.CAS for i in chemicals])
         size = len(IDs)

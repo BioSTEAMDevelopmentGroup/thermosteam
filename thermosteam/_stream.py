@@ -449,7 +449,6 @@ class Stream(AbstractStream):
         coefficients[key] = value
 
     def _update_material_flows(self, value, index=None):
-        value[value < 0] = 0
         if index is None:
             self.mol[:] = value
         else:

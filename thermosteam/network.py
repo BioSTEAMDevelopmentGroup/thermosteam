@@ -1426,6 +1426,30 @@ class AbstractUnit:
         self._specifications.append(BoundedNumericalSpecification(f, *args, **kwargs))
         return f
     
+    def run_phenomena(self):
+        """
+        Run mass and energy balance without converging phenomena. This method also runs specifications
+        user defined specifications unless it is being run within a 
+        specification (to avoid infinite loops). 
+        
+        See Also
+        --------
+        _run
+        specifications
+        add_specification
+        add_bounded_numerical_specification
+        
+        """
+        if self._skip_simulation_when_inlets_are_empty and all([i.isempty() for i in self._ins]):
+            for i in self._outs: i.empty()
+            return
+        if hasattr(self, '_run_phenomena'): 
+            self._run = self._run_phenomena
+            try: self._run_with_specifications()
+            finally: del self._run
+        else:
+            self._run_with_specifications()
+    
     def run(self):
         """
         Run mass and energy balance. This method also runs specifications
@@ -1443,6 +1467,9 @@ class AbstractUnit:
         if self._skip_simulation_when_inlets_are_empty and all([i.isempty() for i in self._ins]):
             for i in self._outs: i.empty()
             return
+        self._run_with_specifications()
+        
+    def _run_with_specifications(self):
         specifications = self._specifications
         if specifications:
             active_specifications = self._active_specifications
@@ -2066,9 +2093,12 @@ def fill_path(feed, path, paths_with_recycle,
     if not unit or unit._universal or unit not in units:
         paths_without_recycle.append(path)
     elif unit in path: 
-        path_with_recycle = path, feed
-        paths_with_recycle.append(path_with_recycle)
-        ends.add(feed)
+        if len(unit.outs) == 1 and unit.outs[0] in ends: 
+            paths_without_recycle.append(path)
+        else:
+            ends.add(feed)
+            path_with_recycle = path, feed
+            paths_with_recycle.append(path_with_recycle)
     elif feed in ends:
         paths_without_recycle.append(path)
     else:
@@ -2221,6 +2251,34 @@ class Network:
             if isinstance(i, Network): i.get_all_recycles(all_recycles)
         return all_recycles
     
+    def sort_without_recycle(self, ends):
+        if self.recycle: return
+        path = tuple(self.path)
+        
+        def sort(network):
+            subpath = tuple(network.path)
+            for o, j in enumerate(subpath):
+                if isinstance(j, Network):
+                    added = sort(j)
+                    if added: return True
+                elif j in sources: 
+                    self.path.remove(u)
+                    network.path.insert(o + 1, u)
+                    return True
+                    
+        for n, u in enumerate(path):
+            if isinstance(u, Network): continue
+            sources = set([i.source for i in u.ins if i.source and i not in ends])
+            subpath = path[n+1:]
+            for m, i in enumerate(subpath):
+                if isinstance(i, Network):
+                    added = sort(i)
+                    if added: break
+                elif i in sources: 
+                    self.path.remove(u)
+                    self.path.insert(n + m, u)
+                    break
+    
     def sort(self, ends):
         isa = isinstance
         for i in self.path: 
@@ -2260,7 +2318,7 @@ class Network:
         if not stop: warn(RuntimeWarning('network path could not be determined'))
     
     @classmethod
-    def from_feedstock(cls, feedstock, feeds=(), ends=None, units=None, final=True):
+    def from_feedstock(cls, feedstock, feeds=(), ends=None, units=None, final=True, recycles=True):
         """
         Create a Network object from a feedstock.
         
@@ -2290,9 +2348,10 @@ class Network:
                 network.join_linear_network(linear_network) 
         else:
             network = Network([])
-        recycle_networks = [Network(*i) for i in cyclic_paths_with_recycle]
-        for recycle_network in recycle_networks:
-            network.join_recycle_network(recycle_network)
+        if recycles: 
+            recycle_networks = [Network(*i) for i in cyclic_paths_with_recycle]
+            for recycle_network in recycle_networks:
+                network.join_recycle_network(recycle_network)
         ends.update(network.streams)
         disjunction_streams = set([i.get_stream() for i in disjunctions])
         for feed in feeds:
@@ -2320,13 +2379,14 @@ class Network:
             recycle_ends.update(disjunction_streams)
             recycle_ends.update(network.get_all_recycles())
             recycle_ends.update(tmo.utils.products_from_units(network.units))
+            network.sort_without_recycle(recycle_ends)
+            if recycles: network.reduce_recycles()
             network.sort(recycle_ends)
-            network.reduce_recycles()
             network.add_interaction_units()
         return network
     
     @classmethod
-    def from_units(cls, units, ends=None):
+    def from_units(cls, units, ends=None, recycles=True):
         """
         Create a System object from all units given.
 
@@ -2354,7 +2414,7 @@ class Network:
             if not ends:
                 ends = tmo.utils.products_from_units(units) + [i.get_stream() for i in disjunctions]
             system = cls.from_feedstock(
-                feedstock, feeds, ends, units,
+                feedstock, feeds, ends, units, final=True, recycles=recycles,
             )
         else:
             system = cls(())

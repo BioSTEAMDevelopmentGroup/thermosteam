@@ -1241,14 +1241,9 @@ class VLE(Equilibrium, phases='lg'):
         self._v = v = self._estimate_v(V, y_bubble, x_dew, dz_bubble, dz_dew)
         self._V = V
         self._y = fn.normalize(v, v.sum() + self._F_mol_light)
-        try:
-            reload_cache = self._x is None or np.abs(self._z_last - self._z).sum() > 0.001
-        except:
-            reload_cache = True
-        if reload_cache:
-            l = self._mol_vle - v
-            l[l < 0] = 1e-12
-            self._x = fn.normalize(l, l.sum() + self._F_mol_heavy)
+        l = self._mol_vle - v
+        l[l < 0] = 1e-12
+        self._x = fn.normalize(l, l.sum() + self._F_mol_heavy)
     
     def _H_hat_err_at_T(self, T, H_hat, gas_conversion, liquid_conversion):
         v = self._solve_v(T, self._P, gas_conversion, liquid_conversion)
