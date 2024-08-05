@@ -1029,8 +1029,11 @@ class AbstractUnit:
         #: Whether to prioritize unit operation specification within recycle loop (if any).
         self.prioritize: bool = False
         
-        #: Safety toggle to prevent infinite recursion
+        #: Safety toggle to prevent infinite recursion.
         self._active_specifications: set[ProcessSpecification] = set()
+        
+        #: Auxiliary unit operation names.
+        self.auxiliary_unit_names = set(self.auxiliary_unit_names)
         
         self._init(**kwargs)
         
@@ -1187,9 +1190,29 @@ class AbstractUnit:
         else:
             return [self.auxout(i, thermo=thermo) for i in streams]
     
+    def register_auxiliary(self, unit, name=None):
+        if isinstance(unit, AbstractUnit):
+            if name is None: name = unit._ID
+            self.auxiliary_unit_names.add(name)
+            setattr(self, name, unit)
+        elif isinstance(unit, Iterable):
+            if name is None: raise ValueError('`name` must be a string')
+            self.auxiliary_unit_names.add(name)
+            setattr(self, name, unit)
+        elif hasattr(unit, 'units'):
+            system = unit
+            if name is None: name = system._ID
+            setattr(self, name, system)
+            for i in system.units:
+                name = i._ID
+                self.auxiliary_unit_names.add(name)
+                setattr(self, name, i)
+        else:
+            raise ValueError('`unit` must be a unit, list of units, or a system')
+    
     def auxiliary(
             self, name, cls, ins=None, outs=(), thermo=None,
-            **kwargs
+            register=False, **kwargs
         ):
         """
         Create and register an auxiliary unit operation. Inlet and outlet
@@ -1205,6 +1228,8 @@ class AbstractUnit:
             stack.append(auxunit)
         else:
             setattr(self, name, auxunit)
+        if register and name not in self.auxiliary_unit_names:
+           self.auxiliary_unit_names.add(name)
         auxunit.owner = self # Avoids property package checks
         auxunit.__init__(
             '.' + name, 
