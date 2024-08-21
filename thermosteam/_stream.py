@@ -438,12 +438,12 @@ class Stream(AbstractStream):
     def _create_energy_departure_equations(self):
         return [i() for i in self.energy_equations]
 
-    def _update_energy_departure_coefficient(self, coefficients):
+    def _update_energy_departure_coefficient(self, coefficients, temperature_only):
         source = self.source
         if source is None: return
         if not source._get_energy_departure_coefficient:
             raise NotImplementedError(f'{source!r} has no method `_get_energy_departure_coefficient`')
-        coeff = source._get_energy_departure_coefficient(self)
+        coeff = source._get_energy_departure_coefficient(self, temperature_only)
         if coeff is None: return
         key, value = coeff
         coefficients[key] = value

@@ -31,7 +31,8 @@ def solve_y(y_phi, phi, T, P, y_guess):
     return flx.wegstein(y_iter, y_phi, 1e-9, args=(y_phi, phi, T, P), 
                         checkiter=False,
                         checkconvergence=False, 
-                        convergenceiter=3)
+                        convergenceiter=5,
+                        maxiter=BubblePoint.maxiter)
 
 
 # %% Bubble point values container
@@ -103,6 +104,7 @@ class BubblePoint:
     __slots__ = ('chemicals', 'IDs', 'gamma', 'phi', 'pcf',
                  'Psats', 'Tmin', 'Tmax', 'Pmin', 'Pmax')
     _cached = {}
+    maxiter = 50
     T_tol = 1e-9
     P_tol = 1e-3
     def __new__(cls, chemicals=(), thermo=None):
@@ -184,7 +186,8 @@ class BubblePoint:
         T = flx.IQ_interpolation(f, Tmin, Tmax, fmax, fmin, 
                                  None, self.T_tol, 5e-12, args, 
                                  checkiter=False,
-                                 checkbounds=False)
+                                 checkbounds=False, 
+                                 maxiter=self.maxiter)
         return T, y
     
     def _Py_ideal(self, z_Psat_gamma_pcf):
@@ -253,13 +256,15 @@ class BubblePoint:
             try:
                 T = flx.aitken_secant(f, T_guess, T_guess + 1e-3,
                                       self.T_tol, 5e-12, args,
-                                      checkiter=False)
+                                      checkiter=False, 
+                                      maxiter=self.maxiter)
             except RuntimeError:
                 Tmin = self.Tmin; Tmax = self.Tmax
                 T = flx.IQ_interpolation(f, Tmin, Tmax,
                                          f(Tmin, *args), f(Tmax, *args),
                                          T_guess, self.T_tol, 5e-12, args, 
-                                         checkiter=False, checkbounds=False)
+                                         checkiter=False, checkbounds=False, 
+                                         maxiter=self.maxiter)
             return T, fn.normalize(y)
         else:
             f = self._T_error_reactive
@@ -272,13 +277,14 @@ class BubblePoint:
             try:
                 T = flx.aitken_secant(f, T_guess, T_guess + 1e-3,
                                       self.T_tol, 5e-12, args,
-                                      checkiter=False)
+                                      checkiter=False, maxiter=self.maxiter)
             except RuntimeError:
                 Tmin = self.Tmin; Tmax = self.Tmax
                 T = flx.IQ_interpolation(f, Tmin, Tmax,
                                          f(Tmin, *args), f(Tmax, *args),
                                          T_guess, self.T_tol, 5e-12, args, 
-                                         checkiter=False, checkbounds=False)
+                                         checkiter=False, checkbounds=False,
+                                         maxiter=self.maxiter)
             return T, dz, fn.normalize(y), x
     
     def solve_Py(self, z, T, liquid_conversion=None):
@@ -330,13 +336,14 @@ class BubblePoint:
             args = (T, z_Psat_gamma, Psats, y)
             try:
                 P = flx.aitken_secant(f, P_guess, P_guess-1, self.P_tol, 1e-9,
-                                      args, checkiter=False)
+                                      args, checkiter=False, maxiter=self.maxiter)
             except RuntimeError:
                 Pmin = self.Pmin; Pmax = self.Pmax
                 P = flx.IQ_interpolation(f, Pmin, Pmax,
                                          f(Pmin, *args), f(Pmax, *args),
                                          P_guess, self.P_tol, 5e-12, args,
-                                         checkiter=False, checkbounds=False)
+                                         checkiter=False, checkbounds=False, 
+                                         maxiter=self.maxiter)
             return P, fn.normalize(y)
         else:
             f = self._P_error_reactive
@@ -349,13 +356,15 @@ class BubblePoint:
             args = (T, Psats, z_norm, dz, y, x, liquid_conversion)
             try:
                 P = flx.aitken_secant(f, P_guess, P_guess-1, self.P_tol, 1e-9,
-                                      args, checkiter=False)
+                                      args, checkiter=False, 
+                                      maxiter=self.maxiter)
             except RuntimeError:
                 Pmin = self.Pmin; Pmax = self.Pmax
                 P = flx.IQ_interpolation(f, Pmin, Pmax,
                                          f(Pmin, *args), f(Pmax, *args),
                                          P_guess, self.P_tol, 5e-12, args,
-                                         checkiter=False, checkbounds=False)
+                                         checkiter=False, checkbounds=False,
+                                         maxiter=self.maxiter)
             return P, dz, fn.normalize(y), x
     
     def __repr__(self):

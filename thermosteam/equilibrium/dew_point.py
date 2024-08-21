@@ -38,8 +38,10 @@ def x_iter(x, x_gamma, T, P, f_gamma, gamma_args):
 # @njit(cache=True)
 def solve_x(x_guess, x_gamma, T, P, f_gamma, gamma_args):
     args = (x_gamma, T, P, f_gamma, gamma_args)
-    x = flx.wegstein(x_iter, x_guess, 1e-10, args=args, checkiter=False,
-                 checkconvergence=False, convergenceiter=3)
+    x = flx.wegstein(
+        x_iter, x_guess, 1e-10, args=args, checkiter=False,
+        checkconvergence=False, convergenceiter=5, maxiter=DewPoint.maxiter
+    )
     return x
 
 # %% Dew point values container
@@ -112,6 +114,7 @@ class DewPoint:
     __slots__ = ('chemicals', 'phi', 'gamma', 'IDs', 
                  'pcf', 'Psats', 'Tmin', 'Tmax', 'Pmin', 'Pmax')
     _cached = {}
+    maxiter = 50
     T_tol = 1e-9
     P_tol = 1e-3
     def __new__(cls, chemicals=(), thermo=None):
@@ -197,7 +200,8 @@ class DewPoint:
         if fmax < 0.: return Tmax, x
         T = flx.IQ_interpolation(f, Tmin, Tmax, fmin, fmax, 
                                  None, self.T_tol, 5e-12, args,
-                                 checkiter=False, checkbounds=False)
+                                 checkiter=False, checkbounds=False,
+                                 maxiter=self.maxiter)
         return T, x
     
     def _Px_ideal(self, z_over_Psats):
@@ -266,6 +270,7 @@ class DewPoint:
             try:
                 T = flx.aitken_secant(f, T_guess, T_guess + 1e-3,
                                       self.T_tol, 5e-12, args,
+                                      maxiter=self.maxiter,
                                       checkiter=False)
             except RuntimeError:
                 Tmin = self.Tmin
@@ -273,7 +278,8 @@ class DewPoint:
                 T = flx.IQ_interpolation(f, Tmin, Tmax,
                                          f(Tmin, *args), f(Tmax, *args),
                                          T_guess, self.T_tol, 5e-12, args,
-                                         checkiter=False, checkbounds=False)
+                                         checkiter=False, checkbounds=False,
+                                         maxiter=self.maxiter)
             return T, fn.normalize(x)
         else:
             f = self._T_error_reactive
@@ -342,14 +348,15 @@ class DewPoint:
             f = self._P_error
             try:
                 P = flx.aitken_secant(f, P_guess, P_guess-10, self.P_tol, 5e-12, args,
-                                      checkiter=False)
+                                      checkiter=False, maxiter=self.maxiter)
             except RuntimeError:
                 Pmin = self.Pmin
                 Pmax = self.Pmax
                 P = flx.IQ_interpolation(f, Pmin, Pmax, 
                                          f(Pmin, *args), f(Pmax, *args),
                                          P_guess, self.P_tol, 5e-12, args,
-                                         checkiter=False, checkbounds=False)
+                                         checkiter=False, checkbounds=False,
+                                         maxiter=self.maxiter)
             return P, fn.normalize(x)
         else:
             f = self._P_error_reactive
