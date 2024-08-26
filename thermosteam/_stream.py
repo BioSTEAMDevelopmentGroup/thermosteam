@@ -40,7 +40,6 @@ mol_units = indexer.ChemicalMolarFlowIndexer.units
 mass_units = indexer.ChemicalMassFlowIndexer.units
 vol_units = indexer.ChemicalVolumetricFlowIndexer.units
 
-
 class StreamData:
     __slots__ = ('_imol', '_T', '_P', '_phases')
     

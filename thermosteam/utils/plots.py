@@ -45,7 +45,7 @@ def set_figure_size(width=None, aspect_ratio=None, units=None):
     # aspect ratio defaults to 0.65
     if aspect_ratio is None:
         aspect_ratio = 0.65
-    if width is None:
+    if width is None or width == 'full':
         width = 6.6142
     elif width == 'half':
         width = 6.6142 / 2
