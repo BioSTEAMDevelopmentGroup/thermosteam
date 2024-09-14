@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 # BioSTEAM: The Biorefinery Simulation and Techno-Economic Analysis Modules
-# Copyright (C) 2020-2023, Yoel Cortes-Pena <yoelcortes@gmail.com>
+# Copyright (C) 2020-2025, Yoel Cortes-Pena <yoelcortes@gmail.com>
 # 
 # This module is under the UIUC open-source license. See 
 # github.com/BioSTEAMDevelopmentGroup/biosteam/blob/master/LICENSE.txt
@@ -11,6 +11,8 @@ from scipy.optimize import shgo
 import flexsolve as flx
 from numba import njit
 from warnings import warn
+from .vle import VLE
+from .lle import LLE
 from ..base import SparseVector
 from ..exceptions import InfeasibleRegion, NoEquilibrium
 from . import binary_phase_fraction as binary
@@ -21,79 +23,137 @@ from .fugacity_coefficients import IdealFugacityCoefficients
 from .poyinting_correction_factors import MockPoyintingCorrectionFactors
 from . import activity_coefficients as ac
 from .. import functional as fn
+from .lle import pseudo_equilibrium_outer_loop
 from ..utils import Cache
 import thermosteam as tmo
 import numpy as np
 
-__all__ = ('VLE', 'VLECache')
+__all__ = ('VLLE', 'VLLECache')
 
-@njit(cache=True)
-def xy(x, Ks):
-    y = x * Ks
+
+def psuedo_equilibrium_inner_loop(logKgammay, z, T, n, f_gamma, gamma_args, phi):
+    logKgammay_new = logKgammay.copy()
+    K = np.exp(logKgammay[:n])
+    x = z/(1. + phi * (K - 1.))
+    x = x / x.sum()
+    gammay = logKgammay[n:]
+    gammax = f_gamma(x, T, *gamma_args)
+    K = gammax / gammay 
+    y = K * x
     y /= y.sum()
-    return x, y
+    gammay = f_gamma(y, T, *gamma_args)
+    K = gammax / gammay
+    logKgammay_new[n:] = np.log(K)
+    logKgammay_new[n:] = gammay
+    return logKgammay_new
 
-def xVlogK_iter_2n(xVlogK, pcf_Psat_over_P, T, P, z, f_gamma, gamma_args, f_phi, n,
-                  gas_conversion, liquid_conversion):
-    xVlogK = xVlogK.copy()
-    x = xVlogK[:n]
-    Ks = np.exp(xVlogK[n+1:])
-    x, y = xy(x, Ks)
-    Ks[:] = pcf_Psat_over_P * f_gamma(x, T, *gamma_args) / f_phi(y, T, P)
-    if gas_conversion or liquid_conversion:
-        V = xVlogK[n]
-        if V < 0.: V = 0.
-        elif V > 1.: V = 1.
-        V = binary.compute_phase_fraction_2N(z, Ks)
-        if gas_conversion: 
-            z = z + gas_conversion(material=y * V, T=T, P=P, phase='g')
-            z[z <= 0] = 1e-16
-            z /= z.sum()
-        if liquid_conversion:
-            z = z + liquid_conversion(material=x * (1 - V), T=T, P=P, phase='l')
-            z[z <= 0] = 1e-16
-            z /= z.sum()
-    Ks[Ks < 1e-16] = 1e-16
-    xVlogK[n] = V = binary.compute_phase_fraction_2N(z, Ks)
-    xVlogK[:n] = z/(1. + V * (Ks - 1.))
-    xVlogK[n+1:] = np.log(Ks)
-    return xVlogK
+def pseudo_equilibrium_outer_loop(logKgammayphi, z, T, n, f_gamma, gamma_args, inner_loop_options):
+    logKgammayphi_new = logKgammayphi.copy()
+    # breakpoint()
+    logKgammay = logKgammayphi[:-1]
+    phi = logKgammayphi[-1]
+    args=(z, T, n, f_gamma, gamma_args)
+    logKgammay = flx.aitken(
+        psuedo_equilibrium_inner_loop, logKgammay, 
+        args=(*args, phi), **inner_loop_options,
+    )
+    K = np.exp(logKgammay[:n])
+    try:
+        phi = phase_fraction(z, K, phi)
+    except (ZeroDivisionError, FloatingPointError):
+        raise NoEquilibrium
+    if np.isnan(phi): raise NoEquilibrium
+    if phi > 1: phi = 1 - 1e-16
+    if phi < 0: phi = 1e-16
+    logKgammayphi_new[:-1] = logKgammay
+    logKgammayphi_new[-1] = phi
+    return logKgammayphi_new
 
-def xVlogK_iter(
-        xVlogK, pcf_Psat_over_P, T, P,
+def pseudo_equilibrium(K, phi, z, T, n, f_gamma, gamma_args, inner_loop_options, outer_loop_options):
+    phi = phase_fraction(z, K, phi)
+    try:
+        x = z/(1. + phi * (K - 1.))
+    except:
+        x = np.ones(n)
+    x /= x.sum()
+    y = K * x
+    logKgammayphi = np.zeros(2*n + 1)
+    logKgammayphi[:n] = np.log(K)
+    logKgammayphi[n:-1] = f_gamma(y, T, *gamma_args)
+    logKgammayphi[-1] = phi
+    try:
+        logKgammayphi = flx.aitken(
+            pseudo_equilibrium_outer_loop, logKgammayphi,
+            args=(z, T, n, f_gamma, gamma_args, inner_loop_options),
+            **outer_loop_options,
+        )
+    except NoEquilibrium:
+        return z
+    K = np.exp(logKgammayphi[:n])
+    phi = logKgammayphi[-1]
+    return z/(1. + phi * (K - 1.)) * (1 - phi)
+
+def _zliq_V_logKg0_logK0_gamma1_phi_iter(
+        zliq_V_logKg0_logK0_gamma1_phi, 
+        pcf_Psat_over_P, T, P,
         z, z_light, z_heavy, f_gamma, gamma_args,
-        f_phi, n, gas_conversion, liquid_conversion
+        f_phi, n,
     ):
-    xVlogK = xVlogK.copy()
-    x = xVlogK[:n]
-    Ks = np.exp(xVlogK[n+1:])
-    x, y = xy(x, Ks)
-    Ks[:] = pcf_Psat_over_P * f_gamma(x, T, *gamma_args) / f_phi(y, T, P)
-    V = xVlogK[n]
-    if V < 0.: V = 0.
-    elif V > 1.: V = 1.
-    if gas_conversion or liquid_conversion:
-        if gas_conversion: 
-            z = z + gas_conversion(material=y * V, T=T, P=P, phase='g')
-            z[z <= 0] = 1e-16
-            z /= z.sum()
-        if liquid_conversion:
-            z = z + liquid_conversion(material=x * (1 - V), T=T, P=P, phase='l')
-            z[z <= 0] = 1e-16
-            z /= z.sum()
-    Ks[Ks < 1e-16] = 1e-16
-    xVlogK[n] = V = binary.solve_phase_fraction_Rashford_Rice(z, Ks, V, z_light, z_heavy)
-    xVlogK[:n] = z / (1. + V * (Ks - 1.))
-    xVlogK[n+1:] = np.log(Ks)
-    return xVlogK
+    new_values = zliq_V_logKg0_logK0_gamma1_phi.copy()
+    n2 = 2 * n
+    # LLE outer loop (liq-LIQ equilibrium)
+    zliq = zliq_V_logKg0_logK0_gamma1_phi[:n]
+    logK0_gamma1_phi_new = pseudo_equilibrium_outer_loop(
+        zliq_V_logKg0_logK0_gamma1_phi[n2+1:],
+        z, T, n, f_gamma, gamma_args, inner_loop_options=LLE.pseudo_equilibrium_inner_loop_options
+    )
+    phi = logK0_gamma1_phi_new[-1]
+    K0 = np.exp(logK0_gamma1_phi_new[:n])
+    x = zliq / zliq.sum()
+    x0 = x / (1. + phi * (K0 - 1.))
+    x0 = x0 / x0.sum()
+    x1 = K0 * x0
+    x1 = x1 / x1.sum()
+    
+    # Update Kg0 through gas-liq equilibrium
+    V = zliq_V_logKg0_logK0_gamma1_phi[n]
+    logKg0 = zliq_V_logKg0_logK0_gamma1_phi[n:n2]
+    Kg0 = np.exp(logKg0)
+    y = z - zliq
+    # y = x0 * Kg0
+    y /= y.sum()
+    Kg0 = f_gamma(x0, T, *gamma_args) * pcf_Psat_over_P / f_phi(y, T, P)
+    Kg0[Kg0 < 1e-16] = 1e-16
+    if V < 0.: V = 1e-16
+    elif V > 1.: V = 1. - 1e-16
+    
+    # Update zliq through gas-liq equilibrium and Rashford-Rice
+    z0 = x0 * zliq.sum() * phi + (z - zliq)
+    V0 = binary.solve_phase_fraction_Rashford_Rice(z0, Kg0, V, z_light, z_heavy)
+    x0 = z0 / (1. + V0 * (Kg0 - 1.))
+    zliq = (1 - V) * (1 - phi) * x1 + (1 - V0) * x0 * z0.sum()
+    V = 1. - zliq.sum()
+    # Update x through mass balance
+    print('----')
+    print(zliq)
+    print(y)
+    print(V)
+    print(phi)
+    print(Kg0)
+    breakpoint()
+    new_values[:n] = zliq
+    new_values[n] = V
+    new_values[n+1:n2+1] = np.log(Kg0)
+    new_values[n2+1:] = logK0_gamma1_phi_new
+    return new_values
 
 def set_flows(vapor_mol, liquid_mol, index, vapor_data, total_data):
     vapor_mol[index] = vapor_data
     liquid_mol[index] = total_data - vapor_data
 
-class VLE(Equilibrium, phases='lg'):
+class VLLE(Equilibrium, phases='lLg'):
     """
-    Create a VLE object that performs vapor-liquid equilibrium when called.
+    Create a VLLE object that performs vapor-liquid-liquid equilibrium when called.
         
     Parameters
     ----------
@@ -107,77 +167,77 @@ class VLE(Equilibrium, phases='lg'):
     
     Examples
     --------
-    First create a VLE object:
+    First create a VLLE object:
     
     >>> from thermosteam import indexer, equilibrium, settings
     >>> settings.set_thermo(['Water', 'Ethanol', 'Methanol', 'Propanol'], cache=True)
     >>> imol = indexer.MolarFlowIndexer(
     ...             l=[('Water', 304), ('Ethanol', 30)],
     ...             g=[('Methanol', 40), ('Propanol', 1)])
-    >>> vle = equilibrium.VLE(imol)
-    >>> vle
-    VLE(imol=MolarFlowIndexer(
+    >>> vlle = equilibrium.VLLE(imol)
+    >>> vlle
+    VLLE(imol=MolarFlowIndexer(
             g=[('Methanol', 40), ('Propanol', 1)],
             l=[('Water', 304), ('Ethanol', 30)]),
         thermal_condition=ThermalCondition(T=298.15, P=101325))
     
     Equilibrium given vapor fraction and pressure:
     
-    >>> vle(V=0.5, P=101325)
-    >>> vle
-    VLE(imol=MolarFlowIndexer(
+    >>> vlle(V=0.5, P=101325)
+    >>> vlle
+    VLLE(imol=MolarFlowIndexer(
             g=[('Water', 126.7), ('Ethanol', 26.38), ('Methanol', 33.49), ('Propanol', 0.8958)],
             l=[('Water', 177.3), ('Ethanol', 3.622), ('Methanol', 6.509), ('Propanol', 0.1042)]),
         thermal_condition=ThermalCondition(T=363.85, P=101325))
     
     Equilibrium given temperature and pressure:
     
-    >>> vle(T=363.88, P=101325)
-    >>> vle
-    VLE(imol=MolarFlowIndexer(
+    >>> vlle(T=363.88, P=101325)
+    >>> vlle
+    VLLE(imol=MolarFlowIndexer(
             g=[('Water', 127.4), ('Ethanol', 26.41), ('Methanol', 33.54), ('Propanol', 0.8968)],
             l=[('Water', 176.6), ('Ethanol', 3.59), ('Methanol', 6.456), ('Propanol', 0.1032)]),
         thermal_condition=ThermalCondition(T=363.88, P=101325))
     
     Equilibrium given enthalpy and pressure:
     
-    >>> H = vle.thermo.mixture.xH(vle.imol, T=363.88, P=101325)
-    >>> vle(H=H, P=101325)
-    >>> vle
-    VLE(imol=MolarFlowIndexer(
+    >>> H = vlle.thermo.mixture.xH(vlle.imol, T=363.88, P=101325)
+    >>> vlle(H=H, P=101325)
+    >>> vlle
+    VLLE(imol=MolarFlowIndexer(
             g=[('Water', 127.4), ('Ethanol', 26.41), ('Methanol', 33.54), ('Propanol', 0.8968)],
             l=[('Water', 176.6), ('Ethanol', 3.59), ('Methanol', 6.456), ('Propanol', 0.1032)]),
         thermal_condition=ThermalCondition(T=363.88, P=101325))
     
     Equilibrium given entropy and pressure:
     
-    >>> S = vle.thermo.mixture.xS(vle.imol, T=363.88, P=101325)
-    >>> vle(S=S, P=101325)
-    >>> vle
-    VLE(imol=MolarFlowIndexer(
+    >>> S = vlle.thermo.mixture.xS(vlle.imol, T=363.88, P=101325)
+    >>> vlle(S=S, P=101325)
+    >>> vlle
+    VLLE(imol=MolarFlowIndexer(
             g=[('Water', 127.4), ('Ethanol', 26.41), ('Methanol', 33.54), ('Propanol', 0.8968)],
             l=[('Water', 176.6), ('Ethanol', 3.59), ('Methanol', 6.456), ('Propanol', 0.1032)]),
         thermal_condition=ThermalCondition(T=363.88, P=101325))
     
     Equilibrium given vapor fraction and temperature:
     
-    >>> vle(V=0.5, T=363.88)
-    >>> vle
-    VLE(imol=MolarFlowIndexer(
+    >>> vlle(V=0.5, T=363.88)
+    >>> vlle
+    VLLE(imol=MolarFlowIndexer(
             g=[('Water', 126.7), ('Ethanol', 26.38), ('Methanol', 33.49), ('Propanol', 0.8958)],
             l=[('Water', 177.3), ('Ethanol', 3.622), ('Methanol', 6.509), ('Propanol', 0.1042)]),
         thermal_condition=ThermalCondition(T=363.88, P=101431))
     
     Equilibrium given enthalpy and temperature:
     
-    >>> vle(H=H, T=363.88)
-    >>> vle
-    VLE(imol=MolarFlowIndexer(
+    >>> vlle(H=H, T=363.88)
+    >>> vlle
+    VLLE(imol=MolarFlowIndexer(
             g=[('Water', 127.4), ('Ethanol', 26.41), ('Methanol', 33.54), ('Propanol', 0.8968)],
             l=[('Water', 176.6), ('Ethanol', 3.59), ('Methanol', 6.456), ('Propanol', 0.1032)]),
         thermal_condition=ThermalCondition(T=363.88, P=101325))
     
-    Non-partitioning heavy and gaseous chemicals also affect VLE. Calculation 
+    Non-partitioning heavy and gaseous chemicals also affect VLLE. Calculation 
     are repeated with non-partitioning chemicals:
         
     >>> from thermosteam import indexer, equilibrium, settings, Chemical
@@ -187,54 +247,54 @@ class VLE(Equilibrium, phases='lg'):
     >>> imol = indexer.MolarFlowIndexer(
     ...             l=[('Water', 304), ('Ethanol', 30), ('Glucose', 5)],
     ...             g=[('Methanol', 40), ('Propanol', 1), ('O2', 10)])
-    >>> vle = equilibrium.VLE(imol)
-    >>> vle(T=363.88, P=101325)
-    >>> vle
-    VLE(imol=MolarFlowIndexer(
+    >>> vlle = equilibrium.VLLE(imol)
+    >>> vlle(T=363.88, P=101325)
+    >>> vlle
+    VLLE(imol=MolarFlowIndexer(
             g=[('Water', 159.5), ('Ethanol', 27.65), ('Methanol', 35.63), ('Propanol', 0.9337), ('O2', 10)],
             l=[('Water', 144.5), ('Ethanol', 2.352), ('Methanol', 4.369), ('Propanol', 0.0663), ('Glucose', 5)]),
         thermal_condition=ThermalCondition(T=363.88, P=101325))
     
-    >>> vle(V=0.5, P=101325)
-    >>> vle
-    VLE(imol=MolarFlowIndexer(
+    >>> vlle(V=0.5, P=101325)
+    >>> vlle
+    VLLE(imol=MolarFlowIndexer(
             g=[('Water', 126.7), ('Ethanol', 26.38), ('Methanol', 33.52), ('Propanol', 0.8957), ('O2', 10)],
             l=[('Water', 177.3), ('Ethanol', 3.618), ('Methanol', 6.478), ('Propanol', 0.1043), ('Glucose', 5)]),
         thermal_condition=ThermalCondition(T=362.47, P=101325))
     
-    >>> H = vle.thermo.mixture.xH(vle.imol, T=363.88, P=101325)
-    >>> vle(H=H, P=101325)
-    >>> vle
-    VLE(imol=MolarFlowIndexer(
+    >>> H = vlle.thermo.mixture.xH(vlle.imol, T=363.88, P=101325)
+    >>> vlle(H=H, P=101325)
+    >>> vlle
+    VLLE(imol=MolarFlowIndexer(
             g=[('Water', 127.4), ('Ethanol', 26.42), ('Methanol', 33.58), ('Propanol', 0.8968), ('O2', 10)],
             l=[('Water', 176.6), ('Ethanol', 3.583), ('Methanol', 6.421), ('Propanol', 0.1032), ('Glucose', 5)]),
         thermal_condition=ThermalCondition(T=362.51, P=101325))
     
-    >>> S = vle.thermo.mixture.xS(vle.imol, T=363.88, P=101325)
-    >>> vle(S=S, P=101325)
-    >>> vle
-    VLE(imol=MolarFlowIndexer(
+    >>> S = vlle.thermo.mixture.xS(vlle.imol, T=363.88, P=101325)
+    >>> vlle(S=S, P=101325)
+    >>> vlle
+    VLLE(imol=MolarFlowIndexer(
             g=[('Water', 128.2), ('Ethanol', 26.45), ('Methanol', 33.63), ('Propanol', 0.8979), ('O2', 10)],
             l=[('Water', 175.8), ('Ethanol', 3.548), ('Methanol', 6.365), ('Propanol', 0.1021), ('Glucose', 5)]),
         thermal_condition=ThermalCondition(T=362.54, P=101325))
     
-    >>> vle(V=0.5, T=363.88)
-    >>> vle
-    VLE(imol=MolarFlowIndexer(
+    >>> vlle(V=0.5, T=363.88)
+    >>> vlle
+    VLLE(imol=MolarFlowIndexer(
             g=[('Water', 126.7), ('Ethanol', 26.38), ('Methanol', 33.49), ('Propanol', 0.8958), ('O2', 10)],
             l=[('Water', 177.3), ('Ethanol', 3.622), ('Methanol', 6.509), ('Propanol', 0.1042), ('Glucose', 5)]),
         thermal_condition=ThermalCondition(T=363.88, P=106841))
     
-    >>> vle(H=H, T=363.88)
-    >>> vle 
-    VLE(imol=MolarFlowIndexer(
+    >>> vlle(H=H, T=363.88)
+    >>> vlle 
+    VLLE(imol=MolarFlowIndexer(
             g=[('Water', 126.7), ('Ethanol', 26.38), ('Methanol', 33.49), ('Propanol', 0.8958), ('O2', 10)],
             l=[('Water', 177.3), ('Ethanol', 3.622), ('Methanol', 6.51), ('Propanol', 0.1042), ('Glucose', 5)]),
         thermal_condition=ThermalCondition(T=363.88, P=106842))
 
-    >>> vle(S=S, T=363.88)
-    >>> vle 
-    VLE(imol=MolarFlowIndexer(
+    >>> vlle(S=S, T=363.88)
+    >>> vlle 
+    VLLE(imol=MolarFlowIndexer(
             g=[('Water', 128.1), ('Ethanol', 26.45), ('Methanol', 33.6), ('Propanol', 0.8978), ('O2', 10)],
             l=[('Water', 175.9), ('Ethanol', 3.555), ('Methanol', 6.399), ('Propanol', 0.1022), ('Glucose', 5)]),
         thermal_condition=ThermalCondition(T=363.88, P=106562))
@@ -248,16 +308,18 @@ class VLE(Equilibrium, phases='lg'):
     >>> imol = indexer.MolarFlowIndexer(
     ...             l=[('Water', 30)],
     ...             g=[('O2', 10)])
-    >>> vle = equilibrium.VLE(imol)
-    >>> vle(T=300., P=101325)
-    >>> vle
-    VLE(imol=MolarFlowIndexer(
+    >>> vlle = equilibrium.VLLE(imol)
+    >>> vlle(T=300., P=101325)
+    >>> vlle
+    VLLE(imol=MolarFlowIndexer(
             g=[('Water', 0.3617), ('O2', 10)],
             l=[('Water', 29.64)]),
         thermal_condition=ThermalCondition(T=300.00, P=101325))
 
     """
     __slots__ = (
+        'vle', 
+        'lle',
         'method', # [str] Method for solving equilibrium.
         '_T', # [float] Temperature [K].
         '_P', # [float] Pressure [Pa].
@@ -266,20 +328,22 @@ class VLE(Equilibrium, phases='lg'):
         '_V', # [float] Molar vapor fraction.
         '_dew_point', # [DewPoint] Solves for dew point.
         '_bubble_point', # [BubblePoint] Solves for bubble point.
-        '_y', # [1d array] Vapor composition.
+        '_x', # [1d array] Vapor composition.
+        '_y', # [1d array] Liquid composition.
         '_z_last', # tuple[1d array] Last bulk composition.
+        '_gamma',
         '_phi', # [FugacityCoefficients] Estimates fugacity coefficients of gas.
         '_pcf', # [PoyintingCorrectionFactors] Estimates the PCF of a liquid.
-        '_gamma', # [ActivityCoefficients] Estimates activity coefficients of a liquid.
+        '_zliq_V_logKg0_logK0_gamma1_phi',
+        '_LIQUID_mol', # [1d array] LIQUID molar data.
         '_liquid_mol', # [1d array] Liquid molar data.
         '_vapor_mol', # [1d array] Vapor molar data.
         '_phase_data', # tuple[str, 1d array] Phase-data pairs.
-        '_K', # [1d array] Partition coefficients.
-        '_v', # [1d array] Molar vapor data in equilibrium.
+        '_v',  # [1d array] Molar vapor data in equilibrium.
         '_index', # [1d array] Index of chemicals in equilibrium.
         '_F_mass', # [float] Total mass data.
         '_chemical', # [Chemical] Single chemical in equilibrium.
-        '_mol_vle', # [1d array] Moles of chemicals in VLE calculations.
+        '_mol_vlle', # [1d array] Moles of chemicals in VLLE calculations.
         '_N', # [int] Number of chemicals in equilibrium.
         '_z', # [1d array] Molar composition of chemicals in equilibrium
         '_z_norm', # [1d array] Normalized molar composition of chemicals in equilibrium
@@ -287,10 +351,10 @@ class VLE(Equilibrium, phases='lg'):
         '_z_heavy', # [1d array] Molar composition of heavy chemicals not included in equilibrium calculation.
         '_nonzero', # [1d array(bool)] Chemicals present in the mixture
         '_F_mol', # [float] Total moles of chemicals (accounting for dissociation).
-        '_F_mol_vle', # [float] Total moles in equilibrium.
+        '_F_mol_vlle', # [float] Total moles in equilibrium.
         '_F_mol_light', # [float] Total moles of gas chemicals not included in equilibrium calculation.
         '_F_mol_heavy', # [float] Total moles of heavy chemicals not included in equilibrium calculation.
-        '_dmol_vle',
+        '_dmol_vlle',
         '_dF_mol',
     )
     maxiter = 20
@@ -299,7 +363,7 @@ class VLE(Equilibrium, phases='lg'):
     H_hat_tol = 1e-6
     S_hat_tol = 1e-6
     V_tol = 1e-6
-    K_tol = 1e-6
+    x_tol = 1e-8
     y_tol = 1e-8
     default_method = 'fixed-point'
     
@@ -308,14 +372,19 @@ class VLE(Equilibrium, phases='lg'):
         self.method = self.default_method
         self._T = self._P = self._H_hat = self._V = 0
         super().__init__(imol, thermal_condition, thermo)
+        imol = self._imol
+        thermo = self._thermo
+        thermal_condition = self._thermal_condition
+        self.vle = VLE(imol, thermal_condition, thermo)
+        self.lle = LLE(imol, thermal_condition, thermo)
+        self._x = None
         self._z_last = None
         self._nonzero = None
         self._index = ()
     
-    def __call__(self, *, T=None, P=None, V=None, H=None, S=None, x=None, y=None,
-                 gas_conversion=None, liquid_conversion=None):
+    def __call__(self, *, T=None, P=None, V=None, H=None, S=None, x=None, y=None):
         """
-        Perform vapor-liquid equilibrium.
+        Perform vapor-liquid-liquid equilibrium.
 
         Parameters
         ----------
@@ -329,33 +398,20 @@ class VLE(Equilibrium, phases='lg'):
             Enthalpy [kJ/hr].
         S : float, optional
             Entropy [kJ/hr/K]
-        x : float, optional
-            Molar composition of liquid (for binary mixtures).
-        y : float, optional
-            Molar composition of vapor (for binary mixtures).
         
         Notes
         -----
-        You may only specify two of the following parameters: P, H, T, V, x, and y.
-        Additionally, If x or y is specified, the other parameter must be either
-        P or T (e.g., x and V is invalid).
+        You may only specify two of the following parameters: P, H, T, V.
         
         """
-        if gas_conversion or liquid_conversion:
-            if gas_conversion:
-                if isinstance(gas_conversion, tmo.KineticReaction):
-                    gas_conversion = gas_conversion.conversion_handle(tmo.Stream(thermo=self.thermo))
-                elif isinstance(gas_conversion, (tmo.Reaction, tmo.ReactionItem)):
-                    gas_conversion = gas_conversion.conversion_handle(None)
-            if liquid_conversion:
-                if isinstance(liquid_conversion, tmo.KineticReaction):
-                    liquid_conversion = liquid_conversion.conversion_handle(tmo.Stream(thermo=self.thermo))
-                elif isinstance(liquid_conversion, (tmo.Reaction, tmo.ReactionItem)):
-                    liquid_conversion = liquid_conversion.conversion_handle(None)
-            if x is not None or y is not None:
-                raise ValueError(
-                    "can not pass either 'x' or 'y' arguments with reactions preset"
-                )
+        data = self._imol.data
+        LIQ, gas, liq = data
+        liq += LIQ # All flows must be in the 'l' phase for VLE
+        LIQ[:] = 0.
+        self.vle(T=T, P=P, V=V, H=H, S=S)
+        if not gas.any() or not liq.any(): return
+        self.lle(T, P)
+        if not (LIQ.any() and liq.any()): return
         
         ### Decide what kind of equilibrium to run ###
         T_spec = T is not None
@@ -373,21 +429,21 @@ class VLE(Equilibrium, phases='lg'):
         if T_spec:
             if P_spec:
                 try:
-                    self.set_thermal_condition(T, P, gas_conversion, liquid_conversion)
+                    self.set_thermal_condition(T, P)
                 except NoEquilibrium:
                     thermal_condition = self._thermal_condition
                     thermal_condition.T = T
                     thermal_condition.P = P
             elif V_spec:
                 try:
-                    self.set_TV(T, V, gas_conversion, liquid_conversion)
+                    self.set_TV(T, V)
                 except NoEquilibrium:
                     thermal_condition = self._thermal_condition
                     thermal_condition.T = T
             elif H_spec:
-                self.set_TH(T, H, gas_conversion, liquid_conversion)
+                self.set_TH(T, H)
             elif S_spec:
-                self.set_TS(T, S, gas_conversion, liquid_conversion)
+                self.set_TS(T, S)
             elif x_spec:
                 self.set_Tx(T, np.asarray(x))
             else: # y_spec
@@ -395,22 +451,22 @@ class VLE(Equilibrium, phases='lg'):
         elif P_spec:
             if V_spec:
                 try:
-                    self.set_PV(P, V, gas_conversion, liquid_conversion)
+                    self.set_PV(P, V)
                 except NoEquilibrium:
                     thermal_condition = self._thermal_condition
                     thermal_condition.P = P
             elif H_spec:
                 try:
-                    self.set_PH(P, H, gas_conversion, liquid_conversion)
+                    self.set_PH(P, H)
                 except NoEquilibrium:
                     thermal_condition = self._thermal_condition
                     thermal_condition.P = P
             elif S_spec:
                 try:
-                    self.set_PS(P, S, gas_conversion, liquid_conversion)
+                    self.set_PS(P, S)
                 except:
                     try:
-                        self.set_PS(P, S, gas_conversion, liquid_conversion)
+                        self.set_PS(P, S)
                     except NoEquilibrium:
                         thermal_condition = self._thermal_condition
                         thermal_condition.P = P
@@ -441,275 +497,101 @@ class VLE(Equilibrium, phases='lg'):
                 raise ValueError("specification V and x is invalid")
         else: # pragma: no cover
             raise ValueError("can only pass either 'x' or 'y' arguments, not both")
-    
-    ### Single component equilibrium case ###
-        
-    def _set_thermal_condition_chemical(self, T, P):
-        chemical = self._chemical
-        if T >= chemical.Tc: 
-            self._liquid_mol[self._index] = 0
-            self._vapor_mol[self._index] = self._mol_vle
-        else:
-            # Either liquid or gas
-            Psat = chemical.Psat(T)
-            tol = 1e-3
-            if P < Psat - tol:
-                self._liquid_mol[self._index] = 0
-                self._vapor_mol[self._index] = self._mol_vle
-            elif P > Psat + tol:
-                self._liquid_mol[self._index] = self._mol_vle
-                self._vapor_mol[self._index] = 0
-    
-    def _set_TV_chemical(self, T, V):
-        # Set vapor fraction
-        self._T = self._thermal_condition.T = self._chemical.Psat(T)
-        self._vapor_mol[self._index] = V * self._mol_vle
-        self._liquid_mol[self._index] = self._mol_vle - self._vapor_mol[self._index]
-        
-    def _set_PV_chemical(self, P, V):
-        # Set vapor fraction
-        self._T = self._thermal_condition.T = self._chemical.Tsat(P, check_validity=False)
-        self._vapor_mol[self._index] = self._mol_vle * V
-        self._liquid_mol[self._index] = self._mol_vle - self._vapor_mol[self._index]
-        
-    def _set_PH_chemical(self, P, H): 
-        mol = self._mol_vle
-        index = self._index
-        vapor_mol = self._vapor_mol
+       
+    def _load_guess(self):
+        z = self._z
+        n = z.size
+        self._zliq_V_logKg0_logK0_gamma1_phi = guess = np.zeros(4*n + 2)
         liquid_mol = self._liquid_mol
-        thermo = self._thermo
-        phase_data = self._phase_data
-        mixture = thermo.mixture
-        chemical = self._chemical
-        
-        # Set temperature in equilibrium
-        self._T = self._thermal_condition.T = T = chemical.Tsat(P, check_validity=False) 
-        
-        # Check if super heated vapor
-        vapor_mol[index] = mol
-        liquid_mol[index] = 0
-        H_dew = mixture.xH(phase_data, T, P)
-        if H >= H_dew:
-            self._thermal_condition.T = mixture.xsolve_T_at_HP(phase_data, H, T, P)
-            return
-
-        # Check if subcooled liquid
-        vapor_mol[index] = 0
-        liquid_mol[index] = mol
-        H_bubble = mixture.xH(phase_data, T, P)
-        if H <= H_bubble:
-            self._thermal_condition.T = mixture.xsolve_T_at_HP(phase_data, H, T, P)
-            return
-        
-        # Adjust vapor fraction accordingly
-        V = (H - H_bubble)/(H_dew - H_bubble)
-        vapor_mol[index] = mol*V
-        liquid_mol[index] = mol - vapor_mol[index]
-        
-    def _set_TH_chemical(self, T, H):
-        index = self._index
-        mol = self._mol_vle
+        LIQUID_mol = self._LIQUID_mol
         vapor_mol = self._vapor_mol
-        liquid_mol = self._liquid_mol
-        mixture = self._thermo.mixture
-        phase_data = self._phase_data
-        
-        # Set Pressure in equilibrium
-        self._thermal_condition.P = P = self._chemical.Psat(T)
-        
-        # Check if super heated vapor
-        vapor_mol[index] = mol
-        liquid_mol[index] = 0
-        H_dew = mixture.xH(phase_data, T, P)
-        if H >= H_dew:
-            raise NotImplementedError('cannot solve for pressure yet')
-            self._thermal_condition.P = mixture.xsolve_P_at_HT(phase_data, H, T, P)
-            return
-
-        # Check if subcooled liquid
-        vapor_mol[index] = 0
-        liquid_mol[index] = mol
-        H_bubble = mixture.xH(phase_data, T, P)
-        if H <= H_bubble:
-            raise NotImplementedError('cannot solve for pressure yet')
-            self._thermal_condition.P = mixture.xsolve_P_at_HT(phase_data, H, T, P)
-            return
-        
-        # Adjust vapor fraction accordingly
-        V = (H - H_bubble)/(H_dew - H_bubble)
-        vapor_mol[index] = mol*V
-        liquid_mol[index] = mol - vapor_mol[index]
-        
-    def _set_PS_chemical(self, P, S): 
-        mol = self._mol_vle
+        F_liq = liquid_mol.sum()
+        F_LIQ = LIQUID_mol.sum()
+        F_vap = vapor_mol.sum()
+        liquid_mol_total = liquid_mol + LIQUID_mol
+        F_liq_total = F_liq + F_LIQ
+        zliq = liquid_mol_total / self._F_mol_vlle
+        x0 = liquid_mol / F_liq
+        x1 = LIQUID_mol / F_LIQ
+        y = vapor_mol / F_vap
+        Kg0 = y / x0
+        K0 = x0 / x1
+        guess[:n] = zliq
+        guess[n] = F_vap / self._F_mol_vlle
+        guess[n+1:n*2+1] = np.log(Kg0)
+        guess[n*2+1:n*3+1] = np.log(K0)
+        guess[n*3+1:-1] = self._gamma(x1, self._T)
+        guess[-1] = F_liq / F_liq_total
+    
+    def _solve(self, T, P):
+        Psats = np.array([i(T) for i in self._bubble_point.Psats])
+        pcf_Psat_over_P = self._pcf(T, P, Psats) * Psats / P
+        gamma = self._gamma
+        z = self._z
+        n = z.size
+        args = (pcf_Psat_over_P, T, P, z, 
+                self._z_light, self._z_heavy, 
+                gamma.f, gamma.args, self._phi, n)
+        self._zliq_V_logKg0_logK0_gamma1_phi = results = flx.aitken(
+            _zliq_V_logKg0_logK0_gamma1_phi_iter,
+            self._zliq_V_logKg0_logK0_gamma1_phi,
+            args=args, checkiter=False, 
+            checkconvergence=False, 
+            convergenceiter=5,
+            maxiter=self.maxiter
+        )
+        zliq = results[:n]
+        x = zliq / zliq.sum()
+        V = results[n]
+        Kg0 = np.exp(results[n+1:2*n+1])
+        K0 = np.exp(results[2*n+1:3*n+1])
+        phi = results[-1]
+        x0 = x / (1. + phi * (K0 - 1.))
+        x0 = x0 / x0.sum()
+        x1 = K0 * x0
+        x1 = x1 / x1.sum()
+        y = x0 * Kg0
+        v = self._F_mol_vlle * V * y
+        l0 = x0 * self._F_mol_vlle * (1 - V) * phi
+        l1 = self._mol_vlle - v - l0
+        l1[l1 < 0] - 0  
         index = self._index
-        vapor_mol = self._vapor_mol
-        liquid_mol = self._liquid_mol
-        thermo = self._thermo
-        phase_data = self._phase_data
-        mixture = thermo.mixture
-        chemical = self._chemical
-        
-        # Set temperature in equilibrium
-        self._T = self._thermal_condition.T = T = chemical.Tsat(P, check_validity=False)
-        
-        # Check if super heated vapor
-        vapor_mol[index] = mol
-        liquid_mol[index] = 0
-        S_dew = mixture.xS(phase_data, T, P)
-        if S >= S_dew:
-            self._thermal_condition.T = mixture.xsolve_T_at_SP(phase_data, S, T, P)
-            return
-
-        # Check if subcooled liquid
-        vapor_mol[index] = 0
-        liquid_mol[index] = mol
-        S_bubble = mixture.xS(phase_data, T, P)
-        if S <= S_bubble:
-            self._thermal_condition.T = mixture.xsolve_T_at_SP(phase_data, S, T, P)
-            return
-        
-        # Adjust vapor fraction accordingly
-        V = (S - S_bubble)/(S_dew - S_bubble)
-        vapor_mol[index] = mol*V
-        liquid_mol[index] = mol - vapor_mol[index]
-        
-    def _set_TS_chemical(self, T, S):
-        index = self._index
-        mol = self._mol_vle
-        vapor_mol = self._vapor_mol
-        liquid_mol = self._liquid_mol
-        mixture = self._thermo.mixture
-        phase_data = self._phase_data
-        
-        # Set Pressure in equilibrium
-        self._thermal_condition.P = P = self._chemical.Psat(T)
-        
-        # Check if super heated vapor
-        vapor_mol[index] = mol
-        liquid_mol[index] = 0
-        S_dew = mixture.xS(phase_data, T, P)
-        if S >= S_dew:
-            raise NotImplementedError('cannot solve for pressure yet')
-            self._thermal_condition.P = mixture.xsolve_P_at_ST(phase_data, S, T, P)
-            return
-
-        # Check if subcooled liquid
-        vapor_mol[index] = 0
-        liquid_mol[index] = mol
-        S_bubble = mixture.xS(phase_data, T, P)
-        if S <= S_bubble:
-            raise NotImplementedError('cannot solve for pressure yet')
-            self._thermal_condition.P = mixture.xsolve_P_at_ST(phase_data, S, T, P)
-            return
-        
-        # Adjust vapor fraction accordingly
-        V = (S - S_bubble)/(S_dew - S_bubble)
-        vapor_mol[index] = mol*V
-        liquid_mol[index] = mol - vapor_mol[index]
-        
-    def _lever_rule(self, x, y):
-        split_frac = (self._z[0]-x[0])/(y[0]-x[0])
-        if not -0.00001 < split_frac < 1.00001:
-            raise InfeasibleRegion('phase composition')
-        if split_frac > 1:
-            split_frac = 1
-        elif split_frac < 0:
-            split_frac = 0
-        self._vapor_mol[self._index] = v = self._F_mol * split_frac * y
-        self._liquid_mol[self._index] = self._mol_vle - v
+        self._vapor_mol[index] = v 
+        self._liquid_mol[index] = l0
+        self._LIQUID_mol[index] = l1
     
-    def set_Tx(self, T, x):
+    def set_thermal_condition(self, T, P):
         self._setup()
-        assert self._N == 2, 'number of species in equilibrium must be 2 to specify x'
-        self._thermal_condition.P, y = self._bubble_point.solve_Py(x, T)
-        self._lever_rule(x, y)
-    
-    def set_Px(self, P, x):
-        self._setup()
-        assert self._N == 2, 'number of species in equilibrium must be 2 to specify x'
-        self._thermal_condition.T, y = self._bubble_point.solve_Ty(x, P) 
-        self._lever_rule(x, y)
-        
-    def set_Ty(self, T, y):
-        self._setup()
-        assert self._N == 2, 'number of species in equilibrium must be 2 to specify y'
-        self._thermal_condition.P, x = self._dew_point.solve_Px(y, T)
-        self._lever_rule(x, y)
-    
-    def set_Py(self, P, y):
-        self._setup()
-        assert self._N == 2, 'number of species in equilibrium must be 2 to specify y'
-        self._thermal_condition.T, x = self._dew_point.solve_Tx(y, P) 
-        self._lever_rule(x, y)
-        
-    def set_thermal_condition(self, T, P, gas_conversion=None, liquid_conversion=None):
-        self._setup(gas_conversion, liquid_conversion)
         thermal_condition = self._thermal_condition
         self._T = thermal_condition.T = T
         self._P = thermal_condition.P = P
-        if self._N == 0: return
-        if self._N == 1: return self._set_thermal_condition_chemical(T, P)
-        # Check if there is equilibrium
-        if gas_conversion:
-            P_dew, dz_dew, x_dew, _ = self._dew_point.solve_Px(self._z, T, gas_conversion)
-            if P <= P_dew and not self._F_mol_heavy:
-                self._vapor_mol[self._index] = self._mol_vle + dz_dew * self._F_mol_vle
-                self._liquid_mol[self._index] = 0
-                return
-        else:
-            P_dew, x_dew = self._dew_point.solve_Px(self._z, T)
-            if P <= P_dew and not self._F_mol_heavy:
-                self._vapor_mol[self._index] = self._mol_vle
-                self._liquid_mol[self._index] = 0
-                return
-            dz_dew = None
-        if liquid_conversion:
-            P_bubble, dz_bubble, y_bubble, _ = self._bubble_point.solve_Py(self._z, T, liquid_conversion)
-            if P >= P_bubble and not self._F_mol_light:
-                self._vapor_mol[self._index] = 0
-                self._liquid_mol[self._index] = self._mol_vle + dz_bubble * self._F_mol_vle
-                return
-        else:
-            P_bubble, y_bubble = self._bubble_point.solve_Py(self._z, T)
-            if P >= P_bubble and not self._F_mol_light:
-                self._vapor_mol[self._index] = 0
-                self._liquid_mol[self._index] = self._mol_vle
-                return
-            dz_bubble = None
-        # Guess composition in the vapor is a
-        # weighted average of bubble/dew points
-        dP = (P_bubble - P_dew)
-        V = (P - P_dew) / dP if dP > 1. else 0.5
-        self._refresh_K(V, y_bubble, x_dew, dz_bubble, dz_dew)
-        v = self._solve_v(T, P, gas_conversion, liquid_conversion)
-        mol_vle = self._mol_vle + self._dmol_vle if (gas_conversion or liquid_conversion) else self._mol_vle 
-        set_flows(self._vapor_mol, self._liquid_mol, self._index, v, mol_vle)
+        self._load_guess()
+        self._solve(T, P)
         
     def set_TV(self, T, V, gas_conversion=None, liquid_conversion=None):
         self._setup(gas_conversion, liquid_conversion)
         thermal_condition = self._thermal_condition
         thermal_condition.T = self._T = T
-        if self._N == 0: raise RuntimeError('no chemicals present to perform VLE')
+        if self._N == 0: raise RuntimeError('no chemicals present to perform VLLE')
         if self._N == 1: return self._set_TV_chemical(T, V)
         if self._F_mol_heavy and V == 1.: V = 1. - 1e-3
         if self._F_mol_light and V == 0.: V = 1e-3
         if V == 1:
             if gas_conversion:
                 P_dew, dz, y, x_dew = self._dew_point.solve_Px(self._z, T, gas_conversion)
-                self._vapor_mol[self._index] = self._mol_vle + dz * self._F_mol_vle
+                self._vapor_mol[self._index] = self._mol_vlle + dz * self._F_mol_vlle
             else:
                 P_dew, x_dew = self._dew_point.solve_Px(self._z, T)
-                self._vapor_mol[self._index] = self._mol_vle
+                self._vapor_mol[self._index] = self._mol_vlle
             self._liquid_mol[self._index] = 0
             thermal_condition.P = P_dew
         elif V == 0:
             if liquid_conversion:
                 P_bubble, dz, y_bubble, x = self._bubble_point.solve_Py(self._z, T)
-                self._liquid_mol[self._index] = self._mol_vle + dz * self._F_mol_vle
+                self._liquid_mol[self._index] = self._mol_vlle + dz * self._F_mol_vlle
             else:
                 P_bubble, y_bubble = self._bubble_point.solve_Py(self._z, T)
-                self._liquid_mol[self._index] = self._mol_vle
+                self._liquid_mol[self._index] = self._mol_vlle
             self._vapor_mol[self._index] = 0
             thermal_condition.P = P_bubble
         else:
@@ -723,16 +605,16 @@ class VLE(Equilibrium, phases='lg'):
             else:
                 P_dew, x_dew = self._dew_point.solve_Px(self._z, T, gas_conversion)
                 dz_dew = None
-            self._refresh_K(V, y_bubble, x_dew, dz_bubble, dz_dew)
+            self._refresh_v(V, y_bubble, x_dew, dz_bubble, dz_dew)
             if self._F_mol_light: P_bubble = 0.1 * self._bubble_point.Pmax + 0.9 * P_bubble
             if self._F_mol_heavy: P_dew = 0.1 * self._bubble_point.Pmin + 0.9 * P_dew
             
             V_bubble = self._V_err_at_P(P_bubble, 0., gas_conversion, liquid_conversion)
             if V_bubble > V:
                 F_mol = self._F_mol
-                mol = self._mol_vle
+                mol = self._mol_vlle
                 if liquid_conversion:
-                    mol = mol + self._dmol_vle
+                    mol = mol + self._dmol_vlle
                     F_mol = F_mol + self._dF_mol
                 F_mol_vapor = F_mol * V
                 v = y_bubble * F_mol_vapor
@@ -743,9 +625,9 @@ class VLE(Equilibrium, phases='lg'):
                 V_dew = self._V_err_at_P(P_dew, 0., gas_conversion, liquid_conversion)
                 if V_dew < V:
                     F_mol = self._F_mol
-                    mol = self._mol_vle
+                    mol = self._mol_vlle
                     if gas_conversion:
-                        mol = mol + self._dmol_vle
+                        mol = mol + self._dmol_vlle
                         F_mol = F_mol + self._dF_mol
                     l = x_dew * F_mol * (1. - V)
                     mask = l > mol 
@@ -762,9 +644,9 @@ class VLE(Equilibrium, phases='lg'):
                         maxiter=self.maxiter,
                     )
                     v = self._v
-                    mol = self._mol_vle
+                    mol = self._mol_vlle
                     if gas_conversion or liquid_conversion:
-                        mol = mol + self._dmol_vle
+                        mol = mol + self._dmol_vlle
             
             self._P = thermal_condition.P = P
             set_flows(self._vapor_mol, self._liquid_mol, self._index, v, mol)
@@ -779,11 +661,11 @@ class VLE(Equilibrium, phases='lg'):
 
     def set_TH(self, T, H, gas_conversion=None, liquid_conversion=None):
         self._setup(gas_conversion, liquid_conversion)
-        if self._N == 0: raise RuntimeError('no chemicals present to perform VLE')
+        if self._N == 0: raise RuntimeError('no chemicals present to perform VLLE')
         if self._N == 1: return self._set_TH_chemical(T, H)
         self._T = T
         index = self._index
-        mol = self._mol_vle
+        mol = self._mol_vlle
         vapor_mol = self._vapor_mol
         liquid_mol = self._liquid_mol
         phase_data = self._phase_data
@@ -812,7 +694,7 @@ class VLE(Equilibrium, phases='lg'):
         V = dH_bubble/(H_dew - H_bubble)
         
         # Guess composition in the vapor is a weighted average of boiling points
-        self._refresh_K(V, y_bubble, x_dew)
+        self._refresh_v(V, y_bubble, x_dew)
         F_mass = self._F_mass
         H_hat = H/F_mass
         P = flx.IQ_interpolation(
@@ -828,11 +710,11 @@ class VLE(Equilibrium, phases='lg'):
     
     def set_TS(self, T, S, gas_conversion=None, liquid_conversion=None):
         self._setup(gas_conversion, liquid_conversion)
-        if self._N == 0: raise RuntimeError('no chemicals present to perform VLE')
+        if self._N == 0: raise RuntimeError('no chemicals present to perform VLLE')
         if self._N == 1: return self._set_TS_chemical(T, S)
         self._T = T
         index = self._index
-        mol = self._mol_vle
+        mol = self._mol_vlle
         vapor_mol = self._vapor_mol
         liquid_mol = self._liquid_mol
         phase_data = self._phase_data
@@ -861,7 +743,7 @@ class VLE(Equilibrium, phases='lg'):
         V = dS_bubble/(S_dew - S_bubble)
         
         # Guess composition in the vapor is a weighted average of boiling points
-        self._refresh_K(V, y_bubble, x_dew)
+        self._refresh_v(V, y_bubble, x_dew)
         F_mass = self._F_mass
         S_hat = S/F_mass
         P = flx.IQ_interpolation(
@@ -878,7 +760,7 @@ class VLE(Equilibrium, phases='lg'):
     def set_PV(self, P, V, gas_conversion=None, liquid_conversion=None):
         self._setup(gas_conversion, liquid_conversion)
         self._thermal_condition.P = self._P = P
-        if self._N == 0: raise RuntimeError('no chemicals present to perform VLE')
+        if self._N == 0: raise RuntimeError('no chemicals present to perform VLLE')
         if self._N == 1: return self._set_PV_chemical(P, V)
         
         # Setup bounderies
@@ -891,19 +773,19 @@ class VLE(Equilibrium, phases='lg'):
         if V == 1 and not self._F_mol_heavy:
             if gas_conversion:
                 T_dew, dz, y, x_dew = self._dew_point.solve_Tx(self._z, P, gas_conversion)
-                self._vapor_mol[self._index] = self._mol_vle + dz * self._F_mol_vle
+                self._vapor_mol[self._index] = self._mol_vlle + dz * self._F_mol_vlle
             else:
                 T_dew, x_dew = self._dew_point.solve_Tx(self._z, P)
-                self._vapor_mol[self._index] = self._mol_vle
+                self._vapor_mol[self._index] = self._mol_vlle
             self._liquid_mol[self._index] = 0
             thermal_condition.T = T_dew
         elif V == 0 and not self._F_mol_light:
             if liquid_conversion:
                 T_bubble, dz, y_bubble, x = self._bubble_point.solve_Ty(self._z, P, liquid_conversion)
-                self._liquid_mol[self._index] = self._mol_vle + dz * self._F_mol_vle
+                self._liquid_mol[self._index] = self._mol_vlle + dz * self._F_mol_vlle
             else:
                 T_bubble, y_bubble = self._bubble_point.solve_Ty(self._z, P)
-                self._liquid_mol[self._index] = self._mol_vle
+                self._liquid_mol[self._index] = self._mol_vlle
             self._vapor_mol[self._index] = 0
             thermal_condition.T = T_bubble
         else:
@@ -917,15 +799,15 @@ class VLE(Equilibrium, phases='lg'):
             else:
                 T_dew, x_dew = self._dew_point.solve_Tx(self._z, P)
                 dz_dew = None
-            self._refresh_K(V, y_bubble, x_dew, dz_bubble, dz_dew)
+            self._refresh_v(V, y_bubble, x_dew, dz_bubble, dz_dew)
             if self._F_mol_light: T_bubble = 0.1 * self._bubble_point.Tmin + 0.9 * T_bubble
             if self._F_mol_heavy: T_dew = 0.1 * self._bubble_point.Tmax + 0.9 * T_dew
             V_bubble = self._V_err_at_T(T_bubble, 0., gas_conversion, liquid_conversion)
             if V_bubble > V:
                 F_mol = self._F_mol
-                mol = self._mol_vle
+                mol = self._mol_vlle
                 if liquid_conversion:
-                    mol = mol + self._dmol_vle
+                    mol = mol + self._dmol_vlle
                     F_mol = F_mol + self._dF_mol
                 F_mol_vapor = F_mol * V
                 v = y_bubble * F_mol_vapor
@@ -936,9 +818,9 @@ class VLE(Equilibrium, phases='lg'):
                 V_dew = self._V_err_at_T(T_dew, 0., gas_conversion, liquid_conversion)
                 if V_dew < V:
                     F_mol = self._F_mol
-                    mol = self._mol_vle
+                    mol = self._mol_vlle
                     if gas_conversion:
-                        mol = mol + self._dmol_vle
+                        mol = mol + self._dmol_vlle
                         F_mol = F_mol + self._dF_mol
                     l = x_dew * F_mol * (1. - V)
                     mask = l > mol 
@@ -955,9 +837,9 @@ class VLE(Equilibrium, phases='lg'):
                         maxiter=self.maxiter,
                     )
                     v = self._v
-                    mol = self._mol_vle
+                    mol = self._mol_vlle
                     if gas_conversion or liquid_conversion:
-                        mol = mol + self._dmol_vle
+                        mol = mol + self._dmol_vlle
             self._T = thermal_condition.T = T
             set_flows(vapor_mol, liquid_mol, index, v, mol)
             if liquid_conversion or gas_conversion:
@@ -982,7 +864,7 @@ class VLE(Equilibrium, phases='lg'):
         
         # Setup bounderies
         index = self._index
-        mol = self._mol_vle
+        mol = self._mol_vlle
         vapor_mol = self._vapor_mol
         liquid_mol = self._liquid_mol
         
@@ -1014,7 +896,7 @@ class VLE(Equilibrium, phases='lg'):
         
         # Guess T, overall vapor fraction, and vapor flow rates
         V = dS_bubble/(S_dew - S_bubble)
-        self._refresh_K(V, y_bubble, x_dew)
+        self._refresh_v(V, y_bubble, x_dew)
         
         F_mass = self._F_mass
         S_hat = S/F_mass
@@ -1102,10 +984,10 @@ class VLE(Equilibrium, phases='lg'):
         # Check if subcooled liquid
         if liquid_conversion:
             T_bubble, dz_bubble, y_bubble, x = self._bubble_point.solve_Ty(self._z, P, liquid_conversion)
-            mol = self._mol_vle + dz_bubble * self._F_mol_vle
+            mol = self._mol_vlle + dz_bubble * self._F_mol_vlle
         else:
             T_bubble, y_bubble = self._bubble_point.solve_Ty(self._z, P)
-            mol = self._mol_vle
+            mol = self._mol_vlle
             dz_bubble = None
         if self._F_mol_light: T_bubble = 0.9 * T_bubble + 0.1 * self._bubble_point.Tmin
         vapor_mol[index] = 0
@@ -1123,10 +1005,10 @@ class VLE(Equilibrium, phases='lg'):
         # Check if super heated vapor
         if gas_conversion:
             T_dew, dz_dew, y, x_dew = self.dew_point.solve_Tx(self._z, P, gas_conversion)
-            mol = self._mol_vle + dz_dew
+            mol = self._mol_vlle + dz_dew
         else:
             T_dew, x_dew = self._dew_point.solve_Tx(self._z, P)
-            mol = self._mol_vle
+            mol = self._mol_vlle
             dz_dew = None
         if T_dew <= T_bubble: 
             T_dew, T_bubble = T_bubble, T_dew
@@ -1147,7 +1029,7 @@ class VLE(Equilibrium, phases='lg'):
         
         # Guess T, overall vapor fraction, and vapor flow rates
         V = abs(dH_bubble / (H_dew - H_bubble))
-        self._refresh_K(V, y_bubble, x_dew, dz_bubble, dz_dew)
+        self._refresh_v(V, y_bubble, x_dew, dz_bubble, dz_dew)
         
         F_mass = self._F_mass
         H_hat = H/F_mass
@@ -1167,7 +1049,7 @@ class VLE(Equilibrium, phases='lg'):
             )
          
         if gas_conversion or liquid_conversion: 
-            H -= (self.chemicals.Hf * (self._mol_vle + self._dmol_vle)).sum()
+            H -= (self.chemicals.Hf * (self._mol_vlle + self._dmol_vlle)).sum()
             
         # Make sure energy balance is correct by vaporizing a fraction
         # of the liquid or condensing a fraction of the vapor
@@ -1221,33 +1103,36 @@ class VLE(Equilibrium, phases='lg'):
             )
         self._H_hat = H_hat
     
-    def _refresh_K(self, V, y_bubble, x_dew, dz_bubble=None, dz_dew=None): # TODO: use reaction data here for better estimate
-        F_mol_vle = self._F_mol_vle
+    def _estimate_v(self, V, y_bubble, x_dew, dz_bubble, dz_dew):
+        F_mol_vlle = self._F_mol_vlle
         z = self._z_norm
         L = (1 - V)
         if dz_bubble is not None:
-            F_mol_vle = F_mol_vle - dz_bubble * L * F_mol_vle
+            F_mol_vlle = F_mol_vlle - dz_bubble * L * F_mol_vlle
         if dz_dew is not None:
-            F_mol_vle = F_mol_vle - dz_dew * V * F_mol_vle
-        v_bubble = (V * z + L * y_bubble) * V * F_mol_vle
-        v_dew = (z - L * (L * z + V * x_dew)) * F_mol_vle
+            F_mol_vlle = F_mol_vlle - dz_dew * V * F_mol_vlle
+        v_bubble = (V * z + L * y_bubble) * V * F_mol_vlle
+        v_dew = (z - L * (L * z + V * x_dew)) * F_mol_vlle
         v = L * v_bubble + V * v_dew
-        l = self._mol_vle - v
-        y = v / v.sum()
-        x = l / l.sum()
-        x[x < 1e-32] = 1e-32
-        self._K = y / x
+        return v
+    
+    def _refresh_v(self, V, y_bubble, x_dew, dz_bubble=None, dz_dew=None): # TODO: use reaction data here for better estimate
+        self._v = v = self._estimate_v(V, y_bubble, x_dew, dz_bubble, dz_dew)
         self._V = V
+        self._y = fn.normalize(v, v.sum() + self._F_mol_light)
+        l = self._mol_vlle - v
+        l[l < 0] = 1e-12
+        self._x = fn.normalize(l, l.sum() + self._F_mol_heavy)
     
     def _H_hat_err_at_T(self, T, H_hat, gas_conversion, liquid_conversion):
         v = self._solve_v(T, self._P, gas_conversion, liquid_conversion)
         if gas_conversion or liquid_conversion: 
-            mol_vle = self._mol_vle + self._dmol_vle
-            set_flows(self._vapor_mol, self._liquid_mol, self._index, v, mol_vle)
-            H = self.mixture.xH(self._phase_data, T, self._P) + (self.chemicals.Hf * mol_vle).sum()
+            mol_vlle = self._mol_vlle + self._dmol_vlle
+            set_flows(self._vapor_mol, self._liquid_mol, self._index, v, mol_vlle)
+            H = self.mixture.xH(self._phase_data, T, self._P) + (self.chemicals.Hf * mol_vlle).sum()
         else:
-            mol_vle = self._mol_vle 
-            set_flows(self._vapor_mol, self._liquid_mol, self._index, v, mol_vle)
+            mol_vlle = self._mol_vlle 
+            set_flows(self._vapor_mol, self._liquid_mol, self._index, v, mol_vlle)
             H = self.mixture.xH(self._phase_data, T, self._P)
         self._H_hat = H / self._F_mass
         return self._H_hat - H_hat
@@ -1255,241 +1140,97 @@ class VLE(Equilibrium, phases='lg'):
     def _H_hat_err_at_P(self, P, H_hat, gas_conversion=None, liquid_conversion=None):
         v = self._solve_v(self._T, P, gas_conversion, liquid_conversion)
         if gas_conversion or liquid_conversion: 
-            mol_vle = self._mol_vle + self._dmol_vle
-            set_flows(self._vapor_mol, self._liquid_mol, self._index, v, mol_vle)
-            H = self.mixture.xH(self._phase_data, self._T, P) + (self.chemicals.Hf * mol_vle).sum()
+            mol_vlle = self._mol_vlle + self._dmol_vlle
+            set_flows(self._vapor_mol, self._liquid_mol, self._index, v, mol_vlle)
+            H = self.mixture.xH(self._phase_data, self._T, P) + (self.chemicals.Hf * mol_vlle).sum()
         else:
-            mol_vle = self._mol_vle 
-            set_flows(self._vapor_mol, self._liquid_mol, self._index, v, mol_vle)
+            mol_vlle = self._mol_vlle 
+            set_flows(self._vapor_mol, self._liquid_mol, self._index, v, mol_vlle)
             H = self.mixture.xH(self._phase_data, self._T, P)
         self._H_hat = H / self._F_mass
         return self._H_hat - H_hat
     
     def _S_hat_err_at_T(self, T, S_hat):
         set_flows(self._vapor_mol, self._liquid_mol, self._index,
-                  self._solve_v(T, self._P), self._mol_vle)
+                  self._solve_v(T, self._P), self._mol_vlle)
         self._S_hat = self.mixture.xS(self._phase_data, T, self._P)/self._F_mass
         return self._S_hat - S_hat
     
     def _S_hat_err_at_P(self, P, S_hat):
         set_flows(self._vapor_mol, self._liquid_mol, self._index,
-                  self._solve_v(self._T, P), self._mol_vle)
+                  self._solve_v(self._T, P), self._mol_vlle)
         self._S_hat = self.mixture.xS(self._phase_data, self._T, P)/self._F_mass
         return self._S_hat - S_hat
     
     def _V_err_at_P(self, P, V, gas_conversion, liquid_conversion):
         v = self._solve_v(self._T , P, gas_conversion, liquid_conversion).sum()
         if gas_conversion or liquid_conversion:
-            F_mol_vle = self._F_mol_vle + self._dF_mol
+            F_mol_vlle = self._F_mol_vlle + self._dF_mol
         else:
-            F_mol_vle = self._F_mol_vle
-        return v / F_mol_vle - V
+            F_mol_vlle = self._F_mol_vlle
+        return v / F_mol_vlle - V
         
     def _V_err_at_T(self, T, V, gas_conversion, liquid_conversion):
         v = self._solve_v(T, self._P, gas_conversion, liquid_conversion).sum()
         if gas_conversion or liquid_conversion:
-            F_mol_vle = self._F_mol_vle + self._dF_mol
+            F_mol_vlle = self._F_mol_vlle + self._dF_mol
         else:
-            F_mol_vle = self._F_mol_vle
-        return v / F_mol_vle - V
+            F_mol_vlle = self._F_mol_vlle
+        return v / F_mol_vlle - V
     
     def _solve_v(self, T, P, gas_conversion=None, liquid_conversion=None):
         """Solve for vapor mol"""
         method = self.method
-        if method == 'shgo':
-            if gas_conversion or liquid_conversion:
-                raise RuntimeError('shgo is not a valid method (yet) when reactions are present')
-            gamma = self._gamma
-            phi = self._phi
-            Psats = np.array([i(T) for i in self._bubble_point.Psats]) 
-            pcf = self._pcf(T, P, Psats)
-            F_mol_vle = self._F_mol_vle
-            mol_vle = self._mol_vle
-            z = mol_vle / F_mol_vle
-            self._v = v = F_mol_vle * solve_vle_vapor_mol_shgo(
-                z, T, gamma.f, gamma.args, P, pcf * Psats, phi.f, phi.args, 
-                dict(f_tol=self.y_tol, minimizer_kwargs=dict(f_tol=self.y_tol)),
-            )
-            self._z_last = z
-        elif method == 'fixed-point':
+        if method == 'fixed-point':
             Psats = np.array([i(T) for i in
                               self._bubble_point.Psats])
             pcf_Psats_over_P = self._pcf(T, P, Psats) * Psats / P
             self._T = T
-            self._v = v = self._solve_v_fixed_point(pcf_Psats_over_P, T, P, gas_conversion, liquid_conversion)
+            y = self._solve_y(self._y, pcf_Psats_over_P, T, P, gas_conversion, liquid_conversion)
             if gas_conversion or liquid_conversion:
-                mol_vle = self._mol_vle + self._dmol_vle
+                self._v = v = (self._F_mol + self._dF_mol) * self._V * y
+                mol_vlle = self._mol_vlle + self._dmol_vlle
             else:
-                mol_vle = self._mol_vle
-            mask = v > mol_vle
-            v[mask] = mol_vle[mask]
+                self._v = v = self._F_mol * self._V * y
+                mol_vlle = self._mol_vlle
+            mask = v > mol_vlle
+            v[mask] = mol_vlle[mask]
             v[v < 0.] = 0.
         else:
             raise RuntimeError(f"invalid method '{method}'")
         return v
     
-    def _solve_v_fixed_point(self, pcf_Psat_over_P, T, P, gas_conversion, liquid_conversion):
-        gamma = self._gamma
-        z = self._z
-        K = self._K # pcf_Psat_over_P
-        n = z.size
-        if n > 2 or self._z_light or self._z_heavy:
-            f = xVlogK_iter
-            args = (pcf_Psat_over_P, T, P, z, 
-                    self._z_light, self._z_heavy, 
-                    gamma.f, gamma.args, self._phi, n,
-                    gas_conversion, liquid_conversion)
-        else:
-            f = xVlogK_iter_2n
-            args = (pcf_Psat_over_P, T, P, z, 
-                    gamma.f, gamma.args, self._phi, n,
-                    gas_conversion, liquid_conversion)
-        xVlogK = np.zeros(2 * n + 1)
-        xVlogK[n] = V = self._V
-        K[K < 1e-16] = 1e-16
-        xVlogK[:n] = z/(1. + V * (K - 1.))
-        xVlogK[n+1:] = np.log(K)
-        xVlogK = flx.aitken(
-            f, xVlogK, self.K_tol, args, checkiter=False, 
-            checkconvergence=False, convergenceiter=5,
-            maxiter=self.maxiter
-        )
-        self._V = V = xVlogK[n]
-        self._K = K = np.exp(xVlogK[n+1:])
-        x = xVlogK[:n]
-        x, y = xy(x, K)
-        self._z_last = z
-        if gas_conversion or liquid_conversion:
-            dmol_vle = 0
-            if gas_conversion: 
-                dmol_vle += gas_conversion(material=y * V, T=T, P=P, phase='g')
-            if liquid_conversion:
-                dmol_vle += liquid_conversion(material=x * (1 - V), T=T, P=P, phase='l')
-            dmol_vle *= self._F_mol
-            self._dmol_vle = dmol_vle
-            self._dF_mol = dmol_vle.sum()
-            v = (self._F_mol - self._dF_mol) * V * x * K
-        else:
-            v = self._F_mol * V * x * K
-        return v
-    
     def _setup(self, gas_conversion=None, liquid_conversion=None):
         imol = self._imol
         self._phase_data = tuple(imol)
-        self._liquid_mol = liquid_mol = imol['l']
-        self._vapor_mol = vapor_mol = imol['g']
-        mol = liquid_mol + vapor_mol
-        if not mol.any(): raise NoEquilibrium('no chemicals to perform equilibrium')
-        nonzero = set(mol.nonzero_keys())
-        if gas_conversion:
-            nonzero.update(
-                gas_conversion.reaction.stoichiometry.nonzero_keys()
-            )
-        if liquid_conversion:
-            nonzero.update(
-                liquid_conversion.reaction.stoichiometry.nonzero_keys()
-            )
-        chemicals = self.chemicals
-        if self._nonzero == nonzero:
-            index = self._index
-            eq_chems = chemicals.tuple
-            eq_chems = [eq_chems[i] for i in index]
-            reset = False
-        else:
-            # Set up indices for both equilibrium and non-equilibrium species
-            index = chemicals.get_vle_indices(nonzero)
-            eq_chems = chemicals.tuple
-            eq_chems = [eq_chems[i] for i in index]
-            reset = True     
-            self._nonzero = nonzero
-            self._index = index
-        if gas_conversion and [i.ID for i in eq_chems] != [i.ID for i in gas_conversion.reaction.chemicals]:
-            gas_conversion.set_chemicals(eq_chems)
-        if liquid_conversion and [i.ID for i in eq_chems] != [i.ID for i in liquid_conversion.reaction.chemicals]:
-            liquid_conversion.set_chemicals(eq_chems)
+        self._liquid_mol = imol['l']
+        self._LIQUID_mol = imol['L']
+        self._vapor_mol = imol['g']
         
         # Get overall composition
-        self._F_mass = (chemicals.MW * mol).sum()
-        self._mol_vle = mol_vle = mol[index]
+        vle = self.vle
+        self._F_mass = vle._F_mass
+        self._mol_vlle = vle._mol_vle
 
         # Set light and heavy keys
-        LNK_index = chemicals._light_indices
-        HNK_index = chemicals._heavy_indices
-        vapor_mol[HNK_index] = 0
-        vapor_mol[LNK_index] = light_mol = mol[LNK_index]
-        liquid_mol[LNK_index] = 0
-        liquid_mol[HNK_index] = heavy_mol = mol[HNK_index]
-        if not mol_vle.any(): raise NoEquilibrium('no chemicals to perform equilibrium')
-        self._F_mol_light = F_mol_light = light_mol.sum()
-        self._F_mol_heavy = F_mol_heavy = (heavy_mol * chemicals._heavy_solutes).sum()
-        self._F_mol_vle = F_mol_vle = mol_vle.sum()
-        self._F_mol = F_mol = F_mol_vle + F_mol_light + F_mol_heavy
-        self._z = mol_vle / F_mol
-        self._z_light = z_light = F_mol_light / F_mol
-        self._z_heavy = z_heavy = F_mol_heavy / F_mol
-        self._z_norm = mol_vle / F_mol_vle
-        N = len(index)
-        if N:
-            N += z_light > 0.
-            N += z_heavy > 0.
-        self._N = N
-        if reset:
-            if N == 0:
-                self._phi = self._gamma = self._pcf = self._dew_point = self._bubble_point = None
-            elif N == 1:
-                self._chemical, = eq_chems
-            else:
-                # Set equilibrium objects
-                thermo = self._thermo
-                self._bubble_point = bp = BubblePoint(eq_chems, thermo)
-                self._dew_point = DewPoint(eq_chems, thermo)
-                self._pcf = bp.pcf
-                self._gamma = bp.gamma
-                self._phi = bp.phi
+        self._F_mol_light = vle._F_mol_light
+        self._F_mol_heavy = vle._F_mol_heavy
+        self._F_mol_vlle = vle._F_mol_vle
+        self._F_mol = vle._F_mol
+        self._z = vle._z
+        self._z_light = vle._z_light
+        self._z_heavy = vle._z_heavy
+        self._z_norm = vle._z_norm
+        self._N = vle._N
+        
+        # Set equilibrium objects
+        self._bubble_point = vle._bubble_point
+        self._dew_point = vle._dew_point
+        self._pcf = vle._pcf
+        self._gamma = vle._gamma
+        self._phi = vle._phi
 
 
-class VLECache(Cache): load = VLE
+class VLLECache(Cache): load = VLLE
 del Cache, Equilibrium
 
-@njit(cache=True)
-def liquid_fugacity(mol_L, T, pcf_Psats, f_gamma, gamma_args):
-    total_mol_L = mol_L.sum()
-    if total_mol_L:
-        x = mol_L / total_mol_L
-        fugacity = x * f_gamma(x, T, *gamma_args) * pcf_Psats
-    else:
-        fugacity = np.ones_like(mol_L)
-    return fugacity 
-
-@njit(cache=True)
-def vapor_fugacity(mol_v, T, P, f_phi, phi_args):
-    total_mol_v = mol_v.sum()
-    if total_mol_v:
-        y = mol_v / total_mol_v
-        fugacity = y * P * f_phi(y, T, P, *phi_args)
-    else:
-        fugacity = np.ones_like(mol_v)
-    return fugacity
-
-@njit(cache=True)
-def gibbs_free_energy(mol, fugacity):
-    fugacity[fugacity <= 0] = 1
-    g_mix = (mol * np.log(fugacity)).sum()
-    return g_mix
-
-@njit(cache=True)
-def vle_objective_function(mol_v, mol, T, f_gamma, gamma_args, P, pcf_Psats, f_phi, phi_args):
-    mol_l = mol - mol_v
-    g_mix_l = gibbs_free_energy(mol_l, liquid_fugacity(mol_l, T, pcf_Psats, f_gamma, gamma_args))
-    g_mix_g = gibbs_free_energy(mol_v, vapor_fugacity(mol_v, T, P, f_phi, phi_args))
-    g_mix = g_mix_l + g_mix_g
-    return g_mix
-
-def solve_vle_vapor_mol_shgo(
-        mol, T, f_gamma, gamma_args, P, pcf_Psats, f_phi, phi_args, shgo_options,
-    ):
-    args = (mol, T, f_gamma, gamma_args, P, pcf_Psats, f_phi, phi_args)
-    bounds = np.zeros([mol.size, 2])
-    bounds[:, 1] = mol
-    result = shgo(vle_objective_function, bounds, args, options=shgo_options)
-    return result.x

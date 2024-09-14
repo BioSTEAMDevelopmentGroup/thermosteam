@@ -50,32 +50,33 @@ def lle_objective_function(mol_L, mol, T, f_gamma, gamma_args):
     return g_mix
 
 @njit(cache=True)
-def psuedo_equilibrium_inner_loop(Kgammay, z, T, n, f_gamma, gamma_args, phi):
-    Kgammay_new = Kgammay.copy()
-    K = Kgammay[:n]
-    gammay = Kgammay[n:]
+def psuedo_equilibrium_inner_loop(logKgammay, z, T, n, f_gamma, gamma_args, phi):
+    logKgammay_new = logKgammay.copy()
+    K = np.exp(logKgammay[:n])
     x = z/(1. + phi * (K - 1.))
     x = x / x.sum()
+    gammay = logKgammay[n:]
     gammax = f_gamma(x, T, *gamma_args)
     K = gammax / gammay 
     y = K * x
     y /= y.sum()
     gammay = f_gamma(y, T, *gamma_args)
     K = gammax / gammay
-    Kgammay_new[:n] = K
-    Kgammay_new[n:] = gammay
-    return Kgammay_new
+    logKgammay_new[n:] = np.log(K)
+    logKgammay_new[n:] = gammay
+    return logKgammay_new
 
-def pseudo_equilibrium_outer_loop(Kgammayphi, z, T, n, f_gamma, gamma_args, inner_loop_options):
-    Kgammayphi_new = Kgammayphi.copy()
-    Kgammay = Kgammayphi[:-1]
-    phi = Kgammayphi[-1]
+def pseudo_equilibrium_outer_loop(logKgammayphi, z, T, n, f_gamma, gamma_args, inner_loop_options):
+    logKgammayphi_new = logKgammayphi.copy()
+    # breakpoint()
+    logKgammay = logKgammayphi[:-1]
+    phi = logKgammayphi[-1]
     args=(z, T, n, f_gamma, gamma_args)
-    Kgammay = flx.fixed_point(
-        psuedo_equilibrium_inner_loop, Kgammay, 
+    logKgammay = flx.aitken(
+        psuedo_equilibrium_inner_loop, logKgammay, 
         args=(*args, phi), **inner_loop_options,
     )
-    K = Kgammay[:n]
+    K = np.exp(logKgammay[:n])
     try:
         phi = phase_fraction(z, K, phi)
     except (ZeroDivisionError, FloatingPointError):
@@ -83,9 +84,9 @@ def pseudo_equilibrium_outer_loop(Kgammayphi, z, T, n, f_gamma, gamma_args, inne
     if np.isnan(phi): raise NoEquilibrium
     if phi > 1: phi = 1 - 1e-16
     if phi < 0: phi = 1e-16
-    Kgammayphi_new[:2*n] = Kgammay
-    Kgammayphi_new[-1] = phi
-    return Kgammayphi_new
+    logKgammayphi_new[:-1] = logKgammay
+    logKgammayphi_new[-1] = phi
+    return logKgammayphi_new
 
 def pseudo_equilibrium(K, phi, z, T, n, f_gamma, gamma_args, inner_loop_options, outer_loop_options):
     phi = phase_fraction(z, K, phi)
@@ -95,20 +96,20 @@ def pseudo_equilibrium(K, phi, z, T, n, f_gamma, gamma_args, inner_loop_options,
         x = np.ones(n)
     x /= x.sum()
     y = K * x
-    Kgammayphi = np.zeros(2*n + 1)
-    Kgammayphi[:n] = K
-    Kgammayphi[n:-1] = f_gamma(y, T, *gamma_args)
-    Kgammayphi[-1] = phi
+    logKgammayphi = np.zeros(2*n + 1)
+    logKgammayphi[:n] = np.log(K)
+    logKgammayphi[n:-1] = f_gamma(y, T, *gamma_args)
+    logKgammayphi[-1] = phi
     try:
-        Kgammayphi = flx.fixed_point(
-            pseudo_equilibrium_outer_loop, Kgammayphi,
+        logKgammayphi = flx.aitken(
+            pseudo_equilibrium_outer_loop, logKgammayphi,
             args=(z, T, n, f_gamma, gamma_args, inner_loop_options),
             **outer_loop_options,
         )
     except NoEquilibrium:
         return z
-    K = Kgammayphi[:n]
-    phi = Kgammayphi[-1]
+    K = np.exp(logKgammayphi[:n])
+    phi = logKgammayphi[-1]
     return z/(1. + phi * (K - 1.)) * (1 - phi)
 
 class LLE(Equilibrium, phases='lL'):
