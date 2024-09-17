@@ -29,6 +29,8 @@ __all__ = ('VLE', 'VLECache')
 
 @njit(cache=True)
 def xy(x, Ks):
+    x[x < 0] = 1e-16
+    x /= x.sum()
     y = x * Ks
     y /= y.sum()
     return x, y
