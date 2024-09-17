@@ -2264,7 +2264,7 @@ def simplified_linear_paths(linear_paths):
     for i, path in enumerate(linear_paths):
         simplify_linear_path(path, unit_sets[i:])
         if path:
-            add_back_ends(path, units)
+            # add_back_ends(path, units)
             simplified_paths.append(path)
     simplified_paths.reverse()
     return simplified_paths
@@ -2633,7 +2633,7 @@ class Network:
                                 excluded[sink] += 1
                             else:
                                 excluded[sink] = 1
-        # if len(path) > 1 and path[-1] is path[0]: path.pop() 
+        if len(path) > 1 and path[-1] is path[0]: path.pop() 
             
     # def repeat_interaction_units(self, excluded=None, next_units=None):
     #     isa = isinstance
@@ -2711,7 +2711,6 @@ class Network:
     def join_network_at_unit(self, network, unit):
         isa = isinstance
         path_tuple = tuple(self.path)
-        self._remove_overlap(network, path_tuple)
         for index, item in enumerate(self.path):
             if isa(item, Network) and unit in item.units:
                 if network.recycle:
@@ -2727,7 +2726,7 @@ class Network:
                         network.recycle = None 
                         self._insert_linear_network(index, network)
                     else:
-                        self._insert_recycle_network(index, network)
+                        self._insert_recycle_network(index, network, path_tuple)
                 else:
                     self._insert_linear_network(index, network)
                 return
@@ -2754,10 +2753,8 @@ class Network:
             self._add_linear_network(network)
             return
         else:
-            path = self.path
+            path_tuple = tuple(self.path)
             isa = isinstance
-            path_tuple = tuple(path)
-            self._remove_overlap(network, path_tuple)
             subunits = network.units
             for index, i in enumerate(path_tuple):
                 if isa(i, Network) and not network.isdisjoint(i):
@@ -2771,7 +2768,7 @@ class Network:
             else:
                 for index, item in enumerate(path_tuple):
                     if not isa(item, Network) and item in subunits:
-                        self._insert_recycle_network(index, network)
+                        self._insert_recycle_network(index, network, path_tuple)
                         return
                 raise ValueError('networks must have units in common to join') # pragma: no cover
     
@@ -2847,7 +2844,7 @@ class Network:
             )
         return downstream_units.intersection(upstream_units)
     
-    def _insert_recycle_network(self, index, network):
+    def _insert_recycle_network(self, index, network, path_tuple):
         path = self.path
         path_segment = []
         recycle_units = network.get_recycle_units()
@@ -2855,12 +2852,13 @@ class Network:
             if isinstance(i, Network):
                 if not i.units.isdisjoint(recycle_units):
                     network.join_recycle_network(i)
-                    path.remove(i)
             elif i in recycle_units:
                 path_segment.append(i)
-                path.remove(i)
         linear_network = Network(path_segment)
-        network._add_linear_network(linear_network)
+        if linear_network.units.difference(network.units):
+            if len(path_segment) > 1 and path_segment[0] is path_segment[-1]: path_segment.pop()
+            network._add_linear_network(linear_network)
+        self._remove_overlap(network, path_tuple)
         path.insert(index, network)
         self.units.update(network.units)
 
