@@ -109,15 +109,23 @@ class AbstractStream:
         """Return whether stream has a source but no sink."""
         return bool(self._source and not self._sink)
 
-    def disconnect_source(self):
+    def disconnect_source(self, resize=True):
         """Disconnect stream from source."""
         source = self._source
-        if source: source.outs.remove(self)
+        if source: 
+            if resize:
+                source.outs.remove(self)
+            else:
+                source.outs.replace(self, source.MissingStream())
 
-    def disconnect_sink(self):
+    def disconnect_sink(self, resize=True):
         """Disconnect stream from sink."""
         sink = self._sink
-        if sink: sink.ins.remove(self)
+        if sink: 
+            if resize:
+                sink.ins.remove(self)
+            else:
+                sink.ins.replace(self, sink.MissingStream())
 
     def disconnect(self):
         """Disconnect stream from unit."""
@@ -388,8 +396,16 @@ class StreamSequence:
     
     def _set_stream(self, int, stream, stacklevel):
         stream = self._as_stream(stream)
-        self._undock(self._streams[int])
-        self._streams[int] = self._redock(stream, stacklevel+1)
+        try:
+            old_stream = self._streams[int]
+        except IndexError as e:
+            if int >= self.size and not self._fixed_size: 
+                self._streams.append(self._redock(stream, stacklevel+1))
+            else:
+                raise e from None
+        else:
+            self._undock(old_stream)
+            self._streams[int] = self._redock(stream, stacklevel+1)
     
     def empty(self):
         for i in self._streams: self._undock(i)
@@ -575,12 +591,12 @@ class Connection(NamedTuple):
             if not (sink and getattr(sink, '_owner', None) is source):
                 source.outs[self.source_index] = self.stream
         else:
-            self.stream.disconnect_source()
+            self.stream.disconnect_source(resize=False)
         if sink:
             if not (source and getattr(source, '_owner', None) is sink):
                 sink.ins[self.sink_index] = self.stream
         else:
-            self.stream.disconnect_sink()
+            self.stream.disconnect_sink(resize=False)
 
 
 # %% Piping notation
@@ -1350,7 +1366,10 @@ class AbstractUnit:
             return self._graphics.get_minimal_node(self)
         else:
             node = self._graphics.get_node_tailored_to_unit(self)
-            node['tooltip'] = self._get_tooltip_string()
+            try:
+                node['tooltip'] = self._get_tooltip_string()
+            except:
+                pass
             return node
     
     def add_specification(self, 
@@ -1571,12 +1590,12 @@ class AbstractUnit:
         ins = self._ins
         outs = self._outs
         if inlets is None: 
-            inlets = [i for i in ins if i.source]
+            inlets = tuple(ins)
             ins[:] = ()
         else:
             for i in inlets: ins[ins.index(i) if isinstance(i, AbstractStream) else i] = None
         if outlets is None: 
-            outlets = [i for i in outs if i.sink]
+            outlets = tuple(outs)
             outs[:] = ()
         else:
            for o in outlets: outs[ins.index(o) if isinstance(o, AbstractStream) else o] = None
@@ -1584,7 +1603,7 @@ class AbstractUnit:
             if len(inlets) != len(outlets):
                 raise ValueError("number of inlets must match number of outlets to join ends")
             for inlet, outlet in zip(inlets, outlets):
-                outlet.sink.ins.replace(outlet, inlet)
+                if outlet.sink: outlet.sink.ins.replace(outlet, inlet)
         if discard: self.registry.discard(self)
 
     @ignore_docking_warnings
@@ -1735,14 +1754,17 @@ class AbstractUnit:
             if u and (universal or not u._universal) and not (ends and s in ends):
                 set.add(u)
 
-    def get_downstream_units(self, ends=None, universal=True):
+    def get_downstream_units(self, ends=None, universal=True, downstream_units=None):
         """Return a set of all units downstream."""
-        downstream_units = set()
+        if downstream_units is None: 
+            downstream_units = set()
+            new_length = 0
+        else:
+            new_length = len(downstream_units)
         outer_periphery = set()
         self._add_downstream_neighbors_to_set(outer_periphery, ends, universal)
         inner_periphery = None
         old_length = -1
-        new_length = 0
         while new_length != old_length:
             old_length = new_length
             inner_periphery = outer_periphery
@@ -1753,14 +1775,17 @@ class AbstractUnit:
             new_length = len(downstream_units)
         return downstream_units
     
-    def get_upstream_units(self, ends=None, universal=True):
+    def get_upstream_units(self, ends=None, universal=True, upstream_units=None):
         """Return a set of all units upstream."""
-        upstream_units = set()
+        if upstream_units is None:
+            upstream_units = set()
+            new_length = 0
+        else:
+            new_length = len(upstream_units)
         outer_periphery = set()
         self._add_upstream_neighbors_to_set(outer_periphery, ends, universal)
         inner_periphery = None
         old_length = -1
-        new_length = 0
         while new_length != old_length:
             old_length = new_length
             inner_periphery = outer_periphery
@@ -1770,6 +1795,23 @@ class AbstractUnit:
                 unit._add_upstream_neighbors_to_set(outer_periphery, ends, universal)
             new_length = len(upstream_units)
         return upstream_units
+    
+    def get_recycle_units(self):
+        downstream_units = set()
+        downstream_ends = set()
+        upstream_units = set()
+        upstream_ends = set()
+        self.get_downstream_units(
+            downstream_units=downstream_units, 
+            ends=downstream_ends, 
+            universal=False,
+        )
+        self.get_upstream_units(
+            upstream_units=upstream_units, 
+            ends=upstream_ends, 
+            universal=False,
+        )
+        return downstream_units.intersection(upstream_units)
     
     def neighborhood(self, 
             radius: Optional[int]=1, 
@@ -2046,13 +2088,6 @@ def unmark_disjunction(stream):
     if port in disjunctions:
         disjunctions.remove(port)
 
-
-def get_recycle_sink(recycle):
-    if hasattr(recycle, 'sink'):
-        return recycle.sink
-    else:
-        for i in recycle: return i.sink
-
 def sort_feeds_big_to_small(feeds):
     if feeds:
         feed_priorities = tmo.AbstractStream.feed_priorities
@@ -2071,6 +2106,7 @@ def sort_feeds_big_to_small(feeds):
 
 # %% Path tools
 
+
 class PathSource:
     
     __slots__ = ('source', 'units')
@@ -2079,7 +2115,7 @@ class PathSource:
         self.source = source
         if isinstance(source, Network):
             self.units = units = set()
-            for i in source.units: units.update(i.get_downstream_units(ends=ends, universal=False))
+            for i in source.units: i.get_downstream_units(ends=ends, downstream_units=units, universal=False)
         else:
             self.units = units = source.get_downstream_units(ends=ends, universal=False)
             
@@ -2092,8 +2128,79 @@ class PathSource:
         
     def __repr__(self):
         return f"{type(self).__name__}({str(self.source)})"
-        
+   
+# def find_linear_paths(feed, ends, units):
+#     paths = []
+#     fill_linear_path(feed, [], paths, ends, units)
+#     return simplified_linear_paths(paths)
 
+# def fill_linear_path(feed, path, paths, ends, units):
+#     unit = feed.sink
+#     if not unit or unit._universal or unit not in units:
+#         paths.append(path)
+#     elif feed in ends:
+#         paths.append(path)
+#     elif unit in path: 
+#         if len(unit.outs) == 1 and unit.outs[0] in ends: 
+#             paths.append(path)
+#         else:
+#             ends.add(feed)
+#         if unit._interaction:
+#             index = unit.ins.index(feed)
+#             path.append(unit)
+#             fill_linear_path(unit.outs[index], path,
+#                              paths, ends, units)
+#     elif unit._interaction:
+#         index = unit.ins.index(feed)
+#         path.append(unit)
+#         fill_linear_path(unit.outs[index], path,
+#                          paths, ends, units)
+#     else:
+#         path.append(unit)
+#         outlets = unit._outs
+#         if outlets:
+#             first_outlet, *other_outlets = outlets
+#             for outlet in other_outlets:
+#                 new_path = path.copy()
+#                 fill_linear_path(outlet, new_path, paths, ends, units)
+#             fill_linear_path(first_outlet, path, paths, ends, units)
+
+# def find_cyclic_paths_with_recycle(feed, ends, units):
+#     paths_with_recycle = find_paths_with_recycle(
+#         feed, ends, units
+#     )
+#     cyclic_paths_with_recycle = []
+#     for path_with_recycle in paths_with_recycle:
+#         cyclic_path_with_recycle = path_with_recycle_to_cyclic_path_with_recycle(path_with_recycle)
+#         cyclic_paths_with_recycle.append(cyclic_path_with_recycle)
+#     cyclic_paths_with_recycle.sort(key=lambda x: -len(x[0]))
+#     return cyclic_paths_with_recycle
+
+# def find_paths_with_recycle(feed, ends, units):
+#     paths_with_recycle = []
+#     fill_cyclic_path(feed, [], paths_with_recycle, ends, units)
+#     return paths_with_recycle
+
+# def fill_cyclic_path(feed, path, paths_with_recycle, ends, units):
+#     unit = feed.sink
+#     if not unit or unit._universal or unit not in units or feed in ends:
+#         pass
+#     elif unit in path: 
+#         if len(unit.outs) == 1 and unit.outs[0] in ends: 
+#             pass
+#         else:
+#             ends.add(feed)
+#             paths_with_recycle.append((path, feed))
+#     else:
+#         path.append(unit)
+#         outlets = unit._outs
+#         if outlets:
+#             first_outlet, *other_outlets = outlets
+#             for outlet in other_outlets:
+#                 new_path = path.copy()
+#                 fill_cyclic_path(outlet, new_path, paths_with_recycle, ends, units)
+#             fill_cyclic_path(first_outlet, path, paths_with_recycle, ends, units)
+     
 def find_linear_and_cyclic_paths_with_recycle(feed, ends, units):
     paths_with_recycle, linear_paths = find_paths_with_and_without_recycle(
         feed, ends, units
@@ -2117,6 +2224,8 @@ def fill_path(feed, path, paths_with_recycle,
     unit = feed.sink
     if not unit or unit._universal or unit not in units:
         paths_without_recycle.append(path)
+    elif feed in ends:
+        paths_without_recycle.append(path)
     elif unit in path: 
         if len(unit.outs) == 1 and unit.outs[0] in ends: 
             paths_without_recycle.append(path)
@@ -2124,8 +2233,6 @@ def fill_path(feed, path, paths_with_recycle,
             ends.add(feed)
             path_with_recycle = path, feed
             paths_with_recycle.append(path_with_recycle)
-    elif feed in ends:
-        paths_without_recycle.append(path)
     else:
         path.append(unit)
         outlets = unit._outs
@@ -2185,6 +2292,22 @@ def nested_network_units(path):
         else:
             units.add(i)
     return units
+
+def remove_interaction_units(units):
+    new_units = []
+    old_connections = []
+    interaction_units = []
+    for u in units:
+        if u._interaction:
+            for inlet, outlet in zip(u.ins, u.outs):
+                old_connections.append(inlet.get_connection())
+                old_connections.append(outlet.get_connection())
+            interaction_units.append(u)
+            continue
+        new_units.append(u)
+    for u in interaction_units: 
+        u.disconnect(join_ends=True)
+    return new_units, old_connections
 
 # %% Network
 
@@ -2251,12 +2374,11 @@ class Network:
     
     """
     
-    __slots__ = ('path', 'units', 'recycle', 'recycle_sink')
+    __slots__ = ('path', 'units', 'recycle',)
     
     def __init__(self, path, recycle=None):
         self.path = path
         self.recycle = recycle
-        self.recycle_sink = get_recycle_sink(recycle) if recycle else None
         try: self.units = set(path)
         except: self.units = nested_network_units(path)
     
@@ -2343,7 +2465,7 @@ class Network:
         if not stop: warn(RuntimeWarning('network path could not be determined'))
     
     @classmethod
-    def from_feedstock(cls, feedstock, feeds=(), ends=None, units=None, final=True, recycles=True):
+    def from_feedstock(cls, feedstock, feeds=(), ends=None, units=None, final=True, recycles=True, interaction=True):
         """
         Create a Network object from a feedstock.
         
@@ -2360,6 +2482,8 @@ class Network:
             All unit operations within the network.
             
         """
+        if final and interaction:
+            units, old_connections = remove_interaction_units(units)
         ends = set(ends) if ends else set()
         units = frozenset(units) if units else frozenset()
         recycle_ends = ends.copy()
@@ -2381,7 +2505,7 @@ class Network:
         disjunction_streams = set([i.get_stream() for i in disjunctions])
         for feed in feeds:
             if feed in ends or feed.sink._universal: continue
-            downstream_network = cls.from_feedstock(feed, (), ends, units, final=False)
+            downstream_network = cls.from_feedstock(feed, (), ends, units, final=False, interaction=interaction)
             new_streams = downstream_network.streams
             connections = ends.intersection(new_streams)
             connecting_units = {stream._sink for stream in connections
@@ -2404,14 +2528,16 @@ class Network:
             recycle_ends.update(disjunction_streams)
             recycle_ends.update(network.get_all_recycles())
             recycle_ends.update(tmo.utils.products_from_units(network.units))
-            network.sort_without_recycle(recycle_ends)
+            # network.sort_without_recycle(recycle_ends)
             if recycles: network.reduce_recycles()
             network.sort(recycle_ends)
-            network.add_interaction_units()
+            # network._add_interaction_units({}, [])
+            if interaction:
+                network.add_interaction_units(old_connections, ends)
         return network
     
     @classmethod
-    def from_units(cls, units, ends=None, recycles=True):
+    def from_units(cls, units, ends=None, recycles=True, interaction=True):
         """
         Create a System object from all units given.
 
@@ -2439,7 +2565,7 @@ class Network:
             if not ends:
                 ends = tmo.utils.products_from_units(units) + [i.get_stream() for i in disjunctions]
             system = cls.from_feedstock(
-                feedstock, feeds, ends, units, final=True, recycles=recycles,
+                feedstock, feeds, ends, units, final=True, recycles=recycles, interaction=interaction,
             )
         else:
             system = cls(())
@@ -2467,26 +2593,104 @@ class Network:
                     if len(source.ins) == 1:
                         self.recycle = source.ins[0]
     
-    def add_interaction_units(self, excluded=None):
-        isa = isinstance
+    def add_interaction_units(self, old_connections, ends):
+        for i in old_connections: i.reconnect()
+        self._add_interaction_units({}, [], ends)
+        done = set()
+        surface_interation_units = set([i for i in self.path if getattr(i, '_interaction', False)])
+        for i in surface_interation_units:
+            if i in done: continue
+            recycle_units = i.get_recycle_units()
+            recycle_units.add(i)
+            done.update(recycle_units)
+            network = Network.from_units(recycle_units, interaction=False)
+            self.join_recycle_network(network)
+            
+    def _add_interaction_units(self, excluded, next_units, ends):
         path = self.path
-        if excluded is None: excluded = set()
+        isa = isinstance
+        length = len(path)
         for i, u in enumerate(path):
             if isa(u, Network):
-                u.add_interaction_units(excluded)
+                u._add_interaction_units(excluded, path[i+1:], ends)
             else:
-                if u._interaction: excluded.add(u)
                 for s in u.outs:
                     sink = s.sink
-                    if u in excluded: continue
-                    if u._interaction and sink in path[:i] and not any([(sink in i.units if isa(i, Network) else sink is i) for i in path[i+1:]]):
-                        excluded.add(sink)
-                        path.insert(i+1, sink)
-        if len(path) > 1 and path[-1] is path[0]: path.pop()
+                    if sink and sink._interaction and excluded.get(sink, 0) != len(sink.outs):
+                        inext = i + 1
+                        if inext == length: 
+                            try:
+                                unext = next_units[0]
+                            except:
+                                continue
+                        else:
+                            unext = path[inext]
+                        if isa(unext, Network): unext = unext.get_first_unit()
+                        if sink is not unext:
+                            length += 1
+                            path.insert(i+1, sink)
+                            if sink in excluded:
+                                excluded[sink] += 1
+                            else:
+                                excluded[sink] = 1
+        # if len(path) > 1 and path[-1] is path[0]: path.pop() 
+            
+    # def repeat_interaction_units(self, excluded=None, next_units=None):
+    #     isa = isinstance
+    #     path = self.path
+    #     if excluded is None: excluded = set()
+    #     length = len(path)
+    #     for i, u in enumerate(path):
+    #         if isa(u, Network):
+    #             u.add_interaction_units(excluded, path[i+1:])
+    #         else:
+    #             for s in u.outs:
+    #                 sink = s.sink
+    #                 if sink and sink._interaction and sink not in excluded:
+    #                     inext = i + 1
+    #                     if inext == length: 
+    #                         try:
+    #                             unext = next_units[0]
+    #                         except:
+    #                             continue
+    #                     else:
+    #                         unext = path[inext]
+    #                     if isa(unext, Network): unext = unext.get_first_unit()
+    #                     if sink is not unext:
+    #                         length += 1
+    #                         path.insert(i+1, sink)
+    #                         excluded.add(sink)
+    #     if len(path) > 1 and path[-1] is path[0]: path.pop()
+    
+    def get_first_unit(self):
+        path = self.path
+        first = path[0]
+        if isinstance(first, Network):
+            return first.get_first_unit()
+        else:
+            return first
+    
+    def get_last_unit(self):
+        path = self.path
+        last = path[-1]
+        if isinstance(last, Network):
+            return last.get_last_unit()
+        else:
+            return last
     
     @property
     def streams(self):
         return tmo.utils.streams_from_units(self.units)
+    
+    @property
+    def recycle_sink(self):
+        recycle = self.recycle
+        if recycle is None:
+            return None
+        elif hasattr(recycle, 'sink'):
+            return recycle.sink
+        else:
+            for i in recycle: return i.sink
     
     def first_unit(self, units):
         isa = isinstance
@@ -2501,6 +2705,9 @@ class Network:
     def isdisjoint(self, network):
         return self.units.isdisjoint(network.units)
         
+    def issubset(self, network):
+        return self.units.issubset(network.units)
+    
     def join_network_at_unit(self, network, unit):
         isa = isinstance
         path_tuple = tuple(self.path)
@@ -2515,7 +2722,12 @@ class Network:
                 return
             elif unit is item:
                 if network.recycle:
-                    self._insert_recycle_network(index, network)
+                    if self.recycle:
+                        self.add_recycle(network.recycle)
+                        network.recycle = None 
+                        self._insert_linear_network(index, network)
+                    else:
+                        self._insert_recycle_network(index, network)
                 else:
                     self._insert_linear_network(index, network)
                 return
@@ -2538,24 +2750,30 @@ class Network:
         if self.recycle_sink is network.recycle_sink:
             # Feed forward scenario
             self.add_recycle(network.recycle)
-            network.recycle_sink = network.recycle = None 
+            network.recycle = None 
             self._add_linear_network(network)
             return
-        path = self.path
-        isa = isinstance
-        path_tuple = tuple(path)
-        self._remove_overlap(network, path_tuple)
-        subunits = network.units
-        for index, i in enumerate(path_tuple):
-            if isa(i, Network) and not network.isdisjoint(i):
-                i.join_recycle_network(network)
-                self.units.update(subunits)
-                return
-        for index, item in enumerate(path_tuple):
-            if not isa(item, Network) and item in subunits:
-                self._insert_recycle_network(index, network)
-                return
-        raise ValueError('networks must have units in common to join') # pragma: no cover
+        else:
+            path = self.path
+            isa = isinstance
+            path_tuple = tuple(path)
+            self._remove_overlap(network, path_tuple)
+            subunits = network.units
+            for index, i in enumerate(path_tuple):
+                if isa(i, Network) and not network.isdisjoint(i):
+                    i.join_recycle_network(network)
+                    self.units.update(subunits)
+                    return
+            if self.recycle:
+                self.add_recycle(network.recycle)
+                network.recycle = None 
+                self._add_linear_network(network)
+            else:
+                for index, item in enumerate(path_tuple):
+                    if not isa(item, Network) and item in subunits:
+                        self._insert_recycle_network(index, network)
+                        return
+                raise ValueError('networks must have units in common to join') # pragma: no cover
     
     def add_recycle(self, stream):
         if stream is None: return 
@@ -2597,8 +2815,8 @@ class Network:
             cls = type(self)
             new = cls.__new__(cls)
             new.path = self.path; new.units = self.units
-            new.recycle = self.recycle; new.recycle_sink = self.recycle_sink
-            self.recycle = self.recycle_sink = None
+            new.recycle = self.recycle
+            self.recycle = None
             self.path = [new, network] if network.recycle else [new, *network.path]
             self.units = self.units.union(network.units)
         elif network.recycle:
@@ -2611,16 +2829,40 @@ class Network:
         self.path = [*path[:index], *network.path, *path[index:]]
         self.units.update(network.units)
     
+    def get_recycle_units(self):
+        downstream_units = set()
+        downstream_ends = set()
+        upstream_units = set()
+        upstream_ends = set()
+        for u in self.units:
+            u.get_downstream_units(
+                downstream_units=downstream_units, 
+                ends=downstream_ends, 
+                universal=False,
+            )
+            u.get_upstream_units(
+                upstream_units=upstream_units, 
+                ends=upstream_ends, 
+                universal=False,
+            )
+        return downstream_units.intersection(upstream_units)
+    
     def _insert_recycle_network(self, index, network):
         path = self.path
+        path_segment = []
+        recycle_units = network.get_recycle_units()
+        for i in path[index:]:
+            if isinstance(i, Network):
+                if not i.units.isdisjoint(recycle_units):
+                    network.join_recycle_network(i)
+                    path.remove(i)
+            elif i in recycle_units:
+                path_segment.append(i)
+                path.remove(i)
+        linear_network = Network(path_segment)
+        network._add_linear_network(linear_network)
         path.insert(index, network)
         self.units.update(network.units)
-        if len(path) == 1:
-            network = path[0]
-            if isinstance(network, Network):
-                self.path = network.path
-                self.recycle = network.recycle
-                self.recycle_sink = network.recycle_sink
 
     def _add_linear_network(self, network):
         path = self.path
@@ -2661,7 +2903,7 @@ class Network:
         if recycle:
             if isinstance(recycle, set):
                 recycle = ", ".join([i._source_info() for i in recycle])
-                recycle = '[' + recycle + ']'
+                recycle = '{' + recycle + '}'
             else:
                 recycle = recycle._source_info()
             info += end + f"recycle={recycle})"
