@@ -2063,7 +2063,11 @@ class Stream(AbstractStream):
         liq += LIQ # All flows must be in the 'l' phase for VLE
         LIQ[:] = 0.
         vle(T=T, P=P)
-        if not gas.any() or not liq.any(): return
+        if not gas.any():
+            lle(T, P)
+            return
+        elif not liq.any(): 
+            return
         lle(T, P)
         if not (LIQ.any() and liq.any()): return
         total_flow = data.sum()

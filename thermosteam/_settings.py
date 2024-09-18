@@ -50,12 +50,20 @@ class ProcessSettings:
     Access or change cooling agents:
         
     >>> settings.cooling_agents
-    [<UtilityAgent: cooling_water>, <UtilityAgent: chilled_water>, <UtilityAgent: chilled_brine>, <UtilityAgent: propane>]
+    [<UtilityAgent: cooling_water>,
+     <UtilityAgent: chilled_water>,
+     <UtilityAgent: chilled_brine>,
+     <UtilityAgent: propane>,
+     <UtilityAgent: propylene>,
+     <UtilityAgent: ethylene>]
 
     Access or change heating agents:
         
     >>> settings.heating_agents
-    [<UtilityAgent: low_pressure_steam>, <UtilityAgent: medium_pressure_steam>, <UtilityAgent: high_pressure_steam>]
+    [<UtilityAgent: low_pressure_steam>,
+     <UtilityAgent: medium_pressure_steam>,
+     <UtilityAgent: high_pressure_steam>,
+     <UtilityAgent: natural_gas>]
 
     Access or change the thermodynamic property package:
         

@@ -458,7 +458,10 @@ class IdealMixture(Mixture):
         """
         isa = isinstance
         if isa(chemicals, CompiledChemicals):
-            MWs = chemicals.MW
+            try:
+                MWs = chemicals.MW
+            except:
+                breakpoint()
             chemicals = chemicals.tuple
         else:
             chemicals = [(i if isa(i, Chemical) else Chemical(i, cache=cache)) for i in chemicals]

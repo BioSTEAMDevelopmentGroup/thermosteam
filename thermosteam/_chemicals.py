@@ -29,7 +29,22 @@ def chemical_data_array(chemicals, attr):
     data = np.array([getfield(i, attr) for i in chemicals], dtype=float)
     data.setflags(0)
     return data
-    
+ 
+def prepare(chemicals, skip_checks):
+    free_energies = ('H', 'S', 'H_excess', 'S_excess')
+    for chemical in chemicals:
+        if chemical.get_missing_properties(free_energies):
+            chemical.reset_free_energies()
+        if skip_checks: continue
+        key_properties = chemical.get_key_property_names()
+        missing_properties = chemical.get_missing_properties(key_properties)
+        if not missing_properties: continue
+        missing = utils.repr_listed_values(missing_properties)
+        raise RuntimeError(
+            f"{chemical} is missing key thermodynamic properties ({missing}); "
+            "use the `<Chemical>.get_missing_properties()` to check "
+            "all missing properties"
+        )
 
 # %% Chemicals
 
@@ -228,10 +243,10 @@ class Chemicals:
         
         """
         chemicals = tuple(self)
+        prepare(chemicals, skip_checks)
         setattr(self, '__class__', CompiledChemicals)
-        try: self._compile(chemicals, skip_checks)
+        try: self._compile(chemicals)
         except Exception as error:
-            raise error
             setattr(self, '__class__', Chemicals)
             setattr(self, '__dict__', {i.ID: i for i in chemicals})
             raise error
@@ -529,23 +544,9 @@ class CompiledChemicals(Chemicals):
         reactions = [i.get_combustion_reaction(self) for i in self]
         return tmo.reaction.ParallelReaction([i for i in reactions if i is not None])
 
-    def _compile(self, chemicals, skip_checks=False):
+    def _compile(self, chemicals):
         dct = self.__dict__
         tuple_ = tuple
-        free_energies = ('H', 'S', 'H_excess', 'S_excess')
-        for chemical in chemicals:
-            if chemical.get_missing_properties(free_energies):
-                chemical.reset_free_energies()
-            if skip_checks: continue
-            key_properties = chemical.get_key_property_names()
-            missing_properties = chemical.get_missing_properties(key_properties)
-            if not missing_properties: continue
-            missing = utils.repr_listed_values(missing_properties)
-            raise RuntimeError(
-                f"{chemical} is missing key thermodynamic properties ({missing}); "
-                "use the `<Chemical>.get_missing_properties()` to check "
-                "all missing properties"
-            )
         IDs = tuple_([i.ID for i in chemicals])
         CAS = tuple_([i.CAS for i in chemicals])
         size = len(IDs)
