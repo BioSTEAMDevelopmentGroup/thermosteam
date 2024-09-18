@@ -304,6 +304,7 @@ turbine_graphics = UnitGraphics(single_edge_in, single_edge_out, node)
 node = box_node.copy()
 node['peripheries'] = '0'
 def tailor_valve_node(node, unit): # pragma: no coverage
+    node['label'] = ''
     if tmo.preferences.graphviz_format == 'svg':
         node['fillcolor'] = tmo.preferences.unit_color
         node['fontcolor'] = tmo.preferences.unit_label_color
