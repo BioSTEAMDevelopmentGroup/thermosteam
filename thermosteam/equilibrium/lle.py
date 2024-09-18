@@ -140,8 +140,8 @@ class LLE(Equilibrium, phases='lL'):
     >>> lle(T=360, top_chemical='Octane')
     >>> lle
     LLE(imol=MolarFlowIndexer(
-            L=[('Water', 2.67), ('Ethanol', 2.28), ('Octane', 39.9), ('Hexane', 0.988)],
-            l=[('Water', 301.), ('Ethanol', 27.7), ('Octane', 0.0788), ('Hexane', 0.0115)]),
+            L=[('Water', 2.552), ('Ethanol', 2.167), ('Octane', 39.92), ('Hexane', 0.9886)],
+            l=[('Water', 301.4), ('Ethanol', 27.83), ('Octane', 0.07738), ('Hexane', 0.01141)]),
         thermal_condition=ThermalCondition(T=360.00, P=101325))
     
     References

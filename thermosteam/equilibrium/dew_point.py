@@ -29,6 +29,9 @@ def gamma_iter(gamma, x_gamma, T, P, f_gamma, gamma_args):
     return f_gamma(x, T, *gamma_args)
 
 def solve_x(x_guess, x_gamma, T, P, f_gamma, gamma_args):
+    mask = x_guess < 1e-32
+    x_guess[mask] = 1e-32
+    x_guess = fn.normalize(x_guess)
     gamma = f_gamma(x_guess, T, *gamma_args)
     args = (x_gamma, T, P, f_gamma, gamma_args)
     gamma = flx.wegstein(
@@ -339,7 +342,6 @@ class DewPoint:
             P_guess, x = self._Px_ideal(z_over_Psats)
             args = (T, z_norm, z_over_Psats, Psats, x)
             f = self._P_error
-            breakpoint()
             try:
                 P = flx.aitken_secant(f, P_guess, P_guess-10, self.P_tol, 5e-12, args,
                                       checkiter=False, maxiter=self.maxiter)

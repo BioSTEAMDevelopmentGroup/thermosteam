@@ -2058,37 +2058,33 @@ class Stream(AbstractStream):
         lle = eq.LLE(imol,
                      self._thermal_condition,
                      self._thermo)
-        data = imol.data
-        net_chemical_flows = data.sum(axis=0)
-        data.clear()
-        imol['l'] = net_chemical_flows
-        total_flow = net_chemical_flows.sum()
+        data = self._imol.data
+        LIQ, gas, liq = data
+        liq += LIQ # All flows must be in the 'l' phase for VLE
+        LIQ[:] = 0.
+        vle(T=T, P=P)
+        if not gas.any() or not liq.any(): return
+        lle(T, P)
+        if not (LIQ.any() and liq.any()): return
+        total_flow = data.sum()
         def f(x, done=[False]):
             if done[0]: return x
             data[:] = x 
             lle(T=T, P=P)
-            net_phase_flows = data.sum(axis=1, keepdims=True)
-            compositions = data / net_phase_flows
-            if (abs(compositions[0] - compositions[2]).sum() < 1e-3
-                or compositions[0].sum() < 1e-6
-                or compositions[2].sum() < 1e-6): # Perform VLE on one liquid phase
-                data[2] += data[0] # All flows must be in the 'l' phase for VLE
-                data[0] = 0.
-                vle(T=T, P=P)
-                done[0] = True
-                return data
-            else: # Perform VLE on each liquid phase
-                vle(T=T, P=P)
-                no_vapor = not data[1].any()
-                data[2], data[0] = data[0].copy(), data[2].copy()
-                vle(T=T, P=P)
-                done[0] = no_vapor and not data[1].any() # No VLE
+            vle(T=T, P=P)
+            liq[:], LIQ[:] = LIQ, liq.copy()
+            vle(T=T, P=P)
+            liq[:], LIQ[:] = LIQ, liq.copy()
             return data.to_array()
-        data[:] = total_flow * flx.fixed_point(
-            f, data / total_flow, xtol=1e-3, 
+        flx.fixed_point(
+            f, data / total_flow, xtol=1e-6, 
             checkiter=False, checkconvergence=False, 
             convergenceiter=10
         )
+        if np.abs(liq - LIQ).sum() < 1e-6: 
+            liq += LIQ
+            LIQ.clear()
+        data *= total_flow
 
     @property
     def vle_chemicals(self) -> list[tmo.Chemical]:
