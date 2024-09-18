@@ -1049,7 +1049,7 @@ class AbstractUnit:
         self._active_specifications: set[ProcessSpecification] = set()
         
         #: Auxiliary unit operation names.
-        self.auxiliary_unit_names = set(self.auxiliary_unit_names)
+        self.auxiliary_unit_names = list(self.auxiliary_unit_names)
         
         self._init(**kwargs)
         
@@ -1207,13 +1207,15 @@ class AbstractUnit:
             return [self.auxout(i, thermo=thermo) for i in streams]
     
     def register_auxiliary(self, unit, name=None):
+        names_list = self.auxiliary_unit_names
+        names_set = set(names_list)
         if isinstance(unit, AbstractUnit):
             if name is None: name = unit._ID
-            self.auxiliary_unit_names.add(name)
+            if name not in names_set: names_list.append(name)
             setattr(self, name, unit)
         elif isinstance(unit, Iterable):
             if name is None: raise ValueError('`name` must be a string')
-            self.auxiliary_unit_names.add(name)
+            if name not in names_set: names_list.append(name)
             setattr(self, name, unit)
         elif hasattr(unit, 'units'):
             system = unit
@@ -1221,7 +1223,7 @@ class AbstractUnit:
             setattr(self, name, system)
             for i in system.units:
                 name = i._ID
-                self.auxiliary_unit_names.add(name)
+                if name not in names_set: names_list.append(name)
                 setattr(self, name, i)
         else:
             raise ValueError('`unit` must be a unit, list of units, or a system')
