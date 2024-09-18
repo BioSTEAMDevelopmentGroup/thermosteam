@@ -109,23 +109,15 @@ class AbstractStream:
         """Return whether stream has a source but no sink."""
         return bool(self._source and not self._sink)
 
-    def disconnect_source(self, resize=True):
+    def disconnect_source(self):
         """Disconnect stream from source."""
         source = self._source
-        if source: 
-            if resize:
-                source.outs.remove(self)
-            else:
-                source.outs.replace(self, source.MissingStream())
+        if source: source.outs.remove(self)
 
-    def disconnect_sink(self, resize=True):
+    def disconnect_sink(self):
         """Disconnect stream from sink."""
         sink = self._sink
-        if sink: 
-            if resize:
-                sink.ins.remove(self)
-            else:
-                sink.ins.replace(self, sink.MissingStream())
+        if sink: sink.ins.remove(self)
 
     def disconnect(self):
         """Disconnect stream from unit."""
@@ -451,11 +443,7 @@ class StreamSequence:
         return stream
 
     def remove(self, stream):
-        if self._fixed_size:
-            self.replace(stream, self._create_missing_stream())
-        else:
-            self._undock(stream)
-            self._streams.remove(stream)
+        self.replace(stream, self._create_missing_stream())
         
     def clear(self):
         if self._fixed_size:
@@ -591,12 +579,12 @@ class Connection(NamedTuple):
             if not (sink and getattr(sink, '_owner', None) is source):
                 source.outs[self.source_index] = self.stream
         else:
-            self.stream.disconnect_source(resize=False)
+            self.stream.disconnect_source()
         if sink:
             if not (source and getattr(source, '_owner', None) is sink):
                 sink.ins[self.sink_index] = self.stream
         else:
-            self.stream.disconnect_sink(resize=False)
+            self.stream.disconnect_sink()
 
 
 # %% Piping notation
@@ -1592,12 +1580,12 @@ class AbstractUnit:
         ins = self._ins
         outs = self._outs
         if inlets is None: 
-            inlets = tuple(ins)
+            inlets = [i for i in ins if i]
             ins[:] = ()
         else:
             for i in inlets: ins[ins.index(i) if isinstance(i, AbstractStream) else i] = None
         if outlets is None: 
-            outlets = tuple(outs)
+            outlets = [i for i in outs if i]
             outs[:] = ()
         else:
            for o in outlets: outs[ins.index(o) if isinstance(o, AbstractStream) else o] = None
@@ -2534,8 +2522,7 @@ class Network:
             if recycles: network.reduce_recycles()
             network.sort(recycle_ends)
             # network._add_interaction_units({}, [])
-            if interaction:
-                network.add_interaction_units(old_connections, ends)
+            if interaction: network.add_interaction_units(old_connections, ends)
         return network
     
     @classmethod
