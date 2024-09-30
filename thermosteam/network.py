@@ -971,7 +971,7 @@ class AbstractUnit:
 
     def __init_subclass__(cls):
         dct = cls.__dict__
-        if '__init__' in dct and '_init' not in dct :
+        if '__init__' in dct and '_init' not in dct:
             init = dct['__init__']
             if hasattr(init, 'extension'): cls._init = init.extension
         elif dct.get('_init'):

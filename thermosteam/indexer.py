@@ -803,7 +803,7 @@ class MaterialIndexer(Indexer):
                 self.empty()
                 other_data = other.data
                 data = self.data
-                left_index, other_data = index_overlap(self._chemicals, other._chemicals, [*other_data.nonzero_keys()])
+                left_index, right_index = index_overlap(self._chemicals, other._chemicals, [*other_data.nonzero_keys()])
                 if phase_indexer is other_phase_indexer:
                     data[:, left_index] = other_data[:, right_index]
                 elif phase_indexer.compatible_with(other_phase_indexer):

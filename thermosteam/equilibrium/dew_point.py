@@ -38,7 +38,10 @@ def solve_x(x_guess, x_gamma, T, P, f_gamma, gamma_args):
         gamma_iter, gamma, 1e-12, args=args, checkiter=False,
         checkconvergence=False, convergenceiter=5, maxiter=DewPoint.maxiter
     )
-    return x_gamma / gamma
+    try:
+        return x_gamma / gamma
+    except:
+        return x_gamma / gamma_iter(gamma, *args)
 
 # %% Dew point values container
 
