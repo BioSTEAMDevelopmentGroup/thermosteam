@@ -38,6 +38,8 @@ subs = (
 
 # Remove cache from call
 def __call__(self, T, P):
+    if self.hook: 
+        return self.hook(T, P)
     if self._method_P:
         return self.TP_dependent_property(T, P)
     else:
@@ -49,6 +51,7 @@ TPDependentProperty.__call__ = __call__
 def has_method(self):
     return bool(self._method or self._method_P and self._method_P != NEGLECT_P)
 
+TPDependentProperty.hook = None
 TPDependentProperty.__bool__ = has_method
 
 # Handling methods

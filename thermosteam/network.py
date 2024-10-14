@@ -430,7 +430,15 @@ class StreamSequence:
         self[index] = other_stream
 
     def index(self, stream):
-        return self._streams.index(stream)
+        try:
+            return self._streams.index(stream)
+        except Exception as e:
+            imol = stream._imol
+            for n, i in enumerate(self._streams):
+                if i and i._imol is imol:
+                    return n
+            else:
+                raise e from None
 
     def pop(self, index):
         streams = self._streams

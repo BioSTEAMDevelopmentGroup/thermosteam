@@ -213,10 +213,12 @@ class Mixture:
         self._load_free_energy_args(phase, mol, T_guess, P)
         try:
             args = (H, self.H, phase, mol, P, self.Cn, [0, None])
-            T_guess = flx.aitken(iter_T_at_HP, T_guess, self.T_tol, args, self.maxiter, checkiter=False)
+            T = iter_T_at_HP(T_guess, *args)
+            if abs(T - T_guess) < self.T_tol: return T
+            T_guess = flx.aitken(iter_T_at_HP, T, self.T_tol, args, self.maxiter, checkiter=False)
             T = iter_T_at_HP(T_guess, *args)
             return (
-                flx.aitken_secant(
+                flx.secant(
                     lambda T: self.H(phase, mol, T, P) - H,
                     x0=T_guess, x1=T, xtol=self.T_tol, ytol=0.
                 )
@@ -231,12 +233,14 @@ class Mixture:
         self._load_xfree_energy_args(phase_mol, T_guess, P)
         try:
             args = (H, self.xH, phase_mol, P, self.xCn, [0, None])
-            T_guess = flx.aitken(xiter_T_at_HP, T_guess, self.T_tol, args, self.maxiter, checkiter=False)
+            T = xiter_T_at_HP(T_guess, *args)
+            if abs(T - T_guess) < self.T_tol: return T
+            T_guess = flx.aitken(xiter_T_at_HP, T, self.T_tol, args, self.maxiter, checkiter=False)
             T = xiter_T_at_HP(T_guess, *args)
             return (
-                flx.aitken_secant(
+                flx.secant(
                     lambda T: self.xH(phase_mol, T, P) - H,
-                    x0=T_guess, x1=T, xtol=self.T_tol, ytol=0.
+                    x0=T_guess, x1=T, xtol=self.T_tol, ytol=0., checkiter=False
                 )
                 if abs(T - T_guess) > self.T_tol else T
             )
@@ -248,10 +252,12 @@ class Mixture:
         self._load_free_energy_args(phase, mol, T_guess, P)
         try:
             args = (S, self.S, phase, mol, P, self.Cn, [0, None])
-            T_guess = flx.aitken(iter_T_at_SP, T_guess, self.T_tol, args, self.maxiter, checkiter=False)
+            T = iter_T_at_SP(T_guess, *args)
+            if abs(T - T_guess) < self.T_tol: return T
+            T_guess = flx.aitken(iter_T_at_SP, T, self.T_tol, args, self.maxiter, checkiter=False)
             T = iter_T_at_SP(T_guess, *args)
             return (
-                flx.aitken_secant(
+                flx.secant(
                     lambda T: self.S(phase, mol, T, P) - S,
                     x0=T_guess, x1=T, xtol=self.T_tol, ytol=0.
                 )
@@ -266,10 +272,12 @@ class Mixture:
         self._load_xfree_energy_args(phase_mol, T_guess, P)
         try:
             args = (S, self.xS, phase_mol, P, self.xCn, [0, None])
-            T_guess = flx.aitken(xiter_T_at_SP, T_guess, self.T_tol, args, self.maxiter, checkiter=False)
+            T = xiter_T_at_SP(T_guess, *args)
+            if abs(T - T_guess) < self.T_tol: return T
+            T_guess = flx.aitken(xiter_T_at_SP, T, self.T_tol, args, self.maxiter, checkiter=False)
             T = xiter_T_at_SP(T_guess, *args)
             return (
-                flx.aitken_secant(
+                flx.secant(
                     lambda T: self.xS(phase_mol, T, P) - S,
                     x0=T_guess, x1=T, xtol=self.T_tol, ytol=0.
                 )
@@ -458,10 +466,7 @@ class IdealMixture(Mixture):
         """
         isa = isinstance
         if isa(chemicals, CompiledChemicals):
-            try:
-                MWs = chemicals.MW
-            except:
-                breakpoint()
+            MWs = chemicals.MW
             chemicals = chemicals.tuple
         else:
             chemicals = [(i if isa(i, Chemical) else Chemical(i, cache=cache)) for i in chemicals]
