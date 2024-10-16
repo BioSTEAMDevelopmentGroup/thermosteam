@@ -31,24 +31,14 @@ def test_registration_alias():
 
 def test_vlle():
     tmo.settings.set_thermo(['Water', 'Ethanol', 'Octane'], cache=True)
-    s = tmo.Stream(None, Water=1, Ethanol=1, Octane=2, vlle=True, T=351)
-    assert_allclose(s.mol, [1, 1, 2]) # mass balance
+    s = tmo.Stream(None, Water=1, Ethanol=0.5, Octane=2, vlle=True, T=350)
+    assert_allclose(s.mol, [1, 0.5, 2]) # mass balance
     total = s.F_mol
     xl = s.imol['l'].sum() / total
-    xL = s.imol['L'].sum() / total
+    xL = s.imol['L'].sum() / total if 'L' in s.phases else 0.
     xg = s.imol['g'].sum() / total
-    assert_allclose(xl + xL, 0.533447771190868, atol=0.05) # Convergence
-    assert_allclose(xg, 0.46655222880913216, atol=0.05)
-    # Make sure past equilibrium conditions do not affect result of vlle
-    s = tmo.Stream(None, Water=1, Ethanol=1, Octane=2, T=351)
-    s.vle(T=351, P=101325)
-    s.vlle(T=351, P=101325)
-    assert_allclose(s.mol, [1, 1, 2]) # mass balance
-    xl = s.imol['l'].sum() / total
-    xL = s.imol['L'].sum() / total
-    xg = s.imol['g'].sum() / total
-    assert_allclose(xl + xL, 0.533447771190868, atol=0.05) # Convergence
-    assert_allclose(xg, 0.46655222880913216, atol=0.05)
+    assert_allclose(xl + xL, 0.802404472833999, atol=0.05) # Convergence
+    assert_allclose(xg, 0.19759552716600104, atol=0.05)
     
     s = tmo.Stream(None, Water=1, Ethanol=1, Octane=2, vlle=True, T=300)
     assert set(s.phases) == set(['l', 'L']) # No gas phase

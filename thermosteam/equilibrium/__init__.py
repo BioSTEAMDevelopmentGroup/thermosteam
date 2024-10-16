@@ -26,6 +26,7 @@ from . import fugacities
 from . import vle
 from . import lle
 from . import sle
+from . import vlle
 from . import plot_equilibrium
 from . import flash_package
 
@@ -42,7 +43,8 @@ __all__ = (*ideal.__all__,
            *binary_phase_fraction.__all__,
            *fugacities.__all__,
            *plot_equilibrium.__all__,
-           *flash_package.__all__)
+           *flash_package.__all__,
+           *vlle.__all__)
 
 from .ideal import *
 from .domain import *
@@ -58,5 +60,5 @@ from .bubble_point import *
 from .fugacities import *
 from .plot_equilibrium import *
 from .flash_package import *
-
+from .vlle import *
 

@@ -28,58 +28,65 @@ import numpy as np
 __all__ = ('VLE', 'VLECache')
 
 @njit(cache=True)
-def xy(xV, Ks):
-    x = xV[:-1]
-    x[x < 0.] = 0.
+def xy(x, Ks):
+    x[x < 0] = 1e-16
     x /= x.sum()
-    return x, Ks * x
+    y = x * Ks
+    y /= y.sum()
+    return x, y
 
-@njit(cache=True)
-def update_xV(xV, V, Ks, z):
-    if V < 0.: V = 0.
-    elif V > 1.: V = 1.
-    xV[-1] = V
-    xV[:-1] = z/(1. + V * (Ks - 1.))
-
-def xV_iter_2n(xVlogK, pcf_Psat_over_P, T, P, z, f_gamma, gamma_args, f_phi,
-               n, gas_conversion, liquid_conversion, index):
+def xVlogK_iter_2n(xVlogK, pcf_Psat_over_P, T, P, z, f_gamma, gamma_args, f_phi, n,
+                  gas_conversion, liquid_conversion):
     xVlogK = xVlogK.copy()
-    xV = xVlogK[:-n]
-    Ks = np.exp(xVlogK[-n:])
-    x, y = xy(xV, Ks)
+    x = xVlogK[:n]
+    Ks = np.exp(xVlogK[n+1:])
+    x, y = xy(x, Ks)
     Ks[:] = pcf_Psat_over_P * f_gamma(x, T, *gamma_args) / f_phi(y, T, P)
-    if gas_conversion: 
-        z = z + gas_conversion(material=y * xV[n], T=T, P=P, phase='g')
-    if liquid_conversion:
-        z = z + liquid_conversion(material=x * (1 - xV[n]), T=T, P=P, phase='l')
-    V = binary.compute_phase_fraction_2N(z, Ks)
-    update_xV(xV, V, Ks, z)
-    xVlogK[-n:] = np.log(Ks)
+    if gas_conversion or liquid_conversion:
+        V = xVlogK[n]
+        if V < 0.: V = 0.
+        elif V > 1.: V = 1.
+        V = binary.compute_phase_fraction_2N(z, Ks)
+        if gas_conversion: 
+            z = z + gas_conversion(material=y * V, T=T, P=P, phase='g')
+            z[z <= 0] = 1e-16
+            z /= z.sum()
+        if liquid_conversion:
+            z = z + liquid_conversion(material=x * (1 - V), T=T, P=P, phase='l')
+            z[z <= 0] = 1e-16
+            z /= z.sum()
+    Ks[Ks < 1e-16] = 1e-16
+    xVlogK[n] = V = binary.compute_phase_fraction_2N(z, Ks)
+    xVlogK[:n] = z/(1. + V * (Ks - 1.))
+    xVlogK[n+1:] = np.log(Ks)
     return xVlogK
 
-def xV_iter(
+def xVlogK_iter(
         xVlogK, pcf_Psat_over_P, T, P,
         z, z_light, z_heavy, f_gamma, gamma_args,
-        f_phi, n, gas_conversion, liquid_conversion, index
+        f_phi, n, gas_conversion, liquid_conversion
     ):
     xVlogK = xVlogK.copy()
-    xV = xVlogK[:-n]
-    V = xV[n]
-    Ks = np.exp(xVlogK[-n:])
-    x, y = xy(xV, Ks)
+    x = xVlogK[:n]
+    Ks = np.exp(xVlogK[n+1:])
+    x, y = xy(x, Ks)
     Ks[:] = pcf_Psat_over_P * f_gamma(x, T, *gamma_args) / f_phi(y, T, P)
-    if gas_conversion: 
-        z = z + gas_conversion(material=y * V, T=T, P=P, phase='g')
-        z[z <= 0] = 1e-16
-        z /= z.sum()
-    if liquid_conversion:
-        z = z + liquid_conversion(material=x * (1 - V), T=T, P=P, phase='l')
-        z[z <= 0] = 1e-16
-        z /= z.sum()
-    V = binary.solve_phase_fraction_Rashford_Rice(z, Ks, V, z_light, z_heavy)
-    update_xV(xV, V, Ks, z)
+    V = xVlogK[n]
+    if V < 0.: V = 0.
+    elif V > 1.: V = 1.
+    if gas_conversion or liquid_conversion:
+        if gas_conversion: 
+            z = z + gas_conversion(material=y * V, T=T, P=P, phase='g')
+            z[z <= 0] = 1e-16
+            z /= z.sum()
+        if liquid_conversion:
+            z = z + liquid_conversion(material=x * (1 - V), T=T, P=P, phase='l')
+            z[z <= 0] = 1e-16
+            z /= z.sum()
     Ks[Ks < 1e-16] = 1e-16
-    xVlogK[-n:] = np.log(Ks)
+    xVlogK[n] = V = binary.solve_phase_fraction_Rashford_Rice(z, Ks, V, z_light, z_heavy)
+    xVlogK[:n] = z / (1. + V * (Ks - 1.))
+    xVlogK[n+1:] = np.log(Ks)
     return xVlogK
 
 def set_flows(vapor_mol, liquid_mol, index, vapor_data, total_data):
@@ -261,8 +268,7 @@ class VLE(Equilibrium, phases='lg'):
         '_V', # [float] Molar vapor fraction.
         '_dew_point', # [DewPoint] Solves for dew point.
         '_bubble_point', # [BubblePoint] Solves for bubble point.
-        '_x', # [1d array] Vapor composition.
-        '_y', # [1d array] Liquid composition.
+        '_y', # [1d array] Vapor composition.
         '_z_last', # tuple[1d array] Last bulk composition.
         '_phi', # [FugacityCoefficients] Estimates fugacity coefficients of gas.
         '_pcf', # [PoyintingCorrectionFactors] Estimates the PCF of a liquid.
@@ -270,7 +276,8 @@ class VLE(Equilibrium, phases='lg'):
         '_liquid_mol', # [1d array] Liquid molar data.
         '_vapor_mol', # [1d array] Vapor molar data.
         '_phase_data', # tuple[str, 1d array] Phase-data pairs.
-        '_v',  # [1d array] Molar vapor data in equilibrium.
+        '_K', # [1d array] Partition coefficients.
+        '_v', # [1d array] Molar vapor data in equilibrium.
         '_index', # [1d array] Index of chemicals in equilibrium.
         '_F_mass', # [float] Total mass data.
         '_chemical', # [Chemical] Single chemical in equilibrium.
@@ -294,7 +301,7 @@ class VLE(Equilibrium, phases='lg'):
     H_hat_tol = 1e-6
     S_hat_tol = 1e-6
     V_tol = 1e-6
-    x_tol = 1e-8
+    K_tol = 1e-6
     y_tol = 1e-8
     default_method = 'fixed-point'
     
@@ -303,7 +310,6 @@ class VLE(Equilibrium, phases='lg'):
         self.method = self.default_method
         self._T = self._P = self._H_hat = self._V = 0
         super().__init__(imol, thermal_condition, thermo)
-        self._x = None
         self._z_last = None
         self._nonzero = None
         self._index = ()
@@ -437,13 +443,6 @@ class VLE(Equilibrium, phases='lg'):
                 raise ValueError("specification V and x is invalid")
         else: # pragma: no cover
             raise ValueError("can only pass either 'x' or 'y' arguments, not both")
-            
-    @property
-    def imol(self):
-        return self._imol
-    @property
-    def thermal_condition(self):
-        return self._thermal_condition
     
     ### Single component equilibrium case ###
         
@@ -684,7 +683,7 @@ class VLE(Equilibrium, phases='lg'):
         # weighted average of bubble/dew points
         dP = (P_bubble - P_dew)
         V = (P - P_dew) / dP if dP > 1. else 0.5
-        self._refresh_v(V, y_bubble, x_dew, dz_bubble, dz_dew)
+        self._refresh_K(V, y_bubble, x_dew, dz_bubble, dz_dew)
         v = self._solve_v(T, P, gas_conversion, liquid_conversion)
         mol_vle = self._mol_vle + self._dmol_vle if (gas_conversion or liquid_conversion) else self._mol_vle 
         set_flows(self._vapor_mol, self._liquid_mol, self._index, v, mol_vle)
@@ -726,7 +725,7 @@ class VLE(Equilibrium, phases='lg'):
             else:
                 P_dew, x_dew = self._dew_point.solve_Px(self._z, T, gas_conversion)
                 dz_dew = None
-            self._refresh_v(V, y_bubble, x_dew, dz_bubble, dz_dew)
+            self._refresh_K(V, y_bubble, x_dew, dz_bubble, dz_dew)
             if self._F_mol_light: P_bubble = 0.1 * self._bubble_point.Pmax + 0.9 * P_bubble
             if self._F_mol_heavy: P_dew = 0.1 * self._bubble_point.Pmin + 0.9 * P_dew
             
@@ -815,7 +814,7 @@ class VLE(Equilibrium, phases='lg'):
         V = dH_bubble/(H_dew - H_bubble)
         
         # Guess composition in the vapor is a weighted average of boiling points
-        self._refresh_v(V, y_bubble, x_dew)
+        self._refresh_K(V, y_bubble, x_dew)
         F_mass = self._F_mass
         H_hat = H/F_mass
         P = flx.IQ_interpolation(
@@ -864,7 +863,7 @@ class VLE(Equilibrium, phases='lg'):
         V = dS_bubble/(S_dew - S_bubble)
         
         # Guess composition in the vapor is a weighted average of boiling points
-        self._refresh_v(V, y_bubble, x_dew)
+        self._refresh_K(V, y_bubble, x_dew)
         F_mass = self._F_mass
         S_hat = S/F_mass
         P = flx.IQ_interpolation(
@@ -920,7 +919,7 @@ class VLE(Equilibrium, phases='lg'):
             else:
                 T_dew, x_dew = self._dew_point.solve_Tx(self._z, P)
                 dz_dew = None
-            self._refresh_v(V, y_bubble, x_dew, dz_bubble, dz_dew)
+            self._refresh_K(V, y_bubble, x_dew, dz_bubble, dz_dew)
             if self._F_mol_light: T_bubble = 0.1 * self._bubble_point.Tmin + 0.9 * T_bubble
             if self._F_mol_heavy: T_dew = 0.1 * self._bubble_point.Tmax + 0.9 * T_dew
             V_bubble = self._V_err_at_T(T_bubble, 0., gas_conversion, liquid_conversion)
@@ -1017,7 +1016,7 @@ class VLE(Equilibrium, phases='lg'):
         
         # Guess T, overall vapor fraction, and vapor flow rates
         V = dS_bubble/(S_dew - S_bubble)
-        self._refresh_v(V, y_bubble, x_dew)
+        self._refresh_K(V, y_bubble, x_dew)
         
         F_mass = self._F_mass
         S_hat = S/F_mass
@@ -1150,7 +1149,7 @@ class VLE(Equilibrium, phases='lg'):
         
         # Guess T, overall vapor fraction, and vapor flow rates
         V = abs(dH_bubble / (H_dew - H_bubble))
-        self._refresh_v(V, y_bubble, x_dew, dz_bubble, dz_dew)
+        self._refresh_K(V, y_bubble, x_dew, dz_bubble, dz_dew)
         
         F_mass = self._F_mass
         H_hat = H/F_mass
@@ -1224,7 +1223,7 @@ class VLE(Equilibrium, phases='lg'):
             )
         self._H_hat = H_hat
     
-    def _estimate_v(self, V, y_bubble, x_dew, dz_bubble, dz_dew):
+    def _refresh_K(self, V, y_bubble, x_dew, dz_bubble=None, dz_dew=None): # TODO: use reaction data here for better estimate
         F_mol_vle = self._F_mol_vle
         z = self._z_norm
         L = (1 - V)
@@ -1235,20 +1234,13 @@ class VLE(Equilibrium, phases='lg'):
         v_bubble = (V * z + L * y_bubble) * V * F_mol_vle
         v_dew = (z - L * (L * z + V * x_dew)) * F_mol_vle
         v = L * v_bubble + V * v_dew
-        return v
-    
-    def _refresh_v(self, V, y_bubble, x_dew, dz_bubble=None, dz_dew=None): # TODO: use reaction data here for better estimate
-        self._v = v = self._estimate_v(V, y_bubble, x_dew, dz_bubble, dz_dew)
+        l = self._mol_vle - v
+        y = v / v.sum()
+        l_net = l.sum()
+        x = l / l_net if l_net > 0 else l * 0
+        x[x < 1e-32] = 1e-32
+        self._K = y / x
         self._V = V
-        self._y = fn.normalize(v, v.sum() + self._F_mol_light)
-        try:
-            reload_cache = self._x is None or np.abs(self._z_last - self._z).sum() > 0.001
-        except:
-            reload_cache = True
-        if reload_cache:
-            l = self._mol_vle - v
-            l[l < 0] = 1e-12
-            self._x = fn.normalize(l, l.sum() + self._F_mol_heavy)
     
     def _H_hat_err_at_T(self, T, H_hat, gas_conversion, liquid_conversion):
         v = self._solve_v(T, self._P, gas_conversion, liquid_conversion)
@@ -1317,7 +1309,7 @@ class VLE(Equilibrium, phases='lg'):
             F_mol_vle = self._F_mol_vle
             mol_vle = self._mol_vle
             z = mol_vle / F_mol_vle
-            v = F_mol_vle * solve_vle_vapor_mol_shgo(
+            self._v = v = F_mol_vle * solve_vle_vapor_mol_shgo(
                 z, T, gamma.f, gamma.args, P, pcf * Psats, phi.f, phi.args, 
                 dict(f_tol=self.y_tol, minimizer_kwargs=dict(f_tol=self.y_tol)),
             )
@@ -1327,12 +1319,10 @@ class VLE(Equilibrium, phases='lg'):
                               self._bubble_point.Psats])
             pcf_Psats_over_P = self._pcf(T, P, Psats) * Psats / P
             self._T = T
-            y = self._solve_y(self._y, pcf_Psats_over_P, T, P, gas_conversion, liquid_conversion)
+            self._v = v = self._solve_v_fixed_point(pcf_Psats_over_P, T, P, gas_conversion, liquid_conversion)
             if gas_conversion or liquid_conversion:
-                self._v = v = (self._F_mol + self._dF_mol) * self._V * y
                 mol_vle = self._mol_vle + self._dmol_vle
             else:
-                self._v = v = self._F_mol * self._V * y
                 mol_vle = self._mol_vle
             mask = v > mol_vle
             v[mask] = mol_vle[mask]
@@ -1341,43 +1331,36 @@ class VLE(Equilibrium, phases='lg'):
             raise RuntimeError(f"invalid method '{method}'")
         return v
     
-    def _solve_y(self, y, pcf_Psat_over_P, T, P, gas_conversion, liquid_conversion):
+    def _solve_v_fixed_point(self, pcf_Psat_over_P, T, P, gas_conversion, liquid_conversion):
         gamma = self._gamma
-        x = self._x
-        pcf_Psat_over_P = pcf_Psat_over_P
         z = self._z
-        Ks = pcf_Psat_over_P.copy()
-        index = self._index
+        K = self._K # pcf_Psat_over_P
         n = z.size
         if n > 2 or self._z_light or self._z_heavy:
-            f = xV_iter
+            f = xVlogK_iter
             args = (pcf_Psat_over_P, T, P, z, 
                     self._z_light, self._z_heavy, 
                     gamma.f, gamma.args, self._phi, n,
-                    gas_conversion, liquid_conversion, index)
+                    gas_conversion, liquid_conversion)
         else:
-            f = xV_iter_2n
+            f = xVlogK_iter_2n
             args = (pcf_Psat_over_P, T, P, z, 
                     gamma.f, gamma.args, self._phi, n,
-                    gas_conversion, liquid_conversion, index)
-        xVlogK = np.zeros(2*x.size + 1)
-        xVlogK[:n] = x
-        xVlogK[n] = self._V
-        Ks[Ks < 1e-16] = 1e-16
-        xVlogK[-n:] = np.log(Ks)
+                    gas_conversion, liquid_conversion)
+        xVlogK = np.zeros(2 * n + 1)
+        xVlogK[n] = V = self._V
+        K[K < 1e-16] = 1e-16
+        xVlogK[:n] = z/(1. + V * (K - 1.))
+        xVlogK[n+1:] = np.log(K)
         xVlogK = flx.aitken(
-            f, xVlogK, self.x_tol, args, checkiter=False, 
+            f, xVlogK, self.K_tol, args, checkiter=False, 
             checkconvergence=False, convergenceiter=5,
             maxiter=self.maxiter
         )
-        x = xVlogK[:n]
         self._V = V = xVlogK[n]
-        x[x < 1e-32] = 1e-32
-        self._x = x = fn.normalize(x)
-        if V == 0:
-            Ks = 0
-        else:
-            Ks = (z / x - 1) / V + 1.
+        self._K = K = np.exp(xVlogK[n+1:])
+        x = xVlogK[:n]
+        x, y = xy(x, K)
         self._z_last = z
         if gas_conversion or liquid_conversion:
             dmol_vle = 0
@@ -1388,10 +1371,10 @@ class VLE(Equilibrium, phases='lg'):
             dmol_vle *= self._F_mol
             self._dmol_vle = dmol_vle
             self._dF_mol = dmol_vle.sum()
-            v = (self._F_mol - self._dF_mol) * V * x * Ks   
+            v = (self._F_mol - self._dF_mol) * V * x * K
         else:
-            v = self._F_mol * V * x * Ks   
-        return fn.normalize(v, v.sum() + self._F_mol_light)
+            v = self._F_mol * V * x * K
+        return v
     
     def _setup(self, gas_conversion=None, liquid_conversion=None):
         imol = self._imol

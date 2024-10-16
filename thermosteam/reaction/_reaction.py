@@ -1896,22 +1896,7 @@ class KineticReaction:
         return KineticConversion(self, stream)
     
     def _rate(self, stream):
-        conversion = self.volume(stream) * self.rate(stream)
-        mol = stream.mol
-        full_conversion = conversion * self._stoichiometry
-        new_mol = mol + full_conversion
-        mask = new_mol < 0
-        if mask.any(): conversion = (1 - 1e-12) * (-mol[mask] / full_conversion[mask]).min() * conversion
-        # conversion_eq = self.equilibrium(stream)
-        # if conversion * conversion_eq < 0:
-        #     mol = stream.mol
-        #     full_conversion = conversion * self._stoichiometry
-        #     new_mol = mol + full_conversion
-        #     mask = new_mol < 0
-        #     if mask.any(): conversion = (1 - 1e-12) * (-mol[mask] / full_conversion[mask]).min() * conversion
-        # elif conversion_eq == 0 or conversion / conversion_eq > 1:
-        #     conversion = conversion_eq
-        return conversion
+        return self.volume(stream) * self.rate(stream)
     
     def conversion(self, stream, time=None):
         if stream.chemicals is not self.chemicals: self.reset_chemicals(stream.chemicals)

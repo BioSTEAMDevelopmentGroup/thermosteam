@@ -29,7 +29,22 @@ def chemical_data_array(chemicals, attr):
     data = np.array([getfield(i, attr) for i in chemicals], dtype=float)
     data.setflags(0)
     return data
-    
+ 
+def prepare(chemicals, skip_checks):
+    free_energies = ('H', 'S', 'H_excess', 'S_excess')
+    for chemical in chemicals:
+        if chemical.get_missing_properties(free_energies):
+            chemical.reset_free_energies()
+        if skip_checks: continue
+        key_properties = chemical.get_key_property_names()
+        missing_properties = chemical.get_missing_properties(key_properties)
+        if not missing_properties: continue
+        missing = utils.repr_listed_values(missing_properties)
+        raise RuntimeError(
+            f"{chemical} is missing key thermodynamic properties ({missing}); "
+            "use the `<Chemical>.get_missing_properties()` to check "
+            "all missing properties"
+        )
 
 # %% Chemicals
 
@@ -228,10 +243,10 @@ class Chemicals:
         
         """
         chemicals = tuple(self)
+        prepare(chemicals, skip_checks)
         setattr(self, '__class__', CompiledChemicals)
-        try: self._compile(chemicals, skip_checks)
+        try: self._compile(chemicals)
         except Exception as error:
-            raise error
             setattr(self, '__class__', Chemicals)
             setattr(self, '__dict__', {i.ID: i for i in chemicals})
             raise error
@@ -489,6 +504,14 @@ class CompiledChemicals(Chemicals):
         """All defined chemical groups."""
         return frozenset(self._group_mol_compositions)
     
+    def chemical_group_members(self, name) -> list[str]:
+        index = self._index
+        if name in index:
+            IDs = self.IDs
+            return [IDs[i] for i in index[name]]
+        else:
+            raise ValueError(f"chemical group '{name}' does not exist")
+    
     def refresh_constants(self):
         """
         Refresh constant arrays according to their chemical values,
@@ -521,22 +544,9 @@ class CompiledChemicals(Chemicals):
         reactions = [i.get_combustion_reaction(self) for i in self]
         return tmo.reaction.ParallelReaction([i for i in reactions if i is not None])
 
-    def _compile(self, chemicals, skip_checks=False):
+    def _compile(self, chemicals):
         dct = self.__dict__
         tuple_ = tuple
-        free_energies = ('H', 'S', 'H_excess', 'S_excess')
-        for chemical in chemicals:
-            if chemical.get_missing_properties(free_energies):
-                chemical.reset_free_energies()
-            if skip_checks: continue
-            key_properties = chemical.get_key_property_names()
-            missing_properties = chemical.get_missing_properties(key_properties)
-            if not missing_properties: continue
-            missing = utils.repr_listed_values(missing_properties)
-            raise RuntimeError(
-                f"{chemical} is missing key thermodynamic properties ({missing}); "
-                "use the `<Chemical>.get_missing_properties()` to check "
-                "all missing properties")
         IDs = tuple_([i.ID for i in chemicals])
         CAS = tuple_([i.CAS for i in chemicals])
         size = len(IDs)
@@ -868,7 +878,57 @@ class CompiledChemicals(Chemicals):
         IDs, data = zip(*ID_data.items())
         indexer[IDs] = data
         return indexer
-
+    
+    def split(self, IDs, data):
+        """
+        Return an array with entries that correspond to the ordered chemical IDs.
+        
+        Parameters
+        ----------
+        IDs : iterable
+            Compound IDs.
+        data : array_like
+            Data corresponding to IDs.
+            
+        Examples
+        --------
+        >>> from thermosteam import CompiledChemicals
+        >>> chemicals = CompiledChemicals(['Water', 'Ethanol'], cache=True)
+        >>> chemicals.split(['Water'], [1])
+        array([1., 0.])
+        
+        """
+        array =  np.zeros(self.size) 
+        index, kind = self._get_index_and_kind(tuple(IDs))
+        if kind == 0 or kind == 3:
+            array[index] = data
+        elif kind == 1:
+            array[index] = data
+        elif kind == 2:
+            for i, j in zip(index, data): array[i] = j
+        else:
+            raise IndexError('unknown error')
+        return array
+    
+    def kwsplit(self, ID_data):
+        """
+        Return an array with entries that correspond to the ordered chemical IDs.
+        
+        Parameters
+        ----------
+        ID_data : dict[str, float]
+            ID-data pairs.
+            
+        Examples
+        --------
+        >>> from thermosteam import CompiledChemicals
+        >>> chemicals = CompiledChemicals(['Water', 'Ethanol'], cache=True)
+        >>> chemicals.kwsplit(dict(Water=1))
+        array([1., 0.])
+        
+        """
+        return self.split(*zip(*ID_data.items()))
+    
     def isplit(self, split, order=None):
         """
         Create a SplitIndexer object that represents chemical splits.

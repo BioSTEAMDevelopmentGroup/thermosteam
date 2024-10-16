@@ -194,13 +194,13 @@ def tailor_utility_heat_exchanger_node(node, unit): # pragma: no coverage
         so = unit.outs[0]
         H_in = si.H
         H_out = so.H
-        if H_in > H_out:
+        if H_in > H_out + 1e-6:
             node['color'] = 'none'
             node['fillcolor'] = '#60c1cf'
             node['fontcolor'] = 'white'
             node['gradientangle'] = '0'
             line = 'Cooling'
-        elif H_in < H_out:
+        elif H_in < H_out - 1e-6:
             node['color'] = 'none'
             node['gradientangle'] = '0'
             node['fillcolor'] = '#ed5a6a'
@@ -304,6 +304,7 @@ turbine_graphics = UnitGraphics(single_edge_in, single_edge_out, node)
 node = box_node.copy()
 node['peripheries'] = '0'
 def tailor_valve_node(node, unit): # pragma: no coverage
+    node['label'] = ''
     if tmo.preferences.graphviz_format == 'svg':
         node['fillcolor'] = tmo.preferences.unit_color
         node['fontcolor'] = tmo.preferences.unit_label_color
