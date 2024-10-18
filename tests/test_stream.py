@@ -299,6 +299,13 @@ def test_stream_indexing():
     key = ('l', 'Water')
     stream.set_flow(1, 'gpm', key)
     assert stream.get_flow('gpm', key) == 1.
+    
+    tmo.settings.chemicals.define_group('Mixture', ['Water', 'Alcohol'], [0.5, 0.5], wt=False)
+    stream = tmo.Stream(None, Mixture=1.)
+    assert stream.imol['Alcohol'] == 0.5
+    assert stream.imol['Water'] == 0.5
+    assert stream.imol['Ethanol'] == 0.25
+    assert stream.imol['Methanol'] == 0.25
 
 def test_stream_property_cache():
     tmo.settings.set_thermo(['Water', 'Ethanol'], cache=True)
