@@ -242,7 +242,7 @@ class BubblePoint:
         N = positives.sum()
         if N == 0:
             raise ValueError('no components present')
-        if N == 1:
+        if N == 1 and liquid_conversion is None:
             chemical = self.chemicals[fn.first_true_index(positives)]
             T = chemical.Tsat(P, check_validity=False) if P <= chemical.Pc else chemical.Tc
             y = z.copy()
@@ -320,7 +320,7 @@ class BubblePoint:
         N = positives.sum()
         if N == 0:
             raise ValueError('no components present')
-        if N == 1:
+        if N == 1 and liquid_conversion is None:
             chemical = self.chemicals[fn.first_true_index(positives)]
             P = chemical.Psat(T) if T <= chemical.Tc else chemical.Pc
             y = z.copy()

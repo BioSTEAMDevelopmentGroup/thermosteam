@@ -265,130 +265,139 @@ def test_reactive_phase_equilibrium_no_kinetics():
     )
     
 # TODO: Fix kinetics!
-# def test_reactive_phase_equilibrium_with_kinetics():
-#     import thermosteam as tmo
-#     from math import exp
-#     from numpy.testing import assert_allclose
-#     tmo.settings.set_thermo(['EthylLactate', 'LacticAcid', 'H2O', 'Ethanol'], cache=True)
+def test_reactive_phase_equilibrium_with_kinetics():
+    import thermosteam as tmo
+    from math import exp
+    from numpy.testing import assert_allclose
+    tmo.settings.set_thermo(['EthylLactate', 'LacticAcid', 'H2O', 'Ethanol'], cache=True)
     
-#     class Esterification(tmo.KineticReaction):
+    class Esterification(tmo.KineticReaction):
         
-#         def volume(self, stream):
-#             return 0.01 # Kg of catalyst
+        def volume(self, stream):
+            return 0.001 # Kg of catalyst
         
-#         def rate(self, stream):
-#             T = stream.T
-#             if T > 370: return 0 # Prevents multiple steady states.
-#             R = tmo.constants.R
-#             kf = 6.52e3 * exp(-4.8e4 / (R * T))
-#             kr = 2.72e3 * exp(-4.8e4 / (R * T))
-#             LaEt, La, H2O, EtOH = stream.mol / stream.F_mol
-#             return 3600 * (kf * La * EtOH - kr * LaEt * H2O) # kmol / kg-catalyst / hr
+        def rate(self, stream):
+            T = stream.T
+            if T > 370: return 0 # Prevents multiple steady states.
+            R = tmo.constants.R
+            kf = 6.52e3 * exp(-4.8e4 / (R * T))
+            kr = 2.72e3 * exp(-4.8e4 / (R * T))
+            LaEt, La, H2O, EtOH = stream.mol / stream.F_mol
+            return 3600 * (kf * La * EtOH - kr * LaEt * H2O) # kmol / kg-catalyst / hr
     
-#     rxn = Esterification('LacticAcid + Ethanol -> H2O + EthylLactate', reactant='LacticAcid')
-#     stream = tmo.Stream(
-#         H2O=2, Ethanol=5, LacticAcid=1, T=355,
-#     )
-#     mol_original = stream.mol
-#     F_mass = stream.F_mass
-#     stream.vle(T=360, P=101325, liquid_conversion=rxn)
-#     liq_new = tmo.Stream(flow=stream.imol['l'].copy())
-#     dliq = rxn.conversion(liq_new)
-#     assert_allclose(stream.F_mass, F_mass)
-#     assert_allclose(stream.mol, mol_original + dliq, rtol=1e-6)
-#     rxn(stream)
-#     assert_allclose(
-#         stream.mol,
-#         [0.0015876828181456534,
-#          0.9984123171818543,
-#          2.001587682818146,
-#          4.998412317181854],
-#         atol=1e-3,
-#         rtol=1e-3,
-#     )
-#     stream = tmo.Stream(
-#         H2O=2, Ethanol=5, LacticAcid=1, T=355,
-#     )
-#     T = 360
-#     P = 101325
-#     stream.vle(T=T, P=P, liquid_conversion=rxn)
-#     assert_allclose(
-#         stream.imol['l'],
-#         [0.026512250430257022,
-#          0.9451332614822996,
-#          0.8872670426652305,
-#          1.7832800372000892],
-#         rtol=1e-3,
-#         atol=1e-3,
-#     )
-#     assert_allclose(
-#         stream.imol['g'],
-#         [0.0, 0.028354488087443397, 1.1392452077650264, 3.1902077123696535],
-#         rtol=1e-3,
-#         atol=1e-3,
-#     )
-#     V = stream.vapor_fraction
-#     H = stream.H + stream.Hf
-#     stream = tmo.Stream(
-#         H2O=2, Ethanol=5, LacticAcid=1, T=T,
-#     )
-#     stream.vle(V=V, P=P, liquid_conversion=rxn)
-#     assert_allclose(
-#         stream.imol['l'],
-#         [0.0265122504353963,
-#          0.9451332614841681,
-#          0.8872670426420364,
-#          1.7832800356800504],
-#         rtol=1e-3,
-#         atol=1e-3,
-#     )
-#     assert_allclose(
-#         stream.imol['g'],
-#         [0.0, 0.028354488080435617, 1.13924520779336, 3.1902077138845533],
-#         rtol=1e-3,
-#         atol=1e-3,
-#     )
-#     stream = tmo.Stream(
-#         H2O=2, Ethanol=5, LacticAcid=1, T=T,
-#     )
-#     stream.vle(V=V, T=T, liquid_conversion=rxn)
-#     assert_allclose(
-#         stream.imol['l'],
-#         [0.026512250408482565,
-#          0.9451332615716925,
-#          0.8872670442912585,
-#          1.7832800377855502],
-#         rtol=1e-3,
-#         atol=1e-3,
-#     )
-#     assert_allclose(
-#         stream.imol['g'],
-#         [0.0, 0.02835448801982482, 1.1392452061172242, 3.190207711805967],
-#         rtol=1e-3,
-#         atol=1e-3,
-#     )
-#     stream = tmo.Stream(
-#         H2O=2, Ethanol=5, LacticAcid=1, T=T,
-#     )
-#     stream.vle(H=H, P=P, liquid_conversion=rxn)
-#     assert_allclose(
-#         stream.imol['l'],
-#         [0.026512250412710874,
-#          0.945133261339238,
-#          0.8872670433265364,
-#          1.7832800367594983],
-#         rtol=1e-3,
-#         atol=1e-3,
-#     )
-#     assert_allclose(
-#         stream.imol['g'],
-#         [4.9752893699702054e-12,
-#          0.0283544882430759,
-#          1.1392452070911496,
-#          3.190207712822816],
-#         rtol=1e-3,
-#         atol=1e-3,
-#     )
+    rxn = Esterification('LacticAcid + Ethanol -> H2O + EthylLactate', reactant='LacticAcid')
+    stream = tmo.Stream(
+        H2O=2, Ethanol=5, LacticAcid=1, T=355,
+    )
+    mol_original = stream.mol
+    F_mass = stream.F_mass
+    stream.vle(T=360, P=101325, liquid_conversion=rxn)
+    liq_new = tmo.Stream(flow=stream.imol['l'].copy(), T=360, P=101325)
+    dliq = rxn.conversion(liq_new)
+    assert_allclose(stream.F_mass, F_mass)
+    assert_allclose(stream.mol, mol_original + dliq, atol=1e-2, rtol=1e-6)
+    rxn(stream)
+    assert_allclose(
+        stream.mol,
+        [0.0027372232703874026,
+         0.9972627767296126,
+         2.0027372232703873,
+         4.997262776729612],
+        atol=1e-3,
+        rtol=1e-3,
+    )
+    stream = tmo.Stream(
+        H2O=2, Ethanol=5, LacticAcid=1, T=355,
+    )
+    T = 360
+    P = 101325
+    stream.vle(T=T, P=P, liquid_conversion=rxn)
+    assert_allclose(
+        stream.imol['l'],
+        [0.0025656299861595427,
+         0.9953743460341485,
+         0.8534956958780036,
+         1.814963260010252],
+        rtol=1e-3,
+        atol=1e-3,
+    )
+    assert_allclose(
+        stream.imol['g'],
+        [0.0001715932842278598,
+         0.0018884306954640294,
+         1.1492415273923837,
+         3.18229951671936],
+        rtol=1e-3,
+        atol=1e-3,
+    )
+    V = stream.vapor_fraction
+    H = stream.H + stream.Hf
+    stream = tmo.Stream(
+        H2O=2, Ethanol=5, LacticAcid=1, T=T,
+    )
+    stream.vle(V=V, P=P, liquid_conversion=rxn)
+    assert_allclose(
+        stream.imol['l'],
+        [0.002565629805882328,
+         0.9953743462470112,
+         0.853495772294828,
+         1.8149631824466637],
+        rtol=1e-3,
+        atol=1e-3,
+    )
+    assert_allclose(
+        stream.imol['g'],
+        [0.0001715933162454465,
+         0.0018884306308610292,
+         1.1492414508272997,
+         3.1822995944312087],
+        rtol=1e-3,
+        atol=1e-3,
+    )
+    stream = tmo.Stream(
+        H2O=2, Ethanol=5, LacticAcid=1, T=T,
+    )
+    stream.vle(V=V, T=T, liquid_conversion=rxn)
+    assert_allclose(
+        stream.imol['l'],
+        [0.0025656303993929954,
+         0.9953743433287133,
+         0.853495226089156,
+         1.814961876362787],
+        rtol=1e-3,
+        atol=1e-3,
+    )
+    assert_allclose(
+        stream.imol['g'],
+        [0.0001715935470026392,
+         0.0018884327248910547,
+         1.1492419978572395,
+         3.1823008996908175],
+        rtol=1e-3,
+        atol=1e-3,
+    )
+    stream = tmo.Stream(
+        H2O=2, Ethanol=5, LacticAcid=1, T=T,
+    )
+    stream.vle(H=H, P=P, liquid_conversion=rxn)
+    assert_allclose(
+        stream.imol['l'],
+        [0.0025656298107399112,
+         0.995374346155454,
+         0.853495769770851,
+         1.814963176478684],
+        rtol=1e-3,
+        atol=1e-3,
+    )
+    assert_allclose(
+        stream.imol['g'],
+        [0.00017159331767585686,
+         0.0018884307161302612,
+         1.149241453357565,
+         3.1822996003929],
+        rtol=1e-3,
+        atol=1e-3,
+    )
     
     
 def test_repr():
@@ -420,5 +429,5 @@ if __name__ == '__main__':
     test_reaction_enthalpy_balance()
     test_reaction_enthalpy_with_phases()
     test_reactive_phase_equilibrium_no_kinetics()
-    # test_reactive_phase_equilibrium_with_kinetics()
+    test_reactive_phase_equilibrium_with_kinetics()
     test_repr()

@@ -24,7 +24,7 @@ def test_disconnect():
     
     # Test ins size not fixed
     M.ins[0].disconnect_sink()
-    assert len(M.ins) == 1 and isinstance(M.ins[0], tmo.AbstractStream)
+    assert len(M.ins) == 2 and isinstance(M.ins[0], tmo.AbstractMissingStream) and isinstance(M.ins[1], tmo.AbstractStream)
     
     # Test ins size fixed
     S.ins[0].disconnect_sink()
@@ -32,7 +32,7 @@ def test_disconnect():
     
     # Test outs size not fixed
     S.outs[0].disconnect_source()
-    assert len(S.outs) == 1 and isinstance(S.outs[0], tmo.AbstractStream)
+    assert len(S.outs) == 2 and isinstance(S.outs[0], tmo.AbstractMissingStream) and isinstance(S.outs[1], tmo.AbstractStream)
     
     
 if __name__ == '__main__':
