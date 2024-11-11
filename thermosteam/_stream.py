@@ -421,6 +421,11 @@ class Stream(AbstractStream):
 
     # Phenomena-oriented simulation
     @property
+    def material_reference(self):
+        imol = self._imol
+        return (imol._parent, imol._phase)
+    
+    @property
     def material_equations(self):
         return self.equations.material
     @property
@@ -439,22 +444,13 @@ class Stream(AbstractStream):
 
     def _update_energy_departure_coefficient(self, coefficients):
         source = self.source
-        try:
-            if source is None or not source._recycle_system: return
-        except:
-            breakpoint()
+        if source is None or not source._recycle_system: return
         if not source._get_energy_departure_coefficient:
             raise NotImplementedError(f'{source!r} has no method `_get_energy_departure_coefficient`')
         coeff = source._get_energy_departure_coefficient(self)
         if coeff is None: return
         key, value = coeff
         coefficients[key] = value
-
-    def _update_material_flows(self, value, index=None):
-        if index is None:
-            self.mol[:] = value
-        else:
-            self.mol[index] = value
         
     def scale(self, scale):
         """
@@ -1825,8 +1821,7 @@ class Stream(AbstractStream):
             new._sink = new._source = None
             new.characterization_factors = {}
             new._thermo = self._thermo
-            parent = self._imol._parent.copy()
-            new._imol = parent.get_phase(self.phase)
+            new._imol = self._imol.full_copy()
             new._thermal_condition = self._thermal_condition.copy()
             new.reset_cache()
             new.price = 0
@@ -1840,7 +1835,6 @@ class Stream(AbstractStream):
         
         See Also
         --------
-        :obj:`~Stream.link_with`
         :obj:`~Stream.proxy`
         
         Examples

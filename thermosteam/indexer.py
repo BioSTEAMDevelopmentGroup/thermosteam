@@ -510,6 +510,13 @@ class ChemicalIndexer(Indexer):
             if units: self.set_data(self.data, units)
         return self
     
+    def full_copy(self):
+        parent = self._parent
+        if parent is None:
+            return self.copy()
+        else:
+            return parent.copy().get_phase(self._phase)
+    
     def reset_chemicals(self, chemicals, container=None):
         old_data = self.data
         if container is None:
@@ -764,6 +771,13 @@ class MaterialIndexer(Indexer):
     
     def __reduce__(self):
         return self.from_data, (self.data, self._phases, self._chemicals, False, self._parent)
+    
+    def full_copy(self):
+        parent = self._parent
+        if parent is None:
+            return self.copy()
+        else:
+            return parent.copy().get_phases(self._phases)
     
     def reset_chemicals(self, chemicals, container=None):
         old_data = self.data
@@ -1039,10 +1053,10 @@ class MaterialIndexer(Indexer):
         return material_indexer
     
     def get_phase(self, phase, lock=False):
-        if len(phase) == 1:
-            return self._ChemicalIndexer.blank(phase, self._chemicals, self, lock)
-        else:
-            return self.__class__.blank(phase, self._chemicals, self)
+        return self._ChemicalIndexer.blank(phase, self._chemicals, self, lock)
+        
+    def get_phases(self, phases):
+        return self.__class__.blank(phases, self._chemicals, self)
     
     def __getitem__(self, key):
         index, kind, sum_across_phases = self._get_index_data(key)
