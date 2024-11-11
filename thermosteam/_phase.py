@@ -9,8 +9,7 @@
 """
 from .exceptions import UndefinedPhase
 
-__all__ = ('Phase', 'LockedPhase', 'NoPhase', 'PhaseIndexer',
-           'phase_tuple', 'valid_phases')
+__all__ = ('PhaseIndexer', 'phase_tuple', 'valid_phases')
 
 new = object.__new__
 valid_phases = {
@@ -20,6 +19,7 @@ valid_phases = {
     'S': 'SOLID',
     'L': 'LIQUID',
 }
+index = {j: i for i,j in enumerate(valid_phases)}
 
 def check_phase(phase):
     """
@@ -33,6 +33,7 @@ def check_phase(phase):
     's' (solid), 'l' (liquid), 'g' (gas), 'S' (SOLID), and 'L' (LIQUID)
     
     """
+    if phase is None: return
     if phase not in valid_phases:
         raise RuntimeError(
             f"invalid phase {repr(phase)} encountered; valid phases are "
@@ -53,7 +54,7 @@ def phase_tuple(phases):
     ('g', 'l', 's')
     
     """
-    phases = set(phases)
+    phases = frozenset(phases)
     for i in phases: check_phase(i)
     return tuple(sorted(phases))
 
@@ -136,56 +137,3 @@ class PhaseIndexer:
     def __repr__(self):
         return f"{type(self).__name__}({[*self._phases]})"
 
-
-class Phase:
-    __slots__ = ('_phase',)
-    
-    @classmethod
-    def convert(cls, phase):
-        return phase if isinstance(phase, cls) else cls(phase)
-    
-    def __new__(cls, phase):
-        self = new(cls)
-        self._phase = phase
-        return self
-    
-    def __reduce__(self):
-        return Phase, (self.phase,)
-    
-    @property
-    def phase(self):
-        return self._phase
-    @phase.setter
-    def phase(self, phase):
-        check_phase(phase)
-        self._phase = phase
-    
-    def copy(self):
-        return Phase(self.phase)
-    __copy__ = copy
-    
-    def __repr__(self):
-        return f"{type(self).__name__}({repr(self.phase)})"
-
-
-class LockedPhase(Phase):
-    __slots__ = ()
-    _cache = {}
-    
-    def __new__(cls, phase):
-        cache = cls._cache
-        if phase in cache:
-            self = cache[phase]
-        else:
-            cache[phase] = self = new(cls)
-            object.__setattr__(self, '_phase', phase)
-        return self
-    
-    def __reduce__(self):
-        return Phase, (self.phase,)
-    
-    def __setattr__(self, name, value):
-        if value != self.phase:
-            raise AttributeError('phase is locked')
-        
-NoPhase = LockedPhase(None)

@@ -1067,6 +1067,23 @@ class AbstractUnit:
     def outs(self) -> Sequence[AbstractStream]:
         """List of all outlet streams."""
         return self._outs
+    
+    @property
+    def flat_ins(self) -> Sequence[AbstractStream]:
+        """List of all inlet single-phase streams."""
+        flat = []
+        for i in self._ins:
+            if len(i.phases) > 1: flat.extend(i)
+            else: flat.append(i)
+        return flat
+    @property
+    def flat_outs(self) -> Sequence[AbstractStream]:
+        """List of all outlet single-phase streams."""
+        flat = []
+        for i in self._outs:
+            if len(i.phases) > 1: flat.extend(i)
+            else: flat.append(i)
+        return flat
         
     @property
     def auxiliary_units(self) -> list[AbstractUnit]:

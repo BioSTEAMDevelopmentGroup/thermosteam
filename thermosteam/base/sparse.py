@@ -6,6 +6,7 @@ __all__ = (
     'nonzero_items',
     'sparse_vector',
     'sparse_array',
+    'sum_sparse_vectors',
     'SparseVector',
     'SparseLogicalVector',
     'SparseArray',

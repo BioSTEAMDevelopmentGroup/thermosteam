@@ -18,7 +18,7 @@ from . import (
     _xparse as xprs,
 )
 from ..utils import chemicals_user, thermo_user, AbstractMethod
-from .._phase import NoPhase, phase_tuple
+from .._phase import phase_tuple
 from ..indexer import ChemicalIndexer, MaterialIndexer
 from ..exceptions import InfeasibleRegion
 import numpy as np
@@ -742,7 +742,7 @@ class Reaction:
         if indexer:
             chemicals = self.chemicals
             data = chemicals.kwarray(X_net)
-            return ChemicalIndexer.from_data(data, NoPhase, chemicals, False)
+            return ChemicalIndexer.from_data(data, None, chemicals, False)
         else:
             return X_net
     
@@ -1477,7 +1477,7 @@ class ParallelReaction(ReactionSet):
                 return mi                
             else:
                 data = chemicals.kwarray(X_net)
-                return ChemicalIndexer.from_data(data, NoPhase, chemicals, False)
+                return ChemicalIndexer.from_data(data, None, chemicals, False)
         else:
             return X_net
 
@@ -1521,7 +1521,7 @@ class SeriesReaction(ReactionSet):
         if indexer:
             chemicals = self.chemicals
             data = chemicals.kwarray(X_net)
-            return ChemicalIndexer.from_data(data, NoPhase, chemicals, False)
+            return ChemicalIndexer.from_data(data, None, chemicals, False)
         else:
             return X_net
 
@@ -1680,7 +1680,7 @@ class ReactionSystem:
         if indexer:
             chemicals = self.chemicals
             data = chemicals.kwarray(X_net)
-            return ChemicalIndexer.from_data(data, NoPhase, chemicals, False)
+            return ChemicalIndexer.from_data(data, None, chemicals, False)
         else:
             return X_net
         

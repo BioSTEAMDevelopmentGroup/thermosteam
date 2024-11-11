@@ -230,13 +230,12 @@ def test_multistream():
     assert type(stream) is tmo.Stream
     assert stream.phase == 's'
     
-    # Linking
+    # Copy
     stream.phase = 'l'
     stream.phases = 'lg'
+    stream.imol['l', 'Water'] = 10
+    stream.vle(V=0.5, P=2*101325)
     other = stream.copy()
-    stream.link_with(other)
-    other.imol['l', 'Water'] = 10
-    other.vle(V=0.5, P=2*101325)
     assert_allclose(other.mol, stream.mol)
     assert_allclose(other.T, stream.T)
     assert_allclose(other.P, stream.P)

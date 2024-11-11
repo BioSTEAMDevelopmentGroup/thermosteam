@@ -41,10 +41,10 @@ mass_units = indexer.ChemicalMassFlowIndexer.units
 vol_units = indexer.ChemicalVolumetricFlowIndexer.units
 
 class StreamData:
-    __slots__ = ('_imol', '_T', '_P', '_phases')
+    __slots__ = ('_flow', '_T', '_P', '_phases')
     
     def __init__(self, imol, thermal_condition, phases):
-        self._imol = imol.copy()
+        self._flow = imol.data.copy()
         self._T = thermal_condition._T
         self._P = thermal_condition._P
         self._phases = phases
@@ -60,11 +60,11 @@ class TemporaryPhase:
         
     def __enter__(self):
         stream = self.stream
-        stream._phase._phase = self.temporary
+        stream.phase = self.temporary
         return stream
     
     def __exit__(self, type, exception, traceback):
-        self.stream._phase._phase = self.original
+        self.stream.phase = self.original
         if exception: raise exception
    
     
@@ -439,7 +439,10 @@ class Stream(AbstractStream):
 
     def _update_energy_departure_coefficient(self, coefficients):
         source = self.source
-        if source is None or not source.system.recycle: return
+        try:
+            if source is None or not source._recycle_system: return
+        except:
+            breakpoint()
         if not source._get_energy_departure_coefficient:
             raise NotImplementedError(f'{source!r} has no method `_get_energy_departure_coefficient`')
         coeff = source._get_energy_departure_coefficient(self)
@@ -501,16 +504,6 @@ class Stream(AbstractStream):
                 self.F_mol = total_flow
             else:
                 self.set_total_flow(total_flow, units)
-
-    def _reset_thermo(self, thermo):
-        if thermo is self._thermo: return
-        self._thermo = thermo
-        self._imol.reset_chemicals(thermo.chemicals)
-        self.reset_cache()
-        if hasattr(self, '_streams'):
-            for phase, stream in self._streams.items():
-                stream._imol = self._imol.get_phase(phase)
-                stream._thermo = thermo
 
     def get_CF(self, key: str, basis : Optional[str]=None, units: Optional[str]=None):
         """
@@ -684,7 +677,7 @@ class Stream(AbstractStream):
         """
         if isinstance(stream_data, StreamData):
             self.phases = stream_data._phases
-            self._imol.copy_like(stream_data._imol)
+            self._imol.data.copy_like(stream_data._flow)
             self._thermal_condition.copy_like(stream_data)
         else:
             raise ValueError(f'stream_data must be a StreamData object; not {type(stream_data).__name__}')
@@ -787,18 +780,20 @@ class Stream(AbstractStream):
     def _init_indexer(self, flow, phase, chemicals, chemical_flows):
         """Initialize molar flow rates."""
         if len(flow) == 0:
+            parent = indexer.parent_indexer(chemicals)
             if chemical_flows:
-                imol = indexer.ChemicalMolarFlowIndexer(phase, chemicals=chemicals, **chemical_flows)
+                imol = indexer.ChemicalMolarFlowIndexer(phase, chemicals=chemicals, parent=parent, **chemical_flows)
             else:
-                imol = indexer.ChemicalMolarFlowIndexer.blank(phase, chemicals)
+                imol = indexer.ChemicalMolarFlowIndexer.blank(phase, chemicals, parent=parent)
         else:
             if chemical_flows: ValueError("may specify either 'flow' or 'chemical_flows', but not both")
             if isinstance(flow, indexer.ChemicalMolarFlowIndexer):
                 imol = flow 
                 imol.phase = phase
             else:
-                imol = indexer.ChemicalMolarFlowIndexer.from_data(
-                    np.asarray(flow, dtype=float), phase, chemicals)
+                parent = indexer.parent_indexer(chemicals)
+                imol = parent.to_chemical_indexer(phase)
+                imol.data[:] = flow
         self._imol = imol
 
     def reset_cache(self):
@@ -1001,10 +996,10 @@ class Stream(AbstractStream):
     @property
     def phase(self) -> str:
         """Phase of stream."""
-        return self._imol._phase._phase
+        return self._imol._phase
     @phase.setter
     def phase(self, phase):
-        self._imol._phase.phase = phase
+        self._imol.phase = phase
     
     @property
     def mol(self) -> NDArray[float]:
@@ -1202,7 +1197,7 @@ class Stream(AbstractStream):
             if nophase:
                 literal = (thermal_condition._T, thermal_condition._P)
             else:
-                phase = imol._phase._phase
+                phase = imol._phase
                 literal = (phase, thermal_condition._T, thermal_condition._P)
             last_literal, last_composition_key = self._property_cache_key
             if literal == last_literal and (composition_key == last_composition_key):
@@ -1575,102 +1570,6 @@ class Stream(AbstractStream):
             s2.empty()
             CASs, values = zip(*[(i, j) for i, j in zip(chemicals.CASs, values) if j])
             s2._imol[CASs] = values
-            
-        
-    def link_with(self, other: Stream, 
-                  flow: Optional[bool]=True,
-                  phase: Optional[bool]=True, 
-                  TP: Optional[bool]=True):
-        """
-        Link with another stream.
-        
-        Parameters
-        ----------
-        other : 
-        flow :
-            Whether to link the flow rate data. Defaults to True.
-        phase : 
-            Whether to link the phase. Defaults to True.
-        TP : 
-            Whether to link the temperature and pressure. Defaults to True.
-        
-        See Also
-        --------
-        :obj:`~Stream.flow_proxy`
-        :obj:`~Stream.proxy`
-        
-        Examples
-        --------
-        >>> import thermosteam as tmo
-        >>> tmo.settings.set_thermo(['Water', 'Ethanol'], cache=True) 
-        >>> s1 = tmo.Stream('s1', Water=20, Ethanol=10, units='kg/hr')
-        >>> s2 = tmo.Stream('s2')
-        >>> s2.link_with(s1)
-        >>> s1.mol is s2.mol
-        True
-        >>> s2.thermal_condition is s1.thermal_condition
-        True
-        >>> s1.phase = 'g'
-        >>> s2.phase
-        'g'
-        
-        """
-        if not isinstance(other._imol, self._imol.__class__):
-            at_unit = f" at unit {self.source}" if self.source is other.sink else ""
-            raise RuntimeError(f"stream {self} cannot link with stream {other}" + at_unit
-                               + "; streams must have the same class to link")
-        if TP and flow and (phase or self._imol.data.ndim == 2):
-            self._imol._data_cache = other._imol._data_cache
-        else:
-            self._imol._data_cache.clear()
-        if TP:
-            self._thermal_condition = other._thermal_condition
-        if flow:
-            self._imol.data = other._imol.data
-        if phase and self._imol.data.ndim == 1:
-            self._imol._phase = other._imol._phase
-            
-    def unlink(self):
-        """
-        Unlink stream from other streams.
-        
-        Examples
-        --------
-        >>> import thermosteam as tmo
-        >>> tmo.settings.set_thermo(['Water', 'Ethanol'], cache=True)
-        >>> s1 = tmo.Stream('s1', Water=20, Ethanol=10, units='kg/hr')
-        >>> s2 = tmo.Stream('s2')
-        >>> s2.link_with(s1)
-        >>> s1.unlink()
-        >>> s2.mol is s1.mol
-        False
-        
-        >>> s1.phases = s2.phases = ('l', 'g')
-        >>> s2.link_with(s1)
-        >>> s1.imol.data is s2.imol.data
-        True
-        >>> s1.unlink()
-        >>> s1.imol.data is s2.imol.data
-        False
-        
-        MultiStream phases cannot be unlinked:
-        
-        >>> s1 = tmo.MultiStream(None, phases=('l', 'g'))
-        >>> s1['g'].unlink()
-        Traceback (most recent call last):
-        RuntimeError: phase is locked; stream cannot be unlinked
-        
-        """
-        imol = self._imol
-        if hasattr(imol, '_phase'):
-            if isinstance(imol._phase, tmo._phase.LockedPhase):
-                raise RuntimeError('phase is locked; stream cannot be unlinked')
-            else:
-                imol._phase = imol._phase.copy()
-        imol._data_cache.clear()
-        imol.data = imol.data.copy()
-        self._thermal_condition = self._thermal_condition.copy()
-        self.reset_cache()
         
     def copy_like(self, other):
         """
@@ -1741,7 +1640,7 @@ class Stream(AbstractStream):
     def copy_phase(self, other):
         """Copy phase from another stream."""
         try:
-            self._imol._phase._phase = other._imol._phase._phase
+            self._imol._phase = other._imol._phase
         except AttributeError as e:
             if isinstance(other, tmo.MultiStream): 
                 raise ValueError('cannot copy phase from stream with multiple phases')
@@ -1917,19 +1816,22 @@ class Stream(AbstractStream):
         
         """
         cls = self.__class__
-        new = cls.__new__(cls)
-        new.equations = Equations()
-        new._sink = new._source = None
-        new.characterization_factors = {}
-        new._thermo = thermo or self._thermo
-        new._imol = self._imol.copy()
-        if thermo and thermo.chemicals is not self.chemicals:
-            new._imol.reset_chemicals(thermo.chemicals)
-        new._thermal_condition = self._thermal_condition.copy()
-        new.reset_cache()
-        new.price = 0
-        new.ID = ID
-        return new
+        if thermo is not None:
+            new = cls(ID=ID, thermo=thermo)
+            new.copy_like(self)
+        else:
+            new = cls.__new__(cls)
+            new.equations = Equations()
+            new._sink = new._source = None
+            new.characterization_factors = {}
+            new._thermo = self._thermo
+            parent = self._imol._parent.copy()
+            new._imol = parent.get_phase(self.phase)
+            new._thermal_condition = self._thermal_condition.copy()
+            new.reset_cache()
+            new.price = 0
+            new.ID = ID
+            return new
     __copy__ = copy
     
     def flow_proxy(self, ID=None):

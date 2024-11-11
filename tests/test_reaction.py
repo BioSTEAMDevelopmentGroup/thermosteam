@@ -223,7 +223,7 @@ def test_reactive_phase_equilibrium_no_kinetics():
     stream = tmo.Stream(
         H2O=1, Ethanol=5, LacticAcid=1
     )
-    mol_original = stream.mol
+    mol_original = stream.mol.copy()
     F_mass = stream.F_mass
     stream.vle(T=360, P=101325, liquid_conversion=rxn)
     liq_new = stream.imol['l'].copy()
@@ -289,7 +289,7 @@ def test_reactive_phase_equilibrium_with_kinetics():
     stream = tmo.Stream(
         H2O=2, Ethanol=5, LacticAcid=1, T=355,
     )
-    mol_original = stream.mol
+    mol_original = stream.mol.copy()
     F_mass = stream.F_mass
     stream.vle(T=360, P=101325, liquid_conversion=rxn)
     liq_new = tmo.Stream(flow=stream.imol['l'].copy(), T=360, P=101325)

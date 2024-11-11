@@ -11,11 +11,10 @@ from __future__ import annotations
 from ._thermo import Thermo
 from ._stream import Stream
 from ._thermal_condition import ThermalCondition
-from .indexer import MolarFlowIndexer
+from .indexer import MolarFlowIndexer, nonzeros, parent_indexer
 from ._phase import phase_tuple
 from . import equilibrium as eq
 from . import utils
-from .indexer import nonzeros
 import numpy as np
 from typing import TYPE_CHECKING
 if TYPE_CHECKING:
@@ -304,17 +303,20 @@ class MultiStream(Stream):
         
     def _init_indexer(self, flow, phases, chemicals, phase_flows):
         if flow == ():
+            parent = parent_indexer(chemicals)
             if phase_flows:
-                imol = MolarFlowIndexer(phases, chemicals=chemicals, **phase_flows)
+                imol = MolarFlowIndexer(phases, chemicals=chemicals, parent=parent, **phase_flows)
             else:
-                imol = MolarFlowIndexer.blank(phases, chemicals)
+                imol = MolarFlowIndexer.blank(phases, chemicals, parent)
         else:
             assert not phase_flows, ("may specify either 'flow' or "
                                     "'phase_flows', but not both")
             if isinstance(flow, MolarFlowIndexer):
                 imol = flow
             else:
-                imol = MolarFlowIndexer.from_data(flow, phases, chemicals)
+                parent = parent_indexer(chemicals)
+                imol = parent.to_material_indexer(phases)
+                imol.data[:] = flow
         self._imol = imol
     
     def _get_property(self, name, flow=False, nophase=False):
@@ -371,12 +373,14 @@ class MultiStream(Stream):
         
     def __getitem__(self, phase):
         streams = self._streams
+        if not (isinstance(phase, str) and len(phase) == 1):
+            raise ValueError(f'invalid phase index {phase!r}')
         if phase in streams:
             stream = streams[phase]
         else:
             stream = Stream.__new__(Stream)
             stream._ID = stream._sink = stream._source = None
-            stream._imol = self._imol.get_phase(phase)
+            stream._imol = self._imol.get_phase(phase, lock=True)
             stream._thermal_condition = self._thermal_condition
             stream._thermo = self._thermo
             stream._property_cache = {}
@@ -467,7 +471,6 @@ class MultiStream(Stream):
         phases = phase_tuple(phases)
         if phases != self.phases:
             self._imol = self._imol.to_material_indexer(phases)
-            self.reset_cache()
     
     ### Flow properties ###
             

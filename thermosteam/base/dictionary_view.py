@@ -104,7 +104,7 @@ class VolumetricFlowDict(DictionaryView): # Wraps a dict of molar flows
     def output(self, index, value):
         TP, V = self.cache.get(index, TP_V)
         if not TP.in_equilibrium(self.TP):
-            phase = self.phase or self.phase_container.phase
+            phase = self.phase or self.phase_container._phase
             V = self.V[index]
             V = 1000. * (getattr(V, phase) if isinstance(V, PhaseHandle) else V)(*self.TP)
             self.cache[index] = (self.TP.copy(), V)
@@ -113,7 +113,7 @@ class VolumetricFlowDict(DictionaryView): # Wraps a dict of molar flows
     def input(self, index, value):
         TP, V = self.cache.get(index, TP_V)
         if not TP.in_equilibrium(self.TP):
-            phase = self.phase or self.phase_container.phase
+            phase = self.phase or self.phase_container._phase
             V = self.V[index]
             V = 1000. * (getattr(V, phase) if isinstance(V, PhaseHandle) else V)(*self.TP)
             self.cache[index] = (self.TP.copy(), V)
