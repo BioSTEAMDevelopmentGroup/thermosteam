@@ -41,9 +41,9 @@ _new = object.__new__
 def set_main_phase(main_indexer, indexers):
     other_indexer, *indexers = indexers
     try:
-        phase = other_indexer._phase.phase
+        phase = other_indexer._phase
         for i in indexers:
-            if phase != i._phase.phase: return
+            if phase != i._phase: return
         main_indexer.phase = phase
     except: pass
 
@@ -1036,10 +1036,10 @@ class MaterialIndexer(Indexer):
         dct = sum_sparse_vectors(rows)
         data.dct.clear()
         data.dct.update(dct)
-        return self._ChemicalIndexer.blank(phase, self._chemicals, self._parent)
+        return self._ChemicalIndexer.blank(phase, self._chemicals, self._parent or self)
     
     def to_material_indexer(self, phases):
-        material_indexer = self.__class__.blank(phases, self._chemicals, self._parent)
+        material_indexer = self.__class__.blank(phases, self._chemicals, self._parent or self)
         index = material_indexer._phase_indexer
         rows = material_indexer.data.rows
         for phase, data in self:

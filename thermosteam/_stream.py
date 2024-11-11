@@ -81,7 +81,6 @@ class TemporaryStream:
         
     def __enter__(self):
         stream = self.stream
-        self.data = stream.get_data()
         if self.flow is not None: stream.imol.data[:] = self.flow
         if self.T is not None: stream.T = self.T
         if self.P is not None: stream.P = self.P
@@ -1636,7 +1635,7 @@ class Stream(AbstractStream):
     def copy_phase(self, other):
         """Copy phase from another stream."""
         try:
-            self._imol._phase = other._imol._phase
+            self._imol.phase = other._imol._phase
         except AttributeError as e:
             if isinstance(other, tmo.MultiStream): 
                 raise ValueError('cannot copy phase from stream with multiple phases')
@@ -1826,8 +1825,83 @@ class Stream(AbstractStream):
             new.reset_cache()
             new.price = 0
             new.ID = ID
-            return new
+        return new
     __copy__ = copy
+    
+    def link_with(self, other: Stream):
+        """
+        Link with another stream.
+        
+        Parameters
+        ----------
+        other : 
+        
+        See Also
+        --------
+        :obj:`~Stream.flow_proxy`
+        :obj:`~Stream.proxy`
+        
+        Examples
+        --------
+        >>> import thermosteam as tmo
+        >>> tmo.settings.set_thermo(['Water', 'Ethanol'], cache=True) 
+        >>> s1 = tmo.Stream('s1', Water=20, Ethanol=10, units='kg/hr')
+        >>> s2 = tmo.Stream('s2')
+        >>> s2.link_with(s1)
+        >>> s1.mol is s2.mol
+        True
+        >>> s2.thermal_condition is s1.thermal_condition
+        True
+        >>> s1.phase = 'g'
+        >>> s2.phase
+        'g'
+        
+        """
+        if not isinstance(other._imol, self._imol.__class__):
+            at_unit = f" at unit {self.source}" if self.source is other.sink else ""
+            raise RuntimeError(f"stream {self} cannot link with stream {other}" + at_unit
+                               + "; streams must have the same class to link")
+        self._imol = other._imol
+        self._thermal_condition = other._thermal_condition
+            
+    def unlink(self):
+        """
+        Unlink stream from other streams.
+        
+        Examples
+        --------
+        >>> import thermosteam as tmo
+        >>> tmo.settings.set_thermo(['Water', 'Ethanol'], cache=True)
+        >>> s1 = tmo.Stream('s1', Water=20, Ethanol=10, units='kg/hr')
+        >>> s2 = tmo.Stream('s2')
+        >>> s2.link_with(s1)
+        >>> s1.unlink()
+        >>> s2.mol is s1.mol
+        False
+        
+        >>> s1.phases = s2.phases = ('l', 'g')
+        >>> s2.link_with(s1)
+        >>> s1.imol.data is s2.imol.data
+        True
+        >>> s1.unlink()
+        >>> s1.imol.data is s2.imol.data
+        False
+        
+        MultiStream phases cannot be unlinked:
+        
+        >>> s1 = tmo.MultiStream(None, phases=('l', 'g'))
+        >>> s1['g'].unlink()
+        Traceback (most recent call last):
+        RuntimeError: phase is locked; stream cannot be unlinked
+        
+        """
+        imol = self._imol
+        if hasattr(imol, '_phase'):
+            if imol._lock_phase:
+                raise RuntimeError('phase is locked; stream cannot be unlinked')
+        self._imol = imol.full_copy()
+        self._thermal_condition = self._thermal_condition.copy()
+        self.reset_cache()
     
     def flow_proxy(self, ID=None):
         """
@@ -1835,6 +1909,7 @@ class Stream(AbstractStream):
         
         See Also
         --------
+        :obj:`~Stream.link_with`
         :obj:`~Stream.proxy`
         
         Examples
