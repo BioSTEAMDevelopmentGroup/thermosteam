@@ -1320,17 +1320,19 @@ ChemicalVolumetricFlowIndexer, VolumetricFlowIndexer = _new_Indexer('VolumetricF
 def by_mass(self):
     """Return a ChemicalMassFlowIndexer that references this object's molar data."""
     try:
-        mass = self._data_cache['mass']
+        mass = self._data_cache['mass', self._phase]
     except:
         chemicals = self.chemicals
-        self._data_cache['mass'] = mass = \
+        self._data_cache['mass', self._phase] = mass = \
         ChemicalMassFlowIndexer.from_data(
             SparseVector.from_dict(
                 MassFlowDict(self.data.dct, chemicals.MW),
                 chemicals.size
             ),
-            self._phase, chemicals,
-            False
+            self._phase, 
+            chemicals,
+            False,
+            True,
         )
     return mass
 ChemicalMolarFlowIndexer.by_mass = by_mass
@@ -1367,12 +1369,12 @@ def by_volume(self, TP):
     
     """
     try:
-        vol = self._data_cache['vol', TP]
+        vol = self._data_cache['vol', TP, self._phase]
     except:
         chemicals = self._chemicals
         V = [i.V for i in chemicals]
         phase = self._phase
-        self._data_cache['vol', TP] = \
+        self._data_cache['vol', TP, self._phase] = \
         vol = ChemicalVolumetricFlowIndexer.from_data(
             SparseVector.from_dict(
                 VolumetricFlowDict(self.data.dct, TP, V, None, self, {}),

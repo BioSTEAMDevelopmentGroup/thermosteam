@@ -19,7 +19,7 @@ valid_phases = {
     'S': 'SOLID',
     'L': 'LIQUID',
 }
-index = {j: i for i,j in enumerate(valid_phases)}
+index = {j: i for i,j in enumerate(sorted(valid_phases))}
 
 def check_phase(phase):
     """
@@ -38,7 +38,8 @@ def check_phase(phase):
         raise RuntimeError(
             f"invalid phase {repr(phase)} encountered; valid phases are "
             "'s' (solid), 'l' (liquid), 'g' (gas), 'S' (SOLID), and 'L' (LIQUID)"
-        )  
+        )
+    return phase
 
 def phase_tuple(phases):
     """
