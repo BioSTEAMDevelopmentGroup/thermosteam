@@ -39,7 +39,6 @@ def check_phase(phase):
             f"invalid phase {repr(phase)} encountered; valid phases are "
             "'s' (solid), 'l' (liquid), 'g' (gas), 'S' (SOLID), and 'L' (LIQUID)"
         )
-    return phase
 
 def phase_tuple(phases):
     """

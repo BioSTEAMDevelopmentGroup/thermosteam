@@ -633,27 +633,29 @@ class ChemicalIndexer(Indexer):
         if parent is None:
             self._load_chemicals(chemicals)
             self.data = SparseVector.from_size(chemicals.size)
+            self._data_cache = {}
         else:
             self._chemicals = parent._chemicals
             self.data = parent.data.rows[parent._phase_indexer(phase)]
+            self._data_cache = {'linked': []}
         self._phase = phase
         self._lock_phase = lock_phase
         self._parent = parent
-        self._data_cache = {}
         return self
     
     @classmethod
-    def from_data(cls, data, phase=None, chemicals=None, check_data=True, lock_phase=False):
+    def from_data(cls, data, phase=None, chemicals=None, check_data=True, lock_phase=False, parent=None):
         self = _new(cls)
         self._load_chemicals(chemicals)
-        self._phase = check_phase(phase)
+        self._phase = phase
         self.data = data = sparse_vector(data)
         if check_data:
             assert data.ndim == 1, 'material data must be a 1d numpy array'
             assert data.size == self._chemicals.size, ('size of material data must be equal to '
                                                        'size of chemicals')
-        self._data_cache = {}
-        self._parent = None
+            check_phase(phase)
+        self._data_cache = {} if parent is None else {'linked': []}
+        self._parent = parent
         self._lock_phase = lock_phase
         return self
     
@@ -662,12 +664,13 @@ class ChemicalIndexer(Indexer):
         return self._phase
     @phase.setter
     def phase(self, phase):
-        if phase == self._phase: return
-        if self._lock_phase: raise AttributeError('phase is locked')
-        check_phase(phase)
         parent = self._parent
+        if phase == self._phase: return
+        check_phase(phase)
         if parent is None:
             self._phase = phase
+        elif self._lock_phase: 
+            raise AttributeError('phase is locked')
         else:
             old_data = self.data
             self.data = parent.data.rows[index[phase]]
@@ -675,6 +678,7 @@ class ChemicalIndexer(Indexer):
             dct.clear()
             dct.update(old_data.dct)
             self._phase = phase
+            for i in self._data_cache['linked']: i.dct = dct
     
     def get_phase_and_composition(self):
         """Return phase and composition."""
@@ -1001,7 +1005,7 @@ class MaterialIndexer(Indexer):
         return self
     
     @classmethod
-    def from_data(cls, data, phases, chemicals=None, check_data=True):
+    def from_data(cls, data, phases, chemicals=None, check_data=True, parent=None):
         self = _new(cls)
         self._load_chemicals(chemicals)
         self._set_phases(phases)
@@ -1018,7 +1022,7 @@ class MaterialIndexer(Indexer):
                                       'must be equal to '
                                       'number of material data columns')
         self._data_cache = {}
-        self._parent = None
+        self._parent = parent
         return self
     
     @property
@@ -1277,9 +1281,16 @@ def _replace_indexer_doc(Indexer, Parent):
     doc = Parent.__doc__
     doc = doc[:doc.index("Notes")]
     Indexer.__doc__ = doc.replace(Parent.__name__, Indexer.__name__)
-    
+
+@property
+def proxy_phase(self):
+    return self._phase._phase
+@proxy_phase.setter
+def proxy_phase(self, phase):
+    self._phase.phase = phase
+
 def _new_Indexer(name, units, f_group_composition):
-    dct = {'group_compositions': f_group_composition}
+    dct = {'group_compositions': f_group_composition,}
     ChemicalIndexerSubclass = type('Chemical' + name + 'Indexer', (ChemicalIndexer,), dct)
     MaterialIndexerSubclass = type(name + 'Indexer', (MaterialIndexer,), dct)
     
@@ -1314,25 +1325,29 @@ def group_vol_composition(self):
 ChemicalMolarFlowIndexer, MolarFlowIndexer = _new_Indexer('MolarFlow', 'kmol/hr', group_mol_compositions)
 ChemicalMassFlowIndexer, MassFlowIndexer = _new_Indexer('MassFlow', 'kg/hr', group_wt_compositions)
 ChemicalVolumetricFlowIndexer, VolumetricFlowIndexer = _new_Indexer('VolumetricFlow', 'm^3/hr', group_vol_composition)
+ChemicalMassFlowIndexer.phase = proxy_phase
+ChemicalVolumetricFlowIndexer.phase = proxy_phase
 
 # %% Mass flow properties
 
 def by_mass(self):
     """Return a ChemicalMassFlowIndexer that references this object's molar data."""
     try:
-        mass = self._data_cache['mass', self._phase]
+        mass = self._data_cache['mass']
     except:
         chemicals = self.chemicals
-        self._data_cache['mass', self._phase] = mass = \
+        dct = MassFlowDict(self.data.dct, chemicals.MW)
+        data_cache = self._data_cache
+        if 'linked' in data_cache: data_cache['linked'].append(dct)
+        data_cache['mass'] = mass = \
         ChemicalMassFlowIndexer.from_data(
             SparseVector.from_dict(
-                MassFlowDict(self.data.dct, chemicals.MW),
+                dct,
                 chemicals.size
             ),
-            self._phase, 
+            self, 
             chemicals,
             False,
-            True,
         )
     return mass
 ChemicalMolarFlowIndexer.by_mass = by_mass
@@ -1369,18 +1384,20 @@ def by_volume(self, TP):
     
     """
     try:
-        vol = self._data_cache['vol', TP, self._phase]
+        vol = self._data_cache['vol']
     except:
         chemicals = self._chemicals
         V = [i.V for i in chemicals]
-        phase = self._phase
-        self._data_cache['vol', TP, self._phase] = \
+        dct = VolumetricFlowDict(self.data.dct, TP, V, None, self, {})
+        data_cache = self._data_cache
+        if 'linked' in data_cache: data_cache['linked'].append(dct)
+        data_cache['vol'] = \
         vol = ChemicalVolumetricFlowIndexer.from_data(
             SparseVector.from_dict(
-                VolumetricFlowDict(self.data.dct, TP, V, None, self, {}),
+                dct,
                 chemicals.size
             ),
-            phase, chemicals,
+            self, chemicals,
             False
         )
     return vol
@@ -1395,13 +1412,13 @@ def by_volume(self, TP):
     
     """
     try:
-        vol = self._data_cache[TP]
+        vol = self._data_cache['vol']
     except:
         phases = self._phases
         chemicals = self._chemicals
         V = [i.V for i in chemicals]
         size = chemicals.size
-        self._data_cache[TP] = \
+        self._data_cache['vol'] = \
         vol = VolumetricFlowIndexer.from_data(
             SparseArray.from_rows([
                 SparseVector.from_dict(VolumetricFlowDict(i.dct, TP, V, j, None, {}), size)
