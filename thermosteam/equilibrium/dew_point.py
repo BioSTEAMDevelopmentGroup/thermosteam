@@ -19,7 +19,7 @@ __all__ = ('DewPoint',)
 
 # %% Solvers
 
-@njit(cache=True)
+# @njit(cache=True)
 def gamma_iter(gamma, x_gamma, T, P, f_gamma, gamma_args):
     # Add back trace amounts for activity coefficients at infinite dilution
     x = x_gamma / gamma

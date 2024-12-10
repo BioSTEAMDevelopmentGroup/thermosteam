@@ -230,13 +230,12 @@ def test_multistream():
     assert type(stream) is tmo.Stream
     assert stream.phase == 's'
     
-    # Linking
+    # Copy
     stream.phase = 'l'
     stream.phases = 'lg'
+    stream.imol['l', 'Water'] = 10
+    stream.vle(V=0.5, P=2*101325)
     other = stream.copy()
-    stream.link_with(other)
-    other.imol['l', 'Water'] = 10
-    other.vle(V=0.5, P=2*101325)
     assert_allclose(other.mol, stream.mol)
     assert_allclose(other.T, stream.T)
     assert_allclose(other.P, stream.P)
@@ -299,6 +298,13 @@ def test_stream_indexing():
     key = ('l', 'Water')
     stream.set_flow(1, 'gpm', key)
     assert stream.get_flow('gpm', key) == 1.
+    
+    tmo.settings.chemicals.define_group('Mixture', ['Water', 'Alcohol'], [0.5, 0.5], wt=False)
+    stream = tmo.Stream(None, Mixture=1.)
+    assert stream.imol['Alcohol'] == 0.5
+    assert stream.imol['Water'] == 0.5
+    assert stream.imol['Ethanol'] == 0.25
+    assert stream.imol['Methanol'] == 0.25
 
 def test_stream_property_cache():
     tmo.settings.set_thermo(['Water', 'Ethanol'], cache=True)

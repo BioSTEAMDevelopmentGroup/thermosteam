@@ -1067,6 +1067,23 @@ class AbstractUnit:
     def outs(self) -> Sequence[AbstractStream]:
         """List of all outlet streams."""
         return self._outs
+    
+    @property
+    def flat_ins(self) -> Sequence[AbstractStream]:
+        """List of all inlet single-phase streams."""
+        flat = []
+        for i in self._ins:
+            if len(i.phases) > 1: flat.extend(i)
+            else: flat.append(i)
+        return flat
+    @property
+    def flat_outs(self) -> Sequence[AbstractStream]:
+        """List of all outlet single-phase streams."""
+        flat = []
+        for i in self._outs:
+            if len(i.phases) > 1: flat.extend(i)
+            else: flat.append(i)
+        return flat
         
     @property
     def auxiliary_units(self) -> list[AbstractUnit]:
@@ -1467,30 +1484,6 @@ class AbstractUnit:
         if not callable(f): raise ValueError('f must be callable')
         self._specifications.append(BoundedNumericalSpecification(f, *args, **kwargs))
         return f
-    
-    def run_phenomena(self):
-        """
-        Run mass and energy balance without converging phenomena. This method also runs specifications
-        user defined specifications unless it is being run within a 
-        specification (to avoid infinite loops). 
-        
-        See Also
-        --------
-        _run
-        specifications
-        add_specification
-        add_bounded_numerical_specification
-        
-        """
-        if self._skip_simulation_when_inlets_are_empty and all([i.isempty() for i in self._ins]):
-            for i in self._outs: i.empty()
-            return
-        if hasattr(self, '_run_phenomena'): 
-            self._run = self._run_phenomena
-            try: self._run_with_specifications()
-            finally: del self._run
-        else:
-            self._run_with_specifications()
     
     def run(self):
         """

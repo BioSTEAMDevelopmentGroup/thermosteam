@@ -483,13 +483,20 @@ class CompiledChemicals(Chemicals):
             composition = np.ones(len(IDs))
         elif len(composition) != len(IDs): 
             raise ValueError('length of IDs and composition must be the same')
-        for i in IDs: 
-            if i in self._group_wt_compositions:
-                raise ValueError(f"'{i}' is a group; cannot define new group using other groups")
-        index = self.indices(IDs)
+        new_IDs = []
+        new_composition = []
+        group_compositions = self._group_wt_compositions if wt else self._group_mol_compositions
+        for n, i in enumerate(IDs): 
+            if i in group_compositions:
+                new_IDs.extend([j.ID for j in self[i]])
+                new_composition.extend(composition[n] * group_compositions[i])
+            else:
+                new_IDs.append(i)
+                new_composition.append(composition[n])
+        index = self.indices(new_IDs)
         self.__dict__[name] = [self.tuple[i] for i in index]
         self._index[name] = index
-        composition = np.asarray(composition, float)
+        composition = np.asarray(new_composition, float)
         if wt:
             composition_wt = composition
             composition_mol = composition / self.MW[index]
