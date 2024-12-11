@@ -1125,7 +1125,6 @@ class ReactionItem(Reaction):
         copy._stoichiometry = self._stoichiometry.copy()
         copy._reactant_index = self._reactant_index
         copy._chemicals = self._chemicals
-        copy.chemicals = self.chemicals
         copy._X = self.X
         if basis: set_reaction_basis(copy, basis)
         return copy
