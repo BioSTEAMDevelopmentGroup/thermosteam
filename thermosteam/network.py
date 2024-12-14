@@ -2749,6 +2749,7 @@ class Network:
             for index, i in enumerate(path_tuple):
                 if isa(i, Network) and not network.isdisjoint(i):
                     i.join_recycle_network(network)
+                    self._remove_overlap(network, path_tuple)
                     self.units.update(subunits)
                     return
             if self.recycle:

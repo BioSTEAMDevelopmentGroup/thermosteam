@@ -814,14 +814,18 @@ class Reaction:
         """[ChemicalIndexer] Stoichiometry coefficients."""
         stoichiometry = self._stoichiometry
         if stoichiometry.ndim == 1:
-            return tmo.indexer.ChemicalIndexer.from_data(self._stoichiometry,
-                                                         chemicals=self.chemicals,
-                                                         check_data=False)
+            return tmo.indexer.ChemicalIndexer.from_data(
+                self._stoichiometry,
+                chemicals=self.chemicals,
+                check_data=False
+            )
         else:
-            return tmo.indexer.MaterialIndexer.from_data(self._stoichiometry,
-                                                         phases=self._phases,
-                                                         chemicals=self.chemicals,
-                                                         check_data=False)
+            return tmo.indexer.MaterialIndexer.from_data(
+                self._stoichiometry,
+                phases=self._phases,
+                chemicals=self.chemicals,
+                check_data=False
+            )
     
     @property
     def reactant(self):

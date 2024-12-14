@@ -62,13 +62,12 @@ def psuedo_equilibrium_inner_loop(logKgammay, z, T, n, f_gamma, gamma_args, phi)
     y /= y.sum()
     gammay = f_gamma(y, T, *gamma_args)
     K = gammax / gammay
-    logKgammay_new[n:] = np.log(K)
+    logKgammay_new[:n] = np.log(K)
     logKgammay_new[n:] = gammay
     return logKgammay_new
 
 def pseudo_equilibrium_outer_loop(logKgammayphi, z, T, n, f_gamma, gamma_args, inner_loop_options):
     logKgammayphi_new = logKgammayphi.copy()
-    # breakpoint()
     logKgammay = logKgammayphi[:-1]
     phi = logKgammayphi[-1]
     args=(z, T, n, f_gamma, gamma_args)
@@ -140,8 +139,8 @@ class LLE(Equilibrium, phases='lL'):
     >>> lle(T=360, top_chemical='Octane')
     >>> lle
     LLE(imol=MolarFlowIndexer(
-            L=[('Water', 2.552), ('Ethanol', 2.167), ('Octane', 39.92), ('Hexane', 0.9886)],
-            l=[('Water', 301.4), ('Ethanol', 27.83), ('Octane', 0.07738), ('Hexane', 0.01141)]),
+            L=[('Water', 2.671), ('Ethanol', 2.284), ('Octane', 39.92), ('Hexane', 0.9885)],
+            l=[('Water', 301.3), ('Ethanol', 27.72), ('Octane', 0.07884), ('Hexane', 0.01154)]),
         thermal_condition=ThermalCondition(T=360.00, P=101325))
     
     References
@@ -158,6 +157,7 @@ class LLE(Equilibrium, phases='lL'):
                  '_lle_chemicals',
                  '_IDs',
                  '_K',
+                 '_gamma_y',
                  '_phi'
     )
     default_method = 'pseudo equilibrium'
@@ -242,6 +242,7 @@ class LLE(Equilibrium, phases='lL'):
             else:
                 if self._lle_chemicals != lle_chemicals: 
                     self._K = None
+                    self._gamma_y = None
                     self._phi = None
                 mol_L = self.solve_lle_liquid_mol(mol, T, lle_chemicals, single_loop)
                 mol_l = mol - mol_L
@@ -265,21 +266,25 @@ class LLE(Equilibrium, phases='lL'):
             F_mol_L = mol_L.sum()
             if not F_mol_L:
                 self._K = np.zeros_like(mol)
+                self._gamma_y = np.ones_like(mol)
                 self._phi = 0.
             elif not F_mol_l:
                 self._K = 1e16 * np.ones_like(mol)
+                self._gamma_y = np.ones_like(mol)
                 self._phi = 1.
             else:
                 x_mol_l = mol_l / F_mol_l
                 x_mol_L = mol_L / F_mol_L
                 x_mol_l[x_mol_l < 1e-16] = 1e-16
                 K = x_mol_L / x_mol_l
+                gamma = self.thermo.Gamma(lle_chemicals)
                 self._K = K
+                self._gamma_y = gamma(x_mol_L, T)
                 self._phi = F_mol_L / (F_mol_L + F_mol_l)
             self._lle_chemicals = lle_chemicals
             self._z_mol = z_mol
             self._T = T
-            if not update: return self._lle_chemicals, self._K, self._phi
+            if not update: return self._lle_chemicals, self._K, self._gamma_y, self._phi
             imol['l'][index] = mol_l * F_mol
             imol['L'][index] = mol_L * F_mol
         elif not update: 
@@ -301,7 +306,8 @@ class LLE(Equilibrium, phases='lL'):
             else:
                 K = np.zeros_like(mol)
                 phi = 0.
-            return lle_chemicals, K, phi
+            gamma_y = np.ones_like(mol)
+            return lle_chemicals, K, gamma_y, phi
         
     def solve_lle_liquid_mol(self, mol, T, lle_chemicals, single_loop):
         gamma = self.thermo.Gamma(lle_chemicals)

@@ -99,7 +99,7 @@ class Equations:
         self.energy = []
 
     def __repr__(self):
-        return f"{type(self).__name__}(material={self.material.__name__}(), energy={self.energy.__name__}())"
+        return f"{type(self).__name__}(material={[i.__name__ for i in self.material]}(), energy={[i.__name__ for i in self.energy]}())"
 
 
 # %%
