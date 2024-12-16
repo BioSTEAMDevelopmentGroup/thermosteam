@@ -2079,20 +2079,24 @@ def unmark_disjunction(stream):
     if port in disjunctions:
         disjunctions.remove(port)
 
+def feed_complexity(stream):
+    return stream.F_mass * (stream.mol != 0).sum()** 2
+
 def sort_feeds_big_to_small(feeds):
     if feeds:
         feed_priorities = tmo.AbstractStream.feed_priorities
+        feed_complexities = {i: feed_complexity(i) for i in feeds}
         def feed_priority(feed):
             if feed in feed_priorities:
                 return feed_priorities[feed]
             elif feed:
                 try:
-                    return 1. - feed.F_mass / F_mass_max if F_mass_max else 1.
+                    return 1. - feed_complexities[feed] / max_complexity if max_complexity else 1.
                 except:
                     return 2
             else:
                 return 2.
-        F_mass_max = max([i.F_mass for i in feeds])
+        max_complexity = max(feed_complexities.values())
         feeds.sort(key=feed_priority)
 
 # %% Path tools
