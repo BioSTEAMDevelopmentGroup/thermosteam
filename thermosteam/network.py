@@ -2080,7 +2080,10 @@ def unmark_disjunction(stream):
         disjunctions.remove(port)
 
 def feed_complexity(stream):
-    return stream.F_mass * (stream.mol != 0).sum()** 2
+    if hasattr(stream, 'mol'):
+        return stream.F_mass * (stream.mol != 0).sum()** 2
+    else:
+        return stream.F_mass
 
 def sort_feeds_big_to_small(feeds):
     if feeds:

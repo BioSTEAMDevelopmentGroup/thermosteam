@@ -468,6 +468,27 @@ class Stream(AbstractStream):
         self._imol.data *= scale
     rescale = scale
 
+    def reset(self, T=None, P=None, **flows):
+        """
+        Convinience method for resetting flow rate and thermal condition data.
+        
+        Examples
+        --------
+        >>> import thermosteam as tmo
+        >>> tmo.settings.set_thermo(['Water', 'Ethanol'], cache=True)
+        >>> s1 = tmo.Stream('s1', Water=1)
+        >>> s1.reset(T=300.1, Ethanol=1, phase='g', units='kg/hr', total_flow=2)
+        >>> s1.show('cwt')
+        Stream: s1
+        phase: 'g', T: 300.1 K, P: 101325 Pa
+        composition (%): Ethanol  100
+                         -------  2 kg/hr
+        
+        """
+        self.reset_flow(**flows)
+        if T is not None: self.T = T
+        if P is not None: self.P = P
+
     def reset_flow(self, phase=None, units=None, total_flow=None, **chemical_flows):
         """
         Convinience method for resetting flow rate data.
