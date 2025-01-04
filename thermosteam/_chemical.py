@@ -533,6 +533,7 @@ class Chemical:
             metadata = pubchem_db.search(search_ID)
             data['metadata'] = metadata
             self = cls.new(ID, metadata.CASs, eos, phase_ref, phase, free_energies=False, **data)
+            if CAS is not None: self._CAS = CAS
         else:
             self = cls.blank(ID, CAS, phase_ref, phase=phase, free_energies=False, **data)
         if phase:

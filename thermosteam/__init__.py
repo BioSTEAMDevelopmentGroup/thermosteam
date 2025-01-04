@@ -50,7 +50,7 @@ from .utils import docround
 from .network import *
 from ._chemical_data import ChemicalData
 from ._chemical import Chemical
-from ._chemicals import Chemicals, CompiledChemicals
+from ._chemicals import Chemicals, CompiledChemicals, ChemicalDraft, ChemicalsOutline
 from ._thermal_condition import ThermalCondition
 from ._thermo import Thermo, IdealThermo
 from ._settings import settings, ProcessSettings
@@ -71,8 +71,9 @@ from .equilibrium import *
 from .mixture import *
 from ._preferences import preferences
 
-__all__ = ('Chemical', 'ChemicalData', 'Chemicals', 'CompiledChemicals', 'Thermo', 
-           'IdealThermo', 'Stream', 'MultiStream', 'Heat', 'Power', 'ThermalCondition', 'ProcessSettings',
+__all__ = ('Chemical', 'ChemicalData', 'Chemicals', 'CompiledChemicals', 
+           'ChemicalDraft', 'ChemicalsOutline', 'Thermo', 'IdealThermo', 
+           'Stream', 'MultiStream', 'Heat', 'Power', 'ThermalCondition', 'ProcessSettings',
            'mixture', 'ThermoData', *reaction.__all__, *equilibrium.__all__,  *mixture.__all__,
            *network.__all__, 'preferences',
            'indexer', 'settings', 'functor', 'functors', 'chemicals', 'base', 

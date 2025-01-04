@@ -15,7 +15,7 @@ from collections.abc import Sequence
 import thermosteam as tmo
 import numpy as np
 
-__all__ = ('Chemicals', 'CompiledChemicals')
+__all__ = ('Chemicals', 'CompiledChemicals', 'ChemicalDraft', 'ChemicalsOutline')
 setattr = object.__setattr__
     
 # %% Functions
@@ -45,6 +45,118 @@ def prepare(chemicals, skip_checks):
             "use the `<Chemical>.get_missing_properties()` to check "
             "all missing properties"
         )
+
+# %% Outline
+
+class ChemicalDraft:
+    """
+    Create a draft of a chemical without actually loading the chemical.
+    This allows for extending and modifying an outline of a property package
+    before loading all the chemicals.
+    """
+    def __init__(self, ID, CAS=None, *args, **kwargs):
+        self.ID = ID
+        self.CAS = CAS
+        self.args = args
+        self.kwargs = kwargs
+        
+    def copy(self, CAS=None, **data):
+        new = ChemicalDraft(self.ID, CAS=self.CAS)
+        for i, j in data.items(): setattr(new, i, j)
+        
+    def to_chemical(self):
+        dct = self.__dict__.copy()
+        chemical = Chemical(
+            dct.pop('ID'), *dct.pop('args'), CAS=dct.pop('CAS'), **dct.pop('kwargs')
+        )
+        for i, j in dct.items(): setattr(chemical, i, j)
+        return chemical
+        
+    def __repr__(self):
+        return f'{type(self).__name__}({self.ID})'
+
+
+class ChemicalsOutline:
+    """
+    Create an outline of chemicals without actually loading the chemicals.
+    This allows for extending and modifying an outline of a property package
+    before loading all the chemicals.
+    """
+    def __new__(cls, chemicals, cache=None):
+        self = super().__new__(cls)
+        isa = isinstance
+        setfield = setattr
+        chemicals = [i if isa(i, ChemicalDraft) else ChemicalDraft(i, cache=cache) for i in chemicals]
+        for i in chemicals: setfield(self, i.ID, i)
+        return self
+    
+    def __getnewargs__(self):
+        return (tuple(self),)
+    
+    def __setattr__(self, ID, chemical):
+        raise TypeError("can't set attribute; use <ChemicalsOutline>.append instead")
+    
+    def __setitem__(self, ID, chemical):
+        raise TypeError("can't set item; use <ChemicalsOutline>.append instead")
+    
+    def __getitem__(self, key):
+        dct = self.__dict__
+        try:
+            if isinstance(key, str):
+                return dct[key]
+            else:
+                return [dct[i] for i in key]
+        except KeyError as key_error:
+            raise UndefinedChemicalAlias(key_error.args[0])
+    
+    def copy(self):
+        copy = object.__new__(self.__class__)
+        for chem in self: setattr(copy, chem.ID, chem)
+        return copy
+    
+    def append(self, chemical):
+        if isinstance(chemical, str):
+            chemical = ChemicalDraft(chemical)
+        elif not isinstance(chemical, ChemicalDraft):
+            raise TypeError("only 'ChemicalDraft' objects can be appended, "
+                           f"not '{type(chemical).__name__}'")
+        ID = chemical.ID
+        if ID in self.__dict__:
+            raise ValueError(f"{ID} already defined in chemicals")
+        setattr(self, ID, chemical)
+    
+    def extend(self, chemicals):
+        if isinstance(chemicals, ChemicalsOutline):
+            self.__dict__.update(chemicals.__dict__)
+        else:
+            for chemical in chemicals: self.append(chemical)
+    
+    def to_chemicals(self):
+        return Chemicals([i.to_chemical() for i in self])
+    
+    kwarray = array = index = indices = must_compile
+        
+    def show(self):
+        print(self)
+    _ipython_display_ = show
+    
+    def __len__(self):
+        return len(self.__dict__)
+    
+    def __contains__(self, chemical):
+        if isinstance(chemical, str):
+            return chemical in self.__dict__
+        elif hasattr(chemical, 'ID'):
+            return chemical.ID in self.__dict__
+        else: # pragma: no cover
+            return False
+    
+    def __iter__(self):
+        yield from self.__dict__.values()
+    
+    def __repr__(self):
+        return f"{type(self).__name__}([{', '.join(self.__dict__)}])"
+
 
 # %% Chemicals
 
