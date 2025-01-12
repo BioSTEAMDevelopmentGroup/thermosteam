@@ -59,9 +59,11 @@ from .equilibrium.unifac import (
     PSRKGroupCounts,
     NISTGroupCounts,
 )
+from .units_of_measure import chemical_units_of_measure
+from ._biorefinery_chemicals import search_biorefinery_chemicals
 from .base import (PhaseHandle, PhaseTHandle, PhaseTPHandle,
                    display_asfunctor)
-from .units_of_measure import chemical_units_of_measure
+from .units_of_measure import chemical_units_of_measure, Quantity
 from .utils import copy_maybe, check_valid_ID
 from . import functional as fn 
 from ._phase import check_phase, valid_phases
@@ -304,8 +306,11 @@ class Chemical:
         CAS number of chemical.
     phase: {'s', 'l' or 'g'}, optional
         Phase to set state of chemical.
-    search_db=True: bool, optional
-        Whether to search the data base for chemical.
+    db: str, optional
+        Database to search for chemical properties. Must be one of the following:
+        * 'BioSTEAM' to search for common chemicals used in biorefineries. 
+        * 'ChEDL' to search for chemicals broadly used in process models.
+        * None to not search a database.
     Cn : float or function(T), optional
         Molar heat capacity model [J/mol] as a function of temperature [K].
     sigma : float or function(T), optional
@@ -326,10 +331,12 @@ class Chemical:
         Constant heat capacity model [J/g].
     rho : float, optional
         Constant density model [kg/m3].
-    default=False : bool, optional
+    default : bool, optional
         Whether to default any missing chemical properties such as molar volume,
         heat capacity, surface tension, thermal conductivity, and molecular weight
-        to that of water (on a weight basis).
+        to that of water (on a weight basis). Defaults to False.
+    equilibrium_phases : set[str], optional
+        Valid phases in thermodynamic phase equilibrium.
     **data : float or str
         User data (e.g. Tb, formula, etc.).
     
@@ -487,32 +494,36 @@ class Chemical:
     
     """
     __slots__ = ('_ID', '_locked_state', 
-                 '_phase_ref', '_eos', 
+                 '_phase_ref', '_equilibrium_phases', '_eos', 
                  '_aliases', *_names, *_groups, 
                  *_handles, *_data,
                  '_N_solutes')
     
-    #: [thermo.GEOS] Default EOS for pure components
+    #: [thermo.GEOS] Default EOS for pure components.
     EOS_default = PR
-    #: [float] Reference temperature in Kelvin
+    #: [float] Reference temperature in Kelvin.
     T_ref = 298.15
-    #: [float] Reference pressure in Pascal
+    #: [float] Reference pressure in Pascal.
     P_ref = 101325.
-    #: [float] Reference enthalpy in J/mol
+    #: [float] Reference enthalpy in J/mol.
     H_ref = 0.
-    #: dict[str, Chemical] Cached chemicals
+    #: dict[str, Chemical] Cached chemicals.
     chemical_cache = {}
-    #: [bool] Wheather or not to search cache by default
+    #: [bool] Wheather or not to search cache by default.
     cache = False
+    #: [str] Default database to search chemicals.
+    default_db = 'ChEDL'
     
     ### Creators ###
     
     def __new__(cls, ID, cache=None, *, search_ID=None,
                 eos=None, phase_ref=None, CAS=None,
-                default=False, phase=None, search_db=True, 
+                default=False, phase=None, 
                 V=None, Cn=None, mu=None, Cp=None, rho=None,
                 sigma=None, kappa=None, epsilon=None, Psat=None,
-                Hvap=None, method=None, **data):
+                Hvap=None, method=None, db='default', equilibrium_phases=None, 
+                search_db=True, # TODO: Deprecate eventually
+                **data):
         chemical_cache = cls.chemical_cache
         if cache is None: cache = cls.cache
         if cache and ID in chemical_cache:
@@ -529,13 +540,25 @@ class Chemical:
                 raise ValueError(f'invalid phase {repr(phase)} encountered while parsing ID')
             ID = ID[:-2]
         search_ID = search_ID or ID
-        if search_db:
-            metadata = pubchem_db.search(search_ID)
-            data['metadata'] = metadata
+        if db == 'default': db = cls.default_db
+        if not search_db or db is None: 
+            self = cls.blank(ID, CAS, phase_ref, phase=phase, free_energies=False, **data)
+        elif db == 'BioSTEAM':
+            self = search_biorefinery_chemicals(search_ID)
+            if CAS is not None: self._CAS = CAS
+        elif db == 'ChEDL':
+            if 'metadata' in data:
+                metadata = data['metadata']
+            else:
+                metadata = pubchem_db.search(search_ID)
+                data['metadata'] = metadata
             self = cls.new(ID, metadata.CASs, eos, phase_ref, phase, free_energies=False, **data)
             if CAS is not None: self._CAS = CAS
         else:
-            self = cls.blank(ID, CAS, phase_ref, phase=phase, free_energies=False, **data)
+            raise ValueError(
+                f"invalid chemical database {db!r}; "
+                 "only 'BioSTEAM' and 'ChEDL' are valid"
+            )
         if phase:
             if mu: self._mu.add_method(mu)
             if Cn: self._Cn.add_method(Cn)
@@ -567,6 +590,8 @@ class Chemical:
                     break
         if method: self.set_method(method)
         self.reset_free_energies()
+        if equilibrium_phases is None: equilibrium_phases = 'gls'
+        self._equilibrium_phases = frozenset(equilibrium_phases)
         return self
 
     def set_method(self, method):
@@ -725,9 +750,25 @@ class Chemical:
         return self
 
     @property
+    def equilibrium_phases(self):
+        return self._equilibrium_phases
+    
+    @property
     def charge(self):
         """Charge of chemical as described in the chemical formula."""
         return charge_from_formula(self.formula)
+
+    def _fix_units(self, name, value):
+        if isinstance(value, tuple):
+            value = Quantity(*value)
+        elif not isinstance(value, Quantity):
+            return value
+        units = chemical_units_of_measure[name].units
+        if units.dimensionality == value.dimensionality:
+            return value.to(units)
+        else:
+            value *= Quantity(self._MW, 'g/mol')
+            return value.to(units) # All chemical units are on a molar basis; user potentially used weight basis.
 
     def copy(self, ID, CAS=None, **data):
         """
@@ -1561,11 +1602,11 @@ class Chemical:
             Svap_298K = None if Hvap_298K is None else Hvap_298K / 298.15
             S0 = absolute_entropy_of_formation(self._CAS, self._phase_ref,
                                                Svap_298K, self.Sfus) or 0.
-        self._Hf = Hf
+        self._Hf = Hf = self._fix_units('Hf', Hf)
         self._S0 = S0
         atoms = atoms or self.atoms
         if not all([LHV, HHV, combustion]) and atoms and Hf:
-            cd = combustion_data(atoms, Hf=self._Hf, MW=self._MW, missing_handling='Ash')
+            cd = combustion_data(atoms, Hf=Hf, MW=self._MW, missing_handling='Ash')
             LHV = - cd.LHV
             HHV = - cd.HHV
             combustion = cd.stoichiometry

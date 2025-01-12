@@ -157,7 +157,6 @@ class ChemicalsOutline:
     def __repr__(self):
         return f"{type(self).__name__}([{', '.join(self.__dict__)}])"
 
-
 # %% Chemicals
 
 class Chemicals:
@@ -242,12 +241,12 @@ class Chemicals:
     UndefinedChemicalAlias: 'Butane'
     
     """
-    def __new__(cls, chemicals, cache=None):
+    def __new__(cls, chemicals, cache=None, db='default'):
         self = super().__new__(cls)
         isa = isinstance
         setfield = setattr
         CASs = set()
-        chemicals = [i if isa(i, Chemical) else Chemical(i, cache=cache) for i in chemicals]
+        chemicals = [i if isa(i, Chemical) else Chemical(i, cache=cache, db=db) for i in chemicals]
         for i in chemicals:
             CAS = i.CAS
             if CAS in CASs: continue
@@ -464,10 +463,10 @@ class CompiledChemicals(Chemicals):
     _cache = {}
     
     def __new__(cls, chemicals, cache=None):
-        chemicals = tmo.Chemicals(chemicals)
+        chemicals = Chemicals(chemicals)
         chemicals_tuple = tuple(chemicals) 
         cache = cls._cache
-        if chemicals in cache:
+        if chemicals_tuple in cache:
             self = cache[chemicals]
         else:
             chemicals.compile(cache)
@@ -722,8 +721,11 @@ class CompiledChemicals(Chemicals):
                 else:
                     raise Exception('chemical locked state has an invalid phase')
             else:
-                vle_chemicals.append(i)
-                if i.Dortmund or i.UNIFAC or i.NIST or i.PSRK: lle_chemicals.append(i)
+                equilibrium_phases = i._equilibrium_phases
+                if 'l' in equilibrium_phases and 'g' in equilibrium_phases:
+                    vle_chemicals.append(i)
+                if 'l' in equilibrium_phases and (i.Dortmund or i.UNIFAC or i.NIST or i.PSRK): 
+                    lle_chemicals.append(i)
         dct['vle_chemicals'] = tuple_(vle_chemicals)
         dct['lle_chemicals'] = tuple_(lle_chemicals)
         dct['heavy_chemicals'] = tuple_(heavy_chemicals)

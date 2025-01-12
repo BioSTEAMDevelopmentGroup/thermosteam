@@ -200,6 +200,7 @@ class AbstractMissingStream:
     __slots__ = ('_source', '_sink')
     line = 'Stream'
     ID = 'missing stream'
+    get_connection = AbstractStream.get_connection
     disconnect_source = AbstractStream.disconnect_source
     disconnect_sink = AbstractStream.disconnect_sink
     disconnect = AbstractStream.disconnect
@@ -1581,12 +1582,12 @@ class AbstractUnit:
         ins = self._ins
         outs = self._outs
         if inlets is None: 
-            inlets = [i for i in ins if i]
+            inlets = ins._streams.copy()
             ins[:] = ()
         else:
             for i in inlets: ins[ins.index(i) if isinstance(i, AbstractStream) else i] = None
         if outlets is None: 
-            outlets = [i for i in outs if i]
+            outlets = outs._streams.copy()
             outs[:] = ()
         else:
            for o in outlets: outs[ins.index(o) if isinstance(o, AbstractStream) else o] = None
@@ -2502,7 +2503,8 @@ class Network:
         ends.update(network.streams)
         disjunction_streams = set([i.get_stream() for i in disjunctions])
         for feed in feeds:
-            if feed in ends or feed.sink._universal: continue
+            sink = feed._sink
+            if feed in ends or (sink and sink._universal): continue
             downstream_network = cls.from_feedstock(feed, (), ends, units, final=False, interaction=interaction)
             new_streams = downstream_network.streams
             connections = ends.intersection(new_streams)
