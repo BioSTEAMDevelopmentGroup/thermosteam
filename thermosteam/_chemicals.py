@@ -715,17 +715,13 @@ class CompiledChemicals(Chemicals):
                     heavy_chemicals.append(i)
                     if i.Dortmund or i.UNIFAC or i.NIST or i.PSRK:
                         lle_chemicals.append(i)
-                    if i.N_solutes is None: i._N_solutes = 0
                 elif locked_phase == 'g':
                     light_chemicals.append(i)
                 else:
                     raise Exception('chemical locked state has an invalid phase')
             else:
-                equilibrium_phases = i._equilibrium_phases
-                if 'l' in equilibrium_phases and 'g' in equilibrium_phases:
-                    vle_chemicals.append(i)
-                if 'l' in equilibrium_phases and (i.Dortmund or i.UNIFAC or i.NIST or i.PSRK): 
-                    lle_chemicals.append(i)
+                vle_chemicals.append(i)
+                if i.Dortmund or i.UNIFAC or i.NIST or i.PSRK: lle_chemicals.append(i)
         dct['vle_chemicals'] = tuple_(vle_chemicals)
         dct['lle_chemicals'] = tuple_(lle_chemicals)
         dct['heavy_chemicals'] = tuple_(heavy_chemicals)

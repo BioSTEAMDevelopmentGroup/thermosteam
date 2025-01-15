@@ -31,6 +31,6 @@ sort: false
 stream_color: '#4e4e4e'
 stream_width: F_mass
 tooltips_full_results: false
-unit_color: white:#CDCDCD
+unit_color: #fcfcfc:#e6e6e6
 unit_label_color: black
 unit_periphery_color: '#4e4e4e'

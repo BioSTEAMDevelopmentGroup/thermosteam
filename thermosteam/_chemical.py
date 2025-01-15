@@ -335,8 +335,6 @@ class Chemical:
         Whether to default any missing chemical properties such as molar volume,
         heat capacity, surface tension, thermal conductivity, and molecular weight
         to that of water (on a weight basis). Defaults to False.
-    equilibrium_phases : set[str], optional
-        Valid phases in thermodynamic phase equilibrium.
     **data : float or str
         User data (e.g. Tb, formula, etc.).
     
@@ -494,7 +492,7 @@ class Chemical:
     
     """
     __slots__ = ('_ID', '_locked_state', 
-                 '_phase_ref', '_equilibrium_phases', '_eos', 
+                 '_phase_ref', '_eos', 
                  '_aliases', *_names, *_groups, 
                  *_handles, *_data,
                  '_N_solutes')
@@ -521,7 +519,7 @@ class Chemical:
                 default=False, phase=None, 
                 V=None, Cn=None, mu=None, Cp=None, rho=None,
                 sigma=None, kappa=None, epsilon=None, Psat=None,
-                Hvap=None, method=None, db='default', equilibrium_phases=None, 
+                Hvap=None, method=None, db='default',
                 search_db=True, # TODO: Deprecate eventually
                 **data):
         chemical_cache = cls.chemical_cache
@@ -590,8 +588,6 @@ class Chemical:
                     break
         if method: self.set_method(method)
         self.reset_free_energies()
-        if equilibrium_phases is None: equilibrium_phases = 'gls'
-        self._equilibrium_phases = frozenset(equilibrium_phases)
         return self
 
     def set_method(self, method):
@@ -723,9 +719,10 @@ class Chemical:
         check_valid_ID(ID)
         self._phase_ref = phase_ref or phase
         self._CAS = CAS or ID
-        for i,j in data.items(): setfield(self, '_' + i , j)
         if formula: self.formula = formula
         if atoms: self.atoms = atoms
+        for i,j in data.items(): 
+            setfield(self, '_' + i , self._fix_units(i, j))
         self._eos = create_eos(self.EOS_default, self._Tc, self._Pc, self._omega)
         TDependentProperty.RAISE_PROPERTY_CALCULATION_ERROR = False
         self._estimate_missing_properties(None)
@@ -747,11 +744,8 @@ class Chemical:
                                 self._Tm, self._Tb, self._eos, self._phase_ref, self._S0)
         if self._formula and self._Hf is not None: self.reset_combustion_data()
         TDependentProperty.RAISE_PROPERTY_CALCULATION_ERROR = True
+        if 'N_solutes' not in data: self._N_solutes = 0
         return self
-
-    @property
-    def equilibrium_phases(self):
-        return self._equilibrium_phases
     
     @property
     def charge(self):
@@ -763,12 +757,12 @@ class Chemical:
             value = Quantity(*value)
         elif not isinstance(value, Quantity):
             return value
-        units = chemical_units_of_measure[name].units
+        units = chemical_units_of_measure[name]
         if units.dimensionality == value.dimensionality:
-            return value.to(units)
+            return value.to(units.units).magnitude
         else:
             value *= Quantity(self._MW, 'g/mol')
-            return value.to(units) # All chemical units are on a molar basis; user potentially used weight basis.
+            return value.to(units.units).magnitude # All chemical units are on a molar basis; user potentially used weight basis.
 
     def copy(self, ID, CAS=None, **data):
         """
@@ -798,6 +792,7 @@ class Chemical:
                            new.Tb, new.eos, new.phase_ref, new.S0)
         TDependentProperty.RAISE_PROPERTY_CALCULATION_ERROR = True
         for i,j in data.items(): setfield(new, i , j)
+        if not hasattr(self, '_N_solutes'): self._N_solutes = 0
         return new
     __copy__ = copy
 
@@ -1425,7 +1420,7 @@ class Chemical:
               HHV=None, Hfus=None, dipole=None,
               similarity_variable=None, iscyclic_aliphatic=None, aliases=None,
               synonyms=None, *, metadata=None, phase=None,
-              free_energies=True,
+              free_energies=None, N_solutes=None,
         ):
         """
         Reset all chemical properties.
@@ -1440,6 +1435,9 @@ class Chemical:
             Phase reference. Defaults to the phase at 298.15 K and 101325 Pa.
 
         """
+        if free_energies is None: free_energies = True
+        if N_solutes is None: N_solutes = 0
+        self._N_solutes = N_solutes
         try:
             info = metadata or pubchem_db.search_CAS(CAS)
         except:
@@ -2093,7 +2091,7 @@ class Chemical:
     @property
     def N_solutes(self):
         """[int] Number of molecules formed when solvated."""
-        return getattr(self, '_N_solutes', None)
+        return self._N_solutes
     @N_solutes.setter
     def N_solutes(self, N_solutes):
         self._N_solutes = int(N_solutes)

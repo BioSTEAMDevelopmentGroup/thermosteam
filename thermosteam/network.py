@@ -580,6 +580,7 @@ class Connection(NamedTuple):
     sink_index: int
     sink: object
     
+    @ignore_docking_warnings
     def reconnect(self):
         # Does not attempt to connect auxiliaries with owners (which should not be possible)
         source = self.source

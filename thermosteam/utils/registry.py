@@ -107,15 +107,15 @@ class Registry: # pragma: no cover
                     ID = base + '_' + str(int(num) + 1)
                 elif ID_old:
                     warning = RuntimeWarning(
-                        f"upon renaming, {repr(obj)} replaced {repr(other)} "
+                        f"upon renaming, {obj!r} replaced {other!r} "
                          "in registry"
                     )
                     warn(warning, 4)
                 else:
                     warning = RuntimeWarning(
-                        f"{repr(other)} has been replaced in registry"
+                        f"{other!r} has been replaced in registry"
                     )
-                    warn(warning, stacklevel=getattr(obj, '_stacklevel', 5) - 1)
+                    warn(warning, stacklevel=getattr(obj, '_stacklevel', 4) - 1)
         self._close_registration(ID, obj)
         
     def register(self, ID, obj):
@@ -132,12 +132,12 @@ class Registry: # pragma: no cover
             if obj is not other and other not in self.safe_to_replace:
                 if override is None:
                     warning = RuntimeWarning(
-                        f"alias {repr(alias)} of {repr(other)} has been replaced in registry with {repr(obj)}"
+                        f"alias {alias!r} of {other!r} has been replaced in registry with {obj!r}"
                     )
                     warn(warning, stacklevel=getattr(obj, '_stacklevel', 5) - 1)
                 elif not override:
                     raise RuntimeError(
-                        f"alias {repr(alias)} is already registered to {repr(other)}"
+                        f"alias {alias!r} is already registered to {other!r}"
                     )
         self.register_alias(alias, obj)
         

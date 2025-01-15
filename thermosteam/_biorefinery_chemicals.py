@@ -14,8 +14,10 @@ def search_biorefinery_chemicals(ID, **kwargs):
         if key in biorefinery_chemicals: 
             f = biorefinery_chemicals[key]
         else:
-            return tmo.Chemical(ID, db='ChEDL', **kwargs)
-    return f(ID, **kwargs)
+            chemical = tmo.Chemical(ID, default=True, db='ChEDL', **kwargs)
+            if chemical.Tm > 1000: chemical.at_state('s')
+            return chemical
+    return f(ID, default=True, **kwargs)
 
 # Lignocellulosic heat capacities:
 # Assume heat capacity of lignin, cellulose, and hemicellulose
@@ -58,112 +60,123 @@ def register(*aliases):
 
 @register
 def Ash(ID, **kwargs):
-    return tmo.Chemical(ID, MW=1., default=True, phase='s', db=None,
+    return tmo.Chemical(ID, MW=1., phase='s', db=None,
                         Cp=0.37656, **kwargs)
 
 @register
 def Flocculant(ID, **kwargs):
-    return tmo.Chemical(ID, MW=1., default=True, phase='s', db=None,
+    return tmo.Chemical(ID, MW=1., phase='s', db=None,
                         Cp=Cp_cellulosic, **kwargs)
 
 @register
 def Solids(ID, **kwargs):
-    return tmo.Chemical(ID, MW=1., default=True, phase='s', db=None,
+    return tmo.Chemical(ID, MW=1., phase='s', db=None,
                         Cp=1.100, **kwargs)
 
 # %% Microbes and cellular components
 
-@register
+@register('DryYeast')
 def Yeast(ID, **kwargs):
     return tmo.Chemical(ID, formula='CH1.61O0.56', rho=1112.6,
-                        default=True, phase='s', db=None, 
-                        Hf=(-7055.556554690305, 'J/g'), **kwargs)
+                        phase='s', db=None, 
+                        Hf=(-7055.556554690305, 'J/g'),
+                        aliases=['DryYeast', 'Yeast'], **kwargs)
 
 @register('NYeast')
 def NitrogenYeast(ID, **kwargs):
     return tmo.Chemical(ID, formula='CH1.61O0.56N0.16', phase='s',
-                        rho=1112.6, default=True, db=None, 
-                        Hf=(-7055.556554690305, 'J/g'), **kwargs)
+                        rho=1112.6, db=None, 
+                        Hf=(-7055.556554690305, 'J/g'),
+                        aliases=['DryYeast', 'Yeast'], **kwargs)
 
 @register('WWTsludge')
 def Sluge(ID, **kwargs):
     return tmo.Chemical(ID, formula='CH1.64O0.39N0.23S0.0035', 
-                        rho=1112.6, default=True, phase='s', 
+                        rho=1112.6, phase='s', 
                         Hf=-23200.01*cal2joule, db=None, **kwargs)
 
 @register('Enzyme', 'Cellulase', 'Amylase')
 def Protein(ID, **kwargs):
     return tmo.Chemical(ID, formula='CH1.57O0.31N0.29S0.007', 
-                        rho=1112.6, default=True, phase='s', 
+                        rho=1112.6, phase='s', 
                         Hf=-17618*cal2joule, db=None, **kwargs)
 
 # %% Cellulosic biomass components
 
 @register('Mannose', 'Galactose')
 def Glucose(ID, **kwargs):
-    return tmo.Chemical(ID, search_ID='Glucose', equilibrium_phases='ls', 
+    return tmo.Chemical(ID, search_ID='Glucose', phase='l', 
                         db='ChEDL', N_solutes=1, **kwargs)
 
 @register
 def Sucrose(ID, **kwargs):
-    return tmo.Chemical(ID, search_ID='Sucrose', equilibrium_phases='ls', 
+    return tmo.Chemical(ID, search_ID='Sucrose', phase='l', 
                         db='ChEDL', N_solutes=2, **kwargs)
 
 @register('Arabinose')
 def Xylose(ID, **kwargs):
-    return tmo.Chemical(ID, search_ID='Xylose', equilibrium_phases='ls',
+    return tmo.Chemical(ID, search_ID='Xylose', phase='l',
                         db='ChEDL', **kwargs)
 
 @register('Cellulose')
 def Glucan(ID, **kwargs):
     return tmo.Chemical(ID, formula='C6H10O5', phase='s', db=None,
                         Hf=-233200*cal2joule, rho=rho_solid, Cp=Cp_cellulosic, 
-                        default=True, **kwargs)
+                        **kwargs)
 
 @register
 def Hemicellulose(ID, **kwargs):
     return tmo.Chemical(ID, formula="C5H8O4", # Model formula as xylose monomer minus water
-                        Hf=-761906.4, default=True, phase='s', db=None, 
+                        Hf=-761906.4, phase='s', db=None, 
                         Cp=Cp_cellulosic, **kwargs)
 
 @register('Arabinan')
 def Xylan(ID, **kwargs):
     return tmo.Chemical(ID, formula='C5H8O4', phase='s', db=None,
                         Hf=-182100*cal2joule, rho=rho_solid, Cp=Cp_cellulosic, 
-                        default=True, **kwargs)
+                        **kwargs)
 
 @register
 def Lignin(ID, **kwargs):
     return tmo.Chemical(ID, formula='C8H8O3', phase='s', db=None,
                         Hf=-108248*cal2joule, rho=rho_solid, Cp=Cp_cellulosic, 
-                        default=True, **kwargs)
+                        **kwargs)
 
 @register
 def SolubleLignin(ID, **kwargs):
     return tmo.Chemical(ID, formula='C8H8O3', phase='l', db=None,
                         Hf=-108248*cal2joule, rho=rho_solute, Cp=Cp_cellulosic,
-                        default=True, **kwargs)
+                        **kwargs)
 
 @register('GalactoseOligomer', 'MannoseOligomer')
 def GlucoseOligomer(ID, **kwargs):
     return tmo.Chemical(ID, formula='C6H10O5', phase='l', db=None, 
                         Hf=-233200*cal2joule, rho=rho_solute, Cp=Cp_cellulosic, 
-                        default=True, **kwargs)
+                        **kwargs)
 
 @register('ArabinoseOligomer')
 def XyloseOligomer(ID, **kwargs):
     return tmo.Chemical(ID, formula='C5H8O4', phase='l', db=None, 
                         Hf=-182100*cal2joule, rho=rho_solute, Cp=Cp_cellulosic, 
-                        default=True, **kwargs)
+                        **kwargs)
 
 @register
 def Xylitol(ID, **kwargs):
     return tmo.Chemical(ID, formula='C5H12O5', phase='l', db=None,
                         Hf=-243145*cal2joule, rho=rho_solid, Cp=Cp_cellulosic, 
-                        default=True, **kwargs)
+                        **kwargs)
 
 @register
 def Cellobiose(ID, **kwargs):
     return tmo.Chemical(ID, formula='C12H22O11', phase='l', db=None,
                         Hf=-480900*cal2joule, rho=rho_solid, Cp=Cp_cellulosic, 
-                        default=True, **kwargs)
+                        **kwargs)
+
+@register
+def H3PO4(ID, **kwargs):
+    return tmo.Chemical(ID, search_ID='H3PO4', phase='s', db='ChEDL', **kwargs)
+
+@register
+def P4O10(ID, **kwargs):
+    return tmo.Chemical(ID, search_ID='P4O10', phase='s', db='ChEDL', **kwargs)
+ 
