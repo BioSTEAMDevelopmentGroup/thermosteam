@@ -490,7 +490,10 @@ class Reaction:
         values, config, original = as_material_array(
             material, self._basis, self._phases, self.chemicals
         )
-        self._reaction(values)
+        if values.ndim == 2:
+            for i in values: self._reaction(i)
+        else:
+            self._reaction(values)
         if tmo.reaction.CHECK_FEASIBILITY:
             has_negatives = values.has_negatives()
             if has_negatives:
