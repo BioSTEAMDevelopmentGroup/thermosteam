@@ -330,7 +330,7 @@ class Stream(AbstractStream):
     _flow_cache = {}
 
     def __init__(self, ID: Optional[str]='', 
-                 flow: Sequence[float]=(),
+                 flow: Sequence[float]|Sequence[tuple[str, float]]=(),
                  phase: Optional[str]='l',
                  T: Optional[float]=298.15,
                  P: Optional[float]=101325.,
@@ -809,7 +809,16 @@ class Stream(AbstractStream):
             else:
                 parent = indexer.parent_indexer(chemicals)
                 imol = parent.to_chemical_indexer(phase)
-                imol.data[:] = flow
+                if isinstance(flow[0], str):
+                    ID, flow = flow
+                    imol[ID] = flow
+                else:
+                    try:
+                        IDs, flow = zip(*flow)
+                    except:
+                        imol.data[:] = flow
+                    else:
+                        imol[IDs] = flow
         self._imol = imol
 
     def reset_cache(self):

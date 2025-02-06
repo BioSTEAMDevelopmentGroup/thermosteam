@@ -716,7 +716,6 @@ class Chemical:
         for i in _names: setfield(self, i, None)
         for i in _data: setfield(self, i, None)
         for i in _energy_handles: setfield(self, i, None)
-        check_valid_ID(ID)
         self._phase_ref = phase_ref or phase
         self._CAS = CAS or ID
         if formula: self.formula = formula
