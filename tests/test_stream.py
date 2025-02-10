@@ -29,6 +29,16 @@ def test_registration_alias():
     s.register_alias('stream_1')
     assert s.registry.stream_1 is s.registry.s1 is s
 
+def test_copy_like():
+    tmo.settings.set_thermo(
+        ['Water', 'O2', 'Ash'], 
+        db='BioSTEAM', cache=True
+    )
+    ms = tmo.MultiStream(g=[('O2', 1)], s=[('Ash', 1)], phases=('g', 's'))
+    s = tmo.Stream()
+    s.copy_like(ms)
+    assert (s.imol.data == ms.imol.data).all()
+
 def test_vlle():
     tmo.settings.set_thermo(['Water', 'Ethanol', 'Octane'], cache=True)
     s = tmo.Stream(None, Water=1, Ethanol=0.5, Octane=2, vlle=True, T=350)
@@ -433,6 +443,7 @@ if __name__ == '__main__':
     test_registration_alias()
     test_stream()
     test_multistream()
+    test_copy_like()
     test_stream_indexing()
     test_mixing_balance()
     test_vlle()

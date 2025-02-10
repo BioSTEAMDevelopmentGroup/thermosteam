@@ -588,8 +588,9 @@ class ChemicalIndexer(Indexer):
     def to_material_indexer(self, phases):
         parent = self._parent
         material_array = self._MaterialIndexer.blank(phases, self._chemicals, parent)
-        phase = self.phase
-        if phase in phases:
+        if not self.data.any():
+            for row in material_array.data.rows: row.clear()
+        elif (phase:=self.phase) in phases:
             index = material_array._phase_indexer(phase)
             for i, row in enumerate(material_array.data.rows):
                 if i == index: continue

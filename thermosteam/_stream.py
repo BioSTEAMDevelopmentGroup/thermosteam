@@ -1636,6 +1636,7 @@ class Stream(AbstractStream):
                 self.mol.copy_like(other.imol[phase])
                 return
             else:
+                self.empty()
                 self.phases = other.phases
                 imol = other._imol
         else:
