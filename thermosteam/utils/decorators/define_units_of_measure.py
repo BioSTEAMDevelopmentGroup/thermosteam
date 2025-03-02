@@ -10,11 +10,11 @@
 import thermosteam as tmo
 from typing import Optional
 
-__all__ = ('units_of_measure',)
+__all__ = ('define_units_of_measure',)
 
-def units_of_measure(dct, cls=None):
+def define_units_of_measure(dct, cls=None):
     if cls is None:
-        return lambda cls: units_of_measure(dct, cls)
+        return lambda cls: define_units_of_measure(dct, cls)
     else:
         cls.define_property = define_property
         cls._units_of_measure = dct
@@ -24,7 +24,7 @@ def units_of_measure(dct, cls=None):
     
 @classmethod
 def define_property(cls, name, units, fget, fset=None):
-    cls._units_of_measure[name] = tmo.units_of_measure.AbsoluteUnitsOfMeasure(units)
+    cls._units_of_measure[name] = tmo.units_of_measure.UnitsOfMeasure(units)
     if hasattr(cls, name): raise ValueError(f"property with name '{name}' already exists")
     setattr(cls, name, property(fget, fset))
 

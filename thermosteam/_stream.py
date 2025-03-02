@@ -35,7 +35,7 @@ __all__ = ('Stream',)
 
 # %% Utilities
 
-impact_indicator_basis = tmo.units_of_measure.AbsoluteUnitsOfMeasure('kg')
+impact_indicator_basis = tmo.units_of_measure.UnitsOfMeasure('kg')
 mol_units = indexer.ChemicalMolarFlowIndexer.units
 mass_units = indexer.ChemicalMassFlowIndexer.units
 vol_units = indexer.ChemicalVolumetricFlowIndexer.units
@@ -104,7 +104,7 @@ class Equations:
 
 # %%
 
-@utils.units_of_measure(UofM.stream_units_of_measure)
+@utils.define_units_of_measure(UofM.stream_units_of_measure)
 @utils.thermo_user
 class Stream(AbstractStream):
     """
