@@ -10,7 +10,7 @@
 from __future__ import annotations
 import thermosteam as tmo
 from typing import Optional, Iterable
-from .units_of_measure import AbsoluteUnitsOfMeasure
+from .units_of_measure import UnitsOfMeasure
 from typing import TYPE_CHECKING
 if TYPE_CHECKING:
     from .equilibrium import (
@@ -195,7 +195,7 @@ class ProcessSettings:
         :doc:`../tutorial/Life_cycle_assessment`
         
         """
-        self.impact_indicators[key] = AbsoluteUnitsOfMeasure(units)
+        self.impact_indicators[key] = UnitsOfMeasure(units)
     
     def get_impact_indicator_units(self, key):
         try:
