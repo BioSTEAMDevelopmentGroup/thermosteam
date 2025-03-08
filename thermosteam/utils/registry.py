@@ -13,21 +13,11 @@ __all__ = ('Registry', 'is_valid_ID', 'check_valid_ID')
 
 
 def is_valid_ID(ID):
-    if not isinstance(ID, str): return False
-    if not ID[0].isalpha(): return False
-    if not all([word.isalnum() for word in ID.split('_') if word]): return False
-    return True
+    return isinstance(ID, str)
 
 def check_valid_ID(ID):
     if not isinstance(ID, str):
         raise RuntimeError(f"ID must be a string, not a '{type(ID).__name__}' object")
-    if not ID[0].isalpha():
-        raise RuntimeError("ID must start with a letter")
-    if not all([word.isalnum() for word in ID.split('_') if word]):
-        raise RuntimeError(
-            'ID may only contain letters, numbers, and/or underscores; '
-            'no special characters or spaces'
-        )
         
 def check_valid_alias(alias):
     if not isinstance(alias, str):
