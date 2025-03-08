@@ -250,11 +250,13 @@ node['peripheries'] = '1'
 system_unit = UnitGraphics(multi_edge_in, multi_edge_out, node)
 
 node = box_node.copy()
-node['fillcolor'] = '#60c1cf'
-node['color'] = '#55a8b5'
-node['fontcolor'] = 'white'
-stream_unit = UnitGraphics(multi_edge_in, multi_edge_out, node)
-
+node['fillcolor'] = 'none'
+node['color'] = 'none'
+def tailor_stream_node(node, unit):
+    node['fontcolor'] = tmo.preferences.label_color
+    
+stream_unit = UnitGraphics(multi_edge_in, multi_edge_out, node,
+                           tailor_stream_node)
 
 node = box_node.copy()
 def tailor_junction_node(node, unit): # pragma: no coverage
