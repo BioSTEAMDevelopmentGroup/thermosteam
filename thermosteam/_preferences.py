@@ -114,6 +114,7 @@ class DisplayPreferences:
         
         #: Displayed height of graphviz html diagrams without and with full results.
         self.graphviz_html_height: dict[str, tuple[str, str]] = {
+            'huge-system': ('800px', '1200px'),
             'big-system': ('600px', '900px'),
             'system': ('400px', '600px'),
             'unit': ('225px', '400px'),
