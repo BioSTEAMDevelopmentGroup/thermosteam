@@ -157,7 +157,7 @@ def plot_lle_ternary_diagram(
 
     """
     import ternary
-    chemicals = [carrier, solvent, solute]
+    chemicals = [carrier, solute, solvent]
     thermo = as_thermo(thermo, chemicals)
     chemicals = thermo.chemicals
     IDs = chemicals.IDs
@@ -212,14 +212,14 @@ def plot_lle_ternary_diagram(
     fontsize = 12
     offset = 0.14
     C, A, S = [to_searchable_format(i) for i in IDs]
-    tax.right_corner_label(8*' ' + 'Carrier', fontsize=fontsize)
+    tax.right_corner_label(8*' ' + 'Solvent', fontsize=fontsize)
     tax.top_corner_label('Solute\n', fontsize=fontsize)
-    tax.left_corner_label('Solvent' + 8*' ', fontsize=fontsize)
-    tax.left_axis_label(f'{S} wt. %', fontsize=fontsize,
+    tax.left_corner_label('Carrier' + 8*' ', fontsize=fontsize)
+    tax.left_axis_label(f'{C} wt. %', fontsize=fontsize,
                         offset=offset)
     tax.right_axis_label(f'{A} wt. %', fontsize=fontsize,
                          offset=offset)
-    tax.bottom_axis_label(f'{C} wt. %', fontsize=fontsize,
+    tax.bottom_axis_label(f'{S} wt. %', fontsize=fontsize,
                           offset=offset)
     if color is None: color = 'k'
     tax.plot(tie_points, c=colors.neutral_shade.RGBn, label=label)
