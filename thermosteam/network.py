@@ -1071,6 +1071,42 @@ class AbstractUnit:
         return self._outs
     
     @property
+    def feed(self) -> AbstractStream:
+        """Equivalent to :attr:`~Unit.ins`[0] when the number of inlets is 1."""
+        streams = self._ins._streams
+        size = len(streams)
+        if size == 1: return streams[0]
+        elif size > 1: raise AttributeError(f"{repr(self)} has more than one inlet")
+        else: raise AttributeError(f"{repr(self)} has no inlet")
+    @feed.setter
+    def feed(self, feed): 
+        ins = self._ins
+        streams = ins._streams
+        size = len(streams)
+        if size == 1: ins[0] = feed
+        elif size > 1: raise AttributeError(f"{repr(self)} has more than one inlet")
+        else: raise AttributeError(f"{repr(self)} has no inlet")
+    inlet = influent = feed
+    
+    @property
+    def product(self) -> AbstractStream:
+        """Equivalent to :attr:`~Unit.outs`[0] when the number of outlets is 1."""
+        streams = self._outs._streams
+        size = len(streams)
+        if size == 1: return streams[0]
+        elif size > 1: raise AttributeError(f"{repr(self)} has more than one outlet")
+        else: raise AttributeError(f"{repr(self)} has no outlet")
+    @product.setter
+    def product(self, product): 
+        outs = self._outs
+        streams = outs._streams
+        size = len(streams)
+        if size == 1: outs[0] = product
+        elif size > 1: raise AttributeError(f"{repr(self)} has more than one outlet")
+        else: raise AttributeError(f"{repr(self)} has no outlet")
+    outlet = effluent = product
+    
+    @property
     def flat_ins(self) -> Sequence[AbstractStream]:
         """List of all inlet single-phase streams."""
         flat = []
