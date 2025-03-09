@@ -54,6 +54,7 @@ def psuedo_equilibrium_inner_loop(logKgammay, z, T, n, f_gamma, gamma_args, phi)
     logKgammay_new = logKgammay.copy()
     K = np.exp(logKgammay[:n])
     x = z/(1. + phi * (K - 1.))
+    x[x < 0] = 1e-16
     x = x / x.sum()
     gammay = logKgammay[n:]
     gammax = f_gamma(x, T, *gamma_args)
@@ -107,9 +108,12 @@ def pseudo_equilibrium(K, phi, z, T, n, f_gamma, gamma_args, inner_loop_options,
         )
     except NoEquilibrium:
         return z
-    K = np.exp(logKgammayphi[:n])
     phi = logKgammayphi[-1]
-    return z/(1. + phi * (K - 1.)) * (1 - phi)
+    if 0 < phi < 1:
+        K = np.exp(logKgammayphi[:n])
+        return z/(1. + phi * (K - 1.)) * (1 - phi)
+    else:
+        return z
 
 class LLE(Equilibrium, phases='lL'):
     """
@@ -246,6 +250,12 @@ class LLE(Equilibrium, phases='lL'):
                     self._phi = None
                 mol_L = self.solve_lle_liquid_mol(mol, T, lle_chemicals, single_loop)
                 mol_l = mol - mol_L
+                if (mol_L < 0).any(): 
+                    breakpoint()
+                    self.solve_lle_liquid_mol(mol, T, lle_chemicals, single_loop)
+                if (mol_l < 0).any(): 
+                    breakpoint()
+                    self.solve_lle_liquid_mol(mol, T, lle_chemicals, single_loop)
             if top_chemical:
                 MW = self.chemicals.MW[index]
                 mass_L = mol_L * MW
@@ -278,6 +288,7 @@ class LLE(Equilibrium, phases='lL'):
                 x_mol_l[x_mol_l < 1e-16] = 1e-16
                 K = x_mol_L / x_mol_l
                 gamma = self.thermo.Gamma(lle_chemicals)
+                if (K < 0).any(): breakpoint()
                 self._K = K
                 self._gamma_y = gamma(x_mol_L, T)
                 self._phi = F_mol_L / (F_mol_L + F_mol_l)
@@ -363,6 +374,7 @@ class LLE(Equilibrium, phases='lL'):
                 if phi < 0: phi = 1e-16
                 return z/(1. + phi * (K - 1.)) * (1 - phi)
             else:
+                if (K < 0).any(): breakpoint()
                 return pseudo_equilibrium(
                     K, phi, mol, T, n, gamma.f, gamma.args, 
                     self.pseudo_equilibrium_inner_loop_options,
