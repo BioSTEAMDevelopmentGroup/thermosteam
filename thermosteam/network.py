@@ -1072,7 +1072,7 @@ class AbstractUnit:
     
     @property
     def feed(self) -> AbstractStream:
-        """Equivalent to :attr:`~AbstractUnit.ins`[0] when the number of inlets is 1."""
+        """Equivalent to ins[0] when the number of inlets is 1."""
         streams = self._ins._streams
         size = len(streams)
         if size == 1: return streams[0]
@@ -1090,7 +1090,7 @@ class AbstractUnit:
     
     @property
     def product(self) -> AbstractStream:
-        """Equivalent to :attr:`~AbstractUnit.outs`[0] when the number of outlets is 1."""
+        """Equivalent to outs[0] when the number of outlets is 1."""
         streams = self._outs._streams
         size = len(streams)
         if size == 1: return streams[0]
