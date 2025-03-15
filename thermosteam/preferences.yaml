@@ -11,6 +11,9 @@ fill_cluster: true
 flow: kmol/hr:.3g
 graphviz_format: svg
 graphviz_html_height:
+  huge-system: !!python/tuple
+  - 800px
+  - 1200px
   big-system: !!python/tuple
   - 600px
   - 900px

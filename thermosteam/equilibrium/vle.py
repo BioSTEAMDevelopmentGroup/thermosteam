@@ -1231,15 +1231,12 @@ class VLE(Equilibrium, phases='lg'):
             F_mol_vle = F_mol_vle - dz_bubble * L * F_mol_vle
         if dz_dew is not None:
             F_mol_vle = F_mol_vle - dz_dew * V * F_mol_vle
-        v_bubble = (V * z + L * y_bubble) * V * F_mol_vle
-        v_dew = (z - L * (L * z + V * x_dew)) * F_mol_vle
-        v = L * v_bubble + V * v_dew
-        l = self._mol_vle - v
-        y = v / v.sum()
-        l_net = l.sum()
-        x = l / l_net if l_net > 0 else l * 0
-        x[x < 1e-32] = 1e-32
-        self._K = y / x
+        K_bubble = y_bubble / z
+        x_min = z * 1e-9
+        index = x_dew < x_min
+        x_dew[index] = x_min[index]
+        K_dew = z / x_dew
+        self._K = K_dew * V + K_bubble * L
         self._V = V
     
     def _H_hat_err_at_T(self, T, H_hat, gas_conversion, liquid_conversion):
