@@ -106,11 +106,15 @@ def format_units(units, ends='$', mathrm=True):
     >>> format_units('USD/MT')
     '$\\mathrm{USD} \\cdot \\mathrm{MT}^{-1}$'
     
+    >>> format_units('10^6 USD/MT')
+    '$\\mathrm{10}^{6} \\cdot \\mathrm{USD} \\cdot \\mathrm{MT}^{-1}$'
+    
     """
     units = str(units)
     all_numerators = []
     all_denominators = []
     unprocessed_numerators, *unprocessed_denominators = units.split("/")
+    unprocessed_numerators = unprocessed_numerators.replace(' ', '*')
     all_numerators = unprocessed_numerators.split("*")
     for unprocessed_denominator in unprocessed_denominators:
         denominator, *unprocessed_numerators = unprocessed_denominator.split("*")
