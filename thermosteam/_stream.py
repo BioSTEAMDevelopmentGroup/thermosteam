@@ -2552,10 +2552,11 @@ class Stream(AbstractStream):
     
     def _translate_layout(self, layout, flow, composition, N, sort):
         if layout:
+            layout = layout.replace(' ', '')
             if layout[-1] == 's':
                 sort = True
                 layout = layout[:-1]
-            if layout[0] == 'c':
+            if layout[0] in ('c', '%'):
                 composition = True
                 layout = layout[1:]
             if layout.startswith('wt'):
@@ -2576,6 +2577,9 @@ class Stream(AbstractStream):
                     "for example: 'cwt100s' corresponds to compostion=True, "
                     "flow='kg/hr', N=100, sort=True"
                 )
+            if layout[0] == '%':
+                composition = True
+                layout = layout[1:]
             if layout.isdigit():
                 N = int(layout)
         return flow, composition, N, sort
@@ -2763,8 +2767,8 @@ class Stream(AbstractStream):
         ----------
         layout : 
             Convenience paramater for passing `flow`, `composition`, and `N`. 
-            Must have the form {'c' or ''}{'wt', 'mol' or 'vol'}{# or ''}.
-            For example: 'cwt100' corresponds to compostion=True, flow='kg/hr', 
+            Must have the form {'%' or ''}{'wt', 'mol' or 'vol'}{# or ''}.
+            For example: '%wt100' corresponds to compostion=True, flow='kg/hr', 
             and N=100.
         T : 
             Temperature units.
