@@ -115,6 +115,8 @@ def format_units(units, ends='$', mathrm=True):
     all_denominators = []
     unprocessed_numerators, *unprocessed_denominators = units.split("/")
     unprocessed_numerators = unprocessed_numerators.replace(' ', '*')
+    unprocessed_numerators = unprocessed_numerators.replace('*%', '\ %')
+    unprocessed_numerators = unprocessed_numerators.replace('%*', '%\ ')
     all_numerators = unprocessed_numerators.split("*")
     for unprocessed_denominator in unprocessed_denominators:
         denominator, *unprocessed_numerators = unprocessed_denominator.split("*")
