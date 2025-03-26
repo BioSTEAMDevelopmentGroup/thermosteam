@@ -2577,7 +2577,7 @@ class Stream(AbstractStream):
                     "for example: 'cwt100s' corresponds to compostion=True, "
                     "flow='kg/hr', N=100, sort=True"
                 )
-            if layout[0] == '%':
+            if layout and layout[0] == '%':
                 composition = True
                 layout = layout[1:]
             if layout.isdigit():
