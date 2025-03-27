@@ -45,6 +45,7 @@ from . import (
     units_of_measure,
     separations,
     functors,
+    nodes,
 )
 from .utils import docround
 from .network import *
@@ -70,6 +71,7 @@ from .reaction import *
 from .equilibrium import * 
 from .mixture import *
 from ._preferences import preferences
+from .nodes import *
 
 __all__ = ('Chemical', 'ChemicalData', 'Chemicals', 'CompiledChemicals', 
            'ChemicalDraft', 'ChemicalsOutline', 'Thermo', 'IdealThermo', 
@@ -78,7 +80,7 @@ __all__ = ('Chemical', 'ChemicalData', 'Chemicals', 'CompiledChemicals',
            *network.__all__, 'preferences',
            'indexer', 'settings', 'functor', 'functors', 'chemicals', 'base', 
            'equilibrium', 'units_of_measure', 'exceptions', 'functional', 
-           'reaction', 'constants', 'utils', 'separations')
+           'reaction', 'constants', 'utils', 'separations', *nodes.__all__)
 
 # Set number of digits displayed
 import numpy as np
