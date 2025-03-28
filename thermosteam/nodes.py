@@ -30,6 +30,7 @@ class EquationNode:
             if i is None: continue
             if not isinstance(i, VariableNode):
                 raise ValueError('equation nodes can only be connected to variable nodes')
+            filtered_nodes.append(i)
         self.nodes = tuple(filtered_nodes)
         
     def get_connections(self):
