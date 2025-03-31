@@ -2757,8 +2757,7 @@ class Stream(AbstractStream):
                 f'{flow_array[N_max:].sum():{flow_notation}}'
         if composition:
             dashes = '-' * (maxlen - 2)
-            flow_rates += f"{new_line}{dashes}  {
-                total_flow:{flow_notation}} {flow_units}"
+            flow_rates += f"{new_line}{dashes}  {total_flow:{flow_notation}} {flow_units}"
         return (basic_info
                 + beginning
                 + flow_rates)
