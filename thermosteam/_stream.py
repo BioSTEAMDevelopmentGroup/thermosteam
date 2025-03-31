@@ -738,8 +738,8 @@ class Stream(AbstractStream):
             self._imol.data.copy_like(stream_data._flow)
             self._thermal_condition.copy_like(stream_data)
         else:
-            raise ValueError(f'stream_data must be a StreamData object; not {
-                             type(stream_data).__name__}')
+            raise ValueError('stream_data must be a StreamData object; '
+                            f'not {type(stream_data).__name__}')
 
     @property
     def price(self) -> float:
