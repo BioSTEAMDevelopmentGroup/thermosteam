@@ -1994,8 +1994,7 @@ class Stream(AbstractStream):
 
         """
         if not isinstance(other._imol, self._imol.__class__):
-            at_unit = f" at unit {
-                self.source}" if self.source is other.sink else ""
+            at_unit = f" at unit {self.source}" if self.source is other.sink else ""
             raise RuntimeError(f"stream {self} cannot link with stream {other}" + at_unit
                                + "; streams must have the same class to link")
         self._imol = other._imol
