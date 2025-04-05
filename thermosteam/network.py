@@ -896,7 +896,7 @@ def superposition_property(name):
     return p
 
 def _superposition(cls, parent, port):
-    excluded = set([*cls.__dict__, port, '_' + port, 'port'])
+    excluded = set([*cls.__dict__, port, '_' + port, 'port', 'F_node', 'E_node'])
     for name in (*parent.__dict__, *AbstractStream.__slots__):
         if name in excluded: continue
         setattr(cls, name, superposition_property(name))

@@ -446,7 +446,8 @@ class Stream(AbstractStream):
         if hasattr(self, '_F_node'):
             self._F_node.value = self.mol.to_array()
             return self._F_node
-        self._F_node = var = VariableNode(f"{self.ID}.F",
+        self._F_node = var = VariableNode(
+            f"{source.node_tag}.outs[{source.outs.index(self)}].F",
             self.mol.to_array(),
             *source.get_connected_material_nodes(self),
             # TODO: Use get_connected_material_nodes here too
