@@ -490,7 +490,7 @@ class Reaction:
         values, config, original = as_material_array(
             material, self._basis, self._phases, self.chemicals
         )
-        if values.ndim == 2:
+        if values.ndim == 2 and not isinstance(self._reactant_index, tuple):
             for i in values: self._reaction(i)
         else:
             self._reaction(values)

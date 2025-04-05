@@ -1630,7 +1630,10 @@ class AbstractUnit:
            for o in outlets: outs[ins.index(o) if isinstance(o, AbstractStream) else o] = None
         if join_ends:
             if len(inlets) != len(outlets):
-                raise ValueError("number of inlets must match number of outlets to join ends")
+                inlets = [i for i in inlets if i]
+                outlets = [i for i in outlets if i]
+                if len(inlets) != len(outlets):
+                    raise ValueError("number of inlets must match number of outlets to join ends")
             for inlet, outlet in zip(inlets, outlets):
                 if outlet.sink: outlet.sink.ins.replace(outlet, inlet)
         if discard: self.registry.discard(self)
