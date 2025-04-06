@@ -164,7 +164,7 @@ def has_only_water(stream):
 
 class FreeProductStreams:
     __slots__ = ('all_streams', 'cache', 'LHV_combustible', 'wastewater_keys', 'combustible_keys')
-    LHV_combustible_default = 500.
+    LHV_combustible_default = 800.
     wastewater_keys_default = {'wastewater', 'brine'}
     combustible_keys_default = {'to_boiler',}
     
