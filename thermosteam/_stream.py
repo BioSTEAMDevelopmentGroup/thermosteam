@@ -1259,6 +1259,11 @@ class Stream(AbstractStream):
             )
 
     @property
+    def G(self):
+        """Gibb's free energy (including heats of formation) [kJ/hr]."""
+        return self.Hf + self.H - self.T * self.S
+
+    @property
     def Hnet(self) -> float:
         """Total enthalpy flow rate (including heats of formation) [kJ/hr]."""
         return self.H + self.Hf
