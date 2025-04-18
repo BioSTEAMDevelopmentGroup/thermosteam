@@ -374,7 +374,7 @@ class LLE(Equilibrium, phases='lL'):
                 if phi < 0: phi = 1e-16
                 return z/(1. + phi * (K - 1.)) * (1 - phi)
             else:
-                if (K < 0).any(): breakpoint()
+                if (K <= 0).any(): breakpoint()
                 return pseudo_equilibrium(
                     K, phi, mol, T, n, gamma.f, gamma.args, 
                     self.pseudo_equilibrium_inner_loop_options,
