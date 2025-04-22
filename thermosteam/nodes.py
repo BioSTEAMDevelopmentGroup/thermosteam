@@ -1,11 +1,13 @@
 # -*- coding: utf-8 -*-
 """
 """
+from typing import NamedTuple
 
 __all__ = (
     'EquationNode',
     'VariableNode',   
-    'PhenomenaGraph'
+    'PhenomenaGraph',
+    'Edge',
 )
 
 def filter_nodes(nodes, cls):
@@ -16,17 +18,6 @@ def filter_nodes(nodes, cls):
             raise ValueError('equation nodes can only be connected to variable nodes')
         filtered_nodes.append(i)
     return tuple(filtered_nodes)
-
-class VariableEquationConnection:
-    __slots__ = ('variable_node', 'equation_node')
-    
-    def __init__(self, variable_node, equation_node):
-        self.variable_node = variable_node
-        self.equation_node = equation_node
-        
-    def __repr__(self):
-        return f'{self.variable_node}--{self.equation_node}'
-
 
 class EquationNode:
     __slots__ = ('name', 'inputs', 'outputs', 'variables')
@@ -39,7 +30,7 @@ class EquationNode:
         self.outputs = filter_nodes(outputs, VariableNode)
         self.variables = (*self.inputs, *self.outputs)
     
-    def get_connections(self, inputs=True, outputs=True):
+    def get_edges(self, inputs=True, outputs=True):
         if inputs:
             nodes = self.inputs
             if outputs:
@@ -48,7 +39,7 @@ class EquationNode:
             nodes = self.outputs
         else:
             nodes = ()
-        return [VariableEquationConnection(self, i) for i in nodes]
+        return [Edge(self, i) for i in nodes]
         
     def __repr__(self):
         return self.name
@@ -66,15 +57,25 @@ class VariableNode:
         return self.name
 
 
-class PhenomenaGraph:
-    __slots__ = ('name', 'equations', 'variables', 'connections', 
-                 'variable_profiles', 'equation_profiles', 'subgraphs')
+class Edge(NamedTuple):
+    variable_node: VariableNode
+    equation_node: EquationNode
     
-    def __init__(self, name, equations, variables, connections, equation_profiles, variable_profiles, subgraphs=()):
+    @property
+    def name(self):
+        return (self.variable_node.name, self.equation_node.name)
+
+
+class PhenomenaGraph:
+    __slots__ = ('name', 'equations', 'variables', 'edges', 
+                 'variable_profiles', 'equation_profiles', 'edge_profiles'
+                 'subgraphs')
+    
+    def __init__(self, name, equations, variables, edges, equation_profiles, variable_profiles, subgraphs=()):
         self.name = name
         self.equations = equations
         self.variables = variables
-        self.connections = connections
+        self.edges = edges
         self.equation_profiles = equation_profiles
         self.variable_profiles = variable_profiles
         self.subgraphs = subgraphs
