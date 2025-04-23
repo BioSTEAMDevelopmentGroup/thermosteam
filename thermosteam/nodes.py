@@ -68,7 +68,7 @@ class Edge(NamedTuple):
 
 class PhenomenaGraph:
     __slots__ = ('name', 'equations', 'variables', 'edges', 
-                 'variable_profiles', 'equation_profiles', 'edge_profiles'
+                 'variable_profiles', 'equation_profiles', 'edge_profiles',
                  'subgraphs')
     
     def __init__(self, name, equations, variables, edges, equation_profiles, variable_profiles, edge_profiles, subgraphs=()):
