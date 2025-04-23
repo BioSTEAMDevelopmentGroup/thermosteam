@@ -71,13 +71,14 @@ class PhenomenaGraph:
                  'variable_profiles', 'equation_profiles', 'edge_profiles'
                  'subgraphs')
     
-    def __init__(self, name, equations, variables, edges, equation_profiles, variable_profiles, subgraphs=()):
+    def __init__(self, name, equations, variables, edges, equation_profiles, variable_profiles, edge_profiles, subgraphs=()):
         self.name = name
         self.equations = equations
         self.variables = variables
         self.edges = edges
         self.equation_profiles = equation_profiles
         self.variable_profiles = variable_profiles
+        self.edge_profiles = edge_profiles
         self.subgraphs = subgraphs
         
     def __repr__(self):
