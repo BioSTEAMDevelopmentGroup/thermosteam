@@ -24,6 +24,7 @@ from typing import TYPE_CHECKING
 from ._phase import valid_phases
 from .network import AbstractStream
 from .nodes import VariableNode
+from .exceptions import NoEquilibrium
 if TYPE_CHECKING:
     from .base import SparseVector, SparseArray
     from numpy.typing import NDArray
@@ -2591,7 +2592,13 @@ class Stream(AbstractStream):
         ms.mix_from([self, other], energy_balance=False)
         if energy_balance:
             ms.H = H = self.H + other.H
-        ms.vle._setup()
+        try:
+            ms.vle._setup()
+        except NoEquilibrium:
+            self.copy_like(ms['g'])
+            other.copy_like(ms['l'])
+            self.T = other.T = ms.T
+            return
         vapor = ms['g']
         liquid = ms['l']
         for chemical in ms.chemicals:

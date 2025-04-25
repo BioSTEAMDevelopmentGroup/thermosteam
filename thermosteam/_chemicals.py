@@ -691,7 +691,11 @@ class CompiledChemicals(Chemicals):
             if not i.iupac_name: i.iupac_name = ()
             elif isa(i.iupac_name, str):
                 i.iupac_name = (i.iupac_name,)
-            all_names = set([*i.iupac_name, *i.aliases, i.common_name, i.formula])
+            all_names = list([*i.iupac_name, *i.aliases, i.common_name, i.formula])
+            if i.common_name:
+                all_names.append(i.common_name.capitalize())
+                all_names.append(i.common_name.upper())
+            all_names = set(all_names)
             all_names_list.append(all_names)
             for name in all_names:
                 if not name: continue

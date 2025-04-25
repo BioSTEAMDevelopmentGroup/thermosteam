@@ -838,6 +838,20 @@ class Reaction:
             return self._phases[phase_index], self.chemicals.IDs[chemical_index]
         else:
             return self.chemicals.IDs[self._reactant_index] 
+    @reactant.setter
+    def reactant(self, reactant):
+        """[str] Reactant associated to conversion."""
+        phases = self._phases
+        stoichiometry = self._stoichiometry
+        chemicals = self.chemicals
+        if phases:
+            reactant_index = chemicals.index(reactant)
+            for phase_index, x in enumerate(stoichiometry[:, reactant_index]):
+                if x: break
+            self._reactant_index = (phase_index, reactant_index)
+        else:
+            self._reactant_index = chemicals.index(reactant)
+        self._rescale()
 
     @property
     def MWs(self):
