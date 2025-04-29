@@ -125,6 +125,22 @@ def Glucan(ID, **kwargs):
                         **kwargs)
 
 @register
+def Starch(ID, **kwargs):
+    return tmo.Chemical(
+        ID, formula='C6H10O5', phase='s', db=None,
+        Hf=-233200*cal2joule, rho=rho_solid, Cp=Cp_cellulosic, 
+        **kwargs
+    )
+
+@register
+def Fiber(ID, **kwargs):
+    return tmo.Chemical(
+        ID, formula='C6H10O5', phase='s', db=None,
+        Hf=-233200*cal2joule, rho=rho_solid, Cp=Cp_cellulosic, 
+        **kwargs
+    )
+
+@register
 def Hemicellulose(ID, **kwargs):
     return tmo.Chemical(ID, formula="C5H8O4", # Model formula as xylose monomer minus water
                         Hf=-761906.4, phase='s', db=None, 
