@@ -19,6 +19,8 @@ import thermosteam as tmo
 import numpy as np
 from numpy.linalg import lstsq
 import flexsolve as flx
+from scipy import interpolate
+from scipy.ndimage.filters import gaussian_filter
 
 __all__ = ('plot_vle_binary_phase_envelope',
            'plot_lle_ternary_diagram',
@@ -85,7 +87,8 @@ def plot_vle_binary_phase_envelope(chemicals, T=None, P=None, vc=None, lc=None, 
     thermo = as_thermo(thermo, chemicals)
     chemical_a, chemical_b = chemicals = [thermo.as_chemical(i) for i in chemicals]
     BP = tmo.BubblePoint(chemicals, thermo)
-    zs_a = np.linspace(0, 1)
+    N = 50
+    zs_a = np.linspace(0, 1, N)
     zs_b = 1 - zs_a
     zs = np.vstack([zs_a, zs_b]).transpose()
     if P:
@@ -102,11 +105,29 @@ def plot_vle_binary_phase_envelope(chemicals, T=None, P=None, vc=None, lc=None, 
         raise AssertionError("must pass either T or P")
     ms = np.array(ms)
     ys_a = np.array([bp.y[0] for bp in bps])
+    ms_liq = ms.copy()
+    ms_gas = interpolate.interp1d(ys_a, ms, bounds_error=False, kind='slinear')(zs_a)
+    if P:
+        azeotrope = ms_liq > ms_gas
+    elif T:
+        azeotrope = ms_liq < ms_gas
+    ms_liq[0] = 0.5 * (ms_liq[0] + ms_gas[0])
+    ms_liq[-1] = 0.5 * (ms_liq[-1] + ms_gas[-1])
+    if azeotrope.any():
+        index = np.where(azeotrope)[0]
+        left = index[0]
+        right = index[-1]
+        mid = int(np.median(index))
+        azeotrope[left:right] = True
+        azeotrope[mid] = False
+        ms_gas[mid] = ms_liq[mid]
+        ms_gas = interpolate.interp1d(zs_a[~azeotrope], ms_gas[~azeotrope], bounds_error=False, kind='slinear')(zs_a)
+        
     top, bottom = (chemical_a, chemical_b) if ys_a.mean() > 0.5 else (chemical_a, chemical_b)
     plt.figure()
     plt.xlim([0, 1])
-    plt.plot(ys_a, ms, c=vc if vc is not None else colors.red.RGBn, label=f"{top}-rich vapor")
-    plt.plot(zs_a, ms, c=lc if lc is not None else colors.blue.RGBn, label=f'{bottom}-rich liquid')
+    plt.plot(zs_a, ms_gas, c=vc if vc is not None else colors.red.RGBn, label='vapor')
+    plt.plot(zs_a, ms_liq, c=lc if lc is not None else colors.blue.RGBn, label='liquid')
     plt.ylim([ms.min(), ms.max()])
     if yticks is None: yticks, ytext = plt.yticks()
         

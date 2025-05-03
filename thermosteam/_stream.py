@@ -436,6 +436,17 @@ class Stream(AbstractStream):
 
     # Phenomena-oriented simulation
     @property
+    def node_tag(self):
+        source = self.source
+        sink = self.sink
+        if source:
+            return f"{source.node_tag}.outs[{source.outs.index(self)}]"
+        elif sink:
+            return f"{sink.node_tag}.outs[{sink.ins.index(self)}]"
+        else:
+            return None
+    
+    @property
     def E_node(self):
         return self.source.E_node if self.source else None
 

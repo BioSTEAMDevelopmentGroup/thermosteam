@@ -539,18 +539,23 @@ class Chemical:
             ID = ID[:-2]
         search_ID = search_ID or ID
         if db == 'default': db = cls.default_db
+        if db is not None: db = db.lower()
         if not search_db or db is None: 
             self = cls.blank(ID, CAS, phase_ref, phase=phase, free_energies=False, **data)
-        elif db == 'BioSTEAM':
+        elif db == 'chedl':
+            try:
+                if 'metadata' in data:
+                    metadata = data['metadata']
+                else:
+                    metadata = pubchem_db.search(search_ID)
+                    data['metadata'] = metadata
+                self = cls.new(ID, metadata.CASs, eos, phase_ref, phase, free_energies=False, **data)
+            except LookupError as error:
+                # Try BioSTEAM
+                self = search_biorefinery_chemicals(search_ID, error)
+                if CAS is not None: self._CAS = CAS
+        elif db in ('biosteam', 'thermosteam'):
             self = search_biorefinery_chemicals(search_ID)
-            if CAS is not None: self._CAS = CAS
-        elif db == 'ChEDL':
-            if 'metadata' in data:
-                metadata = data['metadata']
-            else:
-                metadata = pubchem_db.search(search_ID)
-                data['metadata'] = metadata
-            self = cls.new(ID, metadata.CASs, eos, phase_ref, phase, free_energies=False, **data)
             if CAS is not None: self._CAS = CAS
         else:
             raise ValueError(

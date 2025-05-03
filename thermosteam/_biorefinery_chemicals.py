@@ -6,13 +6,15 @@ from chemicals.identifiers import pubchem_db
 
 biorefinery_chemicals = {}
 
-def search_biorefinery_chemicals(ID, **kwargs):
+def search_biorefinery_chemicals(ID, error=None, **kwargs):
     if ID in biorefinery_chemicals: 
         f = biorefinery_chemicals[ID]
     else:
         key = ID.replace(' ', '').replace('-', '').replace('_', '').lower()
         if key in biorefinery_chemicals: 
             f = biorefinery_chemicals[key]
+        elif error:
+            raise error from None
         else:
             chemical = tmo.Chemical(ID, default=True, db='ChEDL', **kwargs)
             if chemical.Tm > 1000: chemical.at_state('s')
