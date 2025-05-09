@@ -7,7 +7,8 @@
 # for license details.
 """
 """
-__all__ = ('AbstractMethod', 'NotImplementedMethod')
+__all__ = ('AbstractMethod', 'NotImplementedMethod',
+           'AbstractClassMethod', 'NotImplementedClassMethod')
 
 class AbstractMethodType:
     __slots__ = ()
@@ -18,5 +19,15 @@ class AbstractMethodType:
     def __call__(self): return NotImplemented
     def __bool__(self): return False
     def __repr__(self): return "AbstractMethod"
+    
+class AbstractClassMethodType:
+    
+    @property
+    def __name__(self): return "AbstractClassMethod"
+    def __new__(self): return AbstractClassMethod
+    def __call__(self): return NotImplemented
+    def __bool__(self): return False
+    def __repr__(self): return "AbstractClassMethod"
 
 AbstractMethod = NotImplementedMethod = object.__new__(AbstractMethodType)
+AbstractClassMethod = NotImplementedClassMethod = object.__new__(AbstractClassMethodType)

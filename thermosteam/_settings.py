@@ -10,7 +10,7 @@
 from __future__ import annotations
 import thermosteam as tmo
 from typing import Optional, Iterable
-from .units_of_measure import AbsoluteUnitsOfMeasure
+from .units_of_measure import UnitsOfMeasure
 from typing import TYPE_CHECKING
 if TYPE_CHECKING:
     from .equilibrium import (
@@ -114,6 +114,7 @@ class ProcessSettings:
             cache: Optional[bool]=None,
             skip_checks: Optional[bool]=False, 
             ideal: Optional[bool]=False,
+            db: Optional[str]='default',
         ):
         """
         Set the default :class:`~thermosteam.Thermo` object. If `thermo` is 
@@ -137,11 +138,13 @@ class ProcessSettings:
         ideal :
             Whether to use ideal phase equilibrium and mixture property 
             algorithms.
+        db : str, optional
+            Database to load any chemicals.
         
         """
         if not isinstance(thermo, (tmo.Thermo, tmo.IdealThermo)):
             thermo = tmo.Thermo(thermo, mixture=mixture, cache=cache, skip_checks=skip_checks,
-                                Gamma=Gamma, Phi=Phi, PCF=PCF)
+                                Gamma=Gamma, Phi=Phi, PCF=PCF, db=db)
         if ideal: thermo = thermo.ideal()
         self._thermo = thermo
     
@@ -192,7 +195,7 @@ class ProcessSettings:
         :doc:`../tutorial/Life_cycle_assessment`
         
         """
-        self.impact_indicators[key] = AbsoluteUnitsOfMeasure(units)
+        self.impact_indicators[key] = UnitsOfMeasure(units)
     
     def get_impact_indicator_units(self, key):
         try:

@@ -13,6 +13,7 @@ import numpy as np
 from math import exp
 from thermosteam import functional as fn
 from thermo.interaction_parameters import IPDB
+from numpy.typing import NDArray
 from thermo import eos_mix
 from .. import units_of_measure as thermo_units
 from ..base import PhaseHandle, MockPhaseTHandle, MockPhaseTPHandle, SparseVector, sparse
@@ -103,11 +104,8 @@ class Mixture:
     epsilon(mol, T, P) : float
         Relative permitivity [-]
     
-    Abstract attributes
-    MWs : 1d array[float]
-        Component molecular weights [g/mol].
-    
     """
+    MWs: NDArray[float] #: Component molecular weights [g/mol].
     maxiter = 20
     T_tol = 1e-6
     __slots__ = ()

@@ -94,14 +94,17 @@ def set_ticks(ax, ticks, which='x', ticklabels=(),
     
 
 def style_axis(ax=None, xticks=None, yticks=None, 
-               xticklabels=True, yticklabels=True,
+               xticklabels=None, yticklabels=None,
                top=True, right=True, trim_to_limits=False,
                xtick0=True, ytick0=True,
                xtickf=True, ytickf=True,
                offset_xticks=False,
                offset_yticks=False,
                xrot=None, xha=None,
-               yrot=None, yha=None): # pragma: no cover
+               yrot=None, yha=None,
+               axtwinx=None, axtwiny=None): # pragma: no cover
+    if xticklabels is None: xticklabels = True
+    if yticklabels is None: yticklabels = True
     if ax is None:
         ax = plt.gca()
     else:
@@ -148,7 +151,7 @@ def style_axis(ax=None, xticks=None, yticks=None,
     ylim = plt.ylim()
     axes = {'ax': ax}
     if right:
-        x_twin = ax.twinx()
+        x_twin = ax.twinx() if axtwinx is None else axtwinx
         ax._cached_xtwin = x_twin
         axes['twinx'] = x_twin 
         plt.sca(x_twin)
@@ -157,7 +160,7 @@ def style_axis(ax=None, xticks=None, yticks=None,
         plt.ylim(ylim)
         plt.yticks(yticks, ())
     if top:
-        y_twin = ax.twiny()
+        y_twin = ax.twiny() if axtwiny is None else axtwiny
         ax._cached_ytwin = y_twin
         axes['twiny'] = y_twin 
         plt.sca(y_twin)

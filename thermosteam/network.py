@@ -200,6 +200,7 @@ class AbstractMissingStream:
     __slots__ = ('_source', '_sink')
     line = 'Stream'
     ID = 'missing stream'
+    get_connection = AbstractStream.get_connection
     disconnect_source = AbstractStream.disconnect_source
     disconnect_sink = AbstractStream.disconnect_sink
     disconnect = AbstractStream.disconnect
@@ -579,6 +580,7 @@ class Connection(NamedTuple):
     sink_index: int
     sink: object
     
+    @ignore_docking_warnings
     def reconnect(self):
         # Does not attempt to connect auxiliaries with owners (which should not be possible)
         source = self.source
@@ -894,7 +896,7 @@ def superposition_property(name):
     return p
 
 def _superposition(cls, parent, port):
-    excluded = set([*cls.__dict__, port, '_' + port, 'port'])
+    excluded = set([*cls.__dict__, port, '_' + port, 'port', 'F_node', 'E_node'])
     for name in (*parent.__dict__, *AbstractStream.__slots__):
         if name in excluded: continue
         setattr(cls, name, superposition_property(name))
@@ -1067,6 +1069,42 @@ class AbstractUnit:
     def outs(self) -> Sequence[AbstractStream]:
         """List of all outlet streams."""
         return self._outs
+    
+    @property
+    def feed(self) -> AbstractStream:
+        """Equivalent to ins[0] when the number of inlets is 1."""
+        streams = self._ins._streams
+        size = len(streams)
+        if size == 1: return streams[0]
+        elif size > 1: raise AttributeError(f"{repr(self)} has more than one inlet")
+        else: raise AttributeError(f"{repr(self)} has no inlet")
+    @feed.setter
+    def feed(self, feed): 
+        ins = self._ins
+        streams = ins._streams
+        size = len(streams)
+        if size == 1: ins[0] = feed
+        elif size > 1: raise AttributeError(f"{repr(self)} has more than one inlet")
+        else: raise AttributeError(f"{repr(self)} has no inlet")
+    inlet = influent = feed
+    
+    @property
+    def product(self) -> AbstractStream:
+        """Equivalent to outs[0] when the number of outlets is 1."""
+        streams = self._outs._streams
+        size = len(streams)
+        if size == 1: return streams[0]
+        elif size > 1: raise AttributeError(f"{repr(self)} has more than one outlet")
+        else: raise AttributeError(f"{repr(self)} has no outlet")
+    @product.setter
+    def product(self, product): 
+        outs = self._outs
+        streams = outs._streams
+        size = len(streams)
+        if size == 1: outs[0] = product
+        elif size > 1: raise AttributeError(f"{repr(self)} has more than one outlet")
+        else: raise AttributeError(f"{repr(self)} has no outlet")
+    outlet = effluent = product
     
     @property
     def flat_ins(self) -> Sequence[AbstractStream]:
@@ -1581,18 +1619,21 @@ class AbstractUnit:
         ins = self._ins
         outs = self._outs
         if inlets is None: 
-            inlets = [i for i in ins if i]
+            inlets = ins._streams.copy()
             ins[:] = ()
         else:
             for i in inlets: ins[ins.index(i) if isinstance(i, AbstractStream) else i] = None
         if outlets is None: 
-            outlets = [i for i in outs if i]
+            outlets = outs._streams.copy()
             outs[:] = ()
         else:
            for o in outlets: outs[ins.index(o) if isinstance(o, AbstractStream) else o] = None
         if join_ends:
             if len(inlets) != len(outlets):
-                raise ValueError("number of inlets must match number of outlets to join ends")
+                inlets = [i for i in inlets if i]
+                outlets = [i for i in outlets if i]
+                if len(inlets) != len(outlets):
+                    raise ValueError("number of inlets must match number of outlets to join ends")
             for inlet, outlet in zip(inlets, outlets):
                 if outlet.sink: outlet.sink.ins.replace(outlet, inlet)
         if discard: self.registry.discard(self)
@@ -2079,20 +2120,27 @@ def unmark_disjunction(stream):
     if port in disjunctions:
         disjunctions.remove(port)
 
+def feed_complexity(stream):
+    if hasattr(stream, 'mol'):
+        return stream.F_mass * (stream.mol != 0).sum()** 2
+    else:
+        return stream.F_mass
+
 def sort_feeds_big_to_small(feeds):
     if feeds:
         feed_priorities = tmo.AbstractStream.feed_priorities
+        feed_complexities = {i: feed_complexity(i) for i in feeds}
         def feed_priority(feed):
             if feed in feed_priorities:
                 return feed_priorities[feed]
             elif feed:
                 try:
-                    return 1. - feed.F_mass / F_mass_max if F_mass_max else 1.
+                    return 1. - feed_complexities[feed] / max_complexity if max_complexity else 1.
                 except:
                     return 2
             else:
                 return 2.
-        F_mass_max = max([i.F_mass for i in feeds])
+        max_complexity = max(feed_complexities.values())
         feeds.sort(key=feed_priority)
 
 # %% Path tools
@@ -2495,7 +2543,8 @@ class Network:
         ends.update(network.streams)
         disjunction_streams = set([i.get_stream() for i in disjunctions])
         for feed in feeds:
-            if feed in ends or feed.sink._universal: continue
+            sink = feed._sink
+            if feed in ends or (sink and sink._universal): continue
             downstream_network = cls.from_feedstock(feed, (), ends, units, final=False, interaction=interaction)
             new_streams = downstream_network.streams
             connections = ends.intersection(new_streams)
@@ -2749,6 +2798,7 @@ class Network:
             for index, i in enumerate(path_tuple):
                 if isa(i, Network) and not network.isdisjoint(i):
                     i.join_recycle_network(network)
+                    self._remove_overlap(network, path_tuple)
                     self.units.update(subunits)
                     return
             if self.recycle:

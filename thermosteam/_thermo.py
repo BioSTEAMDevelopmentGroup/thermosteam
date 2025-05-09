@@ -35,10 +35,12 @@ class Thermo:
         Class for computing fugacity coefficients.
     PCF : :class:`~thermosteam.equilibrium.poyinting_correction_factors.PoyintingCorrectionFactors` subclass, optional
         Class for computing poynting correction factors.
-    cache : optional
+    cache : bool, optional
         Whether or not to use cached chemicals.
     skip_checks : bool, optional
         Whether to skip checks for missing or invalid properties.
+    db : str, optional
+        Database to load any chemicals.
     
     Examples
     --------
@@ -129,11 +131,12 @@ class Thermo:
                  Phi=None,
                  PCF=None,
                  cache=None,
-                 skip_checks=False):
+                 skip_checks=False,
+                 db='default'):
         if Gamma is None: Gamma = eq.DortmundActivityCoefficients
         if Phi is None: Phi = eq.IdealFugacityCoefficients
         if PCF is None: PCF = eq.MockPoyintingCorrectionFactors
-        if not isinstance(chemicals, Chemicals): chemicals = Chemicals(chemicals, cache)
+        if not isinstance(chemicals, Chemicals): chemicals = Chemicals(chemicals, cache, db=db)
         if not mixture:
             mixture = IdealMixture.from_chemicals(chemicals)
         elif not isinstance(mixture, Mixture): # pragma: no cover

@@ -382,7 +382,7 @@ def lle_partition_coefficients(top, bottom):
     >>> IDs
     ('Water', 'Ethanol', 'Octanol')
     >>> round(K[2], -1) # Octanol
-    2390.0
+    3330.0
 
     """
     IDs = tuple([i.ID for i in bottom.lle_chemicals])
@@ -605,15 +605,15 @@ def lle(feed, top, bottom, top_chemical=None, efficiency=1.0, multi_stream=None)
     >>> top.show()
     Stream: top
     phase: 'l', T: 298.15 K, P: 101325 Pa
-    flow (kmol/hr): Water    2.87
-                    Ethanol  0.828
+    flow (kmol/hr): Water    3.55
+                    Ethanol  0.861
                     Octanol  20
     >>> bottom.show()
     Stream: bottom
     phase: 'l', T: 298.15 K, P: 101325 Pa
-    flow (kmol/hr): Water    17.1
-                    Ethanol  0.172
-                    Octanol  0.00612
+    flow (kmol/hr): Water    16.5
+                    Ethanol  0.139
+                    Octanol  0.00409
     
     Assume that 1% of the feed is not in equilibrium (possibly due to poor mixing):
         
@@ -627,12 +627,12 @@ def lle(feed, top, bottom, top_chemical=None, efficiency=1.0, multi_stream=None)
     >>> ms.show()
     MultiStream: ms
     phases: ('L', 'l'), T: 298.15 K, P: 101325 Pa
-    flow (kmol/hr): (L) Water    2.87
-                        Ethanol  0.828
+    flow (kmol/hr): (L) Water    3.55
+                        Ethanol  0.861
                         Octanol  20
-                    (l) Water    17.1
-                        Ethanol  0.172
-                        Octanol  0.00612
+                    (l) Water    16.5
+                        Ethanol  0.139
+                        Octanol  0.00409
     
     """
     if multi_stream:
@@ -641,7 +641,8 @@ def lle(feed, top, bottom, top_chemical=None, efficiency=1.0, multi_stream=None)
     else:
         ms = feed.copy()
     ms.lle(feed.T, top_chemical=top_chemical)
-    top_phase, bottom_phase = ms.phases
+    top_phase = 'L'
+    bottom_phase = 'l'
     if not top_chemical:
         rho_l = ms['l'].rho
         rho_L = ms['L'].rho

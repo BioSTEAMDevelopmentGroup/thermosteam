@@ -12,7 +12,7 @@ __all__ = ('chemical_units_of_measure',
            'ureg', 'get_dimensionality',
            'DisplayUnits', 
            'DisplayNotation',
-           'AbsoluteUnitsOfMeasure', 
+           'UnitsOfMeasure', 
            'convert',
            'Quantity', 
            'parse_units_notation',
@@ -82,14 +82,14 @@ def format_units_power(units, isnumerator=True, mathrm=True):
     if '^' in units:
         units, power = units.split('^')
         units = format_degrees(units)
-        if mathrm: units = '\mathrm{' + units + '}'
+        if mathrm: units = r'\mathrm{' + units + '}'
         power, *other = power.split(' ', 1)
         units += '^{' + (power if isnumerator else '-' + power) + '}'
         if other: units += other[0]
     else:
         if units != '%':
             units = format_degrees(units)      
-            if mathrm: units = '\mathrm{' + units + '}'
+            if mathrm: units = r'\mathrm{' + units + '}'
         if not isnumerator:
             units = units + '^{-1}'
     return units
@@ -106,11 +106,17 @@ def format_units(units, ends='$', mathrm=True):
     >>> format_units('USD/MT')
     '$\\mathrm{USD} \\cdot \\mathrm{MT}^{-1}$'
     
+    >>> format_units('10^6 USD/MT')
+    '$\\mathrm{10}^{6} \\cdot \\mathrm{USD} \\cdot \\mathrm{MT}^{-1}$'
+    
     """
     units = str(units)
     all_numerators = []
     all_denominators = []
     unprocessed_numerators, *unprocessed_denominators = units.split("/")
+    unprocessed_numerators = unprocessed_numerators.replace(' ', '*')
+    unprocessed_numerators = unprocessed_numerators.replace('*%', '\ %')
+    unprocessed_numerators = unprocessed_numerators.replace('%*', '%\ ')
     all_numerators = unprocessed_numerators.split("*")
     for unprocessed_denominator in unprocessed_denominators:
         denominator, *unprocessed_numerators = unprocessed_denominator.split("*")
@@ -118,7 +124,7 @@ def format_units(units, ends='$', mathrm=True):
         all_denominators.append(denominator)
     all_numerators = [format_units_power(i, True, mathrm) for i in all_numerators if i != '1']
     all_denominators = [format_units_power(i, False, mathrm) for i in all_denominators if i != '1']
-    return ends + ' \cdot '.join(all_numerators + all_denominators).replace('$', '\$').replace('%', '\%') + ends
+    return ends + r' \cdot '.join(all_numerators + all_denominators).replace('$', r'\$').replace('%', r'\%') + ends
 
 def reformat_units(name):
     left, right = name.split('[')
@@ -132,19 +138,6 @@ get_dimensionality = ureg.get_dimensionality
 
 class UnitsOfMeasure:
     __slots__ = ('units', 'units_container', 'dimensionality')
-    
-    def __bool__(self):
-        return bool(self.units)
-    
-    def __str__(self):
-        return self.units
-    
-    def __repr__(self):
-        return f"{type(self).__name__}({repr(self.units)})"
-
-
-class AbsoluteUnitsOfMeasure(UnitsOfMeasure):
-    __slots__ = ('factor_cache',)
     _cache = {}
     
     def __new__(cls, units):
@@ -158,40 +151,6 @@ class AbsoluteUnitsOfMeasure(UnitsOfMeasure):
             self.units = units
             self.units_container = ureg[units]
             self.dimensionality = self.units_container.dimensionality
-            self.factor_cache = {}
-            cache[units] = self
-            return self
-    
-    def conversion_factor(self, to_units):
-        cache = self.factor_cache
-        if to_units in cache:
-            factor = cache[to_units]
-        else:
-            cache[to_units] = factor = ureg.convert(1., self.units_container, to_units)
-        return factor
-    
-    def convert(self, value, to_units):
-        return value * self.conversion_factor(to_units)
-    
-    def unconvert(self, value, from_units):
-        return value / self.conversion_factor(from_units)
-
-
-class RelativeUnitsOfMeasure(UnitsOfMeasure):
-    __slots__ = ()
-    _cache = {}
-    
-    def __new__(cls, units):
-        if isinstance(units, cls):
-            return units
-        cache = cls._cache
-        if units in cache:
-            return cache[units]
-        else:
-            self = super().__new__(cls)
-            self.units = units
-            self.units_container = ureg.Unit(units)
-            self.dimensionality = self.units_container.dimensionality
             cache[units] = self
             return self
     
@@ -203,7 +162,17 @@ class RelativeUnitsOfMeasure(UnitsOfMeasure):
     
     def unconvert(self, value, from_units):
         return ureg.convert(value, from_units, self.units_container)
+    
+    def __bool__(self):
+        return bool(self.units)
+    
+    def __str__(self):
+        return self.units
+    
+    def __repr__(self):
+        return f"{type(self).__name__}({repr(self.units)})"
 
+AbsoluteUnitsOfMeasure = RelativeUnitsOfMeasure = UnitsOfMeasure # For backwards compatibility
 
 # %% Manage display units
 
@@ -302,68 +271,68 @@ class DisplayUnits:
 # %% Units of measure
 
 chemical_units_of_measure = {
-    'MW': AbsoluteUnitsOfMeasure('g/mol'),
-    'T': RelativeUnitsOfMeasure('K'),
-    'Tr': RelativeUnitsOfMeasure('K'),
-    'Tm': RelativeUnitsOfMeasure('K'),
-    'Tb': RelativeUnitsOfMeasure('K'),
-    'Tbr': RelativeUnitsOfMeasure('K'),
-    'Tt': RelativeUnitsOfMeasure('K'),
-    'Tc': RelativeUnitsOfMeasure('K'),
-    'P': AbsoluteUnitsOfMeasure('Pa'),
-    'Pr': AbsoluteUnitsOfMeasure('Pa'),
-    'Pc': AbsoluteUnitsOfMeasure('Pa'),
-    'Psat': AbsoluteUnitsOfMeasure('Pa'),
-    'Pt': AbsoluteUnitsOfMeasure('Pa'),
-    'V': AbsoluteUnitsOfMeasure('m^3/mol'),
-    'Vc': AbsoluteUnitsOfMeasure('m^3/mol'),
-    'Cp': AbsoluteUnitsOfMeasure('J/g/K'),
-    'Cn': AbsoluteUnitsOfMeasure('J/mol/K'),
-    'R': AbsoluteUnitsOfMeasure('J/mol/K'),
-    'rho': AbsoluteUnitsOfMeasure('kg/m^3'),
-    'rhoc': AbsoluteUnitsOfMeasure('kg/m^3'),
-    'nu': AbsoluteUnitsOfMeasure('m^2/s'),
-    'alpha': AbsoluteUnitsOfMeasure('m^2/s'),
-    'mu': AbsoluteUnitsOfMeasure('Pa*s'),
-    'sigma': AbsoluteUnitsOfMeasure('N/m'),
-    'kappa': AbsoluteUnitsOfMeasure('W/m/K'),
-    'Hvap': AbsoluteUnitsOfMeasure('J/mol'),
-    'H': AbsoluteUnitsOfMeasure('J/mol'),  
-    'Hf': AbsoluteUnitsOfMeasure('J/mol'), 
-    'Hc': AbsoluteUnitsOfMeasure('J/mol'), 
-    'Hfus': AbsoluteUnitsOfMeasure('J/mol'), 
-    'Hsub': AbsoluteUnitsOfMeasure('J/mol'),
-    'HHV': AbsoluteUnitsOfMeasure('J/mol'),
-    'LHV': AbsoluteUnitsOfMeasure('J/mol'),
-    'S': AbsoluteUnitsOfMeasure('J/K/mol'),
-    'S0': AbsoluteUnitsOfMeasure('J/K/mol'),
-    'G': AbsoluteUnitsOfMeasure('J/mol'), 
-    'U': AbsoluteUnitsOfMeasure('J/mol'),
-    'H_excess': AbsoluteUnitsOfMeasure('J/mol'), 
-    'S_excess': AbsoluteUnitsOfMeasure('J/mol'),
-    'dipole': AbsoluteUnitsOfMeasure('Debye'),
-    'delta': AbsoluteUnitsOfMeasure('Pa^0.5'),
-    'epsilon': AbsoluteUnitsOfMeasure(''),
+    'MW': UnitsOfMeasure('g/mol'),
+    'T': UnitsOfMeasure('K'),
+    'Tr': UnitsOfMeasure('K'),
+    'Tm': UnitsOfMeasure('K'),
+    'Tb': UnitsOfMeasure('K'),
+    'Tbr': UnitsOfMeasure('K'),
+    'Tt': UnitsOfMeasure('K'),
+    'Tc': UnitsOfMeasure('K'),
+    'P': UnitsOfMeasure('Pa'),
+    'Pr': UnitsOfMeasure('Pa'),
+    'Pc': UnitsOfMeasure('Pa'),
+    'Psat': UnitsOfMeasure('Pa'),
+    'Pt': UnitsOfMeasure('Pa'),
+    'V': UnitsOfMeasure('m^3/mol'),
+    'Vc': UnitsOfMeasure('m^3/mol'),
+    'Cp': UnitsOfMeasure('J/g/K'),
+    'Cn': UnitsOfMeasure('J/mol/K'),
+    'R': UnitsOfMeasure('J/mol/K'),
+    'rho': UnitsOfMeasure('kg/m^3'),
+    'rhoc': UnitsOfMeasure('kg/m^3'),
+    'nu': UnitsOfMeasure('m^2/s'),
+    'alpha': UnitsOfMeasure('m^2/s'),
+    'mu': UnitsOfMeasure('Pa*s'),
+    'sigma': UnitsOfMeasure('N/m'),
+    'kappa': UnitsOfMeasure('W/m/K'),
+    'Hvap': UnitsOfMeasure('J/mol'),
+    'H': UnitsOfMeasure('J/mol'),  
+    'Hf': UnitsOfMeasure('J/mol'), 
+    'Hc': UnitsOfMeasure('J/mol'), 
+    'Hfus': UnitsOfMeasure('J/mol'), 
+    'Hsub': UnitsOfMeasure('J/mol'),
+    'HHV': UnitsOfMeasure('J/mol'),
+    'LHV': UnitsOfMeasure('J/mol'),
+    'S': UnitsOfMeasure('J/K/mol'),
+    'S0': UnitsOfMeasure('J/K/mol'),
+    'G': UnitsOfMeasure('J/mol'), 
+    'U': UnitsOfMeasure('J/mol'),
+    'H_excess': UnitsOfMeasure('J/mol'), 
+    'S_excess': UnitsOfMeasure('J/mol'),
+    'dipole': UnitsOfMeasure('Debye'),
+    'delta': UnitsOfMeasure('Pa^0.5'),
+    'epsilon': UnitsOfMeasure(''),
 }
 stream_units_of_measure = {
-    'mol': AbsoluteUnitsOfMeasure('kmol/hr'),
-    'mass': AbsoluteUnitsOfMeasure('kg/hr'),
-    'vol': AbsoluteUnitsOfMeasure('m^3/hr'),
-    'F_mass': AbsoluteUnitsOfMeasure('kg/hr'),
-    'F_mol': AbsoluteUnitsOfMeasure('kmol/hr'),
-    'F_vol': AbsoluteUnitsOfMeasure('m^3/hr'),
-    'cost': AbsoluteUnitsOfMeasure('USD/hr'),
-    'HHV': AbsoluteUnitsOfMeasure('kJ/hr'),
-    'LHV': AbsoluteUnitsOfMeasure('kJ/hr'),
-    'Hvap': AbsoluteUnitsOfMeasure('kJ/hr'),
-    'Hf': AbsoluteUnitsOfMeasure('kJ/hr'), 
-    'S0': AbsoluteUnitsOfMeasure('kJ/K/hr'), 
-    'Hc': AbsoluteUnitsOfMeasure('kJ/hr'), 
-    'H': AbsoluteUnitsOfMeasure('kJ/hr'),
-    'S': AbsoluteUnitsOfMeasure('kJ/K/hr'),
-    'G': AbsoluteUnitsOfMeasure('kJ/hr'),
-    'U': AbsoluteUnitsOfMeasure('kJ/hr'),
-    'C': AbsoluteUnitsOfMeasure('kJ/hr/K'),
+    'mol': UnitsOfMeasure('kmol/hr'),
+    'mass': UnitsOfMeasure('kg/hr'),
+    'vol': UnitsOfMeasure('m^3/hr'),
+    'F_mass': UnitsOfMeasure('kg/hr'),
+    'F_mol': UnitsOfMeasure('kmol/hr'),
+    'F_vol': UnitsOfMeasure('m^3/hr'),
+    'cost': UnitsOfMeasure('USD/hr'),
+    'HHV': UnitsOfMeasure('kJ/hr'),
+    'LHV': UnitsOfMeasure('kJ/hr'),
+    'Hvap': UnitsOfMeasure('kJ/hr'),
+    'Hf': UnitsOfMeasure('kJ/hr'), 
+    'S0': UnitsOfMeasure('kJ/K/hr'), 
+    'Hc': UnitsOfMeasure('kJ/hr'), 
+    'H': UnitsOfMeasure('kJ/hr'),
+    'S': UnitsOfMeasure('kJ/K/hr'),
+    'G': UnitsOfMeasure('kJ/hr'),
+    'U': UnitsOfMeasure('kJ/hr'),
+    'C': UnitsOfMeasure('kJ/hr/K'),
 }
 for i in ('T', 'P', 'mu', 'V', 'rho', 'sigma',
           'kappa', 'nu', 'epsilon', 'delta',
@@ -371,16 +340,16 @@ for i in ('T', 'P', 'mu', 'V', 'rho', 'sigma',
     stream_units_of_measure[i] = chemical_units_of_measure[i]
 
 power_utility_units_of_measure = {
-    'cost': AbsoluteUnitsOfMeasure('USD/hr'),
-    'rate': AbsoluteUnitsOfMeasure('kW'),
-    'consumption': AbsoluteUnitsOfMeasure('kW'),
-    'production': AbsoluteUnitsOfMeasure('kW'),
+    'cost': UnitsOfMeasure('USD/hr'),
+    'rate': UnitsOfMeasure('kW'),
+    'consumption': UnitsOfMeasure('kW'),
+    'production': UnitsOfMeasure('kW'),
 }
 
 heat_utility_units_of_measure = {
-    'cost': AbsoluteUnitsOfMeasure('USD/hr'),
-    'flow': AbsoluteUnitsOfMeasure('kmol/hr'),
-    'duty': AbsoluteUnitsOfMeasure('kJ/hr'),
+    'cost': UnitsOfMeasure('USD/hr'),
+    'flow': UnitsOfMeasure('kmol/hr'),
+    'duty': UnitsOfMeasure('kJ/hr'),
 }
 
 definitions = {

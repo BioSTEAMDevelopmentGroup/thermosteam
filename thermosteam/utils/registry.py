@@ -13,21 +13,11 @@ __all__ = ('Registry', 'is_valid_ID', 'check_valid_ID')
 
 
 def is_valid_ID(ID):
-    if not isinstance(ID, str): return False
-    if not ID[0].isalpha(): return False
-    if not all([word.isalnum() for word in ID.split('_') if word]): return False
-    return True
+    return isinstance(ID, str)
 
 def check_valid_ID(ID):
     if not isinstance(ID, str):
         raise RuntimeError(f"ID must be a string, not a '{type(ID).__name__}' object")
-    if not ID[0].isalpha():
-        raise RuntimeError("ID must start with a letter")
-    if not all([word.isalnum() for word in ID.split('_') if word]):
-        raise RuntimeError(
-            'ID may only contain letters, numbers, and/or underscores; '
-            'no special characters or spaces'
-        )
         
 def check_valid_alias(alias):
     if not isinstance(alias, str):
@@ -107,15 +97,15 @@ class Registry: # pragma: no cover
                     ID = base + '_' + str(int(num) + 1)
                 elif ID_old:
                     warning = RuntimeWarning(
-                        f"upon renaming, {repr(obj)} replaced {repr(other)} "
+                        f"upon renaming, {obj!r} replaced {other!r} "
                          "in registry"
                     )
                     warn(warning, 4)
                 else:
                     warning = RuntimeWarning(
-                        f"{repr(other)} has been replaced in registry"
+                        f"{other!r} has been replaced in registry"
                     )
-                    warn(warning, stacklevel=getattr(obj, '_stacklevel', 5) - 1)
+                    warn(warning, stacklevel=getattr(obj, '_stacklevel', 4) - 1)
         self._close_registration(ID, obj)
         
     def register(self, ID, obj):
@@ -132,12 +122,12 @@ class Registry: # pragma: no cover
             if obj is not other and other not in self.safe_to_replace:
                 if override is None:
                     warning = RuntimeWarning(
-                        f"alias {repr(alias)} of {repr(other)} has been replaced in registry with {repr(obj)}"
+                        f"alias {alias!r} of {other!r} has been replaced in registry with {obj!r}"
                     )
                     warn(warning, stacklevel=getattr(obj, '_stacklevel', 5) - 1)
                 elif not override:
                     raise RuntimeError(
-                        f"alias {repr(alias)} is already registered to {repr(other)}"
+                        f"alias {alias!r} is already registered to {other!r}"
                     )
         self.register_alias(alias, obj)
         

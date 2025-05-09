@@ -8,7 +8,7 @@
 """
 """
 import thermosteam as tmo
-from .units_of_measure import AbsoluteUnitsOfMeasure
+from .units_of_measure import UnitsOfMeasure
 from . import utils
 from .exceptions import UndefinedChemicalAlias, UndefinedPhase
 from .base import (
@@ -588,8 +588,9 @@ class ChemicalIndexer(Indexer):
     def to_material_indexer(self, phases):
         parent = self._parent
         material_array = self._MaterialIndexer.blank(phases, self._chemicals, parent)
-        phase = self.phase
-        if phase in phases:
+        if not self.data.any():
+            for row in material_array.data.rows: row.clear()
+        elif (phase:=self.phase) in phases:
             index = material_array._phase_indexer(phase)
             for i, row in enumerate(material_array.data.rows):
                 if i == index: continue
@@ -1298,7 +1299,7 @@ def _new_Indexer(name, units, f_group_composition):
     MaterialIndexerSubclass.__slots__ = ()
     
     ChemicalIndexerSubclass.units = \
-    MaterialIndexerSubclass.units = AbsoluteUnitsOfMeasure(units)
+    MaterialIndexerSubclass.units = UnitsOfMeasure(units)
     
     MaterialIndexerSubclass._ChemicalIndexer = ChemicalIndexerSubclass
     ChemicalIndexerSubclass._MaterialIndexer = MaterialIndexerSubclass

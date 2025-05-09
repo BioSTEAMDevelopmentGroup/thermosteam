@@ -114,6 +114,7 @@ class DisplayPreferences:
         
         #: Displayed height of graphviz html diagrams without and with full results.
         self.graphviz_html_height: dict[str, tuple[str, str]] = {
+            'huge-system': ('800px', '1200px'),
             'big-system': ('600px', '900px'),
             'system': ('400px', '600px'),
             'unit': ('225px', '400px'),
@@ -240,7 +241,7 @@ class DisplayPreferences:
                        unit_periphery_color, fill_cluster, save)
     
     def light_mode(self, stream='#4e4e4e', label='#4e4e4e', bg='#ffffffff',
-                   cluster=['#d5edf02f', '#ffffffdf'], unit_color='white:#CDCDCD', 
+                   cluster=['#d5edf02f', '#ffffffdf'], unit_color='#fcfcfc:#e6e6e6', 
                    unit_label_color='black', unit_periphery_color='#4e4e4e',
                    fill_cluster=True, save=False):
         """Set diagram display colors to light mode."""

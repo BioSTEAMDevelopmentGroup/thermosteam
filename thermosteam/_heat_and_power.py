@@ -32,7 +32,7 @@ class Heat:
     
     @classmethod
     def sum(cls, streams, ID=None):
-        new = Power(ID)
+        new = Heat(ID)
         new.mix_from(streams)
         return new
     

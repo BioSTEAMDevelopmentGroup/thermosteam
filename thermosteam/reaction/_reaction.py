@@ -490,7 +490,10 @@ class Reaction:
         values, config, original = as_material_array(
             material, self._basis, self._phases, self.chemicals
         )
-        self._reaction(values)
+        if values.ndim == 2 and not isinstance(self._reactant_index, tuple):
+            for i in values: self._reaction(i)
+        else:
+            self._reaction(values)
         if tmo.reaction.CHECK_FEASIBILITY:
             has_negatives = values.has_negatives()
             if has_negatives:
@@ -814,14 +817,18 @@ class Reaction:
         """[ChemicalIndexer] Stoichiometry coefficients."""
         stoichiometry = self._stoichiometry
         if stoichiometry.ndim == 1:
-            return tmo.indexer.ChemicalIndexer.from_data(self._stoichiometry,
-                                                         chemicals=self.chemicals,
-                                                         check_data=False)
+            return tmo.indexer.ChemicalIndexer.from_data(
+                self._stoichiometry,
+                chemicals=self.chemicals,
+                check_data=False
+            )
         else:
-            return tmo.indexer.MaterialIndexer.from_data(self._stoichiometry,
-                                                         phases=self._phases,
-                                                         chemicals=self.chemicals,
-                                                         check_data=False)
+            return tmo.indexer.MaterialIndexer.from_data(
+                self._stoichiometry,
+                phases=self._phases,
+                chemicals=self.chemicals,
+                check_data=False
+            )
     
     @property
     def reactant(self):
@@ -831,6 +838,20 @@ class Reaction:
             return self._phases[phase_index], self.chemicals.IDs[chemical_index]
         else:
             return self.chemicals.IDs[self._reactant_index] 
+    @reactant.setter
+    def reactant(self, reactant):
+        """[str] Reactant associated to conversion."""
+        phases = self._phases
+        stoichiometry = self._stoichiometry
+        chemicals = self.chemicals
+        if phases:
+            reactant_index = chemicals.index(reactant)
+            for phase_index, x in enumerate(stoichiometry[:, reactant_index]):
+                if x: break
+            self._reactant_index = (phase_index, reactant_index)
+        else:
+            self._reactant_index = chemicals.index(reactant)
+        self._rescale()
 
     @property
     def MWs(self):
@@ -1125,7 +1146,6 @@ class ReactionItem(Reaction):
         copy._stoichiometry = self._stoichiometry.copy()
         copy._reactant_index = self._reactant_index
         copy._chemicals = self._chemicals
-        copy.chemicals = self.chemicals
         copy._X = self.X
         if basis: set_reaction_basis(copy, basis)
         return copy

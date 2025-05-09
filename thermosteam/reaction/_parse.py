@@ -60,7 +60,7 @@ def split_coefficient(nID, sign):
                 break
             else:
                 if next_letter.isalpha(): break
-        elif letter.isalpha() or letter in '()[]{}':
+        elif letter.isalpha() or letter in '`()[]{}':
             break
     if i: 
         ID = nID[i:]
