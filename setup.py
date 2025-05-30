@@ -42,6 +42,7 @@ setup(
     },
     package_data={
         'thermosteam': [
+            'temporary_images/',
             'base/*',
             'equilibrium/*',
             'reaction/*',
@@ -55,6 +56,7 @@ setup(
             'units_of_measure.txt',
         ]
     },
+    excluded=['*.png'],
     python_requires='>=3.9',
     platforms=['Windows', 'Mac', 'Linux'],
     author_email='yoelcortes@gmail.com',
