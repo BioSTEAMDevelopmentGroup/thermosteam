@@ -31,7 +31,7 @@
 #     update_module(chemicals, numba)
 # use_numba_chemicals()
 # del use_numba_chemicals
-__version__ = "0.51.13"
+__version__ = "0.51.14"
 
 from . import thermo
 del thermo
@@ -45,7 +45,7 @@ from . import (
     units_of_measure,
     separations,
     functors,
-    nodes,
+    phenomenode,
 )
 from .utils import docround
 from .network import *
@@ -71,7 +71,7 @@ from .reaction import *
 from .equilibrium import * 
 from .mixture import *
 from ._preferences import preferences
-from .nodes import *
+from .phenomenode import *
 
 __all__ = ('Chemical', 'ChemicalData', 'Chemicals', 'CompiledChemicals', 
            'ChemicalDraft', 'ChemicalsOutline', 'Thermo', 'IdealThermo', 
@@ -80,7 +80,7 @@ __all__ = ('Chemical', 'ChemicalData', 'Chemicals', 'CompiledChemicals',
            *network.__all__, 'preferences',
            'indexer', 'settings', 'functor', 'functors', 'chemicals', 'base', 
            'equilibrium', 'units_of_measure', 'exceptions', 'functional', 
-           'reaction', 'constants', 'utils', 'separations', *nodes.__all__)
+           'reaction', 'constants', 'utils', 'separations', *phenomenode.__all__)
 
 # Set number of digits displayed
 import numpy as np

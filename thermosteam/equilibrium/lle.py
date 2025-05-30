@@ -218,11 +218,13 @@ class LLE(Equilibrium, phases='lL'):
             partition coefficients, and phase fraction.
             
         """
+        imol = self._imol
         if update:
             thermal_condition = self._thermal_condition
             thermal_condition.T = T
             if P: thermal_condition.P = P
-        imol = self._imol
+        else:
+            old_data = imol.data.copy()
         mol, index, lle_chemicals = self.get_liquid_mol_data()
         F_mol = mol.sum()
         if F_mol and len(lle_chemicals) > 1:
@@ -295,7 +297,9 @@ class LLE(Equilibrium, phases='lL'):
             self._lle_chemicals = lle_chemicals
             self._z_mol = z_mol
             self._T = T
-            if not update: return self._lle_chemicals, self._K, self._gamma_y, self._phi
+            if not update: 
+                imol.data[:] = old_data
+                return self._lle_chemicals, self._K, self._gamma_y, self._phi
             imol['l'][index] = mol_l * F_mol
             imol['L'][index] = mol_L * F_mol
         elif not update: 
@@ -318,6 +322,7 @@ class LLE(Equilibrium, phases='lL'):
                 K = np.zeros_like(mol)
                 phi = 0.
             gamma_y = np.ones_like(mol)
+            imol.data[:] = old_data
             return lle_chemicals, K, gamma_y, phi
         
     def solve_lle_liquid_mol(self, mol, T, lle_chemicals, single_loop):

@@ -23,7 +23,7 @@ from .indexer import nonzeros
 from typing import TYPE_CHECKING
 from ._phase import valid_phases
 from .network import AbstractStream
-from .nodes import VariableNode
+from .phenomenode import VariableNode
 from .exceptions import NoEquilibrium
 if TYPE_CHECKING:
     from .base import SparseVector, SparseArray
@@ -323,6 +323,7 @@ class Stream(AbstractStream):
         '_original',
         '_F_node',
         '_E_node',
+        '_T_node',
         # '_velocity', '_height'
     )
 
@@ -448,22 +449,37 @@ class Stream(AbstractStream):
     
     @property
     def E_node(self):
-        return self.source.E_node if self.source else None
+        return self.source.get_E_node(self) if self.source else None
+
+    @property
+    def T_node(self):
+        source = self.source
+        if source is None:
+            return None
+        else:
+            if hasattr(source, 'T_node'):
+                return source.T_node
+            elif hasattr(self, '_T_node'):
+                self._T_node.value = self.T
+                return self._T_node
+            else:
+                self._T_node = var = VariableNode(
+                    f"{source.node_tag}.outs[{source.outs.index(self)}].T",
+                    self.T,
+                )
+                return var
 
     @property
     def F_node(self):
         source = self.source
-        if source is None:
-            return None
         if hasattr(self, '_F_node'):
             self._F_node.value = self.mol.to_array()
             return self._F_node
+        elif source is None:
+            return None
         self._F_node = var = VariableNode(
             f"{source.node_tag}.outs[{source.outs.index(self)}].F",
             self.mol.to_array(),
-            *source.get_connected_material_nodes(self),
-            # TODO: Use get_connected_material_nodes here too
-            *[i.sink.overall_material_balance_node for i in source.outs if i.sink],
         )
         return var
 
@@ -1471,7 +1487,7 @@ class Stream(AbstractStream):
         return self._thermal_condition.in_equilibrium(other._thermal_condition)
 
     @classmethod
-    def sum(cls, streams, ID=None, thermo=None, energy_balance=True, vle=False):
+    def sum(cls, streams, ID=None, thermo=None, energy_balance=True, vle=False, Q=0., conserve_phases=False):
         """
         Return a new Stream object that represents the sum of all given streams.
 
@@ -1502,7 +1518,7 @@ class Stream(AbstractStream):
         new = cls(ID, thermo=thermo)
         if streams:
             new.copy_thermal_condition(streams[0])
-        new.mix_from(streams, energy_balance, vle)
+        new.mix_from(streams, energy_balance, vle, Q, conserve_phases)
         return new
 
     def separate_out(self, other, energy_balance=True):
