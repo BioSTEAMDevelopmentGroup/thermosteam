@@ -11,7 +11,7 @@ setup(
     name='thermosteam',
     packages=['thermosteam'],
     license='MIT',
-    version='0.51.13',
+    version='0.51.16',
     description="BioSTEAM's Premier Thermodynamic Engine",
     long_description=open('README.rst', encoding='utf-8').read(),
     author='Yoel Cortes-Pena',
@@ -28,6 +28,8 @@ setup(
                       'flexsolve>=0.5.4',
                       'numba==0.60.0',
                       'coolprop',
+                      'imageio',
+                      'pydot',
                       'pyglet'],
     extras_require={
         'dev': [
@@ -42,6 +44,7 @@ setup(
     },
     package_data={
         'thermosteam': [
+            'temporary_images/',
             'base/*',
             'equilibrium/*',
             'reaction/*',
@@ -55,6 +58,7 @@ setup(
             'units_of_measure.txt',
         ]
     },
+    excluded=['*.png'],
     python_requires='>=3.9',
     platforms=['Windows', 'Mac', 'Linux'],
     author_email='yoelcortes@gmail.com',

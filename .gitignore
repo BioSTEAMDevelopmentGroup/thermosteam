@@ -3,6 +3,7 @@ dist
 thermosteam.egg-info
 thermosteam/preferences.yaml
 Ethanol-Water Property Package
+thermosteam/temporary_images/*
 **/__pycache__
 *.pyc
 *.pyo

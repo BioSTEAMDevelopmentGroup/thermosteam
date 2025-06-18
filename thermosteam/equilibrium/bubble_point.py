@@ -50,6 +50,10 @@ class BubblePointValues:
     @property
     def x(self): return self.z
         
+    @property
+    def K(self):
+        return self.y / self.x
+    
     def __repr__(self):
         return f"{type(self).__name__}(T={self.T:.2f}, P={self.P:.0f}, IDs={self.IDs}, z={self.z}, y={self.y})"
 
@@ -65,6 +69,10 @@ class ReactiveBubblePointValues:
         self.dz = dz
         self.y = y
         self.x = x
+        
+    @property
+    def K(self):
+        return self.y / self.x
         
     def __repr__(self):
         return f"{type(self).__name__}(T={self.T:.2f}, P={self.P:.0f}, IDs={self.IDs}, z0={self.z0}, dz={self.dz}, y={self.y}, x={self.x})"

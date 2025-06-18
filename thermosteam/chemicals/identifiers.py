@@ -111,7 +111,7 @@ class ChemicalMetadataDB:
         InChI_index = self.InChI_index
         InChI_key_index = self.InChI_key_index
         formula_index = self.formula_index
-        f = open(file_name)
+        f = open(file_name, encoding='utf-8')
         for line in f:
             # This is effectively the documentation for the file format of the file
             values = line.rstrip('\n').split('\t')
