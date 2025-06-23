@@ -460,12 +460,11 @@ class Stream(AbstractStream):
             if hasattr(source, 'T_node'):
                 return source.T_node
             elif hasattr(self, '_T_node'):
-                self._T_node.value = self.T
                 return self._T_node
-            else:
+            elif not getattr(source, 'T_specification', None):
                 self._T_node = var = VariableNode(
                     f"{source.node_tag}.outs[{source.outs.index(self)}].T",
-                    self.T,
+                    lambda: self.T,
                 )
                 return var
 
@@ -473,13 +472,12 @@ class Stream(AbstractStream):
     def F_node(self):
         source = self.source
         if hasattr(self, '_F_node'):
-            self._F_node.value = self.mol.to_array()
             return self._F_node
         elif source is None:
             return None
         self._F_node = var = VariableNode(
             f"{source.node_tag}.outs[{source.outs.index(self)}].F",
-            self.mol.to_array(),
+            self.mol.to_array,
         )
         return var
 
