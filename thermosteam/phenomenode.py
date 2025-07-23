@@ -18,6 +18,7 @@ import imageio
 import os
 from matplotlib import colormaps
 from matplotlib.colors import rgb2hex
+import shutil
 
 viridis = colormaps['viridis']
 
@@ -154,7 +155,7 @@ def get_order(values):
     return order
 
 class EquationNode:
-    __slots__ = ('name', 'inputs', 'outputs')
+    __slots__ = ('name', 'inputs', 'outputs', 'tracked_outputs')
     
     def __init__(self, name):
         self.name = name    
@@ -166,9 +167,13 @@ class EquationNode:
             if category in name: return category
         return 'phenomena' # generic
     
-    def set_equations(self, inputs=(), outputs=()):
+    def set_equations(self, inputs=(), outputs=(), tracked_outputs=None):
         self.inputs = filter_nodes(inputs, VariableNode)
         self.outputs = filter_nodes(outputs, VariableNode)
+        if tracked_outputs is None: 
+            self.tracked_outputs = self.outputs
+        else:
+            self.tracked_outputs = filter_nodes(tracked_outputs, VariableNode)
         for i in self.variables: i.equations.append(self)
         
     @property
@@ -195,12 +200,19 @@ class EquationNode:
     
     
 class VariableNode:
-    __slots__ = ('name', 'value', 'equations')
+    __slots__ = ('name', 'getter', 'equations', 'last_value')
     
-    def __init__(self, name, value):
+    def __init__(self, name, getter):
+        if not callable(getter):
+            raise ValueError('getter must be function')
         self.name = name
-        self.value = value
+        self.getter = getter
         self.equations = []
+        self.last_value = np.nan
+        
+    def get_value(self):
+        self.last_value = value = self.getter()
+        return value
         
     def __repr__(self):
         return self.name
@@ -219,6 +231,7 @@ class Criteria:
     __slots__ = ('names',)
     
     def __init__(self, names):
+        if isinstance(names, str): names = [names]
         self.names = names
         
     def match(self, full_name):
@@ -227,13 +240,12 @@ class Criteria:
 
 class CriteriaSelection:
     __slots__ = ('criterias',)
-    def __init__(self, *selection):
-        self.criterias = [Criteria(i) for i in product(*selection)]
+    def __init__(self, selection):
+        self.criterias = [Criteria(i) for i in selection]
 
     def get_criteria(self, full_name):
         for criteria in self.criterias:
             if criteria.match(full_name): return criteria
-        breakpoint()
 
 class PhenomeNode:
     __slots__ = ('name', 'size', 'equations', 'neighbors', 'criteria')
@@ -252,20 +264,19 @@ class PhenomeNode:
         self.size = sum([i in name for i in stage_tags])
         
     def output_variables(self):
-        return set([j for i in self.equations for j in i.outputs]) 
+        return set([j for i in self.equations for j in i.tracked_outputs]) 
         
     def __repr__(self):
         return self.name
 
 
 class PhenomeGraph:
-    __slots__ = ('phenomenodes', 'edges', 'pydot', 'profiles', 'depth')
-        
-    def __init__(self, equations, criteria_selection, stage_tags, variable_profiles, file=None):
-        self.depth = len(criteria_selection) # TODO: remove this workaround for more detailed algorithm
+    __slots__ = ('phenomenodes', 'edges', 'pydot', 'profiles', 'time')
+    
+    def __init__(self, equations, criteria_selection, stage_tags, variable_profiles, time, file=None):
         phenomenodes = []
         collected_equations = set()
-        if not isinstance(criteria_selection, CriteriaSelection): criteria_selection = CriteriaSelection(*criteria_selection)
+        if not isinstance(criteria_selection, CriteriaSelection): criteria_selection = CriteriaSelection(criteria_selection)
         for eq in equations:
             if eq in collected_equations: continue
             phenomenode = PhenomeNode(eq, criteria_selection)
@@ -281,24 +292,28 @@ class PhenomeGraph:
         ])
         for i in phenomenodes: i.finalize(stage_tags)
         errors = np.abs(variable_profiles - variable_profiles.iloc[-1])
+        def normalized_profile(errors):
+            order = np.array(get_order(errors.sum(axis=1)))
+            order_norm = 100 * order / order.max()
+            # breakpoint()
+            return order_norm
+            # MSE = errors.sum(axis=1)
+            # # MSE = (errors * errors).mean(axis=1)
+            # mask = np.isnan(MSE)
+            # MSE[mask] = MSE[~mask].max() # Maximum error
+            # MSE[MSE < 1e-16] = 1e-16 # Minimum error
+            # MSE = np.log(MSE)
+            # MSE_zeroed = MSE - MSE.min()
+            # MSE_norm = 100 * MSE_zeroed / MSE_zeroed.max()
+            # return MSE_norm
+        
+        assert variable_profiles.shape[0] == len(time)
         profiles = [
-            errors[[i.name for i in phenomenode.output_variables()]].values.sum(axis=1)
+            normalized_profile(errors[[i.name for i in phenomenode.output_variables()]].values)
             for phenomenode in phenomenodes
         ]
-        profiles =[get_order(i) for i in profiles]
-        # profiles = [
-        #     np.diff(
-        #         variable_profiles[[i.name for i in phenomenode.output_variables()]].values,
-        #         axis=0
-        #     ).sum(axis=1)
-        #     for phenomenode in phenomenodes
-        # ]
-        profiles = np.abs(np.array(profiles, dtype=float)).T
-        # profiles = np.log(profiles + 1e-6)
-        # profiles -= profiles.min(axis=0, keepdims=True)
-        max_errors = profiles.max(axis=0, keepdims=True)
-        max_errors[max_errors < 1e-9] = 1
-        profiles /= max_errors
+        self.time = time
+        assert len(profiles[0]) == len(time)
         self.phenomenodes = phenomenodes
         self.edges = edges
         self.profiles = profiles
@@ -342,35 +357,22 @@ class PhenomeGraph:
             overlap='compress', 
             dir='none',
         )
-        if self.depth == 1:
-            dct = {}
-            for i in self.phenomenodes:
-                key = i.criteria.names
+        dct = {}
+        for i in self.phenomenodes:
+            names = i.criteria.names
+            if len(names) == 1:
+                key, = names
                 if key in dct: dct[key].append(i)
                 else: dct[key] = [i]
-                
-            for n, phenomenodes in enumerate(dct.values()): 
-                with digraph.subgraph(name='cluster_' + str(n)) as subgraph:
-                    subgraph.attr('graph', color='none', bgcolor='none', shape='box', label='')
-                    for i in phenomenodes:
-                        color = colors[i.category]
-                        subgraph.node(
-                            name=i.name, 
-                            color='black',
-                            fillcolor=color,
-                            height=str(i.size * 0.2),
-                            **phenomenode_options
-                        )
-        elif self.depth == 2:
-            dct = {}
-            for i in self.phenomenodes:
-                outer, inner = i.criteria.names
+            else:
+                outer, inner = names
                 if outer in dct: subdct = dct[outer]
                 else: dct[outer] = subdct = {}
                 if inner in subdct: subdct[inner].append(i)
                 else: subdct[inner] = [i]
-                
-            for m, subdct in enumerate(dct.values()):
+            
+        for m, subdct in enumerate(dct.values()):
+            if isinstance(subdct, dict):
                 with digraph.subgraph(name=f'cluster_{m}') as subgraph:
                     subgraph.attr('graph', color='none', bgcolor='none', shape='box', label='')
                     for n, phenomenodes in enumerate(subdct.values()): 
@@ -385,6 +387,20 @@ class PhenomeGraph:
                                     height=str(i.size * 0.2),
                                     **phenomenode_options
                                 )
+            else:
+                n = m
+                phenomenodes = subdct
+                with digraph.subgraph(name='cluster_' + str(n)) as subgraph:
+                    subgraph.attr('graph', color='none', bgcolor='none', shape='box', label='')
+                    for i in phenomenodes:
+                        color = colors[i.category]
+                        subgraph.node(
+                            name=i.name, 
+                            color='black',
+                            fillcolor=color,
+                            height=str(i.size * 0.2),
+                            **phenomenode_options
+                        )
                                 
         # Set attributes for graph and edges
         digraph.attr(
@@ -421,41 +437,47 @@ class PhenomeGraph:
         getattr(self.pydot, method)(file)
         
     # TODO: plots/gifs
-    def plot_convergence_profile(self, file=None):
-        equation_profiles = self.equation_profiles
-        profiles_arr = np.abs(equation_profiles.values)
-        equations = sorted(self.equations, key=lambda x: x.category)
-        index = [equation_profiles.columns.get_loc(i.name) for i in equations]
-        # ps = [*range(0, 101, 1)]
-        # percentiles = np.percentile(profiles_arr, ps, axis=0)
-        # fs = [interp1d(i, ps) for i in percentiles.T]
-        M, N = profiles_arr.shape
-        image = np.zeros([M, N, 3])
-        # errors_percentiles = np.zeros([M, N])
-        # for i in range(M):
-        #     for j in index: 
-        #         errors_percentiles[i, j] = fs[j](profiles_arr[i, j])
-        # errors_percentiles -= errors_percentiles.min(axis=0, keepdims=True)
-        profiles_arr[:] = np.log(profiles_arr + 1e-6)
-        profiles_arr -= profiles_arr.min(axis=0, keepdims=True)
-        max_errors = profiles_arr.max(axis=0, keepdims=True)
-        max_errors[max_errors < 1e-9] = 1
-        profiles_arr /= max_errors
-        for i in range(M):
-            for k, (j, eq) in enumerate(zip(index, equations)): 
-                # error = errors_percentiles[i, j]
-                # if error < 20: error = 0.
-                error = 100 * profiles_arr[i, j]
-                color = colors[eq.category]
-                image[i, k, :] = Color(fg=color).shade(error).RGBn        
-        ax = plt.imshow(image)
-        plt.axis('off')
-        if file:
-            for i in ('svg', 'png'):
-                plt.savefig(file, dpi=900, transparent=True)
-        return ax
+    # def plot_convergence_profile(self, file=None):
+    #     equation_profiles = self.equation_profiles
+    #     profiles_arr = np.abs(equation_profiles.values)
+    #     equations = sorted(self.equations, key=lambda x: x.category)
+    #     index = [equation_profiles.columns.get_loc(i.name) for i in equations]
+    #     # ps = [*range(0, 101, 1)]
+    #     # percentiles = np.percentile(profiles_arr, ps, axis=0)
+    #     # fs = [interp1d(i, ps) for i in percentiles.T]
+    #     M, N = profiles_arr.shape
+    #     image = np.zeros([M, N, 3])
+    #     # errors_percentiles = np.zeros([M, N])
+    #     # for i in range(M):
+    #     #     for j in index: 
+    #     #         errors_percentiles[i, j] = fs[j](profiles_arr[i, j])
+    #     # errors_percentiles -= errors_percentiles.min(axis=0, keepdims=True)
+    #     profiles_arr[:] = np.log(profiles_arr + 1e-6)
+    #     profiles_arr -= profiles_arr.min(axis=0, keepdims=True)
+    #     max_errors = profiles_arr.max(axis=0, keepdims=True)
+    #     max_errors[max_errors < 1e-9] = 1
+    #     profiles_arr /= max_errors
+    #     for i in range(M):
+    #         for k, (j, eq) in enumerate(zip(index, equations)): 
+    #             # error = errors_percentiles[i, j]
+    #             # if error < 20: error = 0.
+    #             error = 100 * profiles_arr[i, j]
+    #             color = colors[eq.category]
+    #             image[i, k, :] = Color(fg=color).shade(error).RGBn        
+    #     ax = plt.imshow(image)
+    #     plt.axis('off')
+    #     if file:
+    #         for i in ('svg', 'png'):
+    #             plt.savefig(file, dpi=900, transparent=True)
+    #     return ax
         
-    def convergence_gif(self, file=None, duration=300, **kwargs):
+    def convergence_gif(
+            self, 
+            file=None, 
+            total_duration=30, # Seconds
+            fps=3,
+            **kwargs
+        ):
         digraph = self.pydot
         digraph.set_maxiter('10') # This speeds up image creation.
         digraph.set_dpi('100') # Pydot does not seem to save dpi from piped graphviz
@@ -463,7 +485,11 @@ class PhenomeGraph:
         output_file = file
         input_file = os.path.join(folder, 'temp0.png')
         profiles = self.profiles
-        M, N = profiles.shape
+        total_frames = total_duration * fps
+        time = self.time
+        normalized_time = time / time[-1] * total_duration
+        frame_duration = 1 / fps 
+        interpolators = [interp1d(normalized_time, profiles[name]) for name in profiles]
         phenomenodes = self.phenomenodes
         nodes_dct = {}
         for subgraph in digraph.get_subgraph_list():
@@ -474,12 +500,13 @@ class PhenomeGraph:
                 for subgraph in subgraph.get_subgraph_list():
                     for i in subgraph.get_nodes():
                         nodes_dct[i.get_name().strip('"')] = i
-        print('M', M)
-        for n in range(M):
-            print(n)
-            continue
+        print('total frames', total_frames)
+        t = 0
+        for n in range(total_frames):
+            print('Frame #', n)
+            t += frame_duration
             for j, node in enumerate(phenomenodes): 
-                error = 0.8 * profiles[n, j] # Leave at least 20% of color in
+                error = 0.8 * interpolators[j](t) # Leave at least 20% of color in
                 color = Color(fg=colors[node.category]).shade(error).HEX
                 node = nodes_dct[node.name]
                 node.set_fillcolor(color)
@@ -488,7 +515,6 @@ class PhenomeGraph:
         if output_file is None: output_file = os.path.join(folder, 'temp.gif')
         elif '.' not in output_file: output_file += '.gif'
         
-        print('duration', duration)
         with contextlib.ExitStack() as stack:
             # lazily load images
             imgs = (
@@ -496,7 +522,7 @@ class PhenomeGraph:
                     Image.open(
                         input_file.replace('0', str(i))
                     )
-                ) for i in range(M)
+                ) for i in range(total_frames)
             )
         
             # extract  first image from iterator
@@ -504,14 +530,13 @@ class PhenomeGraph:
         
             # https://pillow.readthedocs.io/en/stable/handbook/image-file-formats.html#gif
             img.save(fp=output_file, format='GIF', append_images=imgs,
-                     save_all=True, duration=duration, optimize=False, loop=1)
+                     save_all=True, duration=frame_duration * 1000, optimize=False, loop=1)
             
-        
 
 class BipartitePhenomeGraph:
     __slots__ = ('name', 'equations', 'variables', 'edges', 
                  'variable_profiles', 'equation_profiles', 'edge_profiles',
-                 'subgraphs', 'pydot')
+                 'subgraphs', 'pydot', 'time',)
     
     @staticmethod
     def get_node_edges(equation_nodes, inputs=True, outputs=True):
@@ -520,7 +545,7 @@ class BipartitePhenomeGraph:
     def __init__(self, 
             name, equations, variables, edges, 
             equation_profiles, variable_profiles, 
-            edge_profiles, file=None,
+            edge_profiles, time, file=None,
             **kwargs,
         ):
         self.name = name
@@ -530,6 +555,7 @@ class BipartitePhenomeGraph:
         self.equation_profiles = equation_profiles
         self.variable_profiles = variable_profiles
         self.edge_profiles = edge_profiles
+        self.time = time
         self.subgraphs = []
         self.load_pydot(file, **kwargs)
        
@@ -546,6 +572,7 @@ class BipartitePhenomeGraph:
         subgraph.equation_profiles = equation_profiles
         subgraph.variable_profiles = variable_profiles
         subgraph.edge_profiles = edge_profiles
+        subgraph.time = self.time
         self.subgraphs.append(subgraph)
         subgraph.load_pydot(file, parent=self.pydot, **kwargs)
        
@@ -690,44 +717,45 @@ class BipartitePhenomeGraph:
         method = 'write_' + format
         getattr(self.pydot, method)(file)
         
-    def plot_convergence_profile(self, file=None):
-        equation_profiles = self.equation_profiles
-        profiles_arr = np.abs(equation_profiles.values)
-        equations = sorted(self.equations, key=lambda x: x.category)
-        index = [equation_profiles.columns.get_loc(i.name) for i in equations]
-        # ps = [*range(0, 101, 1)]
-        # percentiles = np.percentile(profiles_arr, ps, axis=0)
-        # fs = [interp1d(i, ps) for i in percentiles.T]
-        M, N = profiles_arr.shape
-        image = np.zeros([M, N, 3])
-        # errors_percentiles = np.zeros([M, N])
-        # for i in range(M):
-        #     for j in index: 
-        #         errors_percentiles[i, j] = fs[j](profiles_arr[i, j])
-        # errors_percentiles -= errors_percentiles.min(axis=0, keepdims=True)
-        profiles_arr[:] = np.log(profiles_arr + 1e-6)
-        profiles_arr -= profiles_arr.min(axis=0, keepdims=True)
-        max_errors = profiles_arr.max(axis=0, keepdims=True)
-        max_errors[max_errors < 1e-9] = 1
-        profiles_arr /= max_errors
-        for i in range(M):
-            for k, (j, eq) in enumerate(zip(index, equations)): 
-                # error = errors_percentiles[i, j]
-                # if error < 20: error = 0.
-                error = 100 * profiles_arr[i, j]
-                color = colors[eq.category]
-                image[i, k, :] = Color(fg=color).shade(error).RGBn        
-        ax = plt.imshow(image)
-        plt.axis('off')
-        if file:
-            for i in ('svg', 'png'):
-                plt.savefig(file, dpi=900, transparent=True)
-        return ax
+    # def plot_convergence_profile(self, file=None):
+    #     equation_profiles = self.equation_profiles
+    #     profiles_arr = np.abs(equation_profiles.values)
+    #     equations = sorted(self.equations, key=lambda x: x.category)
+    #     index = [equation_profiles.columns.get_loc(i.name) for i in equations]
+    #     # ps = [*range(0, 101, 1)]
+    #     # percentiles = np.percentile(profiles_arr, ps, axis=0)
+    #     # fs = [interp1d(i, ps) for i in percentiles.T]
+    #     M, N = profiles_arr.shape
+    #     image = np.zeros([M, N, 3])
+    #     # errors_percentiles = np.zeros([M, N])
+    #     # for i in range(M):
+    #     #     for j in index: 
+    #     #         errors_percentiles[i, j] = fs[j](profiles_arr[i, j])
+    #     # errors_percentiles -= errors_percentiles.min(axis=0, keepdims=True)
+    #     profiles_arr[:] = np.log(profiles_arr + 1e-6)
+    #     profiles_arr -= profiles_arr.min(axis=0, keepdims=True)
+    #     max_errors = profiles_arr.max(axis=0, keepdims=True)
+    #     max_errors[max_errors < 1e-9] = 1
+    #     profiles_arr /= max_errors
+    #     for i in range(M):
+    #         for k, (j, eq) in enumerate(zip(index, equations)): 
+    #             # error = errors_percentiles[i, j]
+    #             # if error < 20: error = 0.
+    #             error = 100 * profiles_arr[i, j]
+    #             color = colors[eq.category]
+    #             image[i, k, :] = Color(fg=color).shade(error).RGBn        
+    #     ax = plt.imshow(image)
+    #     plt.axis('off')
+    #     if file:
+    #         for i in ('svg', 'png'):
+    #             plt.savefig(file, dpi=900, transparent=True)
+    #     return ax
         
     def convergence_gif(self, 
-            file=None, duration=300, eqp=None, varp=None, 
-            reference=None, profiles=None, categorize=True,
-            inverse=True, **kwargs
+            reference, time, profiles, 
+            file=None, total_duration=None, fps=None, 
+            categorize=True, interpolate=False,
+            inverse=False, **kwargs
         ):
         digraph = self.pydot
         equations = self.equations
@@ -736,62 +764,94 @@ class BipartitePhenomeGraph:
         # breakpoint()
         output_file = file
         input_file = os.path.join(folder, 'temp0.png')
-        if reference is None: 
-            if eqp is None: eqp = True
+        time = self.time
+        # profiles = self.variable_profiles
+        # reference = {i: n for n, i in enumerate(profiles)}
+        # profiles = profiles.values
+        # profiles = np.abs(profiles - profiles[-1])
+        # profiles -= profiles.min(axis=0, keepdims=True)
+        # profiles *= 100 / profiles.max()
+        pulses = (False, True, False)
+        if interpolate:
+            raise NotImplementedError('not implemented in BioSTEAM yet')
+            if fps is None: fps = 3
+            total_frames = total_duration * fps
+            time -= time[0]
+            normalized_time = time / time[-1] * total_duration
+            frame_duration = 1 / fps 
+            interpolators = [interp1d(normalized_time, i) for i in profiles]
+            duration_ms = 1000 * frame_duration
+            # print(duration_ms)
         else:
-            if eqp is None: eqp = False
-        if varp is None: varp = False
-        if reference:
-            M, N = profiles.shape
-        if eqp:
-            equation_profiles = self.equation_profiles.copy()
-            equation_profiles_arr = equation_profiles.values
-            index = [equation_profiles.columns.get_loc(i.name) for i in equations]
-            # equation_profiles_arr[:] = np.log(equation_profiles_arr + 1e-6)
-            equation_profiles_arr -= equation_profiles_arr.min(axis=0, keepdims=True)
-            max_errors = equation_profiles_arr.max(axis=0, keepdims=True)
-            max_errors[max_errors < 1e-9] = 1
-            equation_profiles_arr /= max_errors
-            M, N = equation_profiles_arr.shape
-        if varp:
-            variable_profiles = self.variable_profiles
-            # variable_profiles_arr = np.abs(np.diff(variable_profiles.values, axis=0))
-            # variable_profiles_arr = np.log(np.abs(variable_profiles.values - variable_profiles.values[-1]) + 1e-12)
-            variable_profiles_arr = np.abs(variable_profiles.values - variable_profiles.values[-1])
-            variable_profiles_arr -= variable_profiles_arr.min(axis=0, keepdims=True)
-            max_errors = variable_profiles_arr.max(axis=0, keepdims=True)
-            max_errors[max_errors < 1e-9] = 1
-            variable_profiles_arr /= max_errors
-            M, N = variable_profiles_arr.shape
+            # time = time[:total_frames + 1] - time[0]
+            # normalized_time = time / time[-1] * total_duration
+            # duration_ms = 1000 * np.diff(normalized_time) # in ms
+            # duration_ms = [*duration_ms]
+            # duration_ms = 1 / fps * 1000
+            # print(duration_ms)
+            # breakpoint()
+            total_frames = len(profiles[0])
+            if total_duration is not None:
+                duration_ms = 1000 * total_duration / total_frames
+                fps = duration_ms / 1000
+            elif fps is not None:
+                total_duration = total_frames / fps
+            else:
+                total_duration = 16
+                fps = total_duration / total_frames
+            duration_ms = 1000 / (fps * len(pulses))
+            print('total_duration', total_duration)
+            # profiles = [i[:total_frames] for i in profiles]
+            # profiles = [i - i.min() for i in profiles]
+            # profiles = [100 * i / (i.max() or 1) for i in profiles]
+        total_frames = len(profiles[0])
+        print('total frames', total_frames)
         variables = set(self.variables)
         nodes_dct = {i.get_name().strip('"'): i for i in digraph.get_nodes()}
+        equation_names = set([i.name for i in equations])
+        variable_names = set([i.name for i in variables])
         edges_dct = {
             (i.get_source().replace(':c', '').strip('"'), i.get_destination().replace(':c', '').strip('"')): i
             for i in digraph.get_edges()
         }
-        if categorize:
-            variable_colors = {}
-            for eq in self.equations: 
-                color = colors[eq.category]
-                for var in eq.outputs: variable_colors[var.name] = color
-        
-        print('M', M)
-        add = 0
-        profiles = 100 * profiles
-        for n in range(M):
-            print(n)
-            if reference:
+        if interpolate: 
+            t = 0
+            dt = total_duration / (total_frames - 1)
+        filenames = []
+        done = set()
+        for n in range(total_frames):
+            print('Frame #', n)
+            if interpolate: 
+                t += dt
+                if t > total_duration: t = total_duration # floating point error
+            nfile = input_file.replace('0', str(n))
+            for pulse in pulses: 
+                pulse_nfile = nfile.replace('.png', '_pulse.png')
+                if (n, pulse) in done:
+                    if pulse: 
+                        filenames.append(pulse_nfile)
+                    else:
+                        filenames.append(nfile)
+                    continue
                 for eq in equations:
                     index = reference[eq.name]
-                    error = profiles[n, index]
-                    if inverse:
-                        error = 100 - error
-                    if categorize:
-                        if not inverse: 0.8 * error
-                        color = colors[eq.category]
-                        color = Color(fg=color).shade(error).HEX
+                    if interpolate: 
+                        baseline = interpolators[index](t) 
+                        if pulse and n:
+                            last = interpolators[index](t - dt) 
+                            error = max(1.5 * baseline - 0.5 * last, 0) # Leave at least 20% of color in
+                        else:
+                            error = baseline
                     else:
-                        color = rgb2hex(viridis(profiles[n, index]))
+                        baseline = profiles[index][n]
+                        if pulse and n:
+                            last = profiles[index][n - 1]
+                            error = max(1.5 * baseline - 0.5 * last, 0) # Leave at least 20% of color in
+                        else:
+                            error = baseline
+                    error = 0.8 * error # Leave at least 20% of color in
+                    color = colors[eq.category]
+                    color = Color(fg=color).shade(error).HEX
                     node = nodes_dct[eq.name]
                     node.set_color(color)
                     node.set_fillcolor(color)
@@ -799,101 +859,36 @@ class BipartitePhenomeGraph:
                     for edge in edges:
                         _edge = edges_dct[edge.equation.name, edge.variable.name]
                         _edge.set_color(color)
-                        var = nodes_dct[edge.variable.name]
+                    for var in eq.outputs:
+                        var = nodes_dct[var.name]
                         var.set_color(color)
-                digraph.write_png(input_file.replace('0', str(n + add)))
-                if n == 0: continue
-                add += 1
-                for eq in equations:
-                    index = reference[eq.name]
-                    last = profiles[n - 1, index]
-                    baseline = profiles[n, index]
-                    error = max((2 * baseline - last), 0) # Leave at least 20% of color in
-                    error = min(error, baseline) # Leave at least 20% of color in
-                    if inverse:
-                        error = 100 - error
-                    if categorize:
-                        if not inverse: 0.8 * error
-                        color = colors[eq.category]
-                        color = Color(fg=color).shade(error).HEX
-                    else:
-                        color = rgb2hex(viridis(profiles[n, index]))
-                    node = nodes_dct[eq.name]
-                    node.set_color(color)
-                    node.set_fillcolor(color)
-                    edges = [i for i in eq.get_edges() if i.variable in variables]
-                    for edge in edges:
-                        _edge = edges_dct[edge.equation.name, edge.variable.name]
-                        _edge.set_color(color)
-                        var = nodes_dct[edge.variable.name]
-                        var.set_color(color)
-                digraph.write_png(input_file.replace('0', str(n + add)))
-                add += 1
-                for eq in equations:
-                    index = reference[eq.name]
-                    error = profiles[n, index] 
-                    if inverse:
-                        error = 100 - error
-                    if categorize:
-                        if not inverse: 0.8 * error
-                        color = colors[eq.category]
-                        color = Color(fg=color).shade(error).HEX
-                    else:
-                        color = rgb2hex(viridis(profiles[n, index]))
-                    node = nodes_dct[eq.name]
-                    node.set_color(color)
-                    node.set_fillcolor(color)
-                    edges = [i for i in eq.get_edges() if i.variable in variables]
-                    for edge in edges:
-                        _edge = edges_dct[edge.equation.name, edge.variable.name]
-                        _edge.set_color(color)
-                        var = nodes_dct[edge.variable.name]
-                        var.set_color(color)
-            else:
-                if eqp:
-                    for j, eq in zip(index, equations): 
-                        color = colors[eq.category]
-                        error = 0.8 * equation_profiles_arr[n, j] # Leave at least 20% of color in
-                        color = Color(fg=color).shade(error).HEX
-                        node = nodes_dct[eq.name]
-                        node.set_color(color)
-                        node.set_fillcolor(color)
-                        edges = [i for i in eq.get_edges() if i.variable in variables]
-                        for edge in edges:
-                            _edge = edges_dct[edge.equation.name, edge.variable.name]
-                            _edge.set_color(color)
-                            if varp: continue
-                            var = nodes_dct[edge.variable.name]
-                            var.set_color(color)
-                if varp:
-                    for j, var in enumerate(variables): 
-                        var_color = Color(fg=variable_colors[var.name])
-                        error = 0.8 * variable_profiles_arr[n, j] # Leave at least 20% of color in
-                        color = var_color.shade(error).HEX
-                        node = nodes_dct[var.name]
-                        node.set_color(color)
-            digraph.write_png(input_file.replace('0', str(n + add)))
-            
+                if pulse: 
+                    digraph.write_png(pulse_nfile)
+                    filenames.append(pulse_nfile)
+                else:
+                    digraph.write_png(nfile)
+                    filenames.append(nfile)
+                done.add((n, pulse))
+                
         if output_file is None: output_file = os.path.join(folder, 'temp.gif')
         elif '.' not in output_file: output_file += '.gif'
-        
-        print('duration', duration)
         with contextlib.ExitStack() as stack:
             # lazily load images
             imgs = (
                 stack.enter_context(
-                    Image.open(
-                        input_file.replace('0', str(i))
-                    )
-                ) for i in range(M + add)
+                    Image.open(i)
+                ) for i in filenames
             )
         
             # extract  first image from iterator
             img = next(imgs)
         
+            duration = [duration_ms] * len(filenames)
+            duration[-1] += 5000
+            print(sum(duration) / 1000)
             # https://pillow.readthedocs.io/en/stable/handbook/image-file-formats.html#gif
-            img.save(fp=output_file, format='GIF', append_images=imgs,
-                     save_all=True, duration=duration, optimize=False, loop=1)
+            img.save(fp=output_file, format='GIF', append_images=imgs, loop=0,
+                     save_all=True, duration=duration, optimize=False)
             
     def __repr__(self):
         return self.name
