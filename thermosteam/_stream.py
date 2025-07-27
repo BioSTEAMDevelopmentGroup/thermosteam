@@ -315,12 +315,13 @@ class Stream(AbstractStream):
 
     """
     __slots__ = (
+        'characterization_factors',
+        'equations',
         '_imol', '_thermal_condition', '_streams',
         '_vle_cache', '_lle_cache', '_sle_cache',
-        '_price', '_property_cache_key',
-        '_property_cache', 'characterization_factors',
-        'equations',
-        '_original',
+        '_price', 
+        '_property_cache_key',
+        '_property_cache', 
         '_F_node',
         '_E_node',
         '_T_node',
@@ -401,9 +402,6 @@ class Stream(AbstractStream):
             data = self._imol.data
             self.phases = [j for i, j in enumerate(
                 self.phases) if data[i].any()]
-
-    def temporary(self, flow=None, T=None, P=None, phase=None):
-        return TemporaryStream(self, flow, T, P, phase)
 
     def temporary_phase(self, phase):
         return TemporaryPhase(self, self.phase, phase)
@@ -1280,8 +1278,36 @@ class Stream(AbstractStream):
                 self.phase = 'g'
             else:
                 raise error
-            self.S = self.mixture.solve_T_at_SP(
+            self.T = self.mixture.solve_T_at_SP(
                 self.phase, self.mol, S, *self._thermal_condition
+            )
+
+    @property
+    def s(self) -> float:
+        """Specific enthalpy [kJ/kmol]."""
+        return self._get_property('S')
+
+    @s.setter
+    def s(self, s: float):
+        if not s and self.isempty():
+            return
+        z_mol = self.z_mol
+        try:
+            self.T = self.mixture.solve_T_at_SP(
+                self.phase, z_mol, s, *self._thermal_condition
+            )
+        except Exception as error:  # pragma: no cover
+            phase = self.phase.lower()
+            if phase == 'g':
+                # Maybe too little heat, liquid must be present
+                self.phase = 'l'
+            elif phase == 'l':
+                # Maybe too much heat, gas must be present
+                self.phase = 'g'
+            else:
+                raise error
+            self.T = self.mixture.solve_T_at_SP(
+                self.phase, z_mol, s, *self._thermal_condition
             )
 
     @property
@@ -1318,22 +1344,29 @@ class Stream(AbstractStream):
         """Enthalpy of vaporization flow rate [kJ/hr]."""
         return self._get_property('Hvap', flow=True, nophase=True)
 
+    @property
+    def hvap(self) -> float:
+        """Enthalpy of vaporization flow rate [kJ/hr]."""
+        return self._get_property('Hvap', flow=False, nophase=True)
+
     def _get_property(self, name, flow=False, nophase=False):
         property_cache = self._property_cache
         thermal_condition = self._thermal_condition
         imol = self._imol
-        data = imol.data
-        total = data.sum()
+        mol = imol.data
+        total = mol.sum()
         if total == 0.:
             return 0. if flow else None
         else:
-            composition = data / total
+            composition = mol / total
             composition_key = composition.dct
+            T = thermal_condition._T
+            P = thermal_condition._P
             if nophase:
-                literal = (thermal_condition._T, thermal_condition._P)
+                literal = (T, P) 
             else:
-                phase = imol._phase
-                literal = (phase, thermal_condition._T, thermal_condition._P)
+                phase = imol._phase  
+                literal = (phase, T, P)
             last_literal, last_composition_key = self._property_cache_key
             if literal == last_literal and (composition_key == last_composition_key):
                 if name in property_cache:
@@ -1344,13 +1377,9 @@ class Stream(AbstractStream):
             self._property_cache_key = (literal, composition_key.copy())
             calculate = getattr(self.mixture, name)
             if nophase:
-                property_cache[name] = value = calculate(
-                    composition, *self._thermal_condition
-                )
+                property_cache[name] = value = calculate(composition, T, P)
             else:
-                property_cache[name] = value = calculate(
-                    phase, composition, *self._thermal_condition
-                )
+                property_cache[name] = value = calculate(phase, composition, T, P)
             return value * total if flow else value
 
     @property
@@ -2130,7 +2159,6 @@ class Stream(AbstractStream):
         """
         cls = self.__class__
         new = cls.__new__(cls)
-        new._original = self
         new._ID = ID or ''
         new._sink = new._source = None
         new._price = self._price

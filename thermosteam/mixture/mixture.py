@@ -76,8 +76,23 @@ def xiter_T_at_SP(T, S, S_model, phase_mol, P, Cn_model, Cn_cache):
     Cn_cache[0] += 1
     return T * exp((S - S_model(phase_mol, T, P)) / Cn)
 
-
 # %% Abstract mixture
+
+stream_mixture_property_interface = {
+    'H': ('H', True, False),
+    'S': ('S', True, False),
+    'C': ('Cn', True, False),
+    'Hvap': ('epsilon', True, True),
+    'h': ('H', False, False),
+    's': ('S', False, False),
+    'V': ('V', False, False),
+    'Cn': ('Cn', False, False),
+    'hvap': ('epsilon', False, True),
+    'kappa': ('kappa', False, False),
+    'mu': ('mu', False, False),
+    'sigma': ('sigma', False, True),
+    'epsilon': ('epsilon', False, True),
+}
 
 class Mixture:
     """
@@ -110,11 +125,39 @@ class Mixture:
     T_tol = 1e-6
     __slots__ = ()
     
+    def __call__(self, 
+            name, stream=None, *,
+            mol=None, T=None, P=None,
+            phase=None, phases=None,
+        ):
+        name, flow, nophase = stream_mixture_property_interface[name]
+        if mol is None: mol = stream._imol.data
+        total = mol.sum()
+        if total == 0.:
+            return 0. if flow else None
+        else:
+            if T is None: T = stream.T
+            if P is None: P = stream.P
+            composition = mol / total
+            if mol.ndim == 2:
+                if nophase:
+                    calculate = getattr(self, name)
+                    value = calculate(composition.sum(axis=0), T, P)
+                else:
+                    calculate = getattr(self, 'x' + name)
+                    value = calculate(zip(phases or stream._imol._phases, composition), T, P)
+            else:
+                calculate = getattr(self, name)
+                if nophase:
+                    value = calculate(composition, T, P)
+                else:
+                    value = calculate(phase or stream._imol._phase, composition, T, P)
+            return value * total if flow else value  
+    
     def MW(self, mol):
         """Return molecular weight [g/mol] given molar array [mol]."""
-        if mol.__class__ is not SparseVector: mol = SparseVector(mol)
         total_mol = mol.sum()
-        return (mol * self.MWs).sum() / total_mol if total_mol else 0.
+        return (self.MWs * mol).sum() / total_mol if total_mol else 0.
     
     def rho(self, phase, mol, T, P):
         """Mixture density [kg/m^3]"""
@@ -196,11 +239,8 @@ class Mixture:
     
     def S(self, phase, mol, T, P):
         """Return entropy in [J/mol/K]."""
-        if mol.__class__ is not SparseVector: mol = SparseVector(mol)
-        if not mol.dct: return 0.
         S = self._S(phase, mol, T, P)
-        if self.include_excess_energies:
-            S += self._S_excess(phase, mol, T, P)
+        if self.include_excess_energies: S += self._S_excess(phase, mol, T, P)
         return S
     
     def _load_free_energy_args(self, *args): pass
@@ -291,14 +331,12 @@ class Mixture:
     def xH(self, phase_mol, T, P):
         """Multi-phase mixture enthalpy [J/mol]."""
         H = self.H
-        phase_mol = tuple(phase_mol)
         H_total = sum([H(phase, mol, T, P) for phase, mol in phase_mol])
         return H_total
     
     def xS(self, phase_mol, T, P):
         """Multi-phase mixture entropy [J/mol/K]."""
         S = self.S
-        phase_mol = tuple(phase_mol)
         S_total = sum([S(phase, mol, T, P) for phase, mol in phase_mol])
         return S_total
     
@@ -570,8 +608,6 @@ class EOSMixture(Mixture):
             if mol.dct: fea[phase] = self.eos_args(phase, mol, T, P)
     
     def Cn(self, phase, mol, T, P):
-        if mol.__class__ is not SparseVector: mol = SparseVector(mol)
-        if not mol.dct: return 0
         Cn = self.Cn_ideal(phase, mol, T, P)
         if phase != 's':
             if phase in self._free_energy_args:
@@ -595,8 +631,6 @@ class EOSMixture(Mixture):
     
     def H(self, phase, mol, T, P):
         """Return enthalpy [J/mol]."""
-        if mol.__class__ is not SparseVector: mol = SparseVector(mol)
-        if not mol.dct: return 0
         H = self.H_ideal(phase, mol, T, P)
         if phase != 's':
             if phase in self._free_energy_args:
@@ -620,8 +654,6 @@ class EOSMixture(Mixture):
     
     def S(self, phase, mol, T, P):
         """Return entropy [J/mol/K]."""
-        if mol.__class__ is not SparseVector: mol = SparseVector(mol)
-        if not mol.dct: return 0
         S = self.S_ideal(phase, mol, T, P)
         if phase != 's':
             if phase in self._free_energy_args:

@@ -170,11 +170,11 @@ class LLE(Equilibrium, phases='lL'):
                                       'popsize': 12,
                                       'tol': 1e-6}
     pseudo_equilibrium_outer_loop_options = dict(
-        xtol=1e-12, maxiter=100, checkiter=False, 
+        xtol=1e-12, rtol=1e-12, maxiter=100, checkiter=False, 
         checkconvergence=False, convergenceiter=10,
     )
     pseudo_equilibrium_inner_loop_options = dict(
-        xtol=1e-9, maxiter=20, checkiter=False,
+        xtol=1e-9, rtol=1e-9, maxiter=20, checkiter=False,
         checkconvergence=False, convergenceiter=5,
     )
     default_composition_cache_tolerance = 1e-5

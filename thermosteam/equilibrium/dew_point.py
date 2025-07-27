@@ -21,8 +21,12 @@ __all__ = ('DewPoint',)
 
 # @njit(cache=True)
 def gamma_iter(gamma, x_gamma, T, P, f_gamma, gamma_args):
+    try:
+        x = x_gamma / gamma
+    except FloatingPointError:
+        gamma[gamma < 1e-32] = 1e-32
+        x = x_gamma / gamma
     # Add back trace amounts for activity coefficients at infinite dilution
-    x = x_gamma / gamma
     mask = x < 1e-32
     x[mask] = 1e-32
     x = fn.normalize(x)

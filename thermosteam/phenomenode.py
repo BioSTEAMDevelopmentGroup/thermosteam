@@ -92,15 +92,13 @@ phenomenode_edge_options = dict(
 
 #: [dict] Default equation node colors by category
 colors = {
-    # Used
     'material': '#a280b9', # purple
     'energy': '#ed586f', # red
     'vle': '#60c1cf', # blue
     'lle': '#79bf82', # green
-    'phenomena': '#f98f60', # generic, orange
     'reaction': '#dd7440', # orange
-    'pressure': '#00a996', # Darker blue 
-    'aggregated': '#5c5763', # black
+    'shortcut': '#00a996', # darker blue 
+    'compression': '#5c5763', # black
 }
 edge_options = dict(
     label='', 
@@ -163,9 +161,9 @@ class EquationNode:
     @property
     def category(self):
         name = self.name
-        for category in ('material', 'energy', 'vle', 'lle'):
+        for category in colors:
             if category in name: return category
-        return 'phenomena' # generic
+        raise AttributeError('no category')
     
     def set_equations(self, inputs=(), outputs=(), tracked_outputs=None):
         self.inputs = filter_nodes(inputs, VariableNode)
@@ -643,8 +641,9 @@ class BipartitePhenomeGraph:
             self.fill_digraph_nodes(digraph, variables, equations)
             self.fill_digraph_edges(digraph, edges)
         # img = digraph.pipe(format='png') # Pin nodes
-        # x = _display.Image(img)
-        # _display.display(x)
+        # f = open(self.name + '.png', 'wb')
+        # f.write(img)
+        # f.close()
         dot = digraph.pipe(format='dot') # Pin nodes
         self.pydot = pydot.graph_from_dot_data(dot.decode('utf-8'))[0]
         # for node in self.pydot.get_nodes(): node.set_pin('false')

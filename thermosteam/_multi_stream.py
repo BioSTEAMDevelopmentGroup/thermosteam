@@ -330,14 +330,17 @@ class MultiStream(Stream):
         else:
             composition = data / total
             composition_key = [i.dct for i in composition.rows]
+            T = thermal_condition._T
+            P = thermal_condition._P
             if nophase:
-                literal = (thermal_condition._T, thermal_condition._P)
+                literal = (T, P)
             else:
-                literal = (imol._phases, thermal_condition._T, thermal_condition._P)
+                phases = imol._phases
+                literal = (phases, T, P)
             last_literal, last_composition_key = self._property_cache_key
             if literal == last_literal and (composition_key == last_composition_key):
                 if name in property_cache:
-                    value = property_cache.get(name)
+                    value = property_cache[name]
                     return value * total if flow else value
             else:
                 property_cache.clear()
@@ -350,7 +353,7 @@ class MultiStream(Stream):
             else:
                 calculate = getattr(self.mixture, 'x' + name)
                 self._property_cache[name] = value = calculate(
-                    zip(imol._phases, composition), *self.thermal_condition
+                    zip(phases, composition), *self.thermal_condition
                 )
             return value * total if flow else value
     
