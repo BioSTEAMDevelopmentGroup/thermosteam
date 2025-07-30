@@ -796,6 +796,12 @@ class StreamPorts:
         if sort: ports = sorted(ports, key=lambda x: x._sorting_key())
         self._ports = tuple(ports)    
     
+    def __add__(self, other):
+        return [i.get_stream() for i in self._ports] + other
+    
+    def __radd__(self, other):
+        return other + [i.get_stream() for i in self._ports]
+    
     def __bool__(self):
         return bool(self._ports)
         
