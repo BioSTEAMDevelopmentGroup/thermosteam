@@ -58,7 +58,9 @@ def set_figure_size(width=None, aspect_ratio=None, units=None):
     params['figure.figsize'] = (width, width * aspect_ratio)
 
 def set_ticks(ax, ticks, which='x', ticklabels=(),
-              labelrotation=0., ha=None, offset=False):
+              labelrotation=0., ha=None, offset=False, 
+              fs=None, ticklen=None):
+    if ticklen is None: ticklen = 4
     if which == 'x':
         axis = ax.xaxis
         set_ticks = plt.xticks
@@ -74,18 +76,18 @@ def set_ticks(ax, ticks, which='x', ticklabels=(),
         ticks_offset = np.zeros(len(ticks) - 1)
         if len(ticks_offset) != 0:
             ticks_offset[:] = ticks[:-1] + 0.5 * np.diff(ticks)
-        ax.tick_params(axis=which, which='major', length=4,
+        ax.tick_params(axis=which, which='major', length=ticklen,
                        direction="inout", **kwargs)
         ax.tick_params(axis=which, which='minor', length=0,
                        labelrotation=labelrotation, **kwargs)
-        set_ticks(ticks_offset, ())
+        set_ticks(ticks_offset, (), fontsize=fs)
         if ticklabels:
             axis.set_minor_locator(ticker.FixedLocator(ticks))
             axis.set_minor_formatter(ticker.FixedFormatter(ticklabels))
         ticks = ticks_offset
     else:
-        set_ticks(ticks, ticklabels)
-        ax.tick_params(axis=which, direction="inout", length=4, 
+        set_ticks(ticks, ticklabels, fontsize=fs)
+        ax.tick_params(axis=which, direction="inout", length=ticklen, 
                        labelrotation=labelrotation, **kwargs)
     if ha is not None:
         for i in axis.get_majorticklabels():
@@ -102,7 +104,9 @@ def style_axis(ax=None, xticks=None, yticks=None,
                offset_yticks=False,
                xrot=None, xha=None,
                yrot=None, yha=None,
-               axtwinx=None, axtwiny=None): # pragma: no cover
+               axtwinx=None, axtwiny=None,
+               fs=None, ticklen=None): # pragma: no cover
+    if ticklen is None: ticklen = 6    
     if xticklabels is None: xticklabels = True
     if yticklabels is None: yticklabels = True
     if ax is None:
@@ -144,8 +148,8 @@ def style_axis(ax=None, xticks=None, yticks=None,
     if not ytickf:
         ytext[-1] = ''
     
-    xticks = set_ticks(ax, xticks, 'x', xtext, xrot, xha, offset_xticks)
-    yticks = set_ticks(ax, yticks, 'y', ytext, yrot, yha, offset_yticks)
+    xticks = set_ticks(ax, xticks, 'x', xtext, xrot, xha, offset_xticks, fs, ticklen=ticklen)
+    yticks = set_ticks(ax, yticks, 'y', ytext, yrot, yha, offset_yticks, fs, ticklen=ticklen)
     ax.zorder = 1
     xlim = plt.xlim()
     ylim = plt.ylim()
@@ -155,7 +159,7 @@ def style_axis(ax=None, xticks=None, yticks=None,
         ax._cached_xtwin = x_twin
         axes['twinx'] = x_twin 
         plt.sca(x_twin)
-        x_twin.tick_params(axis='y', right=True, direction="in", length=4)
+        x_twin.tick_params(axis='y', right=True, direction="in", length=ticklen)
         x_twin.zorder = 2
         plt.ylim(ylim)
         plt.yticks(yticks, ())
@@ -164,7 +168,7 @@ def style_axis(ax=None, xticks=None, yticks=None,
         ax._cached_ytwin = y_twin
         axes['twiny'] = y_twin 
         plt.sca(y_twin)
-        y_twin.tick_params(axis='x', top=True, direction="in", length=4)
+        y_twin.tick_params(axis='x', top=True, direction="in", length=ticklen)
         y_twin.zorder = 2
         plt.xlim(xlim)
         plt.xticks(xticks, ())

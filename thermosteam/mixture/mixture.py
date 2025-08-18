@@ -132,6 +132,7 @@ class Mixture:
         ):
         name, flow, nophase = stream_mixture_property_interface[name]
         if mol is None: mol = stream._imol.data
+        else: mol = sparse(mol)
         total = mol.sum()
         if total == 0.:
             return 0. if flow else None
@@ -156,6 +157,7 @@ class Mixture:
     
     def MW(self, mol):
         """Return molecular weight [g/mol] given molar array [mol]."""
+        if mol.__class__ is not SparseVector: mol = SparseVector(mol)
         total_mol = mol.sum()
         return (self.MWs * mol).sum() / total_mol if total_mol else 0.
     

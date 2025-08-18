@@ -720,6 +720,7 @@ class InletPort:
     
     @classmethod
     def from_inlet(cls, inlet):
+        if hasattr(inlet, 'port'): return inlet.port
         sink = inlet.sink
         if not sink: raise ValueError(f'stream {inlet} is not an inlet to any unit')
         index = sink.ins.index(inlet)
@@ -753,6 +754,7 @@ class OutletPort:
     
     @classmethod
     def from_outlet(cls, outlet):
+        if hasattr(outlet, 'port'): return outlet.port
         source = outlet.source
         if not source: raise ValueError(f'stream {outlet} is not an outlet to any unit')
         index = source.outs.index(outlet)

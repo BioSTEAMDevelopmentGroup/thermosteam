@@ -403,6 +403,9 @@ class Stream(AbstractStream):
             self.phases = [j for i, j in enumerate(
                 self.phases) if data[i].any()]
 
+    def temporary(self, flow=None, T=None, P=None, phase=None):
+        return TemporaryStream(self, flow, T, P, phase)
+
     def temporary_phase(self, phase):
         return TemporaryPhase(self, self.phase, phase)
 
@@ -475,7 +478,7 @@ class Stream(AbstractStream):
             return None
         self._F_node = var = VariableNode(
             f"{source.node_tag}.outs[{source.outs.index(self)}].F",
-            self.mol.to_array,
+            lambda: self.mol.to_array(),
         )
         return var
 
@@ -2240,22 +2243,18 @@ class Stream(AbstractStream):
         elif not liq.any():
             return
         lle(T, P)
-        if not (LIQ.any() and liq.any()):
+        if not (LIQ.any() or liq.any()):
             return
         total_flow = data.sum()
 
-        def f(x, done=[False]):
-            if done[0]:
-                return x
-            data[:] = x
+        def f(x):
+            data[:] = x / x.sum()
             lle(T=T, P=P)
+            if not liq.any(): liq[:], LIQ[:] = LIQ, liq.copy()
             vle(T=T, P=P)
-            liq[:], LIQ[:] = LIQ, liq.copy()
-            vle(T=T, P=P)
-            liq[:], LIQ[:] = LIQ, liq.copy()
             return data.to_array()
         flx.fixed_point(
-            f, data / total_flow, xtol=1e-6,
+            f, data / total_flow, xtol=1e-6, rtol=1e-6,
             checkiter=False, checkconvergence=False,
             convergenceiter=10
         )

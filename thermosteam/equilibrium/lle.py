@@ -253,10 +253,8 @@ class LLE(Equilibrium, phases='lL'):
                 mol_L = self.solve_lle_liquid_mol(mol, T, lle_chemicals, single_loop)
                 mol_l = mol - mol_L
                 if (mol_L < 0).any(): 
-                    breakpoint()
                     self.solve_lle_liquid_mol(mol, T, lle_chemicals, single_loop)
                 if (mol_l < 0).any(): 
-                    breakpoint()
                     self.solve_lle_liquid_mol(mol, T, lle_chemicals, single_loop)
             if top_chemical:
                 MW = self.chemicals.MW[index]
@@ -379,8 +377,7 @@ class LLE(Equilibrium, phases='lL'):
                 if phi < 0: phi = 1e-16
                 return z/(1. + phi * (K - 1.)) * (1 - phi)
             else:
-                K[K == 0] = 1e-9
-                if (K <= 0).any(): breakpoint()
+                K[K <= 0] = 1e-9
                 return pseudo_equilibrium(
                     K, phi, mol, T, n, gamma.f, gamma.args, 
                     self.pseudo_equilibrium_inner_loop_options,

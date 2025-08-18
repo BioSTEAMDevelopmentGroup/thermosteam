@@ -149,7 +149,7 @@ class UnitsOfMeasure:
         else:
             self = super().__new__(cls)
             self.units = units
-            self.units_container = ureg[units]
+            self.units_container = ureg(units)
             self.dimensionality = self.units_container.dimensionality
             cache[units] = self
             return self
@@ -237,10 +237,10 @@ class DisplayUnits:
         list_keys = []
         for k, v in display_units.items():
             try: # Assume units is one string
-                dims = ureg[v].dimensionality
+                dims = ureg(v).dimensionality
             except:
                 try: # Assume units are a list of possible units
-                    dims = [ureg[i].dimensionality for i in v]
+                    dims = [ureg(i).dimensionality for i in v]
                     list_keys.append(k)
                 except: # Assume the user uses value as an option, and ignores units
                     dims = v

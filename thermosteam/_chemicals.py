@@ -780,9 +780,8 @@ class CompiledChemicals(Chemicals):
         'C4H10O2'
         
         """
-        isvalid = utils.is_valid_ID      
         for i in self.get_aliases(ID):
-            if isvalid(i): return i        
+            if all([s not in i for s in ('-', ',')]): return i        
     
     get_parsable_synonym = get_parsable_alias
     
@@ -804,7 +803,7 @@ class CompiledChemicals(Chemicals):
         >>> aliases = chemicals.get_aliases('Water')
         >>> aliases.sort()
         >>> aliases
-        ['7732-18-5', 'H2O', 'Water', 'oxidane', 'water']
+        ['7732-18-5', 'H2O', 'WATER', 'Water', 'oxidane', 'water']
         
         """
         k = self._index[ID]

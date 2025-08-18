@@ -519,6 +519,49 @@ def sum_sparse_vectors(svs):
         raise RuntimeError('unexpected dtype')
     return dct
 
+class FlatSparseArrayView:
+    __slots__ = ('array', 'M', 'N', 'size')
+
+    def __init__(self, array):
+        self.array = array
+        M, N = array.shape
+        self.M = M
+        self.N = N
+        self.size = M * N
+
+    def __len__(self):
+        return self.size
+
+    def __getitem__(self, index):
+        if index < 0:
+            index += self.size
+        if not (0 <= index < self.size):
+            raise IndexError("flat index out of range")
+
+        i, j = divmod(index, self.N)
+        return self.array.rows[i].dct.get(j, 0)
+
+    def __setitem__(self, index, value):
+        if index < 0:
+            index += self.size
+        if not (0 <= index < self.size):
+            raise IndexError("flat index out of range")
+
+        i, j = divmod(index, self.N)
+        dct = self.array.rows[i].dct
+        if value:
+            dct[j] = value
+        elif j in dct:
+            del dct[j]
+
+    def __iter__(self):
+        rows = self.array.rows
+        range_n = range(self.N)
+        for i in range(self.M):
+            dct = rows[i].dct
+            for j in range_n:
+                yield dct.get(j, 0)
+
 class SparseArray:
     __doc__ = sparse.__doc__
     __slots__ = ('rows',)
@@ -531,6 +574,10 @@ class SparseArray:
             self.rows = [sparse_vector(row, size=vector_size) for row in obj]
         else:
             raise TypeError(f'cannot convert {type(obj).__name__} object to a sparse array')
+    
+    @property
+    def flat(self):
+        return FlatSparseArrayView(self)
     
     @property
     def dtype(self):

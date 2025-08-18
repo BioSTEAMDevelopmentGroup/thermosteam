@@ -21,7 +21,7 @@ class DisplayPreferences:
     Examples
     --------
     >>> from biosteam import preferences
-    >>> preferences.show()
+    >>> preferences.show() # doctest: +SKIP
     DisplayPreferences:
     label_streams: True
     autodisplay: True
@@ -30,17 +30,17 @@ class DisplayPreferences:
     profile: False
     raise_exception: False
     background_color: 'transparent'
-    stream_color: '#90918e'
-    label_color: '#90918e'
-    depth_colors: ['#f98f609f']
+    stream_color: '#98a2ad'
+    label_color: '#e5e5e5'
+    depth_colors: ['#5172512f', '#1111112f']
     stream_width: 'F_mass'
     unit_color: '#555f69'
     unit_label_color: 'white'
-    unit_periphery_color: '#90918e'
-    fill_cluster: False
+    unit_periphery_color: 'none'
+    fill_cluster: True
     graphviz_format: 'svg'
     tooltips_full_results: False
-    graphviz_html_height: {'big-system': ('600px', '900px'), 'system': ('400px', '600px'), 'unit': ('225px', '400px')}
+    graphviz_html_height: {'big-system': ('600px', '900px'), 'huge-system': ('800px', '1200px'), 'system': ('400px', '600px'), 'unit': ('225px', '400px')}
     show_all_streams: True
     flow: 'kmol/hr:.3g'
     T: 'K:.5g'

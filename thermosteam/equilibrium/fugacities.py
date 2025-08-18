@@ -50,6 +50,10 @@ class LiquidFugacities:
         self.gamma = thermo.Gamma(chemicals)
         self.pcf = thermo.PCF(chemicals)
     
+    def coefficient(self, x, T, P=101325.):
+        Psats = np.array([i.Psat(T) for i in self.chemicals], dtype=float)
+        return self.gamma(x, T) * self.pcf(T, P, Psats) * Psats
+    
     def __call__(self, x, T, P=101325.):
         Psats = np.array([i.Psat(T) for i in self.chemicals], dtype=float)
         return x * self.gamma(x, T) * self.pcf(T, P, Psats) * Psats
@@ -94,6 +98,9 @@ class GasFugacities:
         thermo = tmo.settings.get_default_thermo(thermo)
         self.chemicals = chemicals = tuple(chemicals)
         self.phi = thermo.Phi(chemicals)
+    
+    def coefficient(self, y, T, P):
+        return P * self.phi(y, T, P)
     
     def __call__(self, y, T, P):
         return P * self.phi(y, T, P) * y
