@@ -275,9 +275,10 @@ class LLE(Equilibrium, phases='lL'):
             F_mol_l = mol_l.sum()
             F_mol_L = mol_L.sum()
             if not F_mol_L:
-                self._K = np.zeros_like(mol)
+                mol_l, mol_L = mol_L, mol_l
+                self._K = 1e16 * np.ones_like(mol)
                 self._gamma_y = np.ones_like(mol)
-                self._phi = 0.
+                self._phi = 1.
             elif not F_mol_l:
                 self._K = 1e16 * np.ones_like(mol)
                 self._gamma_y = np.ones_like(mol)
@@ -288,7 +289,6 @@ class LLE(Equilibrium, phases='lL'):
                 x_mol_l[x_mol_l < 1e-16] = 1e-16
                 K = x_mol_L / x_mol_l
                 gamma = self.thermo.Gamma(lle_chemicals)
-                if (K < 0).any(): breakpoint()
                 self._K = K
                 self._gamma_y = gamma(x_mol_L, T)
                 self._phi = F_mol_L / (F_mol_L + F_mol_l)
