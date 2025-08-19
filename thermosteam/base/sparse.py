@@ -3322,7 +3322,8 @@ class FlatView:
             for n, i in enumerate(index): 
                 if i < 0: i += size
                 i, j = divmod(i, N)
-                value[n] = rows[i].dct.get(j, 0)
+                dct = rows[i].dct
+                if j in dct: value[n] = dct[j]
             return value
         elif index.__class__ is slice:
             if index == open_slice:
@@ -3335,7 +3336,8 @@ class FlatView:
                 N = self.N
                 for n, i in enumerate(range_):
                     i, j = divmod(i, N)
-                    value[n] = rows[i].dct.get(j, 0)
+                    dct = rows[i].dct
+                    if j in dct: value[n] = dct[j]
                 value.setflags(0)
                 return value
         elif ndim:

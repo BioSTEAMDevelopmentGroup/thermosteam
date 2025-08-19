@@ -10,12 +10,12 @@
 import thermosteam as tmo
 from .units_of_measure import UnitsOfMeasure
 from . import utils
-from .exceptions import UndefinedChemicalAlias, UndefinedPhase
+from .exceptions import UndefinedChemicalAlias
 from .base import (
     SparseVector, SparseArray, sparse_vector, sparse_array,
     MassFlowDict, VolumetricFlowDict, sum_sparse_vectors, get_ndim,
 )
-from ._phase import PhaseIndexer, phase_tuple, check_phase, index, valid_phases as phase_names
+from ._phase import PhaseIndexer, phase_tuple, check_phase, valid_phases as phase_names
 import numpy as np
 
 __all__ = (
@@ -510,9 +510,6 @@ class ChemicalIndexer(Indexer):
             if units: self.set_data(self.data, units)
         return self
     
-    def linked_copy(self):
-        return self._parent.copy().get_phase(self._phase)
-    
     def reset_chemicals(self, chemicals, container=None):
         old_data = self.data
         if container is None:
@@ -613,8 +610,8 @@ class ChemicalIndexer(Indexer):
     
     def _copy_without_data(self):
         new = _new(self.__class__)
-        new._chemicals = self.chemicals
-        new._parent = None
+        new._chemicals = chemicals = self.chemicals
+        new._parent = parent_indexer(chemicals)
         new._phase = self._phase
         new._lock_phase = False
         new._data_cache = {}
@@ -630,7 +627,7 @@ class ChemicalIndexer(Indexer):
         else:
             self._chemicals = parent._chemicals
             self.data = parent.data.rows[parent._phase_indexer(phase)]
-            self._data_cache = {'linked': []}
+            self._data_cache = {}
         self._phase = phase
         self._lock_phase = lock_phase
         self._parent = parent
@@ -647,7 +644,7 @@ class ChemicalIndexer(Indexer):
             assert data.size == self._chemicals.size, ('size of material data must be equal to '
                                                        'size of chemicals')
             check_phase(phase)
-        self._data_cache = {} if parent is None else {'linked': []}
+        self._data_cache = {}
         self._parent = parent
         self._lock_phase = lock_phase
         return self
@@ -666,12 +663,11 @@ class ChemicalIndexer(Indexer):
             raise AttributeError('phase is locked')
         else:
             old_data = self.data
-            self.data = parent.data.rows[index[phase]]
+            self.data = parent.data.rows[parent._phase_indexer(phase)]
             dct = self.data.dct
             dct.clear()
             dct.update(old_data.dct)
             self._phase = phase
-            for i in self._data_cache['linked']: i.dct = dct
     
     def get_phase_and_composition(self):
         """Return phase and composition."""
@@ -770,11 +766,11 @@ class MaterialIndexer(Indexer):
         return self.from_data, (self.data, self._phases, self._chemicals, False, self._parent)
     
     def linked_copy(self):
-        return self._parent.copy().get_phases(self._phases)
+        return self._parent.get_phases(self._phases)
     
     def reset_chemicals(self, chemicals, container=None):
         old_data = self.data
-        old__data_cache = self._data_cache
+        old_data_cache = self._data_cache
         N_phases = len(self._phases)
         if container is None:
             self.data = data = SparseArray.from_shape([N_phases, chemicals.size])
@@ -791,7 +787,7 @@ class MaterialIndexer(Indexer):
                 if value: data[i, chemicals.index(CASs[j])] = value
         self._load_chemicals(chemicals)
         self._set_cache()
-        return (old_data, old__data_cache)
+        return (old_data, old_data_cache)
     
     def phases_are_empty(self, phases):
         index = self._phase_indexer
@@ -963,10 +959,10 @@ class MaterialIndexer(Indexer):
     def _copy_without_data(self):
         new = _new(self.__class__)
         new._phases = self._phases
-        new._chemicals = self._chemicals
+        new._chemicals = chemicals = self._chemicals
         new._phase_indexer = self._phase_indexer
         new._index_cache = self._index_cache
-        new._parent = None
+        new._parent = parent_indexer(chemicals)
         new._data_cache = {}
         return new
     
@@ -1330,7 +1326,6 @@ def by_mass(self):
         chemicals = self.chemicals
         dct = MassFlowDict(self.data.dct, chemicals.MW)
         data_cache = self._data_cache
-        if 'linked' in data_cache: data_cache['linked'].append(dct)
         data_cache['mass'] = mass = \
         ChemicalMassFlowIndexer.from_data(
             SparseVector.from_dict(
@@ -1382,7 +1377,6 @@ def by_volume(self, TP):
         V = [i.V for i in chemicals]
         dct = VolumetricFlowDict(self.data.dct, TP, V, None, self, {})
         data_cache = self._data_cache
-        if 'linked' in data_cache: data_cache['linked'].append(dct)
         data_cache['vol'] = \
         vol = ChemicalVolumetricFlowIndexer.from_data(
             SparseVector.from_dict(

@@ -342,7 +342,7 @@ class Stream(AbstractStream):
     _flow_cache = {}
 
     def __init__(self, ID: Optional[str] = '',
-                 flow: Sequence[float] | Sequence[tuple[str, float]] = (),
+                 flow: Optional[Sequence[float] | Sequence[tuple[str, float]]] = None,
                  phase: Optional[str] = 'l',
                  T: Optional[float] = 298.15,
                  P: Optional[float] = 101325.,
@@ -404,10 +404,7 @@ class Stream(AbstractStream):
                     self.phases) if data[i].any()]
             if 'L' in phases and 'l' not in phases:
                 phases = [i.lower() for i in phases]
-            if len(phases) == 1:
-                self.phase = phases[0] 
-            else:
-                self.phases = phases
+            self.phases = phases
 
     def temporary(self, flow=None, T=None, P=None, phase=None):
         return TemporaryStream(self, flow, T, P, phase)
@@ -876,7 +873,7 @@ class Stream(AbstractStream):
 
     def _init_indexer(self, flow, phase, chemicals, chemical_flows):
         """Initialize molar flow rates."""
-        if len(flow) == 0:
+        if flow is None:
             parent = indexer.parent_indexer(chemicals)
             if chemical_flows:
                 imol = indexer.ChemicalMolarFlowIndexer(
@@ -887,7 +884,8 @@ class Stream(AbstractStream):
         else:
             if chemical_flows:
                 ValueError(
-                    "may specify either 'flow' or 'chemical_flows', but not both")
+                    "may specify either 'flow' or 'chemical_flows', but not both"
+                )
             if isinstance(flow, indexer.ChemicalMolarFlowIndexer):
                 imol = flow
                 imol.phase = phase
@@ -2105,8 +2103,9 @@ class Stream(AbstractStream):
         if hasattr(imol, '_phase'):
             if imol._lock_phase:
                 raise RuntimeError(
-                    'phase is locked; stream cannot be unlinked')
-        self._imol = imol.linked_copy()
+                    'phase is locked; stream cannot be unlinked'
+                )
+        self._imol = imol.copy()
         self._thermal_condition = self._thermal_condition.copy()
         self.reset_cache()
 
