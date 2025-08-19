@@ -519,52 +519,10 @@ def sum_sparse_vectors(svs):
         raise RuntimeError('unexpected dtype')
     return dct
 
-class FlatSparseArrayView:
-    __slots__ = ('array', 'M', 'N', 'size')
-
-    def __init__(self, array):
-        self.array = array
-        M, N = array.shape
-        self.M = M
-        self.N = N
-        self.size = M * N
-
-    def __len__(self):
-        return self.size
-
-    def __getitem__(self, index):
-        if index < 0:
-            index += self.size
-        if not (0 <= index < self.size):
-            raise IndexError("flat index out of range")
-
-        i, j = divmod(index, self.N)
-        return self.array.rows[i].dct.get(j, 0)
-
-    def __setitem__(self, index, value):
-        if index < 0:
-            index += self.size
-        if not (0 <= index < self.size):
-            raise IndexError("flat index out of range")
-
-        i, j = divmod(index, self.N)
-        dct = self.array.rows[i].dct
-        if value:
-            dct[j] = value
-        elif j in dct:
-            del dct[j]
-
-    def __iter__(self):
-        rows = self.array.rows
-        range_n = range(self.N)
-        for i in range(self.M):
-            dct = rows[i].dct
-            for j in range_n:
-                yield dct.get(j, 0)
 
 class SparseArray:
     __doc__ = sparse.__doc__
-    __slots__ = ('rows',)
+    __slots__ = ('rows', '_flat')
     ndim = 2
     
     def __init__(self, obj=None, vector_size=None):
@@ -575,9 +533,41 @@ class SparseArray:
         else:
             raise TypeError(f'cannot convert {type(obj).__name__} object to a sparse array')
     
+    def flatten(self):
+        rows = self.rows
+        for i in rows:
+            N = i.size
+            dtype = i.dtype
+            break
+        else:
+            N = 0
+            dtype = float
+        M = len(rows)
+        size = M * N
+        if dtype is float:
+            dct = {}
+            arr = SparseVector.from_dict(dct, size)
+            for i in range(M):
+                idct = rows[i].dct
+                base = i * N
+                for i, j in idct.items():
+                    dct[base + i] = j
+        else:
+            set_ = set()
+            arr = SparseLogicalVector.from_set(set_, self.size)
+            for i in range(M):
+                iset = rows[i].set
+                base = i * N
+                set_.update([base + i for i in iset])
+        return arr
+    
     @property
     def flat(self):
-        return FlatSparseArrayView(self)
+        try:
+            return self._flat
+        except:
+            self._flat = (FlatView if self.dtype is float else FlatLogicalView)(self)
+            return self._flat
     
     @property
     def dtype(self):
@@ -780,7 +770,7 @@ class SparseArray:
     def __getitem__(self, index):
         rows = self.rows
         if index.__class__ is tuple:
-            m, n = unpack_index(index, self.ndim)
+            m, n = unpack_index(index, 2)
             if m.__class__ is slice:
                 if m == open_slice:
                     if n == open_slice:
@@ -862,7 +852,7 @@ class SparseArray:
         rows = self.rows
         value, vd, _ = reduce_ndim(value)
         if index.__class__ is tuple:
-            m, n = unpack_index(index, self.ndim)
+            m, n = unpack_index(index, 2)
             if m.__class__ is slice:
                 if m == open_slice:
                     if n.__class__ is slice:
@@ -1020,10 +1010,11 @@ class SparseArray:
     
     @property
     def vector_size(self):
-        vector_size = 0
         for i in self.rows:
             vector_size = i.size
             break
+        else:
+            vector_size = 0
         return vector_size
     
     @property
@@ -1669,7 +1660,7 @@ class SparseVector:
     def __getitem__(self, index):
         dct = self.dct
         if index.__class__ is tuple:
-            index, = unpack_index(index, self.ndim)
+            index, = unpack_index(index, 1)
         ndim, has_bool = get_array_properties(index)
         if has_bool:
             return self[index.nonzero() if hasattr(index, 'nonzero') else np.nonzero(index)]
@@ -1694,7 +1685,7 @@ class SparseVector:
         if self.read_only: raise ValueError('assignment destination is read-only')
         dct = self.dct
         if index.__class__ is tuple:
-            index, = unpack_index(index, self.ndim)
+            index, = unpack_index(index, 1)
         ndim, has_bool = get_array_properties(index)
         value, vd, _ = reduce_ndim(value)
         if has_bool: 
@@ -2578,8 +2569,7 @@ class SparseLogicalVector:
         for i in range(self.size):
             yield i in set
     
-    def __len__(self):
-        return self.size
+    __len__ = SparseVector.__len__
     
     def tolist(self):
         set = self.set
@@ -2709,7 +2699,7 @@ class SparseLogicalVector:
     def __getitem__(self, index):
         set = self.set
         if index.__class__ is tuple:
-            index, = unpack_index(index, self.ndim)
+            index, = unpack_index(index, 1)
         ndim, has_bool = get_array_properties(index)
         if has_bool:
             return self[index.nonzero() if hasattr(index, 'nonzero') else np.nonzero(index)]
@@ -2733,7 +2723,7 @@ class SparseLogicalVector:
     def __setitem__(self, index, value):
         set = self.set
         if index.__class__ is tuple:
-            index, = unpack_index(index, self.ndim)
+            index, = unpack_index(index, 1)
         ndim, has_bool = get_array_properties(index)
         value, vd, _ = reduce_ndim(value)
         if has_bool: 
@@ -3281,3 +3271,359 @@ class SparseLogicalVector:
 
 SparseSet = frozenset([SparseArray, SparseVector, SparseLogicalVector])
 SparseVectorSet = frozenset([SparseVector, SparseLogicalVector])
+
+
+class FlatView:
+    __slots__ = ('array', 'M', 'N', 'size')
+    dtype = float
+    
+    def __init__(self, array):
+        self.array = array
+        M, N = array.shape
+        self.M = M
+        self.N = N
+        self.size = M * N
+
+    __len__ = SparseVector.__len__
+
+    def __eq__(self, other):
+        return self._sparse() == other
+    
+    def __ne__(self, other):
+        return self._sparse() != other
+    
+    def __gt__(self, other):
+        return self._sparse() > other
+    
+    def __lt__(self, other):
+        return self._sparse() < other
+    
+    def __ge__(self, other):
+        return self._sparse() >= other
+    
+    def __le__(self, other):
+        return self._sparse() <= other
+    
+    def __getitem__(self, index):
+        if index.__class__ is tuple:
+            index, = unpack_index(index, 1)
+        ndim, has_bool = get_array_properties(index)
+        if has_bool:
+            if ndim != 1:
+                raise IndexError(
+                    f'boolean index is {ndim}-d but sparse array is 1-d '
+                )
+            index, = index.nonzero() if hasattr(index, 'nonzero') else np.nonzero(index)
+        if ndim == 1:
+            value = np.zeros(len(index))
+            rows = self.array.rows
+            size = self.size
+            N = self.N
+            for n, i in enumerate(index): 
+                if i < 0: i += size
+                i, j = divmod(i, N)
+                value[n] = rows[i].dct.get(j, 0)
+            return value
+        elif index.__class__ is slice:
+            if index == open_slice:
+                return self
+            else:
+                range_ = default_range(index, self.size)
+                value = np.zeros(len(range_))
+                rows = self.array.rows
+                size = self.size
+                N = self.N
+                for n, i in enumerate(range_):
+                    i, j = divmod(i, N)
+                    value[n] = rows[i].dct.get(j, 0)
+                value.setflags(0)
+                return value
+        elif ndim:
+            raise IndexError(f'index can be at most 1-d, not {ndim}-d')    
+        else:
+            if index < 0: index += self.size
+            i, j = divmod(index, self.N)
+            dct = self.array.rows[i].dct
+            return dct.get(j, 0)
+
+    def __setitem__(self, index, value):
+        if index.__class__ is tuple:
+            index, = unpack_index(index, 1)
+        ndim, has_bool = get_array_properties(index)
+        value, vd, _ = reduce_ndim(value)
+        if has_bool: 
+            if ndim != 1:
+                raise IndexError(
+                    f'boolean index is {ndim}-d but sparse array is 1-d '
+                )
+            index, = index.nonzero() if hasattr(index, 'nonzero') else np.nonzero(index)
+        if ndim == 1:
+            if vd == 1:
+                N = self.N
+                size = self.size
+                rows = self.array.rows
+                for i, v in zip(index, value): 
+                    if i < 0: i += size
+                    i, j = divmod(i, N)
+                    dct = rows[i].dct
+                    if v:
+                        dct[j] = v
+                    elif j in dct:
+                        del dct[j]
+            elif vd > 1:
+                raise IndexError(
+                    f'cannot broadcast {vd}-d array on to 1-d sparse array'
+                )
+            elif value:
+                N = self.N
+                size = self.size
+                rows = self.array.rows
+                for i in index: 
+                    if i < 0: i += size
+                    i, j = divmod(i, N)
+                    rows[i].dct[j] = value
+            else:
+                N = self.N
+                size = self.size
+                rows = self.array.rows
+                for i in index: 
+                    if i < 0: i += size
+                    i, j = divmod(i, N)
+                    dct = rows[i].dct
+                    if j in dct: del dct[j]
+        elif index.__class__ is slice:
+            if index == open_slice:
+                if value is self: return
+                if vd == 1:
+                    N = self.N
+                    size = self.size
+                    rows = self.array.rows
+                    for i, v in enumerate(value): 
+                        i, j = divmod(i, N)
+                        dct = rows[i].dct
+                        if v:
+                            dct[j] = v
+                        elif j in dct:
+                            del dct[j]
+                elif vd == 0:
+                    if value:
+                        N = self.N
+                        size = self.size
+                        rows = self.array.rows
+                        for i in range(size): 
+                            i, j = divmod(i, N)
+                            rows[i].dct[j] = value
+                else:
+                    raise IndexError(
+                        f'cannot broadcast {vd}-d array on to 1-d sparse array'
+                    )
+            else:
+                self[default_range(index, self.size)] = value
+        elif ndim:
+            raise IndexError(f'index can be at most 1-d, not {ndim}-d')    
+        elif vd:
+            raise IndexError(
+                'cannot set an array element with a sequence'
+            )
+        else:
+            if index < 0: index += self.size
+            i, j = divmod(index, self.N)
+            dct = self.array.rows[i].dct
+            if value:
+                dct[j] = value
+            elif j in dct:
+                del dct[j]
+
+    def _sparse(self):
+        dct = {}
+        arr = SparseVector.from_dict(dct, self.size)
+        rows = self.array.rows
+        N = self.N
+        for i in range(self.M):
+            idct = rows[i].dct
+            base = i * N
+            for i, j in idct.items():
+                dct[base + i] = j
+        return arr
+
+    def __iter__(self):
+        rows = self.array.rows
+        range_n = range(self.N)
+        for i in range(self.M):
+            get = rows[i].dct.get
+            for j in range_n:
+                yield get(j, 0)
+    
+    def __repr__(self):
+        return repr(self._sparse())
+    
+    def __str__(self):
+        return str(self._sparse())
+    
+    
+class FlatLogicalView:
+    __slots__ = FlatView.__slots__
+    __init__ = FlatView.__init__
+    __len__ = SparseVector.__len__
+    __eq__ = FlatView.__eq__
+    __ne__ = FlatView.__ne__
+    __gt__ = FlatView.__gt__
+    __lt__ = FlatView.__lt__
+    __ge__ = FlatView.__ge__
+    __le__ = FlatView.__le__
+    __repr__ = FlatView.__repr__
+    __str__ = FlatView.__str__
+    
+    def __getitem__(self, index):
+        if index.__class__ is tuple:
+            index, = unpack_index(index, 1)
+        ndim, has_bool = get_array_properties(index)
+        if has_bool:
+            if ndim != 1:
+                raise IndexError(
+                    f'boolean index is {ndim}-d but sparse array is 1-d '
+                )
+            index, = index.nonzero() if hasattr(index, 'nonzero') else np.nonzero(index)
+        if ndim == 1:
+            value = np.zeros(len(index))
+            rows = self.array.rows
+            size = self.size
+            N = self.N
+            for n, i in enumerate(index): 
+                if i < 0: i += size
+                i, j = divmod(i, N)
+                value[n] = rows[i].dct.get(j, 0)
+            return value
+        elif index.__class__ is slice:
+            if index == open_slice:
+                return self
+            else:
+                range_ = default_range(index, self.size)
+                value = np.zeros(len(range_))
+                rows = self.array.rows
+                size = self.size
+                N = self.N
+                for n, i in enumerate(range_):
+                    i, j = divmod(i, N)
+                    value[n] = rows[i].dct.get(j, 0)
+                value.setflags(0)
+                return value
+        elif ndim:
+            raise IndexError(f'index can be at most 1-d, not {ndim}-d')    
+        else:
+            if index < 0: index += self.size
+            i, j = divmod(index, self.N)
+            dct = self.array.rows[i].dct
+            if value:
+                dct[j] = value
+            elif j in dct:
+                del dct[j]
+
+    def __setitem__(self, index, value):
+        if index.__class__ is tuple:
+            index, = unpack_index(index, 1)
+        ndim, has_bool = get_array_properties(index)
+        value, vd, _ = reduce_ndim(value)
+        if has_bool: 
+            if ndim != 1:
+                raise IndexError(
+                    f'boolean index is {ndim}-d but sparse array is 1-d '
+                )
+            index, = index.nonzero() if hasattr(index, 'nonzero') else np.nonzero(index)
+        if ndim == 1:
+            if vd == 1:
+                N = self.N
+                size = self.size
+                rows = self.array.rows
+                for i, v in zip(index, value): 
+                    if i < 0: i += size
+                    i, j = divmod(i, N)
+                    set_ = rows[i].set
+                    if v:
+                        set_.add(j)
+                    elif j in set_:
+                        set_.remove(j)
+            elif vd > 1:
+                raise IndexError(
+                    f'cannot broadcast {vd}-d array on to 1-d sparse array'
+                )
+            elif value:
+                N = self.N
+                size = self.size
+                rows = self.array.rows
+                for i in index: 
+                    if i < 0: i += size
+                    i, j = divmod(i, N)
+                    rows[i].set.add(j)
+            else:
+                N = self.N
+                size = self.size
+                rows = self.array.rows
+                for i in index: 
+                    if i < 0: i += size
+                    i, j = divmod(i, N)
+                    rows[i].set.remove(j)
+        elif index.__class__ is slice:
+            if index == open_slice:
+                if value is self: return
+                if vd == 1:
+                    N = self.N
+                    size = self.size
+                    rows = self.array.rows
+                    for i, v in enumerate(value): 
+                        i, j = divmod(i, N)
+                        set_ = rows[i].set
+                        if v:
+                            set_.add(j)
+                        elif j in set_:
+                            set_.remove(j)
+                elif vd == 0:
+                    if value:
+                        N = self.N
+                        size = self.size
+                        rows = self.array.rows
+                        for i in range(size): 
+                            i, j = divmod(i, N)
+                            rows[i].set.add(j)
+                else:
+                    raise IndexError(
+                        f'cannot broadcast {vd}-d array on to 1-d sparse array'
+                    )
+            else:
+                self[default_range(index, self.size)] = value
+        elif ndim:
+            raise IndexError(f'index can be at most 1-d, not {ndim}-d')    
+        elif vd:
+            raise IndexError(
+                'cannot set an array element with a sequence'
+            )
+        else:
+            if index < 0: index += self.size
+            i, j = divmod(index, self.N)
+            set_ = self.array.rows[i].set
+            if value:
+                set_.add(value)
+            elif j in set_:
+                set_.remove(j)
+
+    def _sparse(self):
+        set_ = set()
+        arr = SparseLogicalVector.from_set(set_, self.size)
+        rows = self.array.rows
+        N = self.N
+        for i in range(self.M):
+            iset = rows[i].set
+            base = i * N
+            set_.update([base + i for i in iset])
+        return arr
+
+    def __iter__(self):
+        rows = self.array.rows
+        range_n = range(self.N)
+        for i in range(self.M):
+            set = rows[i].set
+            for j in range_n:
+                yield j in set
+                    
+    __repr__ = SparseArray.__repr__
+    __str__ = SparseArray.__str__
