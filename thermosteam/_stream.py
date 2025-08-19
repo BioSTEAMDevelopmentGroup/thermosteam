@@ -2020,7 +2020,7 @@ class Stream(AbstractStream):
             new._sink = new._source = None
             new.characterization_factors = {}
             new._thermo = self._thermo
-            new._imol = self._imol.full_copy()
+            new._imol = self._imol.copy()
             new._thermal_condition = self._thermal_condition.copy()
             new.reset_cache()
             new.price = 0
@@ -2100,7 +2100,7 @@ class Stream(AbstractStream):
             if imol._lock_phase:
                 raise RuntimeError(
                     'phase is locked; stream cannot be unlinked')
-        self._imol = imol.full_copy()
+        self._imol = imol.linked_copy()
         self._thermal_condition = self._thermal_condition.copy()
         self.reset_cache()
 

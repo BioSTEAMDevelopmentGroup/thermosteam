@@ -510,12 +510,8 @@ class ChemicalIndexer(Indexer):
             if units: self.set_data(self.data, units)
         return self
     
-    def full_copy(self):
-        parent = self._parent
-        if parent is None:
-            return self.copy()
-        else:
-            return parent.copy().get_phase(self._phase)
+    def linked_copy(self):
+        return self._parent.copy().get_phase(self._phase)
     
     def reset_chemicals(self, chemicals, container=None):
         old_data = self.data
@@ -590,22 +586,18 @@ class ChemicalIndexer(Indexer):
         material_array = self._MaterialIndexer.blank(phases, self._chemicals, parent)
         if not self.data.any():
             for row in material_array.data.rows: row.clear()
-        elif (phase:=self.phase) in phases:
-            index = material_array._phase_indexer(phase)
-            for i, row in enumerate(material_array.data.rows):
-                if i == index: continue
-                row.clear()
-        else:
+            return material_array
+        elif (phase:=self.phase) not in phases:
             if phase.isupper():
                 phase = phase.lower()
             else:
                 phase = phase.upper()
-            index = material_array._phase_indexer(phase)
-            for i, row in enumerate(material_array.data.rows):
-                if i == index: 
-                    row.copy_like(self.data)
-                    continue
-                row.clear()
+        index = material_array._phase_indexer(phase)
+        for i, row in enumerate(material_array.data.rows):
+            if i == index: 
+                row.copy_like(self.data)
+                continue
+            row.clear()
         return material_array
     
     def copy_like(self, other):
@@ -777,12 +769,8 @@ class MaterialIndexer(Indexer):
     def __reduce__(self):
         return self.from_data, (self.data, self._phases, self._chemicals, False, self._parent)
     
-    def full_copy(self):
-        parent = self._parent
-        if parent is None:
-            return self.copy()
-        else:
-            return parent.copy().get_phases(self._phases)
+    def linked_copy(self):
+        return self._parent.copy().get_phases(self._phases)
     
     def reset_chemicals(self, chemicals, container=None):
         old_data = self.data
@@ -997,9 +985,12 @@ class MaterialIndexer(Indexer):
             self._set_phases(phases)
             self._chemicals = parent._chemicals
             self._set_cache()
-            index = parent._phase_indexer
+            index = parent._phase_indexer._index
             rows = parent.data.rows
-            self.data = SparseArray.from_rows([rows[index(i)] for i in self._phases])
+            self.data = SparseArray.from_rows([
+                (rows[index[i]] if i in index else SparseVector(size=self._chemicals.size))
+                 for i in self._phases
+            ])
             parent._data_cache[phases] = self
         self._data_cache = {}
         self._parent = parent
