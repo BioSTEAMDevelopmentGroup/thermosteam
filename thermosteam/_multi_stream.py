@@ -249,7 +249,7 @@ class MultiStream(Stream):
         self._sink = self._source = None
         self.reset_cache()
         self._register(ID)
-        if vlle: self.vlle(T, P)
+        if vlle: self.vlle(T=T, P=P)
         
     @classmethod
     def from_streams(cls, streams, thermo=None):
@@ -373,6 +373,9 @@ class MultiStream(Stream):
         self._sle_cache = eq.SLECache(self._imol,
                                       self._thermal_condition, 
                                       self._thermo)
+        self._vlle_cache = eq.VLLECache(self._imol,
+                                        self._thermal_condition, 
+                                        self._thermo)
         
     def __getitem__(self, phase):
         streams = self._streams
@@ -983,6 +986,13 @@ class MultiStream(Stream):
         if 's' not in phases or 'l' not in phases: 
             self.phases = [*phases, 's', 'l']
         return self._sle_cache.retrieve()
+    @property
+    def vlle(self) -> eq.VLLE:
+        """An object that can perform vapor-liquid equilibrium on the stream."""
+        phases = self.phases
+        if 'l' not in phases or 'g' not in phases: 
+            self.phases = [*phases, 'l', 'g']
+        return self._vlle_cache.retrieve()
     
     ### Casting ###
     

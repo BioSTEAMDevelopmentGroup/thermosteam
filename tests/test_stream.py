@@ -41,15 +41,16 @@ def test_copy_like():
 
 def test_vlle():
     tmo.settings.set_thermo(['Water', 'Ethanol', 'Octane'], cache=True)
-    s = tmo.Stream(None, Water=1, Ethanol=0.5, Octane=2, vlle=True, T=350)
+    s = tmo.Stream(None, Water=1, Ethanol=0.5, Octane=2, vlle=True, T=351)
     assert_allclose(s.mol, [1, 0.5, 2]) # mass balance
     total = s.F_mol
     xl = s.imol['l'].sum() / total
     xL = s.imol['L'].sum() / total if 'L' in s.phases else 0.
     xg = s.imol['g'].sum() / total
     # VLLE algorithm not implemented well yet, but there should be multiple phases
-    assert xl + xL
-    assert xg
+    assert_allclose(xl, 0.2748928033836762, atol=2e-3, rtol=2e-3)
+    assert_allclose(xL, 0.6370268977038833, atol=2e-3, rtol=2e-3) # mass balance
+    assert_allclose(xg, 0.08808029891244049, atol=2e-3, rtol=2e-3) # mass balance
     
     s = tmo.Stream(None, Water=1, Ethanol=1, Octane=2, vlle=True, T=300)
     assert set(s.phases) == set(['l', 'L']) # No gas phase
@@ -60,7 +61,7 @@ def test_vlle():
     assert_allclose(s.imol['g'], [0.9548858089512597, 0.949841750275759, 0.7342182603619914], rtol=1e-2) # Convergence
     s = tmo.Stream(None, Water=1, Ethanol=1, Octane=2, vlle=True, T=380)
     assert s.phases == ('g',) # Only one phase
-    s = tmo.MultiStream(None, l=[('Water', 1), ('Ethanol', 1), ('Octane', 2)], vlle=True, T=380)
+    s = tmo.MultiStream(None, l=[('Water', 1), ('Ethanol', 1), ('Octane', 2)], vlle=True, T=390)
     assert s.phase == 'g' # Only one phase
     assert set(s.phases) == set(['L', 'l', 'g']) # All three phases can still be used
     

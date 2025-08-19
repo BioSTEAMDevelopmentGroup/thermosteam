@@ -318,7 +318,7 @@ class Stream(AbstractStream):
         'characterization_factors',
         'equations',
         '_imol', '_thermal_condition', '_streams',
-        '_vle_cache', '_lle_cache', '_sle_cache',
+        '_vle_cache', '_lle_cache', '_sle_cache', '_vlle_cache',
         '_price', 
         '_property_cache_key',
         '_property_cache', 
@@ -398,10 +398,16 @@ class Stream(AbstractStream):
         self.reset_cache()
         self._register(ID)
         if vlle:
-            self.vlle(T, P)
+            self.vlle(T=T, P=P)
             data = self._imol.data
-            self.phases = [j for i, j in enumerate(
-                self.phases) if data[i].any()]
+            phases = [j for i, j in enumerate(
+                    self.phases) if data[i].any()]
+            if 'L' in phases and 'l' not in phases:
+                phases = [i.lower() for i in phases]
+            if len(phases) == 1:
+                self.phase = phases[0] 
+            else:
+                self.phases = phases
 
     def temporary(self, flow=None, T=None, P=None, phase=None):
         return TemporaryStream(self, flow, T, P, phase)
@@ -2215,53 +2221,19 @@ class Stream(AbstractStream):
         self.phases = ('s', 'l')
         return self.sle
 
-    def vlle(self, T, P):
+    @property
+    def vlle(self) -> eq.VLLE:
         """
-        Estimate vapor-liquid-liquid equilibrium.
+        An object that can perform vapor-liquid-liquid equilibrium on the stream.
 
         Warning
         -------
-        This method may be as slow as 1 second.
+        This method may take a couple of seconds, which is 
+        considerably slower than the `vle` or `lle` methods.
 
         """
         self.phases = ('L', 'g', 'l')
-        imol = self.imol
-        vle = eq.VLE(imol,
-                     self._thermal_condition,
-                     self._thermo)
-        lle = eq.LLE(imol,
-                     self._thermal_condition,
-                     self._thermo)
-        data = self._imol.data
-        LIQ, gas, liq = data
-        liq += LIQ  # All flows must be in the 'l' phase for VLE
-        LIQ[:] = 0.
-        vle(T=T, P=P)
-        if not gas.any():
-            lle(T, P)
-            return
-        elif not liq.any():
-            return
-        lle(T, P)
-        if not (LIQ.any() or liq.any()):
-            return
-        total_flow = data.sum()
-
-        def f(x):
-            data[:] = x / x.sum()
-            lle(T=T, P=P)
-            if not liq.any(): liq[:], LIQ[:] = LIQ, liq.copy()
-            vle(T=T, P=P)
-            return data.to_array()
-        flx.fixed_point(
-            f, data / total_flow, xtol=1e-6, rtol=1e-6,
-            checkiter=False, checkconvergence=False,
-            convergenceiter=10
-        )
-        if np.abs(liq - LIQ).sum() < 1e-6:
-            liq += LIQ
-            LIQ.clear()
-        data *= total_flow
+        return self.vlle
 
     @property
     def vle_chemicals(self) -> list[tmo.Chemical]:
@@ -2722,6 +2694,9 @@ class Stream(AbstractStream):
             self._sle_cache = eq.SLECache(self._imol,
                                           self._thermal_condition,
                                           self._thermo)
+            self._vlle_cache = eq.VLLECache(self._imol,
+                                            self._thermal_condition,
+                                            self._thermo)
 
     def reduce_phases(self):
         """Remove empty phases."""
