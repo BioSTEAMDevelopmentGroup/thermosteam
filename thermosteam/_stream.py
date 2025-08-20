@@ -404,6 +404,8 @@ class Stream(AbstractStream):
                     self.phases) if data[i].any()]
             if 'L' in phases and 'l' not in phases:
                 phases = [i.lower() for i in phases]
+                self.imol['l'] = self.imol['L']
+                self.imol['L'].clear()
             self.phases = phases
 
     def temporary(self, flow=None, T=None, P=None, phase=None):

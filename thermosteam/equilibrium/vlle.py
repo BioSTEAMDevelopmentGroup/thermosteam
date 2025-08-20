@@ -173,17 +173,27 @@ class VLLE(Equilibrium, phases='Llg'):
         self.vle_l(T=T, P=P)
         return self.imol.data.to_array()
       
-    def _iter_flows_T_at_HP(self, dataT, H, P):
+    def _iter_flows_P_at_bubble_point_T(self, dataP, T):
         thermal_condition = self._thermal_condition
-        data = dataT[:-1]
-        thermal_condition.T = T = dataT[-1]
-        self.imol.data.flat[:] = data / data.sum()
-        self.lle(T=T, P=P, top_chemical=self.top_chemical)
-        self.vle_L(T=T, P=P)
-        self.vle_l(T=T, P=P)
-        dataT_new = np.array([*self.imol.data.flat, self.mixture.xsolve_T_at_HP(tuple(self.imol), H, T, P)])
-        return dataT_new  
-      
+        data = dataP[:-1]
+        thermal_condition.P = dataP[-1]
+        data = data / data.sum()
+        N = self.chemicals.size
+        imol = self.imol
+        L_mol = imol['L']
+        l_mol = imol['l']
+        L_mol = data[:N]
+        l_mol = data[N:]
+        self.lle(P=thermal_condition.P, T=T, top_chemical=self.top_chemical)
+        self.vle_L(V=0, T=T)
+        w_L = L_mol.sum()
+        P_L = thermal_condition.P
+        self.vle_l(V=0, T=T)
+        w_l = l_mol.sum()
+        P_l = thermal_condition.P
+        P = (w_L * P_L + w_l * P_l) / (w_L + w_l)
+        return np.array([*L_mol, *l_mol, P])
+        
     def _iter_flows_T_at_bubble_point_P(self, dataT, P):
         thermal_condition = self._thermal_condition
         data = dataT[:-1]
@@ -207,22 +217,72 @@ class VLLE(Equilibrium, phases='Llg'):
         )
         return np.array([*L_mol, *l_mol, T])
     
-    def bubble_point_at_P(self, P=None):
+    def bubble_point_at_T(self, T=None):
         thermal_condition = self._thermal_condition
-        if P is None: 
-            P = thermal_condition.P
+        if T is None: 
+            T = thermal_condition.T
         else:
-            thermal_condition.P = P
+            thermal_condition.T = T
+        P = thermal_condition.P
         imol = self.imol
         L_mol = imol['L']
         l_mol = imol['l']
         g_mol = imol['g']
         l_mol += g_mol
         g_mol[:] = 0
-        self.lle(T=thermal_condition.T, P=P, top_chemical=self.top_chemical)
-        if not (imol['l'].any()):
+        self.lle(T=T, P=P, top_chemical=self.top_chemical)
+        if not (l_mol.any()):
+            self.vle_L(V=0, T=T)
+            return thermal_condition.P
+        
+        total = (L_mol + l_mol).sum()
+        L_mol /= total
+        l_mol /= total
+        dataP = np.array([*L_mol, *l_mol, P])
+        flx.fixed_point(
+            self._iter_flows_P_at_bubble_point_T, 
+            dataP, args=(T,), xtol=1e-6, 
+            convergenceiter=10, 
+            checkconvergence=False,
+            checkiter=False,
+            maxiter=100,
+        )
+        L_mol *= total
+        l_mol *= total
+        return thermal_condition.P
+    
+    def dew_point_at_T(self, T=None):
+        thermal_condition = self.thermal_condition
+        imol = self.imol
+        imol['g'] += imol['L'] + imol['l']
+        imol['l'].clear()
+        imol['L'].clear()
+        if T is None: 
+            T = thermal_condition.T
+        else:
+            thermal_condition.T = T
+        self.vle_l(V=1, T=T)
+        return thermal_condition.P
+    
+    def bubble_point_at_P(self, P=None):
+        thermal_condition = self._thermal_condition
+        if P is None: 
+            P = thermal_condition.P
+        else:
+            thermal_condition.P = P
+        T = thermal_condition.T
+        imol = self.imol
+        L_mol = imol['L']
+        l_mol = imol['l']
+        g_mol = imol['g']
+        l_mol += g_mol
+        g_mol[:] = 0
+        self.lle(T=T, P=P, top_chemical=self.top_chemical)
+        if not (l_mol.any()):
             self.vle_L(V=0, P=P)
-            return
+            T = thermal_condition.T
+            self.lle(T=T, P=P, top_chemical=self.top_chemical)
+            if not (l_mol.any()): return thermal_condition.T
         
         total = (L_mol + l_mol).sum()
         L_mol /= total
@@ -258,6 +318,21 @@ class VLLE(Equilibrium, phases='Llg'):
         self.set_thermal_condition(T, P)
         return self.mixture.xH(phase_data, T, P) / F_mass - H_hat
     
+    def _H_hat_err_at_P(self, P, H_hat, F_mass, phase_data):
+        T = self.thermal_condition.T
+        self.set_thermal_condition(T, P)
+        return self.mixture.xH(phase_data, T, P) / F_mass - H_hat
+    
+    def _S_hat_err_at_T(self, T, H_hat, F_mass, phase_data):
+        P = self.thermal_condition.P
+        self.set_thermal_condition(T, P)
+        return self.mixture.xS(phase_data, T, P) / F_mass - H_hat
+    
+    def _S_hat_err_at_P(self, P, H_hat, F_mass, phase_data):
+        T = self.thermal_condition.T
+        self.set_thermal_condition(T, P)
+        return self.mixture.xS(phase_data, T, P) / F_mass - H_hat
+    
     def set_PH(self, P, H):
         thermal_condition = self.thermal_condition
         thermal_condition.P = P
@@ -270,7 +345,7 @@ class VLLE(Equilibrium, phases='Llg'):
         H_bubble = self.mixture.xH(phase_data, T_bubble, P)
         dH_bubble = H - H_bubble
         if dH_bubble <= 0:
-            thermal_condition.T = self.mixture.solve_T_at_HP('l', self.imol['l'] + self.imol['L'], H, T_bubble, P)
+            thermal_condition.T = self.mixture.xsolve_T_at_HP(phase_data, H, T_bubble, P)
             return
         
         # Check if super heated vapor
@@ -284,18 +359,6 @@ class VLLE(Equilibrium, phases='Llg'):
         if dH_dew >= 0:
             thermal_condition.T = self.mixture.xsolve_T_at_HP(phase_data, H, T_dew, P)
             return
-        # data = self.imol.data
-        # total = data.sum()
-        # data /= total
-        # dataT = np.array([*data.flat, thermal_condition.T])
-        # flx.fixed_point(
-        #     self._iter_flows_T_at_HP, 
-        #     dataT, args=(H, P), xtol=1e-6, 
-        #     convergenceiter=10, 
-        #     checkconvergence=False,
-        #     checkiter=False
-        # )
-        # data *= total
         
         F_mass = self.mixture.MW(imol.data.sum(axis=0))
         H_hat = H / F_mass
@@ -319,6 +382,133 @@ class VLLE(Equilibrium, phases='Llg'):
         )
         self.thermal_condition.T = self.mixture.xsolve_T_at_HP(phase_data, H, T, P)
 
+    def set_TH(self, T, H):
+        thermal_condition = self.thermal_condition
+        thermal_condition.T = T
+        P_guess = thermal_condition.P
+        imol = self.imol
+        phase_data = tuple(imol)
+        
+        # Check if subcooled liquid
+        P_bubble = self.bubble_point_at_T(T)
+        H_bubble = self.mixture.xH(phase_data, T, P_bubble)
+        dH_bubble = H - H_bubble
+        if dH_bubble <= 0:
+            raise NotImplementedError('cannot solve for pressure yet')
+        
+        # Check if super heated vapor
+        P_dew = self.dew_point_at_T(T)
+        if P_bubble <= P_dew: 
+            P_dew, P_bubble = P_bubble, P_dew
+            P_dew += 0.5
+            P_bubble -= 0.5
+        H_dew = self.mixture.xH(phase_data, T, P_dew)
+        dH_dew = H - H_dew
+        if dH_dew >= 0:
+            raise NotImplementedError('cannot solve for pressure yet')
+        
+        F_mass = self.mixture.MW(imol.data.sum(axis=0))
+        H_hat = H / F_mass
+        H_hat_bubble = H_bubble / F_mass
+        H_hat_dew = H_dew / F_mass
+        flx.IQ_interpolation(
+            self._H_hat_err_at_P, P_bubble, P_dew, 
+            H_hat_bubble - H_hat, H_hat_dew - H_hat,
+            P_guess, 1e-6, 1e-6,
+            (H_hat, F_mass, phase_data),
+            checkiter=False, checkbounds=False,
+            maxiter=100,
+        )
+
+    def set_PS(self, P, S):
+        thermal_condition = self.thermal_condition
+        thermal_condition.P = P
+        T_guess = thermal_condition.T
+        imol = self.imol
+        phase_data = tuple(imol)
+        
+        # Check if subcooled liquid
+        T_bubble = self.bubble_point_at_P(P)
+        S_bubble = self.mixture.xS(phase_data, T_bubble, P)
+        dS_bubble = S - S_bubble
+        if dS_bubble <= 0:
+            thermal_condition.T = self.mixture.xsolve_T_at_SP(phase_data, S, T_bubble, P)
+            return
+        
+        # Check if super heated vapor
+        T_dew = self.dew_point_at_P(P)
+        if T_dew <= T_bubble: 
+            T_dew, T_bubble = T_bubble, T_dew
+            T_dew += 0.5
+            T_bubble -= 0.5
+        S_dew = self.mixture.xS(phase_data, T_dew, P)
+        dS_dew = S - S_dew
+        if dS_dew >= 0:
+            thermal_condition.T = self.mixture.xsolve_T_at_SP(phase_data, S, T_dew, P)
+            return
+        
+        F_mass = self.mixture.MW(imol.data.sum(axis=0))
+        S_hat = S / F_mass
+        S_hat_bubble = S_bubble / F_mass
+        S_hat_dew = S_dew / F_mass
+        T0 = flx.IQ_interpolation(
+            self._S_hat_err_at_T, T_bubble, T_dew, 
+            S_hat_bubble - S_hat, S_hat_dew - S_hat,
+            T_guess, 1e-3, 1e-3,
+            (S_hat, F_mass, phase_data),
+            checkiter=False, checkbounds=False,
+            maxiter=10,
+        )
+        T1 = self.mixture.xsolve_T_at_SP(phase_data, S, thermal_condition.T, P)
+        T = flx.IQ_interpolation(
+            self._S_hat_err_at_T, 2 * T0 - T1, T1, 
+            xtol=1e-6, ytol=1e-6,
+            args=(S_hat, F_mass, phase_data),
+            checkiter=False, checkbounds=False,
+            maxiter=100,
+        )
+        self.thermal_condition.T = self.mixture.xsolve_T_at_SP(phase_data, S, T, P)
+        
+    def set_TS(self, T, S):
+        thermal_condition = self.thermal_condition
+        thermal_condition.T = T
+        P_guess = thermal_condition.P
+        imol = self.imol
+        phase_data = tuple(imol)
+        
+        # Check if subcooled liquid
+        P_bubble = self.bubble_point_at_T(T)
+        S_bubble = self.mixture.xS(phase_data, T, P_bubble)
+        dS_bubble = S - S_bubble
+        if dS_bubble <= 0:
+            thermal_condition.P = self.mixture.xsolve_P_at_ST(phase_data, S, P_bubble, T)
+            return
+        
+        # Check if super heated vapor
+        P_dew = self.dew_point_at_T(T)
+        if P_bubble <= P_dew: 
+            P_dew, P_bubble = P_bubble, P_dew
+            P_dew += 0.5
+            P_bubble -= 0.5
+        S_dew = self.mixture.xS(phase_data, P_dew, T)
+        dS_dew = S - S_dew
+        if dS_dew >= 0:
+            thermal_condition.P = self.mixture.xsolve_P_at_ST(phase_data, S, P_dew, T)
+            return
+        
+        F_mass = self.mixture.MW(imol.data.sum(axis=0))
+        S_hat = S / F_mass
+        S_hat_bubble = S_bubble / F_mass
+        S_hat_dew = S_dew / F_mass
+        flx.IQ_interpolation(
+            self._S_hat_err_at_P, P_bubble, P_dew, 
+            S_hat_bubble - S_hat, S_hat_dew - S_hat,
+            P_guess, 1e-3, 1e-3,
+            (S_hat, F_mass, phase_data),
+            checkiter=False, checkbounds=False,
+            maxiter=10,
+        )
+    
 class VLLECache(Cache): load = VLLE
 del Cache, Equilibrium
 

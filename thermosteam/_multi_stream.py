@@ -476,7 +476,9 @@ class MultiStream(Stream):
             self.phase, = phases
         phases = phase_tuple(phases)
         if phases != self.phases:
-            self._imol = self._imol.to_material_indexer(phases)
+            phases_set = set(phases)
+            phases_set.update(self.phase)
+            self._imol = self._imol.to_material_indexer(phases_set)
     
     ### Flow properties ###
             
@@ -990,8 +992,8 @@ class MultiStream(Stream):
     def vlle(self) -> eq.VLLE:
         """An object that can perform vapor-liquid equilibrium on the stream."""
         phases = self.phases
-        if 'l' not in phases or 'g' not in phases: 
-            self.phases = [*phases, 'l', 'g']
+        if 'l' not in phases or 'g' not in phases or 'L' not in phases:
+            self.phases = [*phases, 'L', 'l', 'g']
         return self._vlle_cache.retrieve()
     
     ### Casting ###
@@ -1014,7 +1016,7 @@ class MultiStream(Stream):
     @property
     def phase(self) -> str:
         imol = self._imol
-        return ''.join([phases[0] for phases in ('g', 'lL', 'sS') if not imol.phases_are_empty(phases)])
+        return ''.join([i for i, j in imol if j.any()])
     @phase.setter
     def phase(self, phase):
         N_phase = len(phase)

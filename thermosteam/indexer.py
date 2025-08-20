@@ -838,22 +838,6 @@ class MaterialIndexer(Indexer):
                 else:
                     self._expand_phases(other._phases)
                     data[:, left_index] = other_data[:, right_index]
-                    
-    
-    def _expand_phases(self, other_phases=None):
-        phases = self._phases
-        other_phases = set(other_phases)
-        new_phases = other_phases.difference(phases)
-        if new_phases: 
-            data = self.data
-            data_by_phase = {i: j for i, j in zip(phases, data.rows)}
-            all_phases = new_phases.union(phases)
-            self._set_phases(all_phases)
-            size = self._chemicals.size
-            for i in new_phases: data_by_phase[i] = SparseVector.from_size(size)
-            phases = self._phases
-            data.rows = [data_by_phase[i] for i in phases]
-            self._set_cache()
             
     def mix_from(self, others):
         isa = isinstance

@@ -41,16 +41,34 @@ def test_copy_like():
 
 def test_vlle():
     tmo.settings.set_thermo(['Water', 'Ethanol', 'Octane'], cache=True)
-    s = tmo.Stream(None, Water=1, Ethanol=0.5, Octane=2, vlle=True, T=351)
+    T = 351
+    P = 101325
+    s = tmo.Stream(None, Water=1, Ethanol=0.5, Octane=2, vlle=True, T=T, P=P)
     assert_allclose(s.mol, [1, 0.5, 2]) # mass balance
     total = s.F_mol
     xl = s.imol['l'].sum() / total
     xL = s.imol['L'].sum() / total if 'L' in s.phases else 0.
     xg = s.imol['g'].sum() / total
-    # VLLE algorithm not implemented well yet, but there should be multiple phases
     assert_allclose(xl, 0.2748928033836762, atol=2e-3, rtol=2e-3)
     assert_allclose(xL, 0.6370268977038833, atol=2e-3, rtol=2e-3) # mass balance
     assert_allclose(xg, 0.08808029891244049, atol=2e-3, rtol=2e-3) # mass balance
+    H = s.H
+    S = s.S
+    specs = (
+        dict(H=H, P=P), 
+        dict(S=S, P=P), 
+        dict(H=H, T=T), 
+        dict(S=S, T=T)
+    )
+    for spec in specs:
+        s.vlle(**spec)
+        total = s.F_mol
+        xl = s.imol['l'].sum() / total
+        xL = s.imol['L'].sum() / total if 'L' in s.phases else 0.
+        xg = s.imol['g'].sum() / total
+        assert_allclose(xl, 0.2748928033836762, atol=2e-3, rtol=2e-3)
+        assert_allclose(xL, 0.6370268977038833, atol=2e-3, rtol=2e-3) # mass balance
+        assert_allclose(xg, 0.08808029891244049, atol=2e-3, rtol=2e-3) # mass balance
     
     s = tmo.Stream(None, Water=1, Ethanol=1, Octane=2, vlle=True, T=300)
     assert set(s.phases) == set(['l', 'L']) # No gas phase
@@ -64,6 +82,40 @@ def test_vlle():
     s = tmo.MultiStream(None, l=[('Water', 1), ('Ethanol', 1), ('Octane', 2)], vlle=True, T=390)
     assert s.phase == 'g' # Only one phase
     assert set(s.phases) == set(['L', 'l', 'g']) # All three phases can still be used
+    
+def test_vlle_with_solids():
+    Solid = tmo.Chemical('Solid', search_db=False, phase='s', default=True)
+    tmo.settings.set_thermo(['Water', 'Ethanol', 'Octane', Solid], cache=True)
+    T = 351
+    P = 101325
+    s = tmo.Stream(None, Water=1, Ethanol=0.5, Octane=2, vlle=True, T=T, P=P)
+    s.phases = 'sglL'
+    s.imol['s', 'Solid'] = 0.5
+    assert_allclose(s.mol, [1, 0.5, 2, 0.5]) # mass balance
+    total = s.F_mol - s.imol['Solid']
+    xl = s.imol['l'].sum() / total
+    xL = s.imol['L'].sum() / total if 'L' in s.phases else 0.
+    xg = s.imol['g'].sum() / total
+    assert_allclose(xl, 0.2748928033836762, atol=2e-3, rtol=2e-3)
+    assert_allclose(xL, 0.6370268977038833, atol=2e-3, rtol=2e-3) # mass balance
+    assert_allclose(xg, 0.08808029891244049, atol=2e-3, rtol=2e-3) # mass balance
+    H = s.H
+    S = s.S
+    specs = (
+        dict(H=H, P=P), 
+        dict(S=S, P=P), 
+        dict(H=H, T=T), 
+        dict(S=S, T=T)
+    )
+    for spec in specs:
+        s.vlle(**spec)
+        total = s.F_mol - s.imol['Solid']
+        xl = s.imol['l'].sum() / total
+        xL = s.imol['L'].sum() / total if 'L' in s.phases else 0.
+        xg = s.imol['g'].sum() / total
+        assert_allclose(xl, 0.2748928033836762, atol=2e-3, rtol=2e-3)
+        assert_allclose(xL, 0.6370268977038833, atol=2e-3, rtol=2e-3) # mass balance
+        assert_allclose(xg, 0.08808029891244049, atol=2e-3, rtol=2e-3) # mass balance
     
 def stream_methods():
     tmo.settings.set_thermo(['Water', 'Ethanol'], cache=True)
@@ -456,3 +508,4 @@ if __name__ == '__main__':
     test_mixture()
     test_mixing_phases()
     test_mixing_pressure()
+    test_vlle_with_solids()
