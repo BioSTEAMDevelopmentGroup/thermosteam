@@ -471,11 +471,11 @@ class MultiStream(Stream):
         return self._imol._phases
     @phases.setter
     def phases(self, phases):
-        phases = set(phases)
-        if len(phases) == 1:
+        phases_set = set(phases)
+        if len(phases_set) == 1:
             self.phase = phases[0]
         else:
-            self._imol = self._imol.to_material_indexer(phases)
+            self._imol = self._imol.to_material_indexer(phases_set)
     
     ### Flow properties ###
             
@@ -812,8 +812,13 @@ class MultiStream(Stream):
         array([0.667, 0.333])
 
         """
-        z = self.imol[..., IDs].sum(0)
-        z /= z.sum()
+        try:
+            z = self.imol[..., IDs].sum(0)
+            z /= z.sum()
+        except:
+            breakpoint()
+            z = self.imol[..., IDs].sum(0)
+            z /= z.sum()
         return z
     
     def get_normalized_vol(self, IDs: Sequence[str]):

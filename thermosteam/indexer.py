@@ -10,7 +10,7 @@
 import thermosteam as tmo
 from .units_of_measure import UnitsOfMeasure
 from . import utils
-from .exceptions import UndefinedChemicalAlias
+from .exceptions import UndefinedChemicalAlias, UndefinedPhase
 from .base import (
     SparseVector, SparseArray, sparse_vector, sparse_array,
     MassFlowDict, VolumetricFlowDict, sum_sparse_vectors, get_ndim,
@@ -103,14 +103,36 @@ def get_sparse_chemical_data(sparse, index, kind):
     else:
         raise IndexError('invalid index kind')
 
-def reset_sparse_chemical_data(sparse, data):
+def get_sparse_phase_chemical_data(dcts, chemical_index, kind):
+    if kind == 0:
+        return np.array([dct.get(chemical_index, 0.) for dct in dcts])
+    elif kind == 1:
+        return np.array([
+            sum([dct[i] for i in chemical_index if i in dct])
+            for dct in dcts
+        ])
+    elif kind == 2:
+        return np.array([
+            [(sum([dct[j] for j in i if j in dct]) if i.__class__ is list else dct.get(i, 0.))
+             for n, i in enumerate(chemical_index)]
+            for dct in dcts
+        ])
+    elif kind == 3:
+        return np.array([
+            [dct.get(i, 0.) for i in chemical_index]
+            for dct in dcts
+        ])
+    else:
+        raise IndexError('invalid index kind')
+
+def reset_sparse_chemical_data(sparse, data, ndim=None):
     if data is sparse: return
     dct = sparse.dct
     dct.clear()
     if data.__class__ is SparseVector:
         dct.update(data.dct)
     else:
-        ndim = get_ndim(data)
+        if ndim is None: ndim = get_ndim(data)
         if ndim == 0:
             if data:
                 data = float(data)
@@ -124,11 +146,7 @@ def reset_sparse_chemical_data(sparse, data):
                 'cannot set an array element with a sequence'
             )
 
-def set_sparse_chemical_data(sparse, index, kind, data, key, parent):
-    if kind is None:
-        reset_sparse_chemical_data(sparse, data)
-        return
-    ndim = get_ndim(data)
+def set_sparse_chemical_data(sparse, index, kind, data, key, parent, ndim):
     dct = sparse.dct
     if kind == 0:
         if ndim:
@@ -523,10 +541,14 @@ class ChemicalIndexer(Indexer):
         return get_sparse_chemical_data(self.data, *self._chemicals._get_index_and_kind(key))
     
     def __setitem__(self, key, data):
-        set_sparse_chemical_data(
-            self.data, *self._chemicals._get_index_and_kind(key), 
-            data, key, self
-        )
+        index, kind = self._chemicals._get_index_and_kind(key)
+        if kind is None:
+            reset_sparse_chemical_data(self.data, data)
+        else:
+            set_sparse_chemical_data(
+                self.data, index, kind,
+                data, key, self, get_ndim(data)
+            )
     
     def sum_across_phases(self):
         return self.data
@@ -617,7 +639,6 @@ class ChemicalIndexer(Indexer):
         else:
             new._parent = None
             new.data = self.data
-            new.data.read_only = False
         new._lock_phase = False
         new._data_cache = {}
         return new
@@ -815,7 +836,7 @@ class MaterialIndexer(Indexer):
             all_phases = new_phases.union(phases)
             self._set_phases(all_phases)
             parent_data = self._parent.data
-            phase_index = self._parent._phase_index
+            phase_index = self._parent._phase_indexer._index
             for i in new_phases: 
                 data_by_phase[i] = new_phase = parent_data[phase_index[i]]
                 new_phase.clear()
@@ -825,7 +846,7 @@ class MaterialIndexer(Indexer):
     def _reset_phases(self, new_phases=None):
         self._set_phases(new_phases)
         parent_data = self._parent.data
-        phase_index = self._parent._phase_index
+        phase_index = self._parent._phase_indexer
         self.data.rows = [parent_data[phase_index[i]] for i in self._phases]
         self._set_cache()
     
@@ -970,21 +991,25 @@ class MaterialIndexer(Indexer):
         except KeyError:
             self._index_cache = caches[key] = {}
     
-    def copy(self):
+    def copy(self, deep=True):
         new = _new(self.__class__)
         new._phases = phases = self._phases
         new._chemicals = self._chemicals
         new._phase_indexer = self._phase_indexer
         new._index_cache = self._index_cache
         if self._parent:
-            new._parent = parent = self._parent.copy()
+            if deep:
+                new._parent = parent = self._parent.copy()
+            else:
+                parent = self._parent
             data = parent.data
             new.data = SparseArray.from_rows([data[parent_phase_index[i]] for i in phases])
         else:
             new._parent = parent = None
-            new.data = self.data.copy()
-            for i in new.data:
-                i.read_only = False
+            if deep:
+                new.data = self.data.copy()
+            else:
+                new.data = self.data
         new._data_cache = {}
         return new
     __copy__ = copy
@@ -1100,13 +1125,24 @@ class MaterialIndexer(Indexer):
                 raise IndexError('invalid index kind')
         else:
             if kind is None:
-                values = self.data if index is None else self.data.rows[index]
+                if index is None:
+                    values = self.data
+                elif index.__class__ is tuple:
+                    data = self.data
+                    values = SparseArray.from_rows([data.rows[i] for i in index])
+                else:
+                    values = self.data.rows[index]
             else:
                 phase_index, chemical_index = index
                 if phase_index is None:
-                    values = np.array([
-                        get_sparse_chemical_data(i, chemical_index, kind) for i in self.data.rows
-                    ])
+                    dcts = [i.dct for i in self.data.rows]
+                    values = get_sparse_phase_chemical_data(
+                        dcts, chemical_index, kind
+                    )
+                elif phase_index.__class__ is tuple:
+                    rows = self.data.rows
+                    dcts = [rows[i].dct for i in phase_index]
+                    values = get_sparse_phase_chemical_data(dcts, chemical_index, kind)
                 else:
                     phase_index, chemical_index = index
                     values = get_sparse_chemical_data(self.data.rows[phase_index], chemical_index, kind)
@@ -1120,6 +1156,15 @@ class MaterialIndexer(Indexer):
         if kind is None:
             if index is None:
                 self.data[:] = data
+            elif index.__class__ is tuple:
+                ndim = get_ndim(data)
+                if ndim == 2:
+                    rows = self.data.rows
+                    ndim -= 1
+                    for i, j in zip(index, data): reset_sparse_chemical_data(rows[i], j, ndim)
+                else:
+                    rows = self.data.rows
+                    for i in index: reset_sparse_chemical_data(rows[i], data, ndim)
             else:
                 reset_sparse_chemical_data(self.data.rows[index], data)
         else:
@@ -1140,10 +1185,27 @@ class MaterialIndexer(Indexer):
                         sparse_data[:, i] = data[n] * group_compositions[key[n]] if i.__class__ is list else data[n]
                 else:
                     raise IndexError('invalid index kind')
+            elif phase_index.__class__ is tuple:
+                ndim = get_ndim(data)
+                if ndim == 2:
+                    rows = self.data.rows
+                    ndim -= 1
+                    for i, j in zip(phase_index, data): 
+                        set_sparse_chemical_data(
+                            rows[i], chemical_index, kind, 
+                            j, key, self, ndim
+                        )
+                else:
+                    rows = self.data.rows
+                    for i in phase_index:
+                        set_sparse_chemical_data(
+                            rows[i], chemical_index, kind, 
+                            data, key, self, ndim
+                        )
             else:
                 set_sparse_chemical_data(
                     self.data[phase_index], chemical_index, kind, 
-                    data, key, self
+                    data, key, self, get_ndim(data)
                 )
     
     def _get_index_data(self, key):
@@ -1181,20 +1243,35 @@ class MaterialIndexer(Indexer):
     def _get_index_and_kind(self, phase_IDs, undefined_chemical_error):
         isa = isinstance
         if isa(phase_IDs, str):
-            if len(phase_IDs) == 1: 
-                index = self._phase_indexer(phase_IDs)
-                kind = None
+            _index = self._phase_indexer._index
+            if phase_IDs in _index:
+                index = _index[phase_IDs]
             else:
-                raise undefined_chemical_error
+                index = []
+                for i in phase_IDs:
+                    if i in _index:
+                        index.append(_index[i])
+                    else:
+                        raise undefined_chemical_error
+                index = tuple(index)
+            kind = None
         elif phase_IDs is ...:
             phase_index = index = kind = None
         else:
             phase = phase_IDs[0]
             if isa(phase, str):
-                if len(phase) == 1:
-                    phase_index = self._phase_indexer(phase)
+                _index = self._phase_indexer._index
+                if phase in _index:
+                    phase_index = _index[phase]
                 else:
-                    raise undefined_chemical_error
+                    phase_index = []
+                    for i in phase:
+                        if i in _index:
+                            phase_index.append(_index[i])
+                        else:
+                            raise UndefinedPhase(i)
+                    phase_index = tuple(phase_index)
+                kind = None
             elif phase is ...:
                 phase_index = None
             else:

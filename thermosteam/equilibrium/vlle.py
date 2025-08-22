@@ -56,16 +56,13 @@ class VLLE(Equilibrium, phases='Llg'):
         thermo = self._thermo
         thermal_condition = self._thermal_condition
         imol_vle_l = tmo.indexer.MaterialIndexer.from_data(
-            tmo.base.SparseArray.from_rows([imol['g'], imol['l']]),
-            phases=('g', 'l')
+            imol['gl'], phases=('g', 'l')
         )
         imol_vle_L = tmo.indexer.MaterialIndexer.from_data(
-            tmo.base.SparseArray.from_rows([imol['g'], imol['L']]),
-            phases=('g', 'l')
+            imol['gL'], phases=('g', 'l')
         )
         imol_lle = tmo.indexer.MaterialIndexer.from_data(
-            tmo.base.SparseArray.from_rows([imol['L'], imol['l']]),
-            phases=('L', 'l')
+            imol['Ll'], phases=('L', 'l')
         )
         self.vle_l = VLE(imol_vle_l, thermal_condition, thermo)
         self.vle_L = VLE(imol_vle_L, thermal_condition, thermo)
@@ -158,7 +155,7 @@ class VLLE(Equilibrium, phases='Llg'):
         thermal_condition.P = P
         chemicals = self.chemicals
         imol = self.imol
-        data = tmo.base.SparseArray.from_rows([imol[i] for i in 'Lgl'])
+        data = imol['Lgl']
         indices = chemicals.get_vlle_indices(data.nonzero_keys())
         subdata = data[:, indices]
         total = subdata.sum()
@@ -178,9 +175,7 @@ class VLLE(Equilibrium, phases='Llg'):
     def _iter_flows_at_TP(self, data, T, P, indices, total_components):
         self.iter += 1
         imol = self.imol
-        L_mol = imol['L']
-        g_mol = imol['g']
-        l_mol = imol['l']
+        L_mol, g_mol, l_mol = imol['Lgl']
         data *= total_components / data.sum(axis=0)
         L_mol[indices] = data[0]
         g_mol[indices] = data[1]

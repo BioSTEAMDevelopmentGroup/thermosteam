@@ -37,6 +37,6 @@ class Cache:
         return value
     
 def trim_cache(cache): # pragma: no cover
-    if cache.__len__() > 500: 
+    if cache.__len__() > 200: 
         iter = cache.__iter__()
-        for i in 100: del cache[iter.__next__()]
+        for i in 20: del cache[iter.__next__()]
