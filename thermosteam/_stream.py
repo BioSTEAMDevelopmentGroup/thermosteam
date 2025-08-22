@@ -2136,8 +2136,7 @@ class Stream(AbstractStream):
         new._sink = new._source = None
         new._price = 0
         new._thermo = self._thermo
-        new._imol = imol = self._imol._copy_without_data()
-        imol.data = self._imol.data
+        new._imol = self._imol.copy(deep=False)
         new._thermal_condition = self._thermal_condition.copy()
         new.reset_cache()
         new.equations = Equations()
@@ -2250,6 +2249,14 @@ class Stream(AbstractStream):
         chemicals = self.chemicals
         chemicals_tuple = chemicals.tuple
         indices = chemicals.get_lle_indices(self.mol.nonzero_keys())
+        return [chemicals_tuple[i] for i in indices]
+
+    @property
+    def vlle_chemicals(self) -> list[tmo.Chemical]:
+        """Chemicals cabable of liquid-liquid equilibrium."""
+        chemicals = self.chemicals
+        chemicals_tuple = chemicals.tuple
+        indices = chemicals.get_vlle_indices(self.mol.nonzero_keys())
         return [chemicals_tuple[i] for i in indices]
 
     def get_bubble_point(self, IDs: Optional[Sequence[str]] = None):

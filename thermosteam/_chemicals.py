@@ -710,6 +710,7 @@ class CompiledChemicals(Chemicals):
                     self.set_alias(ID, name)
         vle_chemicals = []
         lle_chemicals = []
+        vlle_chemicals = []
         heavy_chemicals = []
         light_chemicals = []
         for i in chemicals:
@@ -719,19 +720,23 @@ class CompiledChemicals(Chemicals):
                     heavy_chemicals.append(i)
                     if i.Dortmund or i.UNIFAC or i.NIST or i.PSRK:
                         lle_chemicals.append(i)
+                        vlle_chemicals.append(i)
                 elif locked_phase == 'g':
                     light_chemicals.append(i)
                 else:
                     raise Exception('chemical locked state has an invalid phase')
             else:
                 vle_chemicals.append(i)
-                if i.Dortmund or i.UNIFAC or i.NIST or i.PSRK: lle_chemicals.append(i)
+                vlle_chemicals.append(i)
+                if i.Dortmund or i.UNIFAC or i.NIST or i.PSRK: 
+                    lle_chemicals.append(i)
         dct['vle_chemicals'] = tuple_(vle_chemicals)
         dct['lle_chemicals'] = tuple_(lle_chemicals)
         dct['heavy_chemicals'] = tuple_(heavy_chemicals)
         dct['light_chemicals'] = tuple_(light_chemicals)
         dct['_vle_index'] = [index[i.ID] for i in vle_chemicals]
         dct['_lle_index'] = [index[i.ID] for i in lle_chemicals]
+        dct['_vlle_index'] = [index[i.ID] for i in vlle_chemicals]
         dct['_heavy_solutes'] = chemical_data_array(heavy_chemicals, 'N_solutes')
         dct['_heavy_indices'] = [index[i.ID] for i in heavy_chemicals]
         dct['_light_indices'] = [index[i.ID] for i in light_chemicals]
@@ -1326,6 +1331,22 @@ class CompiledChemicals(Chemicals):
         
         """
         return [i for i in self._lle_index if i in nonzeros]
+    
+    def get_vlle_indices(self, nonzeros):
+        """
+        Return indices of species in liquid-liquid equilibrium given an array
+        dictating whether or not the chemicals are present.
+        
+        Examples
+        --------
+        >>> from thermosteam import CompiledChemicals
+        >>> chemicals = CompiledChemicals(['Water', 'Methanol', 'Ethanol'])
+        >>> data = chemicals.kwarray(dict(Water=2., Ethanol=1.))
+        >>> chemicals.get_vlle_indices(data[data!=0])
+        [1, 2]
+        
+        """
+        return [i for i in self._vlle_index if i in nonzeros]
     
     def __repr__(self):
         return f"{type(self).__name__}([{', '.join(self.IDs)}])"

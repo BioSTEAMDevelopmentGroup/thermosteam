@@ -15,7 +15,7 @@ from .base import (
     SparseVector, SparseArray, sparse_vector, sparse_array,
     MassFlowDict, VolumetricFlowDict, sum_sparse_vectors, get_ndim,
 )
-from ._phase import PhaseIndexer, phase_tuple, check_phase, valid_phases as phase_names
+from ._phase import PhaseIndexer, phase_tuple, check_phase, index as parent_phase_index, valid_phases as phase_names
 import numpy as np
 
 __all__ = (
@@ -234,12 +234,6 @@ class Indexer:
     
     def isempty(self):
         return not self.data.any()
-    
-    def copy(self):
-        new = self._copy_without_data()
-        new.data = self.data.copy()
-        return new
-    __copy__ = copy
     
     def get_conversion_factor(self, units):
         if self.units:
@@ -608,14 +602,26 @@ class ChemicalIndexer(Indexer):
             self.data[left_index] = other_data[right_index]
         self.phase = other.phase
     
-    def _copy_without_data(self):
+    def copy(self, deep=True):
         new = _new(self.__class__)
-        new._chemicals = chemicals = self.chemicals
-        new._parent = parent_indexer(chemicals)
-        new._phase = self._phase
+        new._chemicals = self.chemicals
+        new._phase = phase = self._phase
+        if deep:
+            parent = self._parent
+            if parent:
+                new._parent = parent = parent.copy()
+                new.data = parent.data[parent_phase_index[phase]]
+            else:
+                new._parent = None
+                new.data = self.data.copy()
+        else:
+            new._parent = None
+            new.data = self.data
+            new.data.read_only = False
         new._lock_phase = False
         new._data_cache = {}
         return new
+    __copy__ = copy
     
     @classmethod
     def blank(cls, phase, chemicals=None, parent=None, lock_phase=False):
@@ -799,6 +805,30 @@ class MaterialIndexer(Indexer):
     def sum_across_phases(self):
         return self.data.sum(0)
     
+    def _expand_phases(self, other_phases=None):
+        phases = self._phases
+        other_phases = set(other_phases)
+        new_phases = other_phases.difference(phases)
+        if new_phases: 
+            data = self.data
+            data_by_phase = {i: j for i, j in zip(phases, data.rows)}
+            all_phases = new_phases.union(phases)
+            self._set_phases(all_phases)
+            parent_data = self._parent.data
+            phase_index = self._parent._phase_index
+            for i in new_phases: 
+                data_by_phase[i] = new_phase = parent_data[phase_index[i]]
+                new_phase.clear()
+            data.rows = [data_by_phase[i] for i in self._phases]
+            self._set_cache()
+    
+    def _reset_phases(self, new_phases=None):
+        self._set_phases(new_phases)
+        parent_data = self._parent.data
+        phase_index = self._parent._phase_index
+        self.data.rows = [parent_data[phase_index[i]] for i in self._phases]
+        self._set_cache()
+    
     def copy_like(self, other):
         if self is other: return
         phase_indexer = self._phase_indexer
@@ -940,15 +970,24 @@ class MaterialIndexer(Indexer):
         except KeyError:
             self._index_cache = caches[key] = {}
     
-    def _copy_without_data(self):
+    def copy(self):
         new = _new(self.__class__)
-        new._phases = self._phases
-        new._chemicals = chemicals = self._chemicals
+        new._phases = phases = self._phases
+        new._chemicals = self._chemicals
         new._phase_indexer = self._phase_indexer
         new._index_cache = self._index_cache
-        new._parent = parent_indexer(chemicals)
+        if self._parent:
+            new._parent = parent = self._parent.copy()
+            data = parent.data
+            new.data = SparseArray.from_rows([data[parent_phase_index[i]] for i in phases])
+        else:
+            new._parent = parent = None
+            new.data = self.data.copy()
+            for i in new.data:
+                i.read_only = False
         new._data_cache = {}
         return new
+    __copy__ = copy
     
     @classmethod
     def blank(cls, phases, chemicals=None, parent=None):
@@ -959,7 +998,9 @@ class MaterialIndexer(Indexer):
             self._set_cache()
             self.data = SparseArray.from_shape([len(phases), self._chemicals.size])
         elif (phases:=frozenset(phases)) in parent._data_cache:
-            return parent._data_cache[phases]
+            indexer = parent._data_cache[phases]
+            if frozenset(indexer._phases) != phases: indexer._reset_phases(phases)
+            return indexer
         else:    
             self = _new(cls)
             self._set_phases(phases)
@@ -968,10 +1009,8 @@ class MaterialIndexer(Indexer):
             index = parent._phase_indexer._index
             rows = parent.data.rows
             self.data = SparseArray.from_rows([
-                (rows[index[i]] if i in index else SparseVector(size=self._chemicals.size))
-                 for i in self._phases
+                rows[index[i]] for i in self._phases
             ])
-            parent._data_cache[phases] = self
         self._data_cache = {}
         self._parent = parent
         return self
@@ -1007,17 +1046,21 @@ class MaterialIndexer(Indexer):
             
     def to_chemical_indexer(self, phase):
         rows = self.data.rows
-        index = self._phase_indexer
-        data = rows[index(phase)]
+        index = self._phase_indexer(phase)
         dct = sum_sparse_vectors(rows)
-        data.dct.clear()
-        data.dct.update(dct)
+        data_dct = rows[index].dct
+        data_dct.clear()
+        data_dct.update(dct)
         return self._ChemicalIndexer.blank(phase, self._chemicals, self._parent or self)
     
     def to_material_indexer(self, phases):
+        original_phases = set(self._phases)
+        phases = set(phases)
         material_indexer = self.__class__.blank(phases, self._chemicals, self._parent or self)
-        index = material_indexer._phase_indexer
+        index = material_indexer._phase_indexer._index
         rows = material_indexer.data.rows
+        for phase, row in zip(material_indexer._phases, rows):
+            if phase not in original_phases: row.clear()
         for phase, data in self:
             if data.any(): 
                 if phase not in phases:
@@ -1025,14 +1068,14 @@ class MaterialIndexer(Indexer):
                         phase = phase.lower()
                     else:
                         phase = phase.upper()
-                    rows[index(phase)] += data
+                    rows[index[phase]] += data
         return material_indexer
     
     def get_phase(self, phase, lock=False):
-        return self._ChemicalIndexer.blank(phase, self._chemicals, self, lock)
+        return self._ChemicalIndexer.blank(phase, self._chemicals, self._parent or self, lock)
         
     def get_phases(self, phases):
-        return self.__class__.blank(phases, self._chemicals, self)
+        return self.__class__.blank(phases, self._chemicals, self._parent or self)
     
     def __getitem__(self, key):
         index, kind, sum_across_phases = self._get_index_data(key)

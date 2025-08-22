@@ -226,6 +226,8 @@ class LLE(Equilibrium, phases='lL'):
         else:
             old_data = imol.data.copy()
         mol, index, lle_chemicals = self.get_liquid_mol_data()
+        if top_chemical is None:
+            top_chemical = self.chemicals.IDs[mol.argmax()]
         F_mol = mol.sum()
         if F_mol and len(lle_chemicals) > 1:
             z_mol = mol = mol / F_mol # Normalize first
@@ -256,22 +258,19 @@ class LLE(Equilibrium, phases='lL'):
                     self.solve_lle_liquid_mol(mol, T, lle_chemicals, single_loop)
                 if (mol_l < 0).any(): 
                     self.solve_lle_liquid_mol(mol, T, lle_chemicals, single_loop)
-            if top_chemical:
-                MW = self.chemicals.MW[index]
-                mass_L = mol_L * MW
-                mass_l = mol_l * MW
-                IDs = {i.ID: n for n, i in enumerate(lle_chemicals)}
-                try: top_chemical_index = IDs[top_chemical]
-                except: pass
-                else:
-                    ML = mass_L.sum()
-                    Ml = mass_l.sum()
-                    if ML and Ml:
-                        C_L = mass_L[top_chemical_index] / ML
-                        C_l = mass_l[top_chemical_index] / Ml
-                        if C_L < C_l: mol_l, mol_L = mol_L, mol_l
-                    elif Ml:
-                        mol_l, mol_L = mol_L, mol_l
+            MW = self.chemicals.MW[index]
+            mass_L = mol_L * MW
+            mass_l = mol_l * MW
+            IDs = {i.ID: n for n, i in enumerate(lle_chemicals)}
+            top_chemical_index = IDs[top_chemical]
+            ML = mass_L.sum()
+            Ml = mass_l.sum()
+            if ML and Ml:
+                C_L = mass_L[top_chemical_index] / ML
+                C_l = mass_l[top_chemical_index] / Ml
+                if C_L < C_l: mol_l, mol_L = mol_L, mol_l
+            elif Ml:
+                mol_l, mol_L = mol_L, mol_l
             F_mol_l = mol_l.sum()
             F_mol_L = mol_L.sum()
             if not F_mol_L:
