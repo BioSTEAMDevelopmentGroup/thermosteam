@@ -200,7 +200,7 @@ class LLE(Equilibrium, phases='lL'):
         self._K = None
         self._phi = None
     
-    def __call__(self, T, P=None, top_chemical=None, update=True, use_cache=True, single_loop=False):
+    def __call__(self, T, P=None, top_chemical=None, update=True, use_cache=False, single_loop=False):
         """
         Perform liquid-liquid equilibrium.
 
@@ -231,12 +231,12 @@ class LLE(Equilibrium, phases='lL'):
         F_mol = mol.sum()
         if F_mol and len(lle_chemicals) > 1:
             z_mol = mol = mol / F_mol # Normalize first
-            use_cache = (
-                use_cache 
-                and self._lle_chemicals == lle_chemicals
-                and T - self._T < self.temperature_cache_tolerance 
-                and (self._z_mol - z_mol < self.composition_cache_tolerance).all()
-            )
+            use_cache = use_cache and self._lle_chemicals == lle_chemicals
+            if use_cache:
+                use_cache = (
+                    T - self._T < self.temperature_cache_tolerance 
+                    and (self._z_mol - z_mol < self.composition_cache_tolerance).all()
+                )
             if use_cache:
                 K = self._K 
                 self._phi = phi = phase_fraction(z_mol, K, self._phi)

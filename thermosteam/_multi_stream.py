@@ -812,13 +812,8 @@ class MultiStream(Stream):
         array([0.667, 0.333])
 
         """
-        try:
-            z = self.imol[..., IDs].sum(0)
-            z /= z.sum()
-        except:
-            breakpoint()
-            z = self.imol[..., IDs].sum(0)
-            z /= z.sum()
+        z = self.imol[..., IDs].sum(0)
+        z /= z.sum()
         return z
     
     def get_normalized_vol(self, IDs: Sequence[str]):

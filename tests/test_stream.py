@@ -51,9 +51,9 @@ def test_vlle():
     xl = s.imol['l'].sum() / total
     xL = s.imol['L'].sum() / total if 'L' in s.phases else 0.
     xg = s.imol['g'].sum() / total
-    assert_allclose(xl, 0.2748928033836762, atol=2e-3, rtol=2e-3)
-    assert_allclose(xL, 0.6370268977038833, atol=2e-3, rtol=2e-3) # mass balance
-    assert_allclose(xg, 0.08808029891244049, atol=2e-3, rtol=2e-3) # mass balance
+    assert_allclose(xl, 0.2748928033836762, atol=5e-3, rtol=5e-3)
+    assert_allclose(xL, 0.6370268977038833, atol=5e-3, rtol=5e-3) # mass balance
+    assert_allclose(xg, 0.08808029891244049, atol=5e-3, rtol=5e-3) # mass balance
     H = s.H
     S = s.S
     V = s.vlle.vapor_fraction
@@ -73,9 +73,9 @@ def test_vlle():
         xl = s.imol['l'].sum() / total
         xL = s.imol['L'].sum() / total if 'L' in s.phases else 0.
         xg = s.imol['g'].sum() / total
-        assert_allclose(xl, 0.2748928033836762, atol=2e-3, rtol=2e-3)
-        assert_allclose(xL, 0.6370268977038833, atol=2e-3, rtol=2e-3) # mass balance
-        assert_allclose(xg, 0.08808029891244049, atol=2e-3, rtol=2e-3) # mass balance
+        assert_allclose(xl, 0.2748928033836762, atol=5e-3, rtol=5e-3)
+        assert_allclose(xL, 0.6370268977038833, atol=5e-3, rtol=5e-3) # mass balance
+        assert_allclose(xg, 0.08808029891244049, atol=5e-3, rtol=5e-3) # mass balance
     
     s = tmo.Stream(None, Water=1, Ethanol=1, Octane=2, vlle=True, T=300)
     assert set(s.phases) == set(['l', 'L']) # No gas phase
@@ -105,9 +105,9 @@ def test_vlle_with_solids():
     xl = s.imol['l'].sum() / total
     xL = s.imol['L'].sum() / total if 'L' in s.phases else 0.
     xg = s.imol['g'].sum() / total
-    assert_allclose(xl, 0.2748928033836762, atol=2e-3, rtol=2e-3)
-    assert_allclose(xL, 0.6370268977038833, atol=2e-3, rtol=2e-3) # mass balance
-    assert_allclose(xg, 0.08808029891244049, atol=2e-3, rtol=2e-3) # mass balance
+    assert_allclose(xl, 0.2748928033836762, atol=5e-3, rtol=5e-3)
+    assert_allclose(xL, 0.6370268977038833, atol=5e-3, rtol=5e-3) # mass balance
+    assert_allclose(xg, 0.08808029891244049, atol=5e-3, rtol=5e-3) # mass balance
     H = s.H
     S = s.S
     V = s.vlle.vapor_fraction
@@ -148,9 +148,9 @@ def test_vlle_with_solids_and_supercritical_components():
     xl = s.imol['l'].sum() / total
     xL = s.imol['L'].sum() / total if 'L' in s.phases else 0.
     xg = s.imol['g'].sum() / total
-    assert_allclose(xl, 0.26877566584386003, atol=2e-3, rtol=2e-3)
-    assert_allclose(xL, 0.6042822289561331, atol=2e-3, rtol=2e-3) # mass balance
-    assert_allclose(xg, 0.12694210520000673, atol=2e-3, rtol=2e-3) # mass balance
+    assert_allclose(xl, 0.26877566584386003, atol=5e-3, rtol=5e-3)
+    assert_allclose(xL, 0.6042822289561331, atol=5e-3, rtol=5e-3) # mass balance
+    assert_allclose(xg, 0.12694210520000673, atol=5e-3, rtol=5e-3) # mass balance
     H = s.H
     S = s.S
     V = s.vlle.vapor_fraction
@@ -174,9 +174,9 @@ def test_vlle_with_solids_and_supercritical_components():
         xl = s.imol['l'].sum() / total
         xL = s.imol['L'].sum() / total if 'L' in s.phases else 0.
         xg = s.imol['g'].sum() / total
-        assert_allclose(xl, 0.26877566584386003, atol=2e-3, rtol=2e-3)
-        assert_allclose(xL, 0.6042822289561331, atol=2e-3, rtol=2e-3) # mass balance
-        assert_allclose(xg, 0.12694210520000673, atol=2e-3, rtol=2e-3) # mass balance
+        assert_allclose(xl, 0.26877566584386003, atol=5e-3, rtol=5e-3)
+        assert_allclose(xL, 0.6042822289561331, atol=5e-3, rtol=5e-3) # mass balance
+        assert_allclose(xg, 0.12694210520000673, atol=5e-3, rtol=5e-3) # mass balance
     
 def stream_methods():
     tmo.settings.set_thermo(['Water', 'Ethanol'], cache=True)

@@ -16,12 +16,26 @@ from ..utils import Cache
 import thermosteam as tmo
 import numpy as np
 from numpy.linalg import solve
+from scipy.optimize import root
+from numba import njit
 
 __all__ = ('VLLE', 'VLLECache')
 
 EXTRACT_INDEX = 0
 GAS_INDEX = 1
 RAFFINATE_INDEX = 2
+
+@njit(cache=True)
+def RashfordRice_VLLE_residuals(VL1, z, K_a, K_b):
+    V, L1 = VL1
+    L2 = 1.0 - V - L1
+    denom = V + L1 / K_a + L2 / K_b
+    y = z / denom
+    x_alpha = y / K_a
+    residuals = np.zeros(2)
+    residuals[0] = y.sum() - 1.0
+    residuals[1] = x_alpha.sum() - 1.0
+    return residuals
 
 class VLLE(Equilibrium, phases='Llg'):
     """
@@ -104,7 +118,7 @@ class VLLE(Equilibrium, phases='Llg'):
         if T_spec:
             if P_spec:
                 try:
-                    self.set_thermal_condition(T, P)
+                    self.set_TP(T, P)
                 except NoEquilibrium:
                     thermal_condition = self._thermal_condition
                     thermal_condition.T = T
@@ -149,7 +163,7 @@ class VLLE(Equilibrium, phases='Llg'):
         elif H_spec: # pragma: no cover
             raise NotImplementedError('specification V and H not implemented')
        
-    def set_thermal_condition(self, T, P):
+    def set_TP(self, T, P):
         thermal_condition = self._thermal_condition
         thermal_condition.T = T
         thermal_condition.P = P
@@ -160,103 +174,110 @@ class VLLE(Equilibrium, phases='Llg'):
         subdata = data[:, indices]
         total = subdata.sum()
         subdata = subdata / total
-        total_components = subdata.sum(axis=0)
+        z = subdata.sum(axis=0)
         self.iter = 0
         new_subdata = flx.fixed_point(
             self._iter_flows_at_TP, subdata, xtol=1e-6, 
-            args=(T, P, indices, total_components),
+            args=(T, P, indices, z),
             convergenceiter=10, 
             checkconvergence=False,
             checkiter=False,
             maxiter=100,
         )
-        data[:, indices] = total * new_subdata * total_components / new_subdata.sum(axis=0)
+        data[:, indices] = total * new_subdata * z / new_subdata.sum(axis=0)
     
-    def _iter_flows_at_TP(self, data, T, P, indices, total_components):
-        self.iter += 1
+    def _iter_flows_at_TP(self, data, T, P, indices, z):
         imol = self.imol
         L_mol, g_mol, l_mol = imol['Lgl']
-        data *= total_components / data.sum(axis=0)
+        data *= z / data.sum(axis=0)
         L_mol[indices] = data[0]
         g_mol[indices] = data[1]
         l_mol[indices] = data[2]
-        # Stream numbering
-        extract_index = 0
-        gas_index = 1
-        raffinate_index = 2
-        lle_L_index = 3
-        lle_l_index = 4
-        vle_g_index = 5
-        N_streams = 6
-        N_componenents = total_components.size
-        zeros_coef = np.zeros([N_streams, N_componenents])
-        zeros_comp =  np.zeros([N_componenents])
-        # Total recycle 
-        coef = zeros_coef.copy()
-        coef[0:3] = 1
-        equations = [
-            (coef, total_components)
-        ]
-        L_submol = L_mol[indices]
-        l_submol = l_mol[indices]
-        feed = L_submol + l_submol
-        feed[feed == 0] = 1
-        self.lle(T=T, P=P, top_chemical=self.top_chemical)
-        L_splits = L_mol[indices] / feed
-        coef = zeros_coef.copy()
-        coef[[extract_index, raffinate_index]] = L_splits
-        coef[lle_L_index] = -1
-        equations.append(
-            (coef, zeros_comp)
-        )
-        L_submol = L_mol[indices]
-        g_submol = g_mol[indices]
-        feed = L_submol + g_submol
-        feed[feed == 0] = 1
-        self.vle_L(T=T, P=P)
-        L_splits = L_mol[indices] / feed
-        g_splits = 1 - L_splits
-        coef = zeros_coef.copy()
-        coef[[lle_L_index, gas_index]] = g_splits
-        coef[vle_g_index] = -1
-        equations.append(
-            (coef, zeros_comp)
-        )
-        coef = zeros_coef.copy()
-        coef[[lle_L_index, gas_index]] = L_splits
-        coef[extract_index] = -1
-        equations.append(
-            (coef, zeros_comp)
-        )
-        l_submol = l_mol[indices]
-        g_submol = g_mol[indices]
-        feed = l_submol + g_submol
-        feed[feed == 0] = 1
-        self.vle_l(T=T, P=P)
-        l_splits = l_mol[indices] / feed
-        g_splits = 1 - l_splits
-        coef = zeros_coef.copy()
-        coef[[lle_l_index, vle_g_index]] = g_splits
-        coef[gas_index] = -1
-        equations.append(
-            (coef, zeros_comp)
-        )
-        coef = zeros_coef
-        coef[[lle_l_index, vle_g_index]] = l_splits
-        coef[raffinate_index] = -1
-        equations.append(
-            (coef, zeros_comp)
-        )
-        A, b = zip(*equations)
-        A = np.array(A)
-        b = np.array(b)
-        # original = np.array([
-        #     L_mol[indices],
-        #     g_mol[indices],
-        #     l_mol[indices],
-        # ])
-        values = solve(A.T.swapaxes(1, 2), b.T).T[:3]
-        values[values < 1e-16] = 0
+        self.iter += 1
+        
+        # LLE
+        try:
+            self.lle(T=T, P=P, top_chemical=self.top_chemical, use_cache=True)
+        except:
+            self.lle(T=T, P=P, top_chemical=self.top_chemical)
+        
+        # VLE with extract
+        try:
+            self.vle_L._setup()
+            self.vle_L._solve_TP(T=T, P=P)
+        except:
+            self.vle_L(T=T, P=P)
+        y = g_mol[indices]
+        V0 = y.sum()
+        xa = L_mol[indices]
+        La = xa.sum()
+        if La and V0: 
+            y[y < 1e-16] = 1e-16
+            xa[xa < 1e-16] = 1e-16
+            y /= V0
+            xa /= La
+            Ka = y / xa
+        else:
+            Ka = None
+        
+        # VLE with raffinate
+        try:
+            self.vle_l._setup()
+            self.vle_l._solve_TP(T=T, P=P)
+        except:
+            self.vle_l(T=T, P=P)
+        y = g_mol[indices]
+        V1 = y.sum() 
+        xb = l_mol[indices]
+        Lb = xb.sum()
+        if V1 and Lb:
+            y[y < 1e-16] = 1e-16
+            xb[xb < 1e-16] = 1e-16
+            y /= V1
+            xb /= Lb
+            Kb = y / xb
+        else:
+            Kb = None
+        
+        if (Ka is None or Kb is None) or (Ka >= 1).all() or (Kb >= 1).all() or (Ka < 1).all() or (Kb < 1).all():
+            # At most 2 phases
+            values = np.array([
+                L_mol[indices],
+                g_mol[indices],
+                l_mol[indices],
+            ])
+        else:
+            # Potentially 3 phases
+            guess = np.array([V1, La, Lb])
+            guess /= guess.sum()
+            sol = root(
+                RashfordRice_VLLE_residuals, 
+                guess[:2], 
+                args=(z, Ka, Kb), 
+                method="hybr", 
+                tol=1e-12,
+            )
+            V, La = sol.x
+            Lb = 1 - V - La
+            if V < 1e-12 or La < 1e-12 or Lb < 1e-12:
+                # Actually 2 phases
+                values = np.array([
+                    L_mol[indices],
+                    g_mol[indices],
+                    l_mol[indices],
+                ])
+            else:
+                denom = V + La / Ka + Lb / Kb
+                y = z / denom
+                y /= y.sum()
+                xa = y / Ka
+                xa /= xa.sum()
+                xb  = y / Kb
+                xb /= xb.sum()
+                values = np.array([
+                    xa * La, y * V, xb * Lb
+                ])
+        values[values < 1e-12] = 0
         return values
      
     def bubble_point_at_T(self, T=None):
@@ -321,12 +342,12 @@ class VLLE(Equilibrium, phases='Llg'):
     
     def _H_hat_err_at_T(self, T, H_hat, F_mass, phase_data):
         P = self.thermal_condition.P
-        self.set_thermal_condition(T, P)
+        self.set_TP(T, P)
         return self.mixture.xH(phase_data, T, P) / F_mass - H_hat
     
     def _H_hat_err_at_P(self, P, H_hat, F_mass, phase_data):
         T = self.thermal_condition.T
-        self.set_thermal_condition(T, P)
+        self.set_TP(T, P)
         return self.mixture.xH(phase_data, T, P) / F_mass - H_hat
     
     @property
@@ -337,22 +358,22 @@ class VLLE(Equilibrium, phases='Llg'):
     
     def _V_hat_err_at_T(self, T, V):
         P = self.thermal_condition.P
-        self.set_thermal_condition(T, P)
+        self.set_TP(T, P)
         return self.vapor_fraction - V
     
     def _V_hat_err_at_P(self, P, V):
         T = self.thermal_condition.T
-        self.set_thermal_condition(T, P)
+        self.set_TP(T, P)
         return self.vapor_fraction - V
     
     def _S_hat_err_at_T(self, T, H_hat, F_mass, phase_data):
         P = self.thermal_condition.P
-        self.set_thermal_condition(T, P)
+        self.set_TP(T, P)
         return self.mixture.xS(phase_data, T, P) / F_mass - H_hat
     
     def _S_hat_err_at_P(self, P, H_hat, F_mass, phase_data):
         T = self.thermal_condition.T
-        self.set_thermal_condition(T, P)
+        self.set_TP(T, P)
         return self.mixture.xS(phase_data, T, P) / F_mass - H_hat
     
     def set_PH(self, P, H):
