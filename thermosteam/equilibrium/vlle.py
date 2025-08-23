@@ -15,15 +15,10 @@ from .equilibrium import Equilibrium
 from ..utils import Cache
 import thermosteam as tmo
 import numpy as np
-from numpy.linalg import solve
 from scipy.optimize import root
 from numba import njit
 
 __all__ = ('VLLE', 'VLLECache')
-
-EXTRACT_INDEX = 0
-GAS_INDEX = 1
-RAFFINATE_INDEX = 2
 
 @njit(cache=True)
 def RashfordRice_VLLE_residuals(VL1, z, Ka, Kb):
