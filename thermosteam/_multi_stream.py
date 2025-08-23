@@ -985,7 +985,7 @@ class MultiStream(Stream):
         return self._sle_cache.retrieve()
     @property
     def vlle(self) -> eq.VLLE:
-        """An object that can perform vapor-liquid equilibrium on the stream."""
+        """An object that can perform vapor-liquid-liquid equilibrium on the stream."""
         self._imol._expand_phases('Llg')
         return self._vlle_cache.retrieve()
     

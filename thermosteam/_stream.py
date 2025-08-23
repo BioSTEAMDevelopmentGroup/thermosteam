@@ -2226,11 +2226,6 @@ class Stream(AbstractStream):
         """
         An object that can perform vapor-liquid-liquid equilibrium on the stream.
 
-        Warning
-        -------
-        This method may take a couple of seconds, which is 
-        considerably slower than the `vle` or `lle` methods.
-
         """
         self.phases = ('L', 'g', 'l')
         return self.vlle
