@@ -26,12 +26,12 @@ GAS_INDEX = 1
 RAFFINATE_INDEX = 2
 
 @njit(cache=True)
-def RashfordRice_VLLE_residuals(VL1, z, K_a, K_b):
+def RashfordRice_VLLE_residuals(VL1, z, Ka, Kb):
     V, L1 = VL1
     L2 = 1.0 - V - L1
-    denom = V + L1 / K_a + L2 / K_b
+    denom = V + L1 / Ka + L2 / Kb
     y = z / denom
-    x_alpha = y / K_a
+    x_alpha = y / Ka
     residuals = np.zeros(2)
     residuals[0] = y.sum() - 1.0
     residuals[1] = x_alpha.sum() - 1.0
@@ -239,7 +239,9 @@ class VLLE(Equilibrium, phases='Llg'):
         else:
             Kb = None
         
-        if (Ka is None or Kb is None) or (Ka >= 1).all() or (Kb >= 1).all() or (Ka < 1).all() or (Kb < 1).all():
+        if (Ka is None or Kb is None
+            or (Ka >= 1).all() or (Kb >= 1).all()
+            or (Ka < 1).all() or (Kb < 1).all()):
             # At most 2 phases
             values = np.array([
                 L_mol[indices],
