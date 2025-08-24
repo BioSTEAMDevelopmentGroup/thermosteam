@@ -21,7 +21,7 @@ class StabilityReport(NamedTuple):
     tpd: float
 
 def edge_points_simplex_masked(z: np.ndarray,
-                               points_per_edge: int = 4,
+                               points_per_edge: int = 5,
                                epsilon: float = 1e-3,
                                min_active: int = 2) -> np.ndarray:
     """
@@ -58,7 +58,7 @@ def edge_points_simplex_masked(z: np.ndarray,
         order = np.argsort(-z)
         active = order[:min(n, min_active)]
 
-    # Chebyshev nodes mapped to [0,1]
+    # Chebyshev nodes mapped to [0, 1]
     k = np.arange(points_per_edge)
     t = 0.5 * (1 - np.cos(np.pi * k / (points_per_edge - 1)))
 
@@ -100,9 +100,10 @@ class TangentPlaneStabilityAnalysis:
             for i in phases
         }
     
-    def objective(self, u, T, P, model, logfz):
-        w = np.exp(u - np.max(u)) # Softmax for unconstrained optimization
-        w /= w.sum()
+    def objective(self, w, T, P, model, logfz, softmax=False):
+        if softmax:
+            w = np.exp(w - np.max(w)) # Softmax for unconstrained optimization
+            w /= w.sum()
         return np.dot(w, np.log(model(w, T, P) + 1e-30) - logfz)
     
     def __call__(self, z, T, P, reference_phase='l', potential_phase='L'):
@@ -110,31 +111,32 @@ class TangentPlaneStabilityAnalysis:
         logfz = np.log(reference_model(z, T, P) + 1e-30)
         best_val = np.inf
         best_result = None
-        size = z.size
         samples = edge_points_simplex_masked(z)
         objective = self.objective
         model = self.fugacity_models[potential_phase]
+        args = (T, P, model, logfz)
         for sample in samples:
+            value = objective(sample, *args)
+            if value < best_val:
+                best_val = value
+                best_result = sample
+        if best_val > 0:
             result = minimize(
                 objective, 
-                sample, 
+                best_result, 
                 method="L-BFGS-B", 
-                options=dict(maxiter=size * 2),
-                args=(T, P, model, logfz)
+                options=dict(maxiter=5),
+                args=(*args, True),
             )
-            if result.fun < best_val:
-                best_val = result.fun
-                best_result = result
-        if best_result is None:
-            w = z
-        else:
-            # Optimization space (softmax for unconstrained optimization)
-            u = best_result.x
-            w = np.exp(u - np.max(u))
-            w /= w.sum()
+            value = result.fun
+            if value < best_val:
+                w = result.x
+                w = np.exp(w - np.max(w)) # Softmax for unconstrained optimization
+                w /= w.sum()
+                best_result = w
         return StabilityReport(
-            unstable=(best_val < 0.0),
-            candidate=w,
+            unstable=(best_val < 0),
+            candidate=best_result,
             tpd=best_val
         )
 

@@ -335,7 +335,6 @@ class LLE(Equilibrium, phases='lL'):
                 else:
                     return z
                 K = gamma(y, T) / gamma(x, T)
-                phi = 0.5
             if single_loop:
                 f_gamma = gamma.f
                 gamma_args = gamma.args
@@ -397,7 +396,7 @@ class LLE(Equilibrium, phases='lL'):
             return result.x
         else:
             raise ValueError(f"invalid method {repr(method)}")
-        
+    
     def get_liquid_mol_data(self):
         # Get flow rates
         imol = self._imol
