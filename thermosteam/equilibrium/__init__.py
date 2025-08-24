@@ -29,10 +29,12 @@ from . import sle
 from . import vlle
 from . import plot_equilibrium
 from . import flash_package
+from . import tangential_plane_stability
 
 __all__ = (*ideal.__all__,
            *domain.__all__,
            *activity_coefficients.__all__,
+           *tangential_plane_stability.__all__,
            *vle.__all__,
            *lle.__all__,
            *sle.__all__,
@@ -48,6 +50,7 @@ __all__ = (*ideal.__all__,
 
 from .ideal import *
 from .domain import *
+from .tangential_plane_stability import *
 from .vle import *
 from .lle import *
 from .sle import *

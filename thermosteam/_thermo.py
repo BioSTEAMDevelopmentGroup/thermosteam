@@ -198,6 +198,21 @@ class Thermo:
         setattr(new, '_original_thermo', None)
         return new
     
+    def fugacities(self, phase, chemicals):
+        p = phase.lower()
+        if p == 'g':
+            return self.gas_fugacities(chemicals)
+        elif p == 'l':
+            return self.liquid_fugacities(chemicals)
+        else:
+            raise NotImplementedError(f'fugacities for phase {phase!r} not available')
+    
+    def gas_fugacities(self, chemicals):
+        return eq.GasFugacities(chemicals, self)
+    
+    def liquid_fugacities(self, chemicals):
+        return eq.LiquidFugacities(chemicals, self)
+    
     def ideal(self):
         """Ideal thermodynamic property package."""
         ideal = self._ideal

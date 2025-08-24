@@ -12,6 +12,7 @@ from ..utils import Cache
 from .equilibrium import Equilibrium
 from ..exceptions import NoEquilibrium
 from .binary_phase_fraction import phase_fraction
+from .tangential_plane_stability import TangentPlaneStabilityAnalysis
 from scipy.optimize import shgo, differential_evolution
 import flexsolve as flx
 import numpy as np
@@ -156,6 +157,7 @@ class LLE(Equilibrium, phases='lL'):
     __slots__ = ('composition_cache_tolerance',
                  'temperature_cache_tolerance',
                  'method',
+                 'TPSA',
                  '_z_mol',
                  '_T',
                  '_lle_chemicals',
@@ -177,7 +179,7 @@ class LLE(Equilibrium, phases='lL'):
         xtol=1e-9, rtol=1e-9, maxiter=20, checkiter=False,
         checkconvergence=False, convergenceiter=5,
     )
-    default_composition_cache_tolerance = 1e-5
+    default_composition_cache_tolerance = 1e-6
     default_temperature_cache_tolerance = 1e-3
     
     def __init__(self, imol=None, thermal_condition=None, thermo=None,
@@ -200,7 +202,7 @@ class LLE(Equilibrium, phases='lL'):
         self._K = None
         self._phi = None
     
-    def __call__(self, T, P=None, top_chemical=None, update=True, use_cache=False, single_loop=False):
+    def __call__(self, T, P=None, top_chemical=None, update=True, use_cache=True, single_loop=False):
         """
         Perform liquid-liquid equilibrium.
 
@@ -225,39 +227,31 @@ class LLE(Equilibrium, phases='lL'):
             if P: thermal_condition.P = P
         else:
             old_data = imol.data.copy()
-        mol, index, lle_chemicals = self.get_liquid_mol_data()
+        mol_lL, index, lle_chemicals = self.get_liquid_mol_data()
         if top_chemical is None:
-            top_chemical = self.chemicals.IDs[mol.argmax()]
-        F_mol = mol.sum()
+            top_chemical = self.chemicals.IDs[mol_lL.argmax()]
+        F_mol = mol_lL.sum()
+        N = mol_lL.size
         if F_mol and len(lle_chemicals) > 1:
-            z_mol = mol = mol / F_mol # Normalize first
-            use_cache = use_cache and self._lle_chemicals == lle_chemicals
-            if use_cache:
-                use_cache = (
-                    T - self._T < self.temperature_cache_tolerance 
-                    and (self._z_mol - z_mol < self.composition_cache_tolerance).all()
-                )
-            if use_cache:
-                K = self._K 
-                self._phi = phi = phase_fraction(z_mol, K, self._phi)
-                if phi >= 1.:
-                    mol_l = mol
-                    mol_L = 0. * mol
+            z_mol = mol_lL / F_mol # Normalize first
+            if (use_cache and self._lle_chemicals == lle_chemicals):
+                if (T - self._T < self.temperature_cache_tolerance 
+                    and (self._z_mol - z_mol < self.composition_cache_tolerance).all()):
+                    K = self._K 
+                    self._phi = phi = phase_fraction(z_mol, K, self._phi)
+                    if phi >= 1.:
+                        mol_L = z_mol
+                    else:
+                        y = z_mol * K / (phi * K + (1 - phi))
+                        mol_L = y * phi
                 else:
-                    y = z_mol * K / (phi * K + (1 - phi))
-                    mol_l = y * phi
-                    mol_L = mol - mol_l
+                    mol_L = self.solve_lle_liquid_mol(z_mol, T, lle_chemicals, single_loop)
             else:
-                if self._lle_chemicals != lle_chemicals: 
-                    self._K = None
-                    self._gamma_y = None
-                    self._phi = None
-                mol_L = self.solve_lle_liquid_mol(mol, T, lle_chemicals, single_loop)
-                mol_l = mol - mol_L
-                if (mol_L < 0).any(): 
-                    self.solve_lle_liquid_mol(mol, T, lle_chemicals, single_loop)
-                if (mol_l < 0).any(): 
-                    self.solve_lle_liquid_mol(mol, T, lle_chemicals, single_loop)
+                self._K = None
+                self._gamma_y = None
+                self._phi = None
+                mol_L = self.solve_lle_liquid_mol(z_mol, T, lle_chemicals, single_loop)
+            mol_l = z_mol - mol_L
             MW = self.chemicals.MW[index]
             mass_L = mol_L * MW
             mass_l = mol_l * MW
@@ -275,12 +269,12 @@ class LLE(Equilibrium, phases='lL'):
             F_mol_L = mol_L.sum()
             if not F_mol_L:
                 mol_l, mol_L = mol_L, mol_l
-                self._K = 1e16 * np.ones_like(mol)
-                self._gamma_y = np.ones_like(mol)
+                self._K = 1e16 * np.ones(N)
+                self._gamma_y = np.ones(N)
                 self._phi = 1.
             elif not F_mol_l:
-                self._K = 1e16 * np.ones_like(mol)
-                self._gamma_y = np.ones_like(mol)
+                self._K = 1e16 * np.ones(N)
+                self._gamma_y = np.ones(N)
                 self._phi = 1.
             else:
                 x_mol_l = mol_l / F_mol_l
@@ -300,8 +294,8 @@ class LLE(Equilibrium, phases='lL'):
             imol['l'][index] = mol_l * F_mol
             imol['L'][index] = mol_L * F_mol
         elif not update: 
-            mol_l = mol
-            mol_L = np.zeros_like(mol_l)
+            mol_l = z_mol
+            mol_L = np.zeros(N)
             if top_chemical:
                 MW = self.chemicals.MW[index]
                 IDs = {i.ID: n for n, i in enumerate(lle_chemicals)}
@@ -313,39 +307,36 @@ class LLE(Equilibrium, phases='lL'):
                     if C_L < C_l: mol_l, mol_L = mol_L, mol_l
             F_mol_L = mol_L.sum()
             if F_mol_L:
-                K = 1e16 * np.ones_like(mol)
+                K = 1e16 * np.ones(N)
                 phi = 1.
             else:
-                K = np.zeros_like(mol)
+                K = np.zeros(N)
                 phi = 0.
-            gamma_y = np.ones_like(mol)
+            gamma_y = np.ones(N)
             imol.data[:] = old_data
             return lle_chemicals, K, gamma_y, phi
         
-    def solve_lle_liquid_mol(self, mol, T, lle_chemicals, single_loop):
+    def solve_lle_liquid_mol(self, z, T, lle_chemicals, single_loop):
         gamma = self.thermo.Gamma(lle_chemicals)
-        indices = np.argsort(mol * np.array([i.MW for i in lle_chemicals]))
         method = self.method
-        n = mol.size
+        n = z.size
         if method == 'pseudo equilibrium':
             if self._K is not None and 0 < self._phi < 1:
                 K = self._K
                 phi = self._phi
             else:
-                x = mol.copy()
-                y = mol.copy()
-                a = indices[-1]
-                b = indices[-2]
-                x[a] = 0.99
-                y[a] = 1e-3
-                x[b] = 1e-3
-                y[b] = 0.99
-                x /= x.sum()
-                y /= y.sum()
+                TPSA = TangentPlaneStabilityAnalysis('lL', lle_chemicals)
+                stability = TPSA(z, T, 101325)
+                if stability.unstable:
+                    y = stability.candidate
+                    phi = 0.99 * (z / y).min()
+                    x = z - phi * y
+                    x /= x.sum()
+                else:
+                    return z
                 K = gamma(y, T) / gamma(x, T)
                 phi = 0.5
             if single_loop:
-                z = mol
                 f_gamma = gamma.f
                 gamma_args = gamma.args
                 phi = phase_fraction(z, K, phi)
@@ -378,15 +369,15 @@ class LLE(Equilibrium, phases='lL'):
             else:
                 K[K <= 0] = 1e-9
                 return pseudo_equilibrium(
-                    K, phi, mol, T, n, gamma.f, gamma.args, 
+                    K, phi, z, T, n, gamma.f, gamma.args, 
                     self.pseudo_equilibrium_inner_loop_options,
                     self.pseudo_equilibrium_outer_loop_options,
                 )
-        index = indices[-1]
-        args = (mol, T, gamma.f, gamma.args)
+        index = np.argmax(z * np.array([i.MW for i in lle_chemicals]))
+        args = (z, T, gamma.f, gamma.args)
         bounds = np.zeros([n, 2])
-        bounds[:, 1] = mol
-        bounds[index, 1] = 0.5 * mol[index] # Remove symmetry
+        bounds[:, 1] = z
+        bounds[index, 1] = 0.5 * z[index] # Remove symmetry
         if method == 'shgo':
             result = shgo(
                 lle_objective_function, bounds, args,
