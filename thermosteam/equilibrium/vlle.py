@@ -378,7 +378,7 @@ class VLLE(Equilibrium, phases='Llg'):
             top_chemical=self.top_chemical
         )
         self.vle_L(V=0, P=P)
-        return thermal_condition.T
+        return thermal_condition.P
        
     def bubble_point_at_T(self, T=None):
         thermal_condition = self._thermal_condition
