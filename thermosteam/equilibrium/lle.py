@@ -228,6 +228,9 @@ class LLE(Equilibrium, phases='lL'):
         else:
             old_data = imol.data.copy()
         mol_lL, index, lle_chemicals = self.get_liquid_mol_data()
+        F_mol = mol_lL.sum()
+        N = mol_lL.size
+        if not N: return 
         if top_chemical is None:
             top_chemical_index = mol_lL.argmax()
         else:
@@ -235,8 +238,6 @@ class LLE(Equilibrium, phases='lL'):
                 if chemical.ID == top_chemical: break
             else:
                 top_chemical_index = index[mol_lL.argmax()]
-        F_mol = mol_lL.sum()
-        N = mol_lL.size
         if F_mol and len(lle_chemicals) > 1:
             z_mol = mol_lL / F_mol # Normalize first
             if (use_cache and self._lle_chemicals == lle_chemicals):
