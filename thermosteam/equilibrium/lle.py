@@ -229,7 +229,12 @@ class LLE(Equilibrium, phases='lL'):
             old_data = imol.data.copy()
         mol_lL, index, lle_chemicals = self.get_liquid_mol_data()
         if top_chemical is None:
-            top_chemical = self.chemicals.IDs[mol_lL.argmax()]
+            top_chemical_index = mol_lL.argmax()
+        else:
+            for top_chemical_index, chemical in enumerate(lle_chemicals):
+                if chemical.ID == top_chemical: break
+            else:
+                top_chemical_index = index[mol_lL.argmax()]
         F_mol = mol_lL.sum()
         N = mol_lL.size
         if F_mol and len(lle_chemicals) > 1:
@@ -255,8 +260,6 @@ class LLE(Equilibrium, phases='lL'):
             MW = self.chemicals.MW[index]
             mass_L = mol_L * MW
             mass_l = mol_l * MW
-            IDs = {i.ID: n for n, i in enumerate(lle_chemicals)}
-            top_chemical_index = IDs[top_chemical]
             ML = mass_L.sum()
             Ml = mass_l.sum()
             if ML and Ml:
@@ -296,15 +299,10 @@ class LLE(Equilibrium, phases='lL'):
         elif not update: 
             mol_l = z_mol
             mol_L = np.zeros(N)
-            if top_chemical:
-                MW = self.chemicals.MW[index]
-                IDs = {i.ID: n for n, i in enumerate(lle_chemicals)}
-                try: top_chemical_index = IDs[top_chemical]
-                except: pass
-                else:
-                    C_L = mol_L[top_chemical_index]
-                    C_l = mol_l[top_chemical_index]
-                    if C_L < C_l: mol_l, mol_L = mol_L, mol_l
+            MW = self.chemicals.MW[index]
+            C_L = mol_L[top_chemical_index]
+            C_l = mol_l[top_chemical_index]
+            if C_L < C_l: mol_l, mol_L = mol_L, mol_l
             F_mol_L = mol_L.sum()
             if F_mol_L:
                 K = 1e16 * np.ones(N)

@@ -120,20 +120,19 @@ class TangentPlaneStabilityAnalysis:
             if value < best_val:
                 best_val = value
                 best_result = sample
-        if best_val > 0:
-            result = minimize(
-                objective, 
-                best_result, 
-                method="L-BFGS-B", 
-                options=dict(maxiter=5),
-                args=(*args, True),
-            )
-            value = result.fun
-            if value < best_val:
-                w = result.x
-                w = np.exp(w - np.max(w)) # Softmax for unconstrained optimization
-                w /= w.sum()
-                best_result = w
+        result = minimize(
+            objective, 
+            best_result, 
+            method="L-BFGS-B", 
+            options=dict(maxiter=5),
+            args=(*args, True),
+        )
+        value = result.fun
+        if value < best_val:
+            w = result.x
+            w = np.exp(w - np.max(w)) # Softmax for unconstrained optimization
+            w /= w.sum()
+            best_result = w
         return StabilityReport(
             unstable=(best_val < 0),
             candidate=best_result,

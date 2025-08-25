@@ -234,9 +234,7 @@ class VLLE(Equilibrium, phases='Llg'):
         else:
             Kb = None
         
-        if (Ka is None or Kb is None
-            or (Ka >= 1).all() or (Kb >= 1).all()
-            or (Ka < 1).all() or (Kb < 1).all()):
+        if Ka is None or Kb is None:
             # At most 2 phases
             values = np.array([
                 L_mol[indices],
@@ -362,115 +360,46 @@ class VLLE(Equilibrium, phases='Llg'):
         
     #     return Ka, Kb
     
-    def _iter_flows_at_TP(self, data, T, P, indices, z):
-        imol = self.imol
-        L_mol, g_mol, l_mol = imol['Lgl']
-        data *= z / data.sum(axis=0)
-        L_mol[indices] = data[0]
-        g_mol[indices] = data[1]
-        l_mol[indices] = data[2]
-        self.iter += 1
-        
-        # LLE
-        try:
-            self.lle(T=T, P=P, top_chemical=self.top_chemical, use_cache=True)
-        except:
-            self.lle(T=T, P=P, top_chemical=self.top_chemical)
-        
-        # VLE with extract
-        try:
-            self.vle_L._setup()
-            self.vle_L._solve_TP(T=T, P=P)
-        except:
-            self.vle_L(T=T, P=P)
-        y = g_mol[indices]
-        V0 = y.sum()
-        xa = L_mol[indices]
-        La = xa.sum()
-        if La and V0: 
-            y[y < 1e-16] = 1e-16
-            xa[xa < 1e-16] = 1e-16
-            y /= V0
-            xa /= La
-            Ka = y / xa
-        else:
-            Ka = None
-        
-        # VLE with raffinate
-        try:
-            self.vle_l._setup()
-            self.vle_l._solve_TP(T=T, P=P)
-        except:
-            self.vle_l(T=T, P=P)
-        y = g_mol[indices]
-        V1 = y.sum() 
-        xb = l_mol[indices]
-        Lb = xb.sum()
-        if V1 and Lb:
-            y[y < 1e-16] = 1e-16
-            xb[xb < 1e-16] = 1e-16
-            y /= V1
-            xb /= Lb
-            Kb = y / xb
-        else:
-            Kb = None
-        
-        if Ka is None or Kb is None:
-            # At most 2 phases
-            values = np.array([
-                L_mol[indices],
-                g_mol[indices],
-                l_mol[indices],
-            ])
-        else:
-            # Potentially 3 phases
-            guess = np.array([V1, La, Lb])
-            guess /= guess.sum()
-            sol = root(
-                RashfordRice_VLLE_residuals, 
-                guess[:2], 
-                args=(z, Ka, Kb), 
-                method="hybr", 
-                tol=1e-12,
-            )
-            V, La = sol.x
-            Lb = 1 - V - La
-            if V < 1e-12 or La < 1e-12 or Lb < 1e-12:
-                # Actually 2 phases
-                values = np.array([
-                    L_mol[indices],
-                    g_mol[indices],
-                    l_mol[indices],
-                ])
-            else:
-                denom = V + La / Ka + Lb / Kb
-                y = z / denom
-                y /= y.sum()
-                xa = y / Ka
-                xa /= xa.sum()
-                xb  = y / Kb
-                xb /= xb.sum()
-                values = np.array([
-                    xa * La, y * V, xb * Lb
-                ])
-        values[values < 1e-12] = 0
-        return values
+    def _T_bubble_iter(self, T):
+        thermal_condition = self._thermal_condition
+        self.lle(
+            T=T,
+            P=thermal_condition.P,
+            top_chemical=self.top_chemical
+        )
+        self.vle_L(V=0, P=thermal_condition.P)
+        return thermal_condition.T
      
+    def _P_bubble_iter(self, P):
+        thermal_condition = self._thermal_condition
+        self.lle(
+            T=thermal_condition.T,
+            P=P,
+            top_chemical=self.top_chemical
+        )
+        self.vle_L(V=0, P=P)
+        return thermal_condition.T
+       
     def bubble_point_at_T(self, T=None):
         thermal_condition = self._thermal_condition
         if T is None: 
             T = thermal_condition.T
         else:
             thermal_condition.T = T
-        P = thermal_condition.P
         imol = self.imol
         l_mol = imol['l']
         g_mol = imol['g']
         l_mol += g_mol
         g_mol[:] = 0
-        self.lle(T=T, P=P, top_chemical=self.top_chemical)
-        self.vle_L(V=0, T=T)
-        return thermal_condition.P
+        return flx.wegstein(
+            self._P_bubble_iter, 
+            thermal_condition.P,
+            xtol=1e-6, 
+            convergenceiter=10, 
+            checkconvergence=False,
+            checkiter=False,
+            maxiter=100,
+        )
     
     def dew_point_at_T(self, T=None):
         thermal_condition = self.thermal_condition
@@ -491,17 +420,20 @@ class VLLE(Equilibrium, phases='Llg'):
             P = thermal_condition.P
         else:
             thermal_condition.P = P
-        T = thermal_condition.T
         imol = self.imol
         l_mol = imol['l']
         g_mol = imol['g']
         l_mol += g_mol
         g_mol[:] = 0
-        self.lle(T=T, P=P, top_chemical=self.top_chemical)
-        self.vle_L(V=0, P=P)
-        T = thermal_condition.T
-        self.lle(T=T, P=P, top_chemical=self.top_chemical)
-        return thermal_condition.T
+        return flx.wegstein(
+            self._T_bubble_iter, 
+            thermal_condition.T,
+            xtol=1e-6, 
+            convergenceiter=10, 
+            checkconvergence=False,
+            checkiter=False,
+            maxiter=100,
+        )
     
     def dew_point_at_P(self, P=None):
         thermal_condition = self.thermal_condition
@@ -530,7 +462,7 @@ class VLLE(Equilibrium, phases='Llg'):
     def vapor_fraction(self):
         imol = self.imol
         g = imol['g'].sum()
-        return g / (g + imol['l'].sum() + imol['L'].sum())
+        return g / (g + imol['lL'].sum())
     
     def _V_hat_err_at_T(self, T, V):
         P = self.thermal_condition.P
@@ -725,54 +657,42 @@ class VLLE(Equilibrium, phases='Llg'):
             P_guess, 1, 1e-6,
             (S_hat, F_mass, phase_data),
             checkiter=False, checkbounds=False,
-            maxiter=10,
+            maxiter=100,
         )
         
     def set_PV(self, P, V):
         thermal_condition = self.thermal_condition
         thermal_condition.P = P
-        
-        # Check if subcooled liquid
         if V == 0:
             self.bubble_point_at_P(P)
-            return
-        # Check if super heated vapor
-        if V == 1:
+        elif V == 1:
             self.dew_point_at_P(P)
-            return
-        
-        T_bubble = self.bubble_point_at_P(P)
-        T_dew = self.dew_point_at_P(P)
-        
-        flx.IQ_interpolation(
-            self._V_hat_err_at_T, T_bubble, T_dew, 
-            thermal_condition.T, xtol=1e-6, ytol=1e-6, args=(V,),
-            checkiter=False, checkbounds=False,
-            maxiter=10,
-        )
+        else:
+            T_bubble = self.bubble_point_at_P(P)
+            T_dew = self.dew_point_at_P(P)
+            flx.IQ_interpolation(
+                self._V_hat_err_at_T, T_bubble, T_dew, 
+                thermal_condition.T, xtol=1e-6, ytol=1e-6, args=(V,),
+                checkiter=False, checkbounds=False,
+                maxiter=100,
+            )
 
     def set_TV(self, T, V):
         thermal_condition = self.thermal_condition
         thermal_condition.T = T
-        
-        # Check if subcooled liquid
         if V == 0:
             self.bubble_point_at_T(T)
-            return
-        # Check if super heated vapor
-        if V == 1:
+        elif V == 1:
             self.dew_point_at_T(T)
-            return
-        
-        P_bubble = self.bubble_point_at_T(T)
-        P_dew = self.dew_point_at_T(T)
-        
-        flx.IQ_interpolation(
-            self._V_hat_err_at_P, P_bubble, P_dew, 
-            x=thermal_condition.P, xtol=1, ytol=1e-6, args=(V,),
-            checkiter=False, checkbounds=False,
-            maxiter=10,
-        )
+        else:
+            P_bubble = self.bubble_point_at_T(T)
+            P_dew = self.dew_point_at_T(T)
+            flx.IQ_interpolation(
+                self._V_hat_err_at_P, P_bubble, P_dew, 
+                x=thermal_condition.P, xtol=1, ytol=1e-6, args=(V,),
+                checkiter=False, checkbounds=False,
+                maxiter=100,
+            )
     
 class VLLECache(Cache): load = VLLE
 del Cache, Equilibrium
