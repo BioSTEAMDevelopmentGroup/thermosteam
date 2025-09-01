@@ -49,26 +49,23 @@ def _register(self, ID):
     if ID is None:
         if hasattr(self, '_ID') and data.get(ID_old:=self._ID) is self: del data[ID_old]
         self._ID = ""
-    else:
-        replace_ticket_number = isinstance(ID, int)
-        if replace_ticket_number: 
-            self.ticket_numbers[self.ticket_name] = ID
-            ID = None
-        if ID:
-            if '.' in ID:
-                if hasattr(self, '_ID') and data.get(ID_old:=self._ID) is self: del data[ID_old]
-                self._ID = ID.lstrip('.')
-            else:
-                registry.register_safely(ID, self) 
+    elif isinstance(ID, str):
+        if '.' in ID:
+            if hasattr(self, '_ID') and data.get(ID_old:=self._ID) is self: del data[ID_old]
+            self._ID = ID.lstrip('.')
         else:
-            
-            if self.autonumber or replace_ticket_number:
-                ID = self._take_ticket()
-                while ID in data: ID = self._take_ticket()
-                registry.register(ID, self)
-            else:
-                registry.register_safely(self.ticket_name, self) 
-            
+            registry.register_safely(ID, self) 
+    elif isinstance(ID, int):
+        self.ticket_numbers[self.ticket_name] = ID
+        ID = self._take_ticket()
+        while ID in data: ID = self._take_ticket()
+        registry.register(ID, self)
+    elif hasattr(ID, '__iter__'):
+        ID, *aliases = ID
+        self._register(ID)
+        for i in aliases: self.register_alias(i)
+    else:
+        raise ValueError('invalid ID {ID!r}; ID must be a string, integer, or an interable of these')
 
 def _pretend_to_register(self, ID):
     self._ID = ID

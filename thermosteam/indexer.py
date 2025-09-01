@@ -661,7 +661,7 @@ class ChemicalIndexer(Indexer):
         return self
     
     @classmethod
-    def from_data(cls, data, phase=None, chemicals=None, check_data=True, lock_phase=False, parent=None):
+    def from_data(cls, data, phase, chemicals=None, check_data=True, lock_phase=False, parent=None):
         self = _new(cls)
         self._load_chemicals(chemicals)
         self._phase = phase
@@ -683,18 +683,15 @@ class ChemicalIndexer(Indexer):
     def phase(self, phase):
         parent = self._parent
         if phase == self._phase: return
+        if self._lock_phase: raise AttributeError('phase is locked')
         check_phase(phase)
-        if parent is None:
-            self._phase = phase
-        elif self._lock_phase: 
-            raise AttributeError('phase is locked')
-        else:
+        if parent:
             old_data = self.data
             self.data = parent.data.rows[parent._phase_indexer(phase)]
             dct = self.data.dct
             dct.clear()
             dct.update(old_data.dct)
-            self._phase = phase
+        self._phase = phase
     
     def get_phase_and_composition(self):
         """Return phase and composition."""

@@ -58,6 +58,7 @@ def psuedo_equilibrium_inner_loop(logKgammay, z, T, n, f_gamma, gamma_args, phi)
     x[x < 0] = 1e-16
     x = x / x.sum()
     gammay = logKgammay[n:]
+    gammay[gammay < 0] = 1e-16
     gammax = f_gamma(x, T, *gamma_args)
     K = gammax / gammay 
     y = K * x

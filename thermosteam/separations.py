@@ -295,31 +295,6 @@ def partition_coefficients(IDs, top, bottom):
     denominator[denominator < 1e-24] = 1e-24
     return numerator / denominator
 
-def chemical_splits(a, b=None, mixed=None):
-    """
-    Return a ChemicalIndexer with splits for all chemicals to stream `a`.
-    
-    Examples
-    --------
-    >>> import thermosteam as tmo
-    >>> tmo.settings.set_thermo(['Water', 'Ethanol'], cache=True)
-    >>> stream = tmo.Stream('stream', Water=10, Ethanol=10)
-    >>> stream.vle(V=0.5, P=101325)
-    >>> isplits = tmo.separations.chemical_splits(stream['g'], stream['l'])
-    >>> isplits.show()
-    ChemicalIndexer:
-     Water    0.387
-     Ethanol  0.613
-    >>> isplits = tmo.separations.chemical_splits(stream['g'], mixed=stream)
-    >>> isplits.show()
-    ChemicalIndexer:
-     Water    0.387
-     Ethanol  0.613
-     
-    """
-    mixed_mol = mixed.mol.copy() if mixed else a.mol + b.mol
-    return tmo.indexer.ChemicalIndexer.from_data(a.mol / mixed_mol)
-
 def vle_partition_coefficients(top, bottom):
     """
     Return VLE partition coefficients given vapor and liquid streams in equilibrium.

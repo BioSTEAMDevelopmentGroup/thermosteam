@@ -118,7 +118,7 @@ class GCEOSFugacityCoefficients(FugacityCoefficients):
             )
         return eos
     
-    def __call__(self, x, T, P=101325):
+    def __call__(self, x, T, P):
         eos = self.eos(x, T, P)
         try:
             log_phis = np.array(eos.dlnphi_dns(eos.Z_g)) + eos.G_dep_g * R_inv / T

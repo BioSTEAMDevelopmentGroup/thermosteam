@@ -33,7 +33,6 @@ def check_phase(phase):
     's' (solid), 'l' (liquid), 'g' (gas), 'S' (SOLID), and 'L' (LIQUID)
     
     """
-    if phase is None: return
     if phase not in valid_phases:
         raise RuntimeError(
             f"invalid phase {repr(phase)} encountered; valid phases are "

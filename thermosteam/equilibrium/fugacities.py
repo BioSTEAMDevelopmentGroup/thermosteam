@@ -10,7 +10,8 @@
 import thermosteam as tmo
 import numpy as np
 
-__all__ = ('LiquidFugacities', 'GasFugacities')
+__all__ = ('LiquidFugacities', 'GasFugacities', 'Fugacities',
+           'fugacities_by_phase')
 
 class LiquidFugacities:
     """
@@ -50,7 +51,7 @@ class LiquidFugacities:
         self.gamma = thermo.Gamma(chemicals)
         self.pcf = thermo.PCF(chemicals)
     
-    def coefficient(self, x, T, P=101325.):
+    def unweighted(self, x, T, P=101325.):
         Psats = np.array([i.Psat(T) for i in self.chemicals], dtype=float)
         return self.gamma(x, T) * self.pcf(T, P, Psats) * Psats
     
@@ -61,7 +62,8 @@ class LiquidFugacities:
     def __repr__(self):
         chemicals = ", ".join([i.ID for i in self.chemicals])
         return f"{type(self).__name__}([{chemicals}])"
-    
+
+
 class GasFugacities:
     """
     Create a GasFugacities capable of computing fugacities of chemicals
@@ -99,7 +101,7 @@ class GasFugacities:
         self.chemicals = chemicals = tuple(chemicals)
         self.phi = thermo.Phi(chemicals)
     
-    def coefficient(self, y, T, P):
+    def unweighted(self, y, T, P):
         return P * self.phi(y, T, P)
     
     def __call__(self, y, T, P):
@@ -108,3 +110,30 @@ class GasFugacities:
     def __repr__(self):
         chemicals = ", ".join([i.ID for i in self.chemicals])
         return f"{type(self).__name__}([{chemicals}])"
+
+
+class Fugacities:
+    __slots__ = ('fugacities_by_phase',)
+    
+    def __init__(self, chemicals, thermo=None):
+        self.fugacities_by_phase = fugacities_by_phase(chemicals, thermo)
+        
+    def unweighted(self, phase, z, T, P):
+        return self.fugacities_by_phase[phase].unweighted(z, T, P)
+        
+    def __call__(self, phase, z, T, P):
+        return self.fugacities_by_phase[phase](z, T, P)
+    
+    def __repr__(self):
+        chemicals = ", ".join([i.ID for i in self.chemicals])
+        return f"{type(self).__name__}([{chemicals}])"
+        
+def fugacities_by_phase(chemicals, thermo):
+    thermo = tmo.settings.get_default_thermo(thermo)
+    G = GasFugacities(chemicals, thermo)
+    L = LiquidFugacities(chemicals, thermo)
+    return {
+        'g': G,
+        'l': L,
+        'L': L,
+    }

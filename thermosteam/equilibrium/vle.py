@@ -333,7 +333,7 @@ class VLE(Equilibrium, phases='lg'):
         self._nonzero = None
         self._index = ()
     
-    def __call__(self, *, T=None, P=None, V=None, H=None, S=None, x=None, y=None,
+    def __call__(self, *, T=None, P=None, V=None, H=None, S=None, Q=None, B=None, x=None, y=None,
                  gas_conversion=None, liquid_conversion=None):
         """
         Perform vapor-liquid equilibrium.
@@ -345,11 +345,15 @@ class VLE(Equilibrium, phases='lg'):
         P : float, optional
             Operating pressure [Pa].
         V : float, optional
-            Molar vapor fraction.
+            Molar vapor fraction [by mol].
         H : float, optional
             Enthalpy [kJ/hr].
         S : float, optional
             Entropy [kJ/hr/K]
+        Q : float, optional
+            Duty [kJ/hr].
+        B : float, optional
+            Boil up ratio [by mol]
         x : float, optional
             Molar composition of liquid (for binary mixtures).
         y : float, optional
@@ -362,6 +366,13 @@ class VLE(Equilibrium, phases='lg'):
         P or T (e.g., x and V is invalid).
         
         """
+        if Q is not None:
+            H = Q + self.mixture.xH(self.imol, *self.thermal_condition)
+        if B is not None:
+            if B == np.inf:
+                V = 1.
+            else:
+                V = B / (1 + B)
         if gas_conversion or liquid_conversion:
             if gas_conversion:
                 if isinstance(gas_conversion, tmo.KineticReaction):
