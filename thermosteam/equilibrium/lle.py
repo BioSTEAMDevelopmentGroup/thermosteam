@@ -325,7 +325,7 @@ class LLE(Equilibrium, phases='lL'):
                 K = self._K
                 phi = self._phi
             else:
-                TPSA = TangentPlaneStabilityAnalysis('lL', lle_chemicals)
+                TPSA = TangentPlaneStabilityAnalysis('lL', lle_chemicals, thermo=self.thermo)
                 stability = TPSA(z, T, 101325)
                 if stability.unstable:
                     y = stability.candidate
