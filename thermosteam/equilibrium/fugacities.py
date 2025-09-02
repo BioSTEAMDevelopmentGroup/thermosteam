@@ -55,9 +55,11 @@ class LiquidFugacities:
         Psats = np.array([i.Psat(T) for i in self.chemicals], dtype=float)
         return self.gamma(x, T) * self.pcf(T, P, Psats) * Psats
     
-    def __call__(self, x, T, P=101325.):
+    def __call__(self, x, T, P=101325., reduce=False):
+        f_reduced = x * self.gamma(x, T)
+        if reduce: return f_reduced
         Psats = np.array([i.Psat(T) for i in self.chemicals], dtype=float)
-        return x * self.gamma(x, T) * self.pcf(T, P, Psats) * Psats
+        return f_reduced * Psats * self.pcf(T, P, Psats)
     
     def __repr__(self):
         chemicals = ", ".join([i.ID for i in self.chemicals])
@@ -104,8 +106,10 @@ class GasFugacities:
     def unweighted(self, y, T, P):
         return P * self.phi(y, T, P)
     
-    def __call__(self, y, T, P):
-        return P * self.phi(y, T, P) * y
+    def __call__(self, y, T, P, reduce=False):
+        f_reduced = self.phi(y, T, P) * y
+        if reduce: return f_reduced
+        return P * f_reduced
     
     def __repr__(self):
         chemicals = ", ".join([i.ID for i in self.chemicals])
@@ -121,8 +125,8 @@ class Fugacities:
     def unweighted(self, phase, z, T, P):
         return self.fugacities_by_phase[phase].unweighted(z, T, P)
         
-    def __call__(self, phase, z, T, P):
-        return self.fugacities_by_phase[phase](z, T, P)
+    def __call__(self, phase, z, T, P, reduce=False):
+        return self.fugacities_by_phase[phase](z, T, P, reduce)
     
     def __repr__(self):
         chemicals = ", ".join([i.ID for i in self.chemicals])

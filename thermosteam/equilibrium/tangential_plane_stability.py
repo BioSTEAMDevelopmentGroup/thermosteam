@@ -100,21 +100,22 @@ class TangentPlaneStabilityAnalysis:
             for i in phases
         }
     
-    def objective(self, w, T, P, model, logfz, softmax=False):
+    def objective(self, w, T, P, model, logfz, reduce, softmax=False):
         if softmax:
             w = np.exp(w - np.max(w)) # Softmax for unconstrained optimization
             w /= w.sum()
-        return np.dot(w, np.log(model(w, T, P) + 1e-30) - logfz)
+        return np.dot(w, np.log(model(w, T, P, reduce) + 1e-30) - logfz)
     
     def __call__(self, z, T, P, reference_phase='l', potential_phase='L'):
         reference_model = self.fugacity_models[reference_phase]
-        logfz = np.log(reference_model(z, T, P) + 1e-30)
+        same_phase = reference_phase.lower() == potential_phase.lower()
+        logfz = np.log(reference_model(z, T, P, same_phase) + 1e-30)
         best_val = np.inf
         best_result = None
         samples = edge_points_simplex_masked(z)
         objective = self.objective
         model = self.fugacity_models[potential_phase]
-        args = (T, P, model, logfz)
+        args = (T, P, model, logfz, same_phase)
         for sample in samples:
             value = objective(sample, *args)
             if value < best_val:
