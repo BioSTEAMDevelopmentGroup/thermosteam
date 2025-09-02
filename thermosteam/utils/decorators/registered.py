@@ -53,8 +53,14 @@ def _register(self, ID):
         if '.' in ID:
             if hasattr(self, '_ID') and data.get(ID_old:=self._ID) is self: del data[ID_old]
             self._ID = ID.lstrip('.')
-        else:
+        elif ID:
             registry.register_safely(ID, self) 
+        elif self.autonumber:
+            ID = self._take_ticket()
+            while ID in data: ID = self._take_ticket()
+            registry.register(ID, self)
+        else:
+            registry.register_safely(self.ticket_name, self) 
     elif isinstance(ID, int):
         self.ticket_numbers[self.ticket_name] = ID
         ID = self._take_ticket()
