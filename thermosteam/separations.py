@@ -31,7 +31,7 @@ __all__ = (
 )
 
 def check_partition_infeasibility(infeasible_index, strict, stacklevel=1):
-    if infeasible_index.any():
+    if [i.any() for i in infeasible_index]:
         if strict:
             raise InfeasibleRegion('negative flow rates in equilibrium '
                                    'solution; partition data')
@@ -46,10 +46,10 @@ def check_partition_infeasibility(infeasible_index, strict, stacklevel=1):
 def handle_infeasible_flow_rates(mol, maxmol, strict, stacklevel=1):
     mol = mol
     maxmol = maxmol
-    infeasible_index, = np.where(mol < 0.)
+    infeasible_index = np.where(mol < 0.)
     check_partition_infeasibility(infeasible_index, strict, stacklevel+1)
     mol[infeasible_index] = 0.
-    infeasible_index, = np.where(mol > maxmol)
+    infeasible_index = np.where(mol > maxmol)
     check_partition_infeasibility(infeasible_index, strict, stacklevel+1)
     mol[infeasible_index] = maxmol[infeasible_index]
 
