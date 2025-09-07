@@ -26,7 +26,6 @@ __all__ = (
     'lle_partition_coefficients',
     'partition', 'lle', 'vle', 
     'material_balance',
-    'chemical_splits',
     'phase_fraction',
 )
 
