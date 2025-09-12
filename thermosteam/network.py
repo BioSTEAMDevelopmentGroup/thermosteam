@@ -2176,78 +2176,7 @@ class PathSource:
     def __repr__(self):
         return f"{type(self).__name__}({str(self.source)})"
    
-# def find_linear_paths(feed, ends, units):
-#     paths = []
-#     fill_linear_path(feed, [], paths, ends, units)
-#     return simplified_linear_paths(paths)
 
-# def fill_linear_path(feed, path, paths, ends, units):
-#     unit = feed.sink
-#     if not unit or unit._universal or unit not in units:
-#         paths.append(path)
-#     elif feed in ends:
-#         paths.append(path)
-#     elif unit in path: 
-#         if len(unit.outs) == 1 and unit.outs[0] in ends: 
-#             paths.append(path)
-#         else:
-#             ends.add(feed)
-#         if unit._interaction:
-#             index = unit.ins.index(feed)
-#             path.append(unit)
-#             fill_linear_path(unit.outs[index], path,
-#                              paths, ends, units)
-#     elif unit._interaction:
-#         index = unit.ins.index(feed)
-#         path.append(unit)
-#         fill_linear_path(unit.outs[index], path,
-#                          paths, ends, units)
-#     else:
-#         path.append(unit)
-#         outlets = unit._outs
-#         if outlets:
-#             first_outlet, *other_outlets = outlets
-#             for outlet in other_outlets:
-#                 new_path = path.copy()
-#                 fill_linear_path(outlet, new_path, paths, ends, units)
-#             fill_linear_path(first_outlet, path, paths, ends, units)
-
-# def find_cyclic_paths_with_recycle(feed, ends, units):
-#     paths_with_recycle = find_paths_with_recycle(
-#         feed, ends, units
-#     )
-#     cyclic_paths_with_recycle = []
-#     for path_with_recycle in paths_with_recycle:
-#         cyclic_path_with_recycle = path_with_recycle_to_cyclic_path_with_recycle(path_with_recycle)
-#         cyclic_paths_with_recycle.append(cyclic_path_with_recycle)
-#     cyclic_paths_with_recycle.sort(key=lambda x: -len(x[0]))
-#     return cyclic_paths_with_recycle
-
-# def find_paths_with_recycle(feed, ends, units):
-#     paths_with_recycle = []
-#     fill_cyclic_path(feed, [], paths_with_recycle, ends, units)
-#     return paths_with_recycle
-
-# def fill_cyclic_path(feed, path, paths_with_recycle, ends, units):
-#     unit = feed.sink
-#     if not unit or unit._universal or unit not in units or feed in ends:
-#         pass
-#     elif unit in path: 
-#         if len(unit.outs) == 1 and unit.outs[0] in ends: 
-#             pass
-#         else:
-#             ends.add(feed)
-#             paths_with_recycle.append((path, feed))
-#     else:
-#         path.append(unit)
-#         outlets = unit._outs
-#         if outlets:
-#             first_outlet, *other_outlets = outlets
-#             for outlet in other_outlets:
-#                 new_path = path.copy()
-#                 fill_cyclic_path(outlet, new_path, paths_with_recycle, ends, units)
-#             fill_cyclic_path(first_outlet, path, paths_with_recycle, ends, units)
-     
 def find_linear_and_cyclic_paths_with_recycle(feed, ends, units):
     paths_with_recycle, linear_paths = find_paths_with_and_without_recycle(
         feed, ends, units

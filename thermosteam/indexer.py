@@ -661,7 +661,7 @@ class ChemicalIndexer(Indexer):
         return self
     
     @classmethod
-    def from_data(cls, data, phase, chemicals=None, check_data=True, lock_phase=False, parent=None):
+    def from_data(cls, data, phase=None, chemicals=None, check_data=True, lock_phase=False, parent=None):
         self = _new(cls)
         self._load_chemicals(chemicals)
         self._phase = phase
@@ -670,7 +670,7 @@ class ChemicalIndexer(Indexer):
             assert data.ndim == 1, 'material data must be a 1d numpy array'
             assert data.size == self._chemicals.size, ('size of material data must be equal to '
                                                        'size of chemicals')
-            check_phase(phase)
+            if phase is not None: check_phase(phase)
         self._data_cache = {}
         self._parent = parent
         self._lock_phase = lock_phase
