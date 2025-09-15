@@ -115,9 +115,12 @@ class BubblePoint:
     maxiter = 50
     T_tol = 1e-9
     P_tol = 1e-3
-    def __new__(cls, chemicals=(), thermo=None):
+    def __new__(cls, chemicals=None, thermo=None):
         thermo = settings.get_default_thermo(thermo)
-        chemicals = tuple(chemicals)
+        if chemicals is None: 
+            chemicals = thermo.chemicals.tuple
+        else:
+            chemicals = tuple(chemicals)
         key = (chemicals, thermo.Gamma, thermo.Phi, thermo.PCF)
         cached = cls._cached
         if key in cached:

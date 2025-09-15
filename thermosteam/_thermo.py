@@ -186,11 +186,16 @@ class Thermo:
         for name, index in groups:
             group_CASs = [CASs[i] for i in index]
             chemicals.define_group(name, [i for i in group_CASs if i in chemicals])
+        if hasattr(self.mixture, 'eos_chemicals'):
+            eos_chemicals = [i for i in self.mixture.eos_chemicals if i in chemicals]
+            mixture = self.mixture.from_chemicals(chemicals, eos_chemicals)
+        else:
+            mixture = self.mixture.from_chemicals(chemicals)
         cls = self.__class__
         new = cls.__new__(cls)
         setattr = object.__setattr__
         setattr(new, 'chemicals', chemicals)
-        setattr(new, 'mixture', self.mixture.from_chemicals(chemicals))
+        setattr(new, 'mixture', mixture)
         setattr(new, 'Gamma', self.Gamma)
         setattr(new, 'Phi', self.Phi)
         setattr(new, 'PCF', self.PCF)

@@ -100,14 +100,18 @@ class TemporaryStream:
 
 
 class Equations:
-    __slots__ = ('material', 'energy')
+    __slots__ = ('material', 'energy', 'bulk')
 
     def __init__(self):
         self.material = []
         self.energy = []
+        self.bulk = []
 
     def __repr__(self):
-        return f"{type(self).__name__}(material={[i.__name__ for i in self.material]}(), energy={[i.__name__ for i in self.energy]}())"
+        material = [i.__name__ + '()' for i in self.material]
+        energy = [i.__name__ + '()' for i in self.energy]
+        bulk = [i.__name__ + '()' for i in self.bulk]
+        return f"{type(self).__name__}(material={material}, energy={energy}, bulk={bulk}"
 
 
 # %%
@@ -500,28 +504,34 @@ class Stream(AbstractStream):
     def energy_equations(self):
         return self.equations.energy
 
+    @property
+    def bulk_equations(self):
+        return self.equations.bulk
+
     def material_balance(self, f=None):
         self.material_equations.append(f)
+        return f
+
+    def energy_balance(self, f=None):
+        self.material_equations.append(f)
+        return f
+
+    def bulk_balance(self, f=None):
+        self.bulk_equations.append(f)
         return f
 
     def _create_material_balance_equations(self):
         return [i() for i in self.material_equations]
 
-    def _create_energy_departure_equations(self):
+    def _create_energy_balance_equations(self):
         return [i() for i in self.energy_equations]
 
-    def _update_energy_departure_coefficient(self, coefficients):
+    def _update_energy_coefficient(self, coefficients):
         source = self.source
-        if source is None or not source._recycle_system:
-            return
-        if not source._get_energy_departure_coefficient:
-            raise NotImplementedError(
-                f'{source!r} has no method `_get_energy_departure_coefficient`')
-        coeff = source._get_energy_departure_coefficient(self)
-        if coeff is None:
-            return
-        key, value = coeff
-        coefficients[key] = value
+        return source._update_energy_coefficient(self, coefficients)
+
+    def _update_variable(self, variable, value):
+        return setattr(self, variable, value)
 
     def scale(self, scale):
         """
@@ -1263,6 +1273,11 @@ class Stream(AbstractStream):
             self.T = self.mixture.solve_T_at_HP(
                 self.phase, z_mol, h, *self._thermal_condition
             )
+
+    @property
+    def hf(self) -> float:
+        """Specific enthalpy of formation [kJ/kmol]."""
+        return (self.chemicals.Hf * self.mol).sum() / self.F_mol
 
     @property
     def S(self) -> float:
