@@ -7,18 +7,28 @@
 # for license details.
 """
 """
+import os
 import numba
 from numba.experimental import jitclass
 from numba.extending import as_numba_type
 
 __all__ = ('jitdata',)
 
-def jitdata(name_or_cls, /, **fields):
+class MockJitclassAttribute:
+    def __getattr__(self, name): pass
+    
+    def __setattr__(self, name, value): pass
+
+mock_jitclass_attribute = MockJitclassAttribute()
+mock_jitclass_attribute.instance_type = None
+
+def jitdata(name_or_cls=None, /, py=False, **fields):
     """
     Create a jitclass with a lightweight __init__ method
     which saves input arguments as attributes.
         
     """
+    if name_or_cls is None: return lambda name_or_cls: jitdata(name_or_cls, py=py, **fields)
     for i, j in fields.items():
         if isinstance(j, str): fields[i] = eval(j, numba.__dict__)
     if isinstance(name_or_cls, str):
@@ -35,7 +45,9 @@ def jitdata(name_or_cls, /, **fields):
         raise TypeError('first argument must be a class or name')
     if not all_fields: raise ValueError('at least one field must be given')
     if cls is not None and '__init__' in cls.__dict__:
-        # return cls
+        if py or os.environ.get("NUMBA_DISABLE_JIT"): 
+            cls.class_type = mock_jitclass_attribute
+            return cls
         return jitclass(cls, spec=[(i, as_numba_type(j)) for i, j in fields.items()])
     else:
         arguments = ', '.join(all_fields)
@@ -49,5 +61,8 @@ def jitdata(name_or_cls, /, **fields):
         else:
             cls.__init__ = dct['__init__']
         # return cls
+        if py or os.environ.get("NUMBA_DISABLE_JIT"): 
+            cls.class_type = mock_jitclass_attribute
+            return cls
         return jitclass(cls, spec=[(i, as_numba_type(j)) for i, j in fields.items()])
 

@@ -11,7 +11,7 @@ setup(
     name='thermosteam',
     packages=['thermosteam'],
     license='MIT',
-    version='0.52.3',
+    version='0.52.4',
     description="BioSTEAM's Premier Thermodynamic Engine",
     long_description=open('README.rst', encoding='utf-8').read(),
     author='Yoel Cortes-Pena',
@@ -44,7 +44,7 @@ setup(
     },
     package_data={
         'thermosteam': [
-            'temporary_images/',
+            'temporary_images',
             'base/*',
             'equilibrium/*',
             'reaction/*',
