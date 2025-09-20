@@ -21,7 +21,7 @@ class StabilityReport(NamedTuple):
     tpd: float
 
 def edge_points_simplex_masked(z: np.ndarray,
-                               points_per_edge: int = 5,
+                               points_per_edge: int = 10,
                                epsilon: float = 1e-3,
                                min_active: int = 2) -> np.ndarray:
     """
