@@ -29,7 +29,7 @@ __all__ = ('VLE', 'VLECache', 'stable_phase')
 
 @njit(cache=True)
 def xy(x, Ks):
-    x[x < 0] = 1e-16
+    x[x < 0] = 1e-64
     x /= x.sum()
     y = x * Ks
     y /= y.sum()
@@ -66,13 +66,13 @@ def xVlogK_iter_2n(xVlogK, pcf_Psat_over_P, T, P, z, f_gamma, gamma_args, f_phi,
         V = binary.compute_phase_fraction_2N(z, Ks)
         if gas_conversion: 
             z = z + gas_conversion(material=y * V, T=T, P=P, phase='g')
-            z[z <= 0] = 1e-16
+            z[z <= 0] = 1e-64
             z /= z.sum()
         if liquid_conversion:
             z = z + liquid_conversion(material=x * (1 - V), T=T, P=P, phase='l')
-            z[z <= 0] = 1e-16
+            z[z <= 0] = 1e-64
             z /= z.sum()
-    Ks[Ks < 1e-16] = 1e-16
+    Ks[Ks < 1e-64] = 1e-64
     xVlogK[n] = V = binary.compute_phase_fraction_2N(z, Ks)
     xVlogK[:n] = z/(1. + V * (Ks - 1.))
     xVlogK[n+1:] = np.log(Ks)
@@ -94,13 +94,13 @@ def xVlogK_iter(
     if gas_conversion or liquid_conversion:
         if gas_conversion: 
             z = z + gas_conversion(material=y * V, T=T, P=P, phase='g')
-            z[z <= 0] = 1e-16
+            z[z <= 0] = 1e-64
             z /= z.sum()
         if liquid_conversion:
             z = z + liquid_conversion(material=x * (1 - V), T=T, P=P, phase='l')
-            z[z <= 0] = 1e-16
+            z[z <= 0] = 1e-64
             z /= z.sum()
-    Ks[Ks < 1e-16] = 1e-16
+    Ks[Ks < 1e-64] = 1e-64
     xVlogK[n] = V = binary.solve_phase_fraction_Rashford_Rice(z, Ks, V, z_light, z_heavy)
     xVlogK[:n] = z / (1. + V * (Ks - 1.))
     xVlogK[n+1:] = np.log(Ks)
@@ -313,14 +313,14 @@ class VLE(Equilibrium, phases='lg'):
         '_dF_mol',
         '_vle_chemicals',
     )
-    maxiter = 20
-    T_tol = 5e-8
-    P_tol = 1.
-    H_hat_tol = 1e-6
-    S_hat_tol = 1e-6
-    V_tol = 1e-6
-    x_tol = 1e-8
-    y_tol = 1e-8
+    maxiter = 50
+    T_tol = 1e-12
+    P_tol = 1e-6
+    H_hat_tol = 1e-9
+    S_hat_tol = 1e-9
+    V_tol = 1e-16
+    x_tol = 1e-16
+    y_tol = 1e-16
     default_method = 'fixed-point'
     
     def __init__(self, imol=None, thermal_condition=None,
@@ -1384,7 +1384,7 @@ class VLE(Equilibrium, phases='lg'):
                     gas_conversion, liquid_conversion)
         xVlogK = np.zeros(2 * n + 1)
         xVlogK[n] = V = self._V
-        K[K < 1e-16] = 1e-16
+        K[K < 1e-64] = 1e-64
         xVlogK[:n] = z/(1. + V * (K - 1.))
         xVlogK[n+1:] = np.log(K)
         xVlogK = flx.aitken(

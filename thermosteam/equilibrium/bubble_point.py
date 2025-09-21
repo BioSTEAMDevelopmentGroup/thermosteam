@@ -112,9 +112,9 @@ class BubblePoint:
     __slots__ = ('chemicals', 'IDs', 'gamma', 'phi', 'pcf',
                  'Psats', 'Tmin', 'Tmax', 'Pmin', 'Pmax')
     _cached = {}
-    maxiter = 50
-    T_tol = 1e-9
-    P_tol = 1e-3
+    maxiter = 100
+    T_tol = 1e-12
+    P_tol = 1e-6
     def __new__(cls, chemicals=None, thermo=None):
         thermo = settings.get_default_thermo(thermo)
         if chemicals is None: 
