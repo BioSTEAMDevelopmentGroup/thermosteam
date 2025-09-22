@@ -255,7 +255,12 @@ class MultiStream(Stream):
     def from_streams(cls, streams, thermo=None):
         if not streams: raise ValueError('at least one stream must be passed')
         self = cls.__new__(cls)
-        self._streams = streams_by_phase = {i.phase: i for i in streams}
+        self._streams = streams_by_phase = {}
+        for stream in streams:
+            if isinstance(stream, MultiStream):
+                for i in stream: streams_by_phase[i.phase] = i
+            else:
+                streams_by_phase[i.phase] = i
         phases = phase_tuple(streams_by_phase)
         N_streams = len(streams)
         if len(phases) != N_streams: raise ValueError('each stream must have a different phase')
