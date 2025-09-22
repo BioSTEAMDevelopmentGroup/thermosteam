@@ -617,6 +617,26 @@ class EOSMixture(Mixture):
         eos, eos_mol = self.eos_args(phase, mol, T, P)
         return (eos.Hvap(T) * eos_mol).sum()
 
+    def dh_dep_dzs(self, phase, mol, T, P):
+        if phase == 's': return 0 * mol
+        if phase in self.active_eos:
+            eos, eos_mol = self.active_eos[phase]
+        else:
+            eos, eos_mol = self.eos_args(
+                phase, mol, T, P
+            )
+        dH_dep_dzs = np.zeros(len(self.chemicals))
+        index, = np.nonzero(mol)
+        if phase == 'l':
+            try: dH_dep_dzs[index] = eos.dH_dep_dzs(eos.Z_l)
+            except: 
+                try: dH_dep_dzs[index] = eos.dH_dep_dzs(eos.Z_g)
+                except: pass
+        else:
+            try: dH_dep_dzs[index] = eos.dH_dep_dzs(eos.Z_g)
+            except: pass
+        return dH_dep_dzs
+
     def Cn(self, phase, mol, T, P):
         Cn = self.Cn_ideal(phase, mol, T, P)
         if phase != 's':
@@ -627,12 +647,12 @@ class EOSMixture(Mixture):
                     phase, mol, T, P
                 )
             if phase == 'l':
-                try: Cn += eos.Cn_dep_l * eos_mol
+                try: Cn += eos.Cp_dep_l * eos_mol
                 except: 
-                    try: Cn += eos.Cn_dep_g * eos_mol
+                    try: Cn += eos.Cp_dep_g * eos_mol
                     except: pass
             else:
-                try: Cn += eos.Cn_dep_g * eos_mol
+                try: Cn += eos.Cp_dep_g * eos_mol
                 except: pass
         return Cn
     
