@@ -49,9 +49,8 @@ def edge_points_simplex_masked(z: np.ndarray,
     z = z / z.sum()
     n = z.size
 
-    # filter: components strictly greater than average
-    avg = z.mean()
-    active = np.where(z >= avg)[0]
+    # Ignore components present in small amounts
+    active = np.where(z >= 0.1 * z.mean())[0]
 
     # fallback: ensure at least `min_active` components
     if active.size < min_active:
@@ -127,19 +126,21 @@ class TangentPlaneStabilityAnalysis:
             if value < best_val:
                 best_val = value
                 best_result = sample
-        result = minimize(
-            objective, 
-            best_result, 
-            method="L-BFGS-B", 
-            options=dict(maxiter=10),
-            args=(*args, True),
-        )
-        value = result.fun
-        if value < best_val:
-            w = result.x
-            w = np.exp(w - np.max(w)) # Softmax for unconstrained optimization
-            w /= w.sum()
-            best_result = w
+            if value < -0.5: break
+        else:
+            result = minimize(
+                objective, 
+                best_result, 
+                method="L-BFGS-B", 
+                options=dict(maxiter=10),
+                args=(*args, True),
+            )
+            value = result.fun
+            if value < best_val:
+                w = result.x
+                w = np.exp(w - np.max(w)) # Softmax for unconstrained optimization
+                w /= w.sum()
+                best_result = w
         return StabilityReport(
             unstable=(best_val < 0),
             candidate=best_result,
