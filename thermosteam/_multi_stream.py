@@ -260,7 +260,7 @@ class MultiStream(Stream):
             if isinstance(stream, MultiStream):
                 for i in stream: streams_by_phase[i.phase] = i
             else:
-                streams_by_phase[i.phase] = i
+                streams_by_phase[stream.phase] = stream
         phases = phase_tuple(streams_by_phase)
         N_streams = len(streams)
         if len(phases) != N_streams: raise ValueError('each stream must have a different phase')
