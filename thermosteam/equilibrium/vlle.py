@@ -77,7 +77,7 @@ class VLLE(Equilibrium, phases='Llg'):
         self.vle_L = VLE(imol_vle_L, thermal_condition, thermo)
         self.lle = LLE(imol_lle, thermal_condition, thermo)
     
-    def __call__(self, *, T=None, P=None, V=None, H=None, S=None, top_chemical=None):
+    def __call__(self, *, T=None, P=None, V=None, H=None, S=None, Q=None, B=None, top_chemical=None):
         """
         Perform vapor-liquid-liquid equilibrium.
 
@@ -88,17 +88,29 @@ class VLLE(Equilibrium, phases='Llg'):
         P : float, optional
             Operating pressure [Pa].
         V : float, optional
-            Molar vapor fraction.
+            Molar vapor fraction [by mol].
         H : float, optional
             Enthalpy [kJ/hr].
         S : float, optional
             Entropy [kJ/hr/K]
+        Q : float, optional
+            Duty [kJ/hr].
+        B : float, optional
+            Boil up ratio [by mol]
         
         Notes
         -----
         You may only specify two of the following parameters: P, H, T, V, S.
         
         """
+        if Q is not None:
+            H = Q + self.mixture.xH(self.imol, *self.thermal_condition)
+        if B is not None:
+            if B == np.inf:
+                V = 1.
+            else:
+                V = B / (1 + B)
+        
         ### Decide what kind of equilibrium to run ###
         T_spec = T is not None
         P_spec = P is not None

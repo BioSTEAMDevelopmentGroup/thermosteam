@@ -130,6 +130,7 @@ class GCEOSFugacityCoefficients(FugacityCoefficients):
 
 dct = globals()    
 clsnames = []
+fugacity_coefficient_classes = []
 for name in ('PRMIX', 'SRKMIX', 'PR78MIX', 'VDWMIX', 'PRSVMIX',
              'PRSV2MIX', 'TWUPRMIX', 'TWUSRKMIX', 'APISRKMIX', 'IGMIX', 'RKMIX',
              'PRMIXTranslatedConsistent', 'PRMIXTranslatedPPJP', 'PRMIXTranslated',
@@ -138,8 +139,9 @@ for name in ('PRMIX', 'SRKMIX', 'PR78MIX', 'VDWMIX', 'PRSVMIX',
     cls = GCEOSFugacityCoefficients.subclass(getattr(eos_mix, name))
     clsname = cls.__name__
     clsnames.append(clsname)
+    fugacity_coefficient_classes.append(cls)
     dct[clsname] = cls
 
 dct['PRFugacityCoefficients'].chemsep_db = 'ChemSep PR'
-__all__ = (*__all__, *clsnames)
+__all__ = (*__all__, *clsnames, 'fugacity_coefficient_classes')
 del dct, clsnames

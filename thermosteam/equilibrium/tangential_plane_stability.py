@@ -92,9 +92,10 @@ def edge_points_simplex_masked(z: np.ndarray,
 
 
 class TangentPlaneStabilityAnalysis:
-    
+    __slots__ = ('fugacity_models', 'MW')
     def __init__(self, phases, chemicals, thermo=None):
         thermo = tmo.settings.get_default_thermo(thermo)
+        self.MW = np.array([i.MW for i in chemicals])
         self.fugacity_models =  {
             i: thermo.fugacities(i, chemicals)
             for i in phases
@@ -112,7 +113,12 @@ class TangentPlaneStabilityAnalysis:
         logfz = np.log(reference_model(z, T, P, same_phase) + 1e-30)
         best_val = np.inf
         best_result = None
-        samples = edge_points_simplex_masked(z)
+        MW = self.MW
+        w = z * MW
+        w /= w.sum()
+        samples = edge_points_simplex_masked(w)
+        samples /= MW
+        samples /= samples.sum(axis=1, keepdims=True)
         objective = self.objective
         model = self.fugacity_models[potential_phase]
         args = (T, P, model, logfz, same_phase)
@@ -125,7 +131,7 @@ class TangentPlaneStabilityAnalysis:
             objective, 
             best_result, 
             method="L-BFGS-B", 
-            options=dict(maxiter=5),
+            options=dict(maxiter=10),
             args=(*args, True),
         )
         value = result.fun

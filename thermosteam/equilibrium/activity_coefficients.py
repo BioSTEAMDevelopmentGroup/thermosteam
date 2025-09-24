@@ -169,11 +169,13 @@ def gamma_modified_UNIFAC(x, T, interactions,
             x_sub /= xsum
             psis = psi_modified_UNIFAC(T, interactions)
             fill_group_psis(group_psis, psis, group_mask)
-            gamma_sub = group_activity_coefficients(x_sub, chemgroups,
-                                        loggammacs_modified_UNIFAC(qs, rs, x_sub),
-                                        Qs, psis,
-                                        chem_Qfractions,
-                                        group_psis)
+            gamma_sub = group_activity_coefficients(
+                x_sub, chemgroups,
+                loggammacs_modified_UNIFAC(qs, rs, x_sub),
+                Qs, psis,
+                chem_Qfractions,
+                group_psis
+            )
         for i, j in enumerate(index): 
             value = gamma_sub[i]
             if np.isnan(value): continue
@@ -538,6 +540,7 @@ class GCEOSActivityCoefficients(ActivityCoefficients):
     args = ()
         
 dct = globals()    
+activity_coefficient_classes = [UNIFACActivityCoefficients, DortmundActivityCoefficients, NISTActivityCoefficients]
 clsnames = []
 for name in ('PRMIX', 'SRKMIX', 'PR78MIX', 'VDWMIX', 'PRSVMIX',
              'PRSV2MIX', 'TWUPRMIX', 'TWUSRKMIX', 'APISRKMIX', 'IGMIX', 'RKMIX',
@@ -547,8 +550,9 @@ for name in ('PRMIX', 'SRKMIX', 'PR78MIX', 'VDWMIX', 'PRSVMIX',
     cls = GCEOSActivityCoefficients.subclass(getattr(eos_mix, name))
     clsname = cls.__name__
     clsnames.append(clsname)
+    activity_coefficient_classes.append(cls)
     dct[clsname] = cls
 
 dct['PRActivityCoefficients'].chemsep_db = 'ChemSep PR'
-__all__ = (*__all__, *clsnames)
+__all__ = (*__all__, *clsnames, 'activity_coefficient_classes')
 del dct, clsnames

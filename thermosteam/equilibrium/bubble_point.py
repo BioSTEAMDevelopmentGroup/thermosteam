@@ -28,7 +28,7 @@ def y_iter(y, y_phi, phi, T, P):
 
 def solve_y(y_phi, phi, T, P, y_guess):
     if isinstance(phi, IdealFugacityCoefficients): return y_phi
-    return flx.wegstein(y_iter, y_phi, 1e-9, args=(y_phi, phi, T, P), 
+    return flx.wegstein(y_iter, y_phi, 1e-12, args=(y_phi, phi, T, P), 
                         checkiter=False,
                         checkconvergence=False, 
                         convergenceiter=5,

@@ -9,7 +9,8 @@
 """
 __all__ = ('PoyintingCorrectionFactors',
            'MockPoyintingCorrectionFactors',
-           'IdealGasPoyintingCorrectionFactors')
+           'IdealGasPoyintingCorrectionFactors',
+           'poyinting_correction_factor_classes')
 from ..constants import R
 from numba import njit
 import numpy as np
@@ -101,3 +102,4 @@ class IdealGasPoyintingCorrectionFactors(PoyintingCorrectionFactors):
         pcf[index] = ideal_gas_poyinting_correction_factors(T, P, vls, Psats)
         return pcf
         
+poyinting_correction_factor_classes = [MockPoyintingCorrectionFactors, IdealGasPoyintingCorrectionFactors]
