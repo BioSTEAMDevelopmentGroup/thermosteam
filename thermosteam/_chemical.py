@@ -1796,9 +1796,7 @@ class Chemical:
     
             # Excess data
             if isinstance(eos, IG):
-                H_dep_ref_g = S_dep_ref_g = H_dep_ref_l = S_dep_ref_l = \
-                H_dep_T_ref_Pb = S_dep_T_ref_Pb = H_dep_Tb_Pb_g = H_dep_Tb_P_ref_g = \
-                S_dep_Tb_P_ref_g = S_dep_Tb_Pb_g = 0
+                H_dep_ref_g = S_dep_ref_g = H_dep_Tb_Pb_g = S_dep_Tb_Pb_g = 0
             else:
                 if phase_ref == 'g':
                     try:
@@ -1808,24 +1806,16 @@ class Chemical:
                     except:
                         H_dep_ref_g = S_dep_ref_g = 0.
                 elif phase_ref == 'l':
-                    try:
-                        eos_T_ref_Pb = eos.to_TP(T_ref, P_ref)
-                        H_dep_ref_l = H_dep_T_ref_Pb = eos_T_ref_Pb.H_dep_l
-                        S_dep_ref_l = S_dep_T_ref_Pb = eos_T_ref_Pb.S_dep_l
-                    except:
-                        H_dep_ref_l = H_dep_T_ref_Pb = 0.
-                        S_dep_ref_l = S_dep_T_ref_Pb = 0.
+                    pass
                 if Tb:
                     try:
                         eos_Tb_P_ref = eos.to_TP(Tb, P_ref)
-                        H_dep_Tb_Pb_g = H_dep_Tb_P_ref_g = eos_Tb_P_ref.H_dep_g
-                        S_dep_Tb_Pb_g = S_dep_Tb_P_ref_g = eos_Tb_P_ref.S_dep_g
+                        H_dep_Tb_Pb_g = eos_Tb_P_ref.H_dep_g
+                        S_dep_Tb_Pb_g = eos_Tb_P_ref.S_dep_g
                     except:
-                        S_dep_Tb_Pb_g = S_dep_Tb_P_ref_g = H_dep_Tb_P_ref_g = \
-                        H_dep_Tb_Pb_g = 0.
+                        S_dep_Tb_Pb_g = H_dep_Tb_Pb_g = 0.
                 else:
-                    S_dep_Tb_Pb_g = S_dep_Tb_P_ref_g = H_dep_Tb_P_ref_g = \
-                    H_dep_Tb_Pb_g = 0.
+                    S_dep_Tb_Pb_g  = H_dep_Tb_Pb_g = 0.
             
             # Enthalpy and Entropy
             if single_phase:
@@ -1879,15 +1869,15 @@ class Chemical:
                     self._H_excess = ExcessEnthalpyRefSolid((), (), (), Tc)
                     self._S_excess = ExcessEntropyRefSolid((), (), (), Tc)
                 elif phase_ref == 'l':
-                    gdata = (eos, H_dep_T_ref_Pb, H_dep_ref_l, H_dep_Tb_Pb_g)
+                    gdata = (eos, H_dep_Tb_Pb_g)
                     self._H_excess = ExcessEnthalpyRefLiquid((), (), gdata, Tc)
-                    gdata = (eos, S_dep_T_ref_Pb, S_dep_ref_l, S_dep_Tb_Pb_g)
+                    gdata = (eos, S_dep_Tb_Pb_g)
                     self._S_excess = ExcessEntropyRefLiquid((), (), gdata, Tc)
                 elif phase_ref == 'g':
-                    ldata = (eos, H_dep_Tb_Pb_g, H_dep_Tb_P_ref_g)
+                    ldata = (eos,)
                     gdata = (eos, H_dep_ref_g)
                     self._H_excess = ExcessEnthalpyRefGas((), ldata, gdata, Tc)
-                    ldata = (eos, S_dep_Tb_Pb_g, S_dep_Tb_P_ref_g)
+                    ldata = (eos,)
                     gdata = (eos, S_dep_ref_g)
                     self._S_excess = ExcessEntropyRefGas((), ldata, gdata, Tc)
         else:

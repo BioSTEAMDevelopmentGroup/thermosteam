@@ -103,32 +103,32 @@ class PhaseTHandle(PhaseHandle):
     __slots__ = ()
     force_gas_critical_phase = False
     
-    def __call__(self, phase, T, P=None):
+    def __call__(self, phase, T, P=None, **kwargs):
         if self.force_gas_critical_phase and T > self.Tc: phase = 'g'
-        return getattr(self, phase)(T)
+        return getattr(self, phase)(T, **kwargs)
     
     
 class PhaseTPHandle(PhaseHandle):
     __slots__ = ()
     force_gas_critical_phase = False
     
-    def __call__(self, phase, T, P=None):
+    def __call__(self, phase, T, P=None, **kwargs):
         if self.force_gas_critical_phase and T > self.Tc: phase = 'g'
-        return getattr(self, phase)(T, P)
+        return getattr(self, phase)(T, P, **kwargs)
 
 
 class MockPhaseTHandle(MockPhaseHandle):
     __slots__ = ()
     
-    def __call__(self, phase, T, P=None):
-        return self.model(T)
+    def __call__(self, phase, T, P=None, **kwargs):
+        return self.model(T, **kwargs)
     
     
 class MockPhaseTPHandle(MockPhaseHandle):
     __slots__ = ()
     
-    def __call__(self, phase, T, P=None):
-        return self.model(T, P)
+    def __call__(self, phase, T, P=None, **kwargs):
+        return self.model(T, P, **kwargs)
 
 # %% Builders
 

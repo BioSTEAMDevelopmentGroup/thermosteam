@@ -27,6 +27,15 @@ from .ideal_mixture_model import (
 from .._chemicals import Chemical, CompiledChemicals, chemical_data_array
 
 __all__ = ('Mixture', 'IdealMixture')
+        
+# %% Convenience for EOS
+
+def get_excess_property(eos, free_energy, phase):
+    name = f"{free_energy}_dep_{phase}"
+    try: return getattr(eos, name)
+    except: # Maybe identified closer to another phase near supercritical conditions (doesn't matter)
+        name = f"{free_energy}_dep_g" if phase == 'l' else f"{free_energy}_dep_l"
+        return getattr(eos, name)
 
 # %% Functions for building mixture models
 
@@ -418,17 +427,16 @@ class IdealMixture(Mixture):
     """
     __slots__ = (
         'include_excess_energies',
-        'Cn', 'mu', 'V', 'kappa',
+        'mu', 'V', 'kappa',
         'Hvap', 'sigma', 'epsilon',
-        'MWs', '_H', '_H_excess', '_S', '_S_excess',
+        'MWs', '_eos', '_Cn', '_H', '_H_excess', '_S', '_S_excess',
         '_cache',
     )
     
     def __init__(self, Cn, H, S, H_excess, S_excess,
                  mu, V, kappa, Hvap, sigma, epsilon,
-                 MWs, include_excess_energies=False):
+                 MWs, eos=None, include_excess_energies=False):
         self.include_excess_energies = include_excess_energies
-        self.Cn = Cn
         self.mu = mu
         self.V = V
         self.kappa = kappa
@@ -436,10 +444,25 @@ class IdealMixture(Mixture):
         self.sigma = sigma
         self.epsilon = epsilon
         self.MWs = MWs
+        self._eos = eos
+        self._Cn = Cn
         self._H = H
         self._S = S
         self._H_excess = H_excess
         self._S_excess = S_excess
+    
+    def Cn(self, phase, mol, T, P):
+        Cn = self._Cn(phase, mol, T, P)
+        if not self.include_excess_energies or phase == 's': return Cn
+        if mol.__class__ is SparseVector: 
+            items = mol.dct.items()
+        else:
+            items = [(i, j) for i, j in enumerate(mol) if j]
+        eos = self._eos
+        for i, j in items:
+            eosi = eos[i].to_TP(T, P)
+            Cn += get_excess_property(eosi, 'Cp', phase) * j
+        return Cn
     
     @classmethod
     def from_chemicals(cls, chemicals, 
@@ -500,8 +523,11 @@ class IdealMixture(Mixture):
         Hvap = IdealHvapModel(chemicals)
         sigma = SinglePhaseIdealTMixtureModel([getfield(i, 'sigma') for i in chemicals], 'sigma')
         epsilon = SinglePhaseIdealTMixtureModel([getfield(i, 'epsilon') for i in chemicals], 'epsilon')
+        eos = [i.eos for i in chemicals]
         return cls(Cn, H, S, H_excess, S_excess,
-                   mu, V, kappa, Hvap, sigma, epsilon, MWs, include_excess_energies)
+                   mu, V, kappa, Hvap, sigma, 
+                   epsilon, MWs, eos,
+                   include_excess_energies)
     
     def __repr__(self):
         return f"{type(self).__name__}(..., include_excess_energies={self.include_excess_energies})"
@@ -516,17 +542,19 @@ class IdealMixture(Mixture):
 
 class EOSMixture(Mixture):
     __slots__ = (
-        'chemicals', 'eos_chemicals', 'Cn_ideal', 'mu', 'V', 
-        'kappa', 'sigma', 'epsilon', 'H_ideal', 'S_ideal', 'MWs', 
-        'eos_cache', 'active_eos'
+        'chemicals', 'eos_chemical_index', 'Cn_ideal', 'mu', 'V', 
+        'kappa', 'sigma', 'epsilon', 'MWs', 
+        'H_ideal', 'S_ideal', 
+        'H_excess', 'S_excess', 
+        'eos_cache', 'active_eos', 
     )
     chemsep_db = None
     
-    def __init__(self, chemicals, eos_chemicals, 
+    def __init__(self, chemicals, eos_chemical_index, 
                  Cn_ideal, H_ideal, S_ideal, 
                  mu, V, kappa, sigma, epsilon, MWs):
         self.chemicals = chemicals
-        self.eos_chemicals = eos_chemicals
+        self.eos_chemical_index = eos_chemical_index
         self.Cn_ideal = Cn_ideal
         self.H_ideal = H_ideal
         self.S_ideal = S_ideal
@@ -538,6 +566,25 @@ class EOSMixture(Mixture):
         self.MWs = MWs
         self.eos_cache = {}
         self.active_eos = {}
+        
+        # Ensure consistent equation of state
+        eos_mix = self.eos_args('g', np.ones(len(chemicals)), 298.15, 101325)[0]
+        eos_chemicals = [i for _, i in eos_chemical_index.values()]
+        for chemical, eos in zip(eos_chemicals, eos_mix.pures()):
+            chemical._eos = eos
+            chemical.reset_free_energies()
+            
+        # Populate excess energies
+        for name in ('H_excess', 'S_excess'):
+            E_excess = {}
+            setattr(self, name, E_excess)
+            for phase in 'lg':
+                E_excess[phase] = E_excess_phase = []
+                for chemical in eos_chemicals:
+                    handle = getattr(chemical, name)
+                    E_excess_phase.append(
+                        getattr(handle, phase, handle)
+                    )
     
     def solve_T_at_HP(self, phase, mol, H, T_guess, P):
         """Solve for temperature in Kelvin."""
@@ -570,19 +617,22 @@ class EOSMixture(Mixture):
         return T
     
     def eos_args(self, phase, mol, T, P):
-        chemicals = self.chemicals
         if mol.__class__ is SparseVector: 
             items = mol.dct.items()
         else:
             items = [(i, j) for i, j in enumerate(mol) if j]
-        eos_chemicals = self.eos_chemicals
+        eos_chemical_index = self.eos_chemical_index
         chemical_subset = []
         mol_subset = []
         eos_mol = 0
+        index = []
+        eos_index = []
         for i, j in items:
-            chemical = chemicals[i]
-            if chemical in eos_chemicals:
+            index.append(i)
+            if i in eos_chemical_index:
+                k, chemical = eos_chemical_index[i]
                 chemical_subset.append(chemical)
+                eos_index.append(k)
                 mol_subset.append(j)
                 eos_mol += j
         zs = [i / eos_mol for i in mol_subset]
@@ -610,94 +660,80 @@ class EOSMixture(Mixture):
                 T=T, P=P, zs=zs, only_g=only_g, only_l=only_l,
                 fugacities=False
             )
-        return eos, eos_mol
+        return eos, index, eos_index, eos_mol
 
     def Hvap(self, mol, T, P):
         phase = 'l'
-        eos, eos_mol = self.eos_args(phase, mol, T, P)
+        eos, _, _, eos_mol = self.eos_args(phase, mol, T, P)
         return (eos.Hvap(T) * eos_mol).sum()
 
     def dh_dep_dzs(self, phase, mol, T, P):
         if phase == 's': return 0 * mol
         if phase in self.active_eos:
-            eos, eos_mol = self.active_eos[phase]
+            eos, index, eos_index, eos_mol = self.active_eos[phase]
         else:
-            eos, eos_mol = self.eos_args(
+            eos, index, eos_index, eos_mol = self.eos_args(
                 phase, mol, T, P
             )
         dH_dep_dzs = np.zeros(len(self.chemicals))
-        index, = np.nonzero(mol)
         if phase == 'l':
-            try: dH_dep_dzs[index] = eos.dH_dep_dzs(eos.Z_l)
-            except: 
-                try: dH_dep_dzs[index] = eos.dH_dep_dzs(eos.Z_g)
-                except: pass
+            dH_dep_dzs[index] = eos.dH_dep_dzs(eos.Z_l)
         else:
-            try: dH_dep_dzs[index] = eos.dH_dep_dzs(eos.Z_g)
-            except: pass
+            dH_dep_dzs[index] = eos.dH_dep_dzs(eos.Z_g)
+        H_excess = self.H_excess[phase]
+        for i, j in zip(index, eos_index):
+            dH_dep_dzs[i] -= H_excess[j](T, P, ref=True)
         return dH_dep_dzs
 
     def Cn(self, phase, mol, T, P):
         Cn = self.Cn_ideal(phase, mol, T, P)
-        if phase != 's':
-            if phase in self.active_eos:
-                eos, eos_mol = self.active_eos[phase]
-            else:
-                eos, eos_mol = self.eos_args(
-                    phase, mol, T, P
-                )
-            if phase == 'l':
-                try: Cn += eos.Cp_dep_l * eos_mol
-                except: 
-                    try: Cn += eos.Cp_dep_g * eos_mol
-                    except: pass
-            else:
-                try: Cn += eos.Cp_dep_g * eos_mol
-                except: pass
+        if phase == 's': return Cn
+        if phase in self.active_eos:
+            eos, _, _, eos_mol = self.active_eos[phase]
+        else:
+            eos, _, _, eos_mol = self.eos_args(
+                phase, mol, T, P
+            )
+        Cn += get_excess_property(eos, 'Cp', phase) * eos_mol
         return Cn
     
     def H(self, phase, mol, T, P):
         """Return enthalpy [J/mol]."""
         H = self.H_ideal(phase, mol, T, P)
-        if phase != 's':
-            if phase in self.active_eos:
-                eos, eos_mol = self.active_eos[phase]
-            else:
-                eos, eos_mol = self.eos_args(
-                    phase, mol, T, P
-                )
-            if phase == 'l':
-                try: H += eos.H_dep_l * eos_mol
-                except: 
-                    try: H += eos.H_dep_g * eos_mol
-                    except: pass
-            else:
-                try: H += eos.H_dep_g * eos_mol
-                except: pass
-        return H
+        if phase == 's': return H
+        if phase in self.active_eos:
+            eos, _, eos_index, eos_mol = self.active_eos[phase]
+        else:
+            eos, _, eos_index, eos_mol = self.eos_args(
+                phase, mol, T, P
+            )
+        H_dep = get_excess_property(eos, 'H', phase)
+        H_excess = self.H_excess[phase]
+        H_ref = 0
+        for i, z in zip(eos_index, eos.zs):
+            H_ref += z * H_excess[i](T, P, ref=True)
+        dH_dep = (H_dep - H_ref) * eos_mol
+        return H + dH_dep
     
     def S(self, phase, mol, T, P):
         """Return entropy [J/mol/K]."""
         S = self.S_ideal(phase, mol, T, P)
-        if phase != 's':
-            if phase in self.active_eos:
-                eos, eos_mol = self.active_eos[phase]
-            else:
-                eos, eos_mol = self.eos_args(
-                    phase, mol, T, P
-                )
-            if phase == 'l':
-                try: S += eos.S_dep_l * eos_mol
-                except: 
-                    try: S += eos.S_dep_g * eos_mol
-                    except: pass
-            else:
-                try: S += eos.S_dep_g * eos_mol
-                except: pass
-        return S
+        if phase == 's': return S
+        if phase in self.active_eos:
+            eos, _, eos_index, eos_mol = self.active_eos[phase]
+        else:
+            eos, _, eos_index, eos_mol = self.eos_args(
+                phase, mol, T, P
+            )
+        S_dep = get_excess_property(eos, 'S', phase)
+        S_excess = self.S_excess[phase]
+        S_ref = 0
+        for i, z in zip(eos_index, eos.zs):
+            S_ref += z * S_excess[i](T, P, ref=True)
+        return S + (S_dep - S_ref) * eos_mol
     
     @classmethod
-    def from_chemicals(cls, chemicals, eos_chemicals=None, cache=True):
+    def from_chemicals(cls, chemicals, eos_chemical_index=None, cache=True):
         """
         Create a EOSMixture object from chemical objects.
         
@@ -705,8 +741,8 @@ class EOSMixture(Mixture):
         ----------
         chemicals : Iterable[Chemical]
             For retrieving pure component chemical data.
-        eos_chemicals : Iterable[Chemical]
-            Chemicals with equations of state.
+        eos_chemical_index : Dict[int, tuple[int, Chemical]]
+            index-(eos_index, eos_chemical) pairs.
         cache : optional
             Whether or not to use cached chemicals and cache new chemicals. Defaults to True.
     
@@ -734,8 +770,8 @@ class EOSMixture(Mixture):
         else:
             chemicals = [(i if isa(i, Chemical) else Chemical(i, cache=cache)) for i in chemicals]
             MWs = chemical_data_array(chemicals, 'MW')
-        if eos_chemicals is None:
-            eos_chemicals = tuple(chemicals)
+        if eos_chemical_index is None:
+            eos_chemical_index = {i: (i, j) for i, j in enumerate(chemicals)}
         getfield = getattr
         Cn = create_mixture_model(chemicals, 'Cn', IdealTMixtureModel)
         H = create_mixture_model(chemicals, 'H', IdealTPMixtureModel)
@@ -745,7 +781,7 @@ class EOSMixture(Mixture):
         kappa = create_mixture_model(chemicals, 'kappa', IdealTPMixtureModel)
         sigma = SinglePhaseIdealTMixtureModel([getfield(i, 'sigma') for i in chemicals], 'sigma')
         epsilon = SinglePhaseIdealTMixtureModel([getfield(i, 'epsilon') for i in chemicals], 'epsilon')
-        return cls(chemicals, eos_chemicals, Cn, H, S, mu, V, kappa, sigma, epsilon, MWs)
+        return cls(chemicals, eos_chemical_index, Cn, H, S, mu, V, kappa, sigma, epsilon, MWs)
     
     @classmethod
     def subclass(cls, EOS, name=None):

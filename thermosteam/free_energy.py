@@ -146,47 +146,48 @@ EntropyRefGas = PhaseTPFunctorBuilder('S',
                                      Gas_Entropy_Ref_Gas.functor)
 
 @functor(var='H.l')
-def Excess_Liquid_Enthalpy_Ref_Liquid(T, P):
+def Excess_Liquid_Enthalpy_Ref_Liquid(T, P, ref=False):
     return 0
 
 @functor(var='H.l')
-def Excess_Liquid_Enthalpy_Ref_Gas(T, P, eos, H_dep_Tb_Pb_g,
-                                   H_dep_Tb_P_ref_g):
+def Excess_Liquid_Enthalpy_Ref_Gas(T, P, eos, ref=False):
+    if ref: return get_excess_energy(eos, T, 101325, 'H', 'l')
     if P != 101325:
         dH_dep_l = get_excess_energy(eos, T, P, 'H', 'l') - get_excess_energy(eos, T, 101325, 'H', 'l')
     else:
         dH_dep_l = 0.
-    return H_dep_Tb_Pb_g - H_dep_Tb_P_ref_g + dH_dep_l
+    return dH_dep_l
     
 @functor(var='H.l')
-def Excess_Liquid_Enthalpy_Ref_Solid(T, P):
+def Excess_Liquid_Enthalpy_Ref_Solid(T, P, ref=False):
     return 0
     
 @functor(var='H.s')
-def Excess_Solid_Enthalpy_Ref_Solid(T, P):
+def Excess_Solid_Enthalpy_Ref_Solid(T, P, ref=False):
     return 0
 
 @functor(var='H.s')
-def Excess_Solid_Enthalpy_Ref_Liquid(T, P):
+def Excess_Solid_Enthalpy_Ref_Liquid(T, P, ref=False):
     return 0
 
 @functor(var='H.s')
-def Excess_Solid_Enthalpy_Ref_Gas(T, P):
+def Excess_Solid_Enthalpy_Ref_Gas(T, P, ref=False):
     return 0
     
 @functor(var='H.g')
-def Excess_Gas_Enthalpy_Ref_Gas(T, P, eos, H_dep_ref_g):
+def Excess_Gas_Enthalpy_Ref_Gas(T, P, eos, H_dep_ref_g, ref=False):
+    if ref: return H_dep_ref_g
     H_dep_g = get_excess_energy(eos, T, P, 'H', 'g')
     return H_dep_g - H_dep_ref_g
 
 @functor(var='H.g')
-def Excess_Gas_Enthalpy_Ref_Liquid(T, P, eos, H_dep_T_ref_Pb,
-                                   H_dep_ref_l, H_dep_Tb_Pb_g):
+def Excess_Gas_Enthalpy_Ref_Liquid(T, P, eos, H_dep_Tb_Pb_g, ref=False):
+    if ref: return H_dep_Tb_Pb_g
     H_dep_g = get_excess_energy(eos, T, P, 'H', 'g')
-    return H_dep_T_ref_Pb - H_dep_ref_l + H_dep_g - H_dep_Tb_Pb_g
+    return H_dep_g - H_dep_Tb_Pb_g
 
 @functor(var='H.g')
-def Excess_Gas_Enthalpy_Ref_Solid(T):
+def Excess_Gas_Enthalpy_Ref_Solid(T, ref=False):
     return 0
 
 ExcessEnthalpyRefLiquid = PhaseTPFunctorBuilder('H_excess',
@@ -205,47 +206,48 @@ ExcessEnthalpyRefGas = PhaseTPFunctorBuilder('H_excess',
                                             Excess_Gas_Enthalpy_Ref_Gas.functor)
 
 @functor(var='S.l')
-def Excess_Liquid_Entropy_Ref_Liquid(T, P):
+def Excess_Liquid_Entropy_Ref_Liquid(T, P, ref=False):
     return 0
 
 @functor(var='S.l')
-def Excess_Liquid_Entropy_Ref_Gas(T, P, eos, S_dep_Tb_Pb_g,
-                                  S_dep_Tb_P_ref_g):
+def Excess_Liquid_Entropy_Ref_Gas(T, P, eos, ref=False):
+    if ref: return get_excess_energy(eos, T, 101325, 'S', 'l')
     if P != 101325:
         dS_dep_l = get_excess_energy(eos, T, P, 'S', 'l') - get_excess_energy(eos, T, 101325, 'S', 'l')
     else:
         dS_dep_l = 0.
-    return S_dep_Tb_Pb_g - S_dep_Tb_P_ref_g + dS_dep_l
+    return dS_dep_l
     
 @functor(var='S.l')
-def Excess_Liquid_Entropy_Ref_Solid(T, P):
+def Excess_Liquid_Entropy_Ref_Solid(T, P, ref=False):
     return 0
     
 @functor(var='S.s')
-def Excess_Solid_Entropy_Ref_Solid(T, P):
+def Excess_Solid_Entropy_Ref_Solid(T, P, ref=False):
     return 0
 
 @functor(var='S.s')
-def Excess_Solid_Entropy_Ref_Liquid(T, P):
+def Excess_Solid_Entropy_Ref_Liquid(T, P, ref=False):
     return 0
 
 @functor(var='S.s')
-def Excess_Solid_Entropy_Ref_Gas(T, P):
+def Excess_Solid_Entropy_Ref_Gas(T, P, ref=False):
     return 0
     
 @functor(var='S.g')
-def Excess_Gas_Entropy_Ref_Gas(T, P, eos, S_dep_ref_g):
+def Excess_Gas_Entropy_Ref_Gas(T, P, eos, S_dep_ref_g, ref=False):
+    if ref: return S_dep_ref_g
     S_dep_g = get_excess_energy(eos, T, P, 'S', 'g')
     return S_dep_g - S_dep_ref_g
 
 @functor(var='S.g')
-def Excess_Gas_Entropy_Ref_Liquid(T, P, eos, S_dep_T_ref_Pb, 
-                                  S_dep_ref_l, S_dep_Tb_Pb_g):
+def Excess_Gas_Entropy_Ref_Liquid(T, P, eos,  S_dep_Tb_Pb_g, ref=False):
+    if ref: return S_dep_Tb_Pb_g
     S_dep_g = get_excess_energy(eos, T, P, 'S', 'g')
-    return S_dep_T_ref_Pb - S_dep_ref_l + S_dep_g - S_dep_Tb_Pb_g
+    return S_dep_g - S_dep_Tb_Pb_g
 
 @functor(var='S.g')
-def Excess_Gas_Entropy_Ref_Solid(T, P):
+def Excess_Gas_Entropy_Ref_Solid(T, P, ref=False):
     return 0
 
 ExcessEntropyRefLiquid = PhaseTPFunctorBuilder('S_excess',
