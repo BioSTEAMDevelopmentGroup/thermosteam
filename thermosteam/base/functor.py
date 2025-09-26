@@ -266,8 +266,8 @@ class TFunctor(Functor, args=('T',)):
     __slots__ = ()
     kind = "functor of temperature (T; in K)"
     
-    def __call__(self, T, P=None):
-        return self.function(T, **self.__dict__)
+    def __call__(self, T, P=None, **kwargs):
+        return self.function(T, **self.__dict__, **kwargs)
         
     def tabulate_vs_T(self, Tmin, Tmax, T_units=None, units=None, P=101325):
         Ts = np.linspace(Tmin, Tmax)
@@ -305,8 +305,8 @@ class TPFunctor(Functor, args=('T', 'P')):
     __slots__ = ()
     kind = "functor of temperature (T; in K) and pressure (P; in Pa)"
     
-    def __call__(self, T, P):
-        return self.function(T, P, **self.__dict__)
+    def __call__(self, T, P, **kwargs):
+        return self.function(T, P, **self.__dict__, **kwargs)
     
     def tabulate_vs_T(self, Tmin, Tmax, T_units=None, units=None, P=101325):
         Ts = np.linspace(Tmin, Tmax)
