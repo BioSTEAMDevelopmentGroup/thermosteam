@@ -26,7 +26,7 @@ setup(
                       'xlrd>=1.2.0',
                       'openpyxl>=3.0.0',
                       'flexsolve>=0.5.9',
-                      'numba==0.60.0',
+                      'numba==0.61.0',
                       'coolprop',
                       'imageio',
                       'pydot',
