@@ -15,6 +15,7 @@ from . import forward
 from . import define_units_of_measure
 from . import chemical_cache
 from . import jitdata
+from . import jit_signature
 
 __all__ = (*chemicals_user.__all__,
            *thermo_user.__all__,
@@ -23,7 +24,8 @@ __all__ = (*chemicals_user.__all__,
            *forward.__all__,
            *define_units_of_measure.__all__,
            *chemical_cache.__all__,
-           *jitdata.__all__)
+           *jitdata.__all__,
+           *jit_signature.__all__)
 
 from .registered import *
 from .chemicals_user import *
@@ -33,3 +35,4 @@ from .forward import *
 from .define_units_of_measure import *
 from .chemical_cache import *
 from .jitdata import *
+from .jit_signature import *
