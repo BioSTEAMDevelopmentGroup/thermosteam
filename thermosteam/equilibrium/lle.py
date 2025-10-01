@@ -55,10 +55,10 @@ def psuedo_equilibrium_inner_loop(logKgammay, z, T, n, f_gamma, gamma_args, phi)
     logKgammay_new = logKgammay.copy()
     K = np.exp(logKgammay[:n])
     x = z/(1. + phi * (K - 1.))
-    x[x < 0] = 1e-16
+    x[x < 0] = 1e-64
     x = x / x.sum()
     gammay = logKgammay[n:]
-    gammay[gammay < 0] = 1e-16
+    gammay[gammay < 0] = 1e-64
     gammax = f_gamma(x, T, *gamma_args)
     K = gammax / gammay 
     y = K * x
@@ -324,17 +324,24 @@ class LLE(Equilibrium, phases='lL'):
             if self._K is not None and 0 < self._phi < 1:
                 K = self._K
                 phi = self._phi
+                x0 = z / (1. + phi * (K - 1.))
+                sample = x0
             else:
-                TPSA = TangentPlaneStabilityAnalysis('lL', lle_chemicals, thermo=self.thermo)
-                stability = TPSA(z, T, 101325)
-                if stability.unstable:
-                    y = stability.candidate
-                    phi = 0.99 * (z / y).min()
-                    x = z - phi * y
-                    x /= x.sum()
+                sample = None
+            TPSA = TangentPlaneStabilityAnalysis('lL', lle_chemicals, thermo=self.thermo)
+            stability = TPSA(z, T, 101325, sample=sample)
+            if stability.unstable:
+                y = stability.candidate
+                y[y < 1e-64] = 1e-64
+                if stability.sample_unstable: 
+                    phi = min(0.99 * (z / y).min(), phi)
                 else:
-                    return z
+                    phi = 0.99 * (z / y).min()
+                x = z - phi * y
+                x /= x.sum()
                 K = gamma(y, T) / gamma(x, T)
+            else:
+                return z
             if single_loop:
                 f_gamma = gamma.f
                 gamma_args = gamma.args

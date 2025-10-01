@@ -19,9 +19,10 @@ class StabilityReport(NamedTuple):
     unstable: bool
     candidate: np.ndarray
     tpd: float
+    sample_unstable: bool = False
 
 def edge_points_simplex_masked(z: np.ndarray,
-                               points_per_edge: int = 10,
+                               points_per_edge: int = 8,
                                epsilon: float = 1e-3,
                                min_active: int = 2) -> np.ndarray:
     """
@@ -50,7 +51,7 @@ def edge_points_simplex_masked(z: np.ndarray,
     n = z.size
 
     # Ignore components present in small amounts
-    active = np.where(z >= 0.1 * z.mean())[0]
+    active = np.where(z >= 0.15 * z.mean())[0]
 
     # fallback: ensure at least `min_active` components
     if active.size < min_active:
@@ -106,33 +107,24 @@ class TangentPlaneStabilityAnalysis:
             w /= w.sum()
         return np.dot(w, np.log(model(w, T, P, reduce) + 1e-30) - logfz)
     
-    def __call__(self, z, T, P, reference_phase='l', potential_phase='L'):
+    def __call__(self, z, T, P, reference_phase='l', potential_phase='L', sample=None):
         reference_model = self.fugacity_models[reference_phase]
         same_phase = reference_phase.lower() == potential_phase.lower()
         logfz = np.log(reference_model(z, T, P, same_phase) + 1e-30)
-        best_val = np.inf
-        best_result = None
-        MW = self.MW
-        w = z * MW
-        w /= w.sum()
-        samples = edge_points_simplex_masked(w)
-        samples /= MW
-        samples /= samples.sum(axis=1, keepdims=True)
         objective = self.objective
         model = self.fugacity_models[potential_phase]
         args = (T, P, model, logfz, same_phase)
-        for sample in samples:
-            value = objective(sample, *args)
-            if value < best_val:
-                best_val = value
-                best_result = sample
-            if value < -0.5: break
+        if sample is None:
+            best_val = np.inf
+            best_result = None
         else:
+            best_result = sample
+            best_val = objective(sample, *args)
             result = minimize(
                 objective, 
                 best_result, 
                 method="L-BFGS-B", 
-                options=dict(maxiter=10),
+                options=dict(maxiter=20),
                 args=(*args, True),
             )
             value = result.fun
@@ -141,6 +133,40 @@ class TangentPlaneStabilityAnalysis:
                 w = np.exp(w - np.max(w)) # Softmax for unconstrained optimization
                 w /= w.sum()
                 best_result = w
+                best_val = value
+            unstable = best_val < 0
+            if unstable:
+                return StabilityReport(
+                    unstable=unstable,
+                    candidate=sample,
+                    tpd=best_val,
+                    sample_unstable=True,
+                )
+        MW = self.MW
+        w = z * MW
+        w /= w.sum()
+        samples = edge_points_simplex_masked(w)
+        samples /= MW
+        samples /= samples.sum(axis=1, keepdims=True)
+        for sample in samples:
+            value = objective(sample, *args)
+            if value < best_val:
+                best_val = value
+                best_result = sample
+                result = minimize(
+                    objective, 
+                    best_result, 
+                    method="L-BFGS-B", 
+                    options=dict(maxiter=20),
+                    args=(*args, True),
+                )
+                value = result.fun
+                if value < best_val:
+                    w = result.x
+                    w = np.exp(w - np.max(w)) # Softmax for unconstrained optimization
+                    w /= w.sum()
+                    best_result = w
+                    best_val = value
         return StabilityReport(
             unstable=(best_val < 0),
             candidate=best_result,

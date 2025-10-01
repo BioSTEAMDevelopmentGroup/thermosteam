@@ -215,13 +215,13 @@ class DewPoint:
         x = z_over_Psats * P
         return P, x
     
-    def __call__(self, z, *, T=None, P=None, gas_conversion=None):
+    def __call__(self, z, *, T=None, P=None, gas_conversion=None, guess=None):
         z = np.asarray(z, float)
         if T:
             if P: raise ValueError("may specify either T or P, not both")
-            P, *args = self.solve_Px(z, T, gas_conversion)
+            P, *args = self.solve_Px(z, T, gas_conversion, guess)
         elif P:
-            T, *args = self.solve_Tx(z, P, gas_conversion)
+            T, *args = self.solve_Tx(z, P, gas_conversion, guess)
         else:
             raise ValueError("must specify either T or P")
         if gas_conversion:
@@ -229,7 +229,7 @@ class DewPoint:
         else:
             return DewPointValues(T, P, self.IDs, z, *args)
     
-    def solve_Tx(self, z, P, gas_conversion=None):
+    def solve_Tx(self, z, P, gas_conversion=None, guess=None):
         """
         Dew point given composition and pressure.
 
@@ -271,10 +271,14 @@ class DewPoint:
             f = self._T_error
             z_norm = z/z.sum()
             zP = z * P
-            T_guess, x = self._Tx_ideal(zP) 
+            if guess is None:
+                T_guess0, x = self._Tx_ideal(zP) 
+                T_guess1 = T_guess0 + 1e-3
+            else:
+                T_guess0, x, T_guess1 = guess
             args = (P, z_norm, zP, x)
             try:
-                T = flx.aitken_secant(f, T_guess, T_guess + 1e-3,
+                T = flx.aitken_secant(f, T_guess0, T_guess1,
                                       self.T_tol, 5e-12, args,
                                       maxiter=self.maxiter,
                                       checkiter=False)
@@ -283,7 +287,7 @@ class DewPoint:
                 Tmax = self.Tmax
                 T = flx.IQ_interpolation(f, Tmin, Tmax,
                                          f(Tmin, *args), f(Tmax, *args),
-                                         T_guess, self.T_tol, 5e-12, args,
+                                         T_guess0, self.T_tol, 5e-12, args,
                                          checkiter=False, checkbounds=False,
                                          maxiter=self.maxiter)
             return T, fn.normalize(x)
@@ -307,7 +311,7 @@ class DewPoint:
                                          checkiter=False, checkbounds=False)
             return T, dz, fn.normalize(y), x
     
-    def solve_Px(self, z, T, gas_conversion=None):
+    def solve_Px(self, z, T, gas_conversion=None, guess=None):
         """
         Dew point given composition and temperature.
 
@@ -349,18 +353,22 @@ class DewPoint:
             z_norm = z / z.sum()
             Psats = np.array([i(T) for i in self.Psats], dtype=float)
             z_over_Psats = z / Psats
-            P_guess, x = self._Px_ideal(z_over_Psats)
+            if guess is None:
+                P_guess0, x = self._Px_ideal(z_over_Psats)
+                P_guess1 = P_guess0 - 10
+            else:
+                P_guess0, x, P_guess1 = guess
             args = (T, z_norm, z_over_Psats, Psats, x)
             f = self._P_error
             try:
-                P = flx.aitken_secant(f, P_guess, P_guess-10, self.P_tol, 5e-12, args,
+                P = flx.aitken_secant(f, P_guess0, P_guess1, self.P_tol, 5e-12, args,
                                       checkiter=False, maxiter=self.maxiter)
             except RuntimeError:
                 Pmin = self.Pmin
                 Pmax = self.Pmax
                 P = flx.IQ_interpolation(f, Pmin, Pmax, 
                                          f(Pmin, *args), f(Pmax, *args),
-                                         P_guess, self.P_tol, 5e-12, args,
+                                         P_guess0, self.P_tol, 5e-12, args,
                                          checkiter=False, checkbounds=False,
                                          maxiter=self.maxiter)
             return P, fn.normalize(x)

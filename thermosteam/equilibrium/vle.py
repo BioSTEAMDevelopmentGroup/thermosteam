@@ -15,8 +15,8 @@ from ..base import SparseVector
 from ..exceptions import InfeasibleRegion, NoEquilibrium
 from . import binary_phase_fraction as binary
 from .equilibrium import Equilibrium
-from .dew_point import DewPoint
-from .bubble_point import BubblePoint
+from .dew_point import DewPoint, DewPointValues
+from .bubble_point import BubblePoint, BubblePointValues
 from .fugacity_coefficients import IdealFugacityCoefficients
 from .poyinting_correction_factors import MockPoyintingCorrectionFactors
 from . import activity_coefficients as ac
@@ -716,8 +716,8 @@ class VLE(Equilibrium, phases='lg'):
         self._refresh_K(V, y_bubble, x_dew, dz_bubble, dz_dew)
         self._solve_TP(T, P, gas_conversion, liquid_conversion)
         
-    def _solve_TP(self, T, P, gas_conversion=None, liquid_conversion=None):
-        v = self._solve_v(T, P, gas_conversion, liquid_conversion)
+    def _solve_TP(self, T, P, gas_conversion=None, liquid_conversion=None, single_loop=False):
+        v = self._solve_v(T, P, gas_conversion, liquid_conversion, single_loop)
         mol_vle = self._mol_vle + self._dmol_vle if (gas_conversion or liquid_conversion) else self._mol_vle 
         set_flows(self._vapor_mol, self._liquid_mol, self._index, v, mol_vle)
         return mol_vle
@@ -739,6 +739,7 @@ class VLE(Equilibrium, phases='lg'):
                 self._vapor_mol[self._index] = self._mol_vle
             self._liquid_mol[self._index] = 0
             thermal_condition.P = P_dew
+            return x_dew
         elif V == 0:
             if liquid_conversion:
                 P_bubble, dz, y_bubble, x = self._bubble_point.solve_Py(self._z, T)
@@ -748,6 +749,7 @@ class VLE(Equilibrium, phases='lg'):
                 self._liquid_mol[self._index] = self._mol_vle
             self._vapor_mol[self._index] = 0
             thermal_condition.P = P_bubble
+            return y_bubble
         else:
             if liquid_conversion:
                 P_bubble, dz_bubble, y_bubble, _ = self._bubble_point.solve_Py(self._z, T, liquid_conversion)
@@ -939,6 +941,7 @@ class VLE(Equilibrium, phases='lg'):
                 self._vapor_mol[self._index] = self._mol_vle
             self._liquid_mol[self._index] = 0
             thermal_condition.T = T_dew
+            return x_dew
         elif V == 0 and not self._F_mol_light:
             if liquid_conversion:
                 T_bubble, dz, y_bubble, x = self._bubble_point.solve_Ty(self._z, P, liquid_conversion)
@@ -948,6 +951,7 @@ class VLE(Equilibrium, phases='lg'):
                 self._liquid_mol[self._index] = self._mol_vle
             self._vapor_mol[self._index] = 0
             thermal_condition.T = T_bubble
+            return y_bubble
         else:
             if liquid_conversion:
                 T_bubble, dz_bubble, y_bubble, _ = self._bubble_point.solve_Ty(self._z, P, liquid_conversion)
@@ -1331,7 +1335,7 @@ class VLE(Equilibrium, phases='lg'):
             F_mol_vle = self._F_mol_vle
         return v / F_mol_vle - V
     
-    def _solve_v(self, T, P, gas_conversion=None, liquid_conversion=None):
+    def _solve_v(self, T, P, gas_conversion=None, liquid_conversion=None, single_loop=False):
         """Solve for vapor mol"""
         method = self.method
         if method == 'shgo':
@@ -1354,7 +1358,11 @@ class VLE(Equilibrium, phases='lg'):
                               self._bubble_point.Psats])
             pcf_Psats_over_P = self._pcf(T, P, Psats) * Psats / P
             self._T = T
-            self._v = v = self._solve_v_fixed_point(pcf_Psats_over_P, T, P, gas_conversion, liquid_conversion)
+            self._v = v = self._solve_v_fixed_point(
+                pcf_Psats_over_P, T, P, 
+                gas_conversion, liquid_conversion, 
+                single_loop
+            )
             if gas_conversion or liquid_conversion:
                 mol_vle = self._mol_vle + self._dmol_vle
             else:
@@ -1366,7 +1374,9 @@ class VLE(Equilibrium, phases='lg'):
             raise RuntimeError(f"invalid method '{method}'")
         return v
     
-    def _solve_v_fixed_point(self, pcf_Psat_over_P, T, P, gas_conversion, liquid_conversion):
+    def _solve_v_fixed_point(self, pcf_Psat_over_P, T, P, 
+                             gas_conversion, liquid_conversion,
+                             single_loop=False):
         gamma = self._gamma
         z = self._z
         K = self._K # pcf_Psat_over_P
@@ -1387,11 +1397,14 @@ class VLE(Equilibrium, phases='lg'):
         K[K < 1e-64] = 1e-64
         xVlogK[:n] = z/(1. + V * (K - 1.))
         xVlogK[n+1:] = np.log(K)
-        xVlogK = flx.aitken(
-            f, xVlogK, self.x_tol, args, checkiter=False, 
-            checkconvergence=False, convergenceiter=5,
-            maxiter=self.maxiter, subset=n+1,
-        )
+        if single_loop:
+            xVlogK = f(xVlogK, *args)
+        else:
+            xVlogK = flx.aitken(
+                f, xVlogK, self.x_tol, args, checkiter=False, 
+                checkconvergence=False, convergenceiter=5,
+                maxiter=self.maxiter, subset=n+1,
+            )
         self._V = V = xVlogK[n]
         self._K = K = np.exp(xVlogK[n+1:])
         x = xVlogK[:n]
