@@ -665,7 +665,7 @@ class EOSMixture(Mixture):
     def Hvap(self, mol, T, P):
         phase = 'l'
         eos, _, _, eos_mol = self.eos_args(phase, mol, T, P)
-        return (eos.Hvap(T) * eos_mol).sum()
+        return eos.Hvap(T) * eos_mol
 
     def dh_dep_dzs(self, phase, mol, T, P):
         if phase == 's': return 0 * mol
@@ -752,8 +752,8 @@ class EOSMixture(Mixture):
         
         >>> from thermosteam import PRMixture
         >>> mixture = PRMixture.from_chemicals(['Water', 'Ethanol'])
-        >>> mixture.Hvap([0.2, 0.8], 350)
-        39750.62
+        >>> mixture.Hvap([0.2, 0.8], 350, 101325)
+        39763.83
 
         Calculate density for a water and ethanol mixture in g/L:
 

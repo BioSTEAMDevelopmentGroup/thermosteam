@@ -236,7 +236,7 @@ class Functor:
         return self
     
     def __str__(self):
-        return display_asfunctor(self)
+        return display_asfunctor(self).replace(', **kwargs', '')
     
     def __repr__(self):
         return f"<{self}>"

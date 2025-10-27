@@ -222,7 +222,7 @@ class SinglePhaseIdealTPMixtureModel:
     
     Examples
     --------
-    >>> from thermosteam.mixture import SinglePhaseIdealTPMixtureModel
+    >>> from thermosteam.mixture.ideal_mixture_model import SinglePhaseIdealTPMixtureModel
     >>> from thermosteam import Chemicals
     >>> chemicals = Chemicals(['Water', 'Ethanol'])
     >>> models = [i.V.l for i in chemicals]

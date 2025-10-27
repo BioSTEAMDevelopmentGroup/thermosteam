@@ -62,6 +62,6 @@ class PartitionCoefficients:
         )
     
     def __repr__(self):
-        chemicals = ", ".join([i.ID for i in self.fugacities[self.phases[0]].chemicals])
+        chemicals = ", ".join([i.ID for i in self.fugacities_by_phase[self.phases[0]].chemicals])
         return f"{type(self).__name__}({self.phases!r}, [{chemicals}])"
 

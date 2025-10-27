@@ -2898,7 +2898,17 @@ class Stream(AbstractStream):
         return pd.DataFrame(data, columns=[self.ID.replace('_', ' ')],
                             index=pd.MultiIndex.from_tuples(index))
 
-    def _info(self, layout, T, P, flow, composition, N, IDs, sort=None, df=False):
+    def _info(self,
+            layout: Optional[str] = None,
+            T: Optional[str] = None,
+            P: Optional[str] = None,
+            flow: Optional[str] = None,
+            composition: Optional[bool] = None,
+            N: Optional[int] = None,
+            IDs: Optional[Sequence[str]] = None,
+            sort: Optional[bool] = None,
+            df: Optional[bool] = None  
+        ):
         """Return string with all specifications."""
         units, notation = self.get_display_units_and_notation(
             T=T, P=P, flow=flow)
