@@ -451,7 +451,7 @@ class IdealMixture(Mixture):
         self._H_excess = H_excess
         self._S_excess = S_excess
     
-    def Cn(self, phase, mol, T, P):
+    def Cn(self, phase, mol, T, P=101325):
         Cn = self._Cn(phase, mol, T, P)
         if not self.include_excess_energies or phase == 's': return Cn
         if mol.__class__ is SparseVector: 
@@ -568,8 +568,8 @@ class EOSMixture(Mixture):
         self.active_eos = {}
         
         # Ensure consistent equation of state
-        eos_mix = self.eos_args('g', np.ones(len(chemicals)), 298.15, 101325)[0]
         eos_chemicals = [i for _, i in eos_chemical_index.values()]
+        eos_mix = self.eos_args('g', np.ones(len(eos_chemicals)), 298.15, 101325)[0]
         for chemical, eos in zip(eos_chemicals, eos_mix.pures()):
             chemical._eos = eos
             chemical.reset_free_energies()
@@ -685,7 +685,7 @@ class EOSMixture(Mixture):
             dH_dep_dzs[i] -= H_excess[j](T, P, ref=True)
         return dH_dep_dzs
 
-    def Cn(self, phase, mol, T, P):
+    def Cn(self, phase, mol, T, P=101325):
         Cn = self.Cn_ideal(phase, mol, T, P)
         if phase == 's': return Cn
         if phase in self.active_eos:
@@ -771,7 +771,12 @@ class EOSMixture(Mixture):
             chemicals = [(i if isa(i, Chemical) else Chemical(i, cache=cache)) for i in chemicals]
             MWs = chemical_data_array(chemicals, 'MW')
         if eos_chemical_index is None:
-            eos_chemical_index = {i: (i, j) for i, j in enumerate(chemicals)}
+            eos_chemical_index = {
+                i: (i, j) for i, j in enumerate(chemicals) 
+                if j.locked_state is None and 
+                j.Tc is not None and 
+                j.Pc is not None
+            }
         getfield = getattr
         Cn = create_mixture_model(chemicals, 'Cn', IdealTMixtureModel)
         H = create_mixture_model(chemicals, 'H', IdealTPMixtureModel)
