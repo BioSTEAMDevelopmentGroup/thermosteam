@@ -528,7 +528,7 @@ class GCEOSActivityCoefficients(ActivityCoefficients):
                     kijs = None
             self._eos = eos = self.EOS(
                 zs=zs, T=T, P=P, Tcs=data.Tcs, Pcs=data.Pcs, omegas=data.omegas, kijs=kijs,
-                only_l=True
+                only_l=True, full_alphas=False
             )
         return eos
     
