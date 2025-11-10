@@ -87,7 +87,7 @@ def xVlogK_iter(
     x = xVlogK[:n]
     Ks = np.exp(xVlogK[n+1:])
     x, y = xy(x, Ks)
-    Ks[:] = pcf_Psat_over_P * f_gamma(x, T, *gamma_args) / f_phi(y, T, P)
+    Ks[:] = pcf_Psat_over_P * f_gamma(x, T, *gamma_args, P=P) / f_phi(y, T, P)
     V = xVlogK[n]
     if V < 0.: V = 0.
     elif V > 1.: V = 1.

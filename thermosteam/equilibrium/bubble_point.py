@@ -146,7 +146,7 @@ class BubblePoint:
         Psats = np.array([i(T) for i in self.Psats], dtype=float)
         y_phi =  (z_over_P
                   * Psats
-                  * self.gamma(z_norm, T) 
+                  * self.gamma(z_norm, T, P) 
                   * self.pcf(T, P, Psats))
         y[:] = solve_y(y_phi, self.phi, T, P, y)
         return 1. - y.sum()
@@ -157,6 +157,12 @@ class BubblePoint:
         y[:] = solve_y(y_phi, self.phi, T, P, y)
         return 1. - y.sum()
         
+    def _P_error_dep(self, P, T, z, Psats, z_Psats, y):
+        if P <= 0: raise InfeasibleRegion('negative pressure')
+        y_phi = z_Psats * self.gamma(z, T, P) * self.pcf(T, P, Psats) / P
+        y[:] = solve_y(y_phi, self.phi, T, P, y)
+        return 1. - y.sum()
+    
     def _T_error_reactive(self, T, P, z, dz, y, x, liquid_conversion):
         if T <= 0: raise InfeasibleRegion('negative temperature')
         dz[:] = liquid_conversion(z, T, P, 'l')
@@ -165,7 +171,7 @@ class BubblePoint:
         Psats = np.array([i(T) for i in self.Psats], dtype=float)
         y_phi =  (x / P
                   * Psats
-                  * self.gamma(x, T) 
+                  * self.gamma(x, T, P) 
                   * self.pcf(T, P, Psats))
         y[:] = solve_y(y_phi, self.phi, T, P, y)
         return 1. - y.sum()
@@ -175,7 +181,7 @@ class BubblePoint:
         dz[:] = liquid_conversion(z, T, P, 'l')
         x[:] = z + dz
         x /= x.sum()
-        z_Psat_gamma = x * Psats * self.gamma(x, T)
+        z_Psat_gamma = x * Psats * self.gamma(x, T, P)
         y_phi = z_Psat_gamma * self.pcf(T, P, Psats) / P
         y[:] = solve_y(y_phi, self.phi, T, P, y)
         return 1. - y.sum()
@@ -341,10 +347,16 @@ class BubblePoint:
             elif T < self.Tmin: T = self.Tmin
             Psats = np.array([i(T) for i in self.Psats])
             z_norm = z / z.sum()
-            z_Psat_gamma = z_norm * Psats * self.gamma(z_norm, T)
-            f = self._P_error
-            P_guess, y = self._Py_ideal(z_Psat_gamma)
-            args = (T, z_Psat_gamma, Psats, y)
+            if self.gamma.P_dependent:
+                f = self._P_error_dep
+                z_Psats = z_norm * Psats
+                P_guess, y = self._Py_ideal(z_Psats)
+                args = (T, z_norm, Psats, z_Psats, y)
+            else:
+                z_Psat_gamma = z_norm * Psats * self.gamma(z_norm, T, 101325)
+                P_guess, y = self._Py_ideal(z_Psat_gamma)
+                f = self._P_error
+                args = (T, z_Psat_gamma, Psats, y)
             try:
                 P = flx.aitken_secant(f, P_guess, P_guess-1, self.P_tol, 1e-9,
                                       args, checkiter=False, maxiter=self.maxiter)
@@ -362,7 +374,7 @@ class BubblePoint:
             Psats = np.array([i(T) for i in self.Psats])
             x = z_norm.copy()
             dz = z_norm.copy()
-            z_Psat_gamma = z * Psats * self.gamma(z_norm, T)
+            z_Psat_gamma = z * Psats * self.gamma(z_norm, T, 101325)
             P_guess, y = self._Py_ideal(z_Psat_gamma)
             args = (T, Psats, z_norm, dz, y, x, liquid_conversion)
             try:

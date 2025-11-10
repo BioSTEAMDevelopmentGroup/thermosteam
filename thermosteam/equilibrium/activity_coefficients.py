@@ -131,7 +131,7 @@ def fill_group_psis(group_psis, psis, group_mask):
 @njit(cache=True)
 def gamma_UNIFAC(x, T, interactions, 
                  group_psis, group_mask, qs, rs, Qs,
-                 chemgroups, chem_Qfractions, index):
+                 chemgroups, chem_Qfractions, index, *, P=None):
     N_chemicals = index.size
     gamma = np.ones(x.size)
     if N_chemicals > 1:
@@ -157,7 +157,7 @@ def gamma_UNIFAC(x, T, interactions,
 @njit(cache=True)
 def gamma_modified_UNIFAC(x, T, interactions, 
                    group_psis, group_mask, qs, rs, Qs,
-                   chemgroups, chem_Qfractions, index):
+                   chemgroups, chem_Qfractions, index, *, P=None):
     N_chemicals = index.size
     gamma = np.ones(x.size)
     if N_chemicals > 1:
@@ -225,11 +225,12 @@ class IdealActivityCoefficients(ActivityCoefficients):
     
     """
     __slots__ = ()
+    P_dependent = False
     
     def __init__(self, chemicals):
         self._chemicals = tuple(chemicals)
     
-    def __call__(self, xs, T):
+    def __call__(self, xs, T, P=101325):
         return np.ones(len(xs))
     
 
@@ -244,6 +245,7 @@ class GroupActivityCoefficients(ActivityCoefficients):
     chemicals : Iterable[:class:`~thermosteam.Chemical`]
     
     """
+    P_dependent = False
     __slots__ = ('_rs', '_qs', '_Qs','_chemgroups',
                  '_group_psis',  '_chem_Qfractions',
                  '_group_mask', '_interactions',
@@ -304,7 +306,7 @@ class GroupActivityCoefficients(ActivityCoefficients):
                 self._chemgroups, self._chem_Qfractions, 
                 self._index)
     
-    def activity_coefficients(self, x, T):
+    def activity_coefficients(self, x, T, P=101325):
         """
         Return activity coefficients of chemicals with defined functional groups.
         
@@ -324,7 +326,7 @@ class GroupActivityCoefficients(ActivityCoefficients):
                                            self._chem_Qfractions,
                                            self._group_psis)
     
-    def __call__(self, x, T):
+    def __call__(self, x, T, P=101325):
         """
         Return activity coefficients.
         
@@ -485,6 +487,7 @@ class GCEOSActivityCoefficients(ActivityCoefficients):
     
     """
     __slots__ = ('_chemicals', '_eos')
+    P_dependent = True
     EOS = None # type[GCEOSMIX] Subclasses must implement this attribute.
     chemsep_db = None # Optional[str] Name of chemsep data base for interaction parameters.
     cache = None # [dict] Subclasses must implement this attribute.
@@ -553,6 +556,7 @@ for name in ('PRMIX', 'SRKMIX', 'PR78MIX', 'VDWMIX', 'PRSVMIX',
     activity_coefficient_classes.append(cls)
     dct[clsname] = cls
 
-dct['PRActivityCoefficients'].chemsep_db = 'ChemSep PR'
+for i in ('PR', 'PR78'):
+    dct[i + 'ActivityCoefficients'].chemsep_db = 'ChemSep PR'
 __all__ = (*__all__, *clsnames, 'activity_coefficient_classes')
 del dct, clsnames

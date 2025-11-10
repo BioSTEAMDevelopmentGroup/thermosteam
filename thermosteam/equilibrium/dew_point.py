@@ -30,13 +30,13 @@ def gamma_iter(gamma, x_gamma, T, P, f_gamma, gamma_args):
     mask = x < 1e-32
     x[mask] = 1e-32
     x = fn.normalize(x)
-    return f_gamma(x, T, *gamma_args)
+    return f_gamma(x, T, *gamma_args, P=P)
 
 def solve_x(x_guess, x_gamma, T, P, f_gamma, gamma_args):
     mask = x_guess < 1e-32
     x_guess[mask] = 1e-32
     x_guess = fn.normalize(x_guess)
-    gamma = f_gamma(x_guess, T, *gamma_args)
+    gamma = f_gamma(x_guess, T, *gamma_args, P=P)
     args = (x_gamma, T, P, f_gamma, gamma_args)
     gamma = flx.wegstein(
         gamma_iter, gamma, 1e-12, args=args, checkiter=False,

@@ -53,7 +53,7 @@ class LiquidFugacities:
     
     def unweighted(self, x, T, P=101325.):
         Psats = np.array([i.Psat(T) for i in self.chemicals], dtype=float)
-        return self.gamma(x, T) * self.pcf(T, P, Psats) * Psats
+        return self.gamma(x, T, P) * self.pcf(T, P, Psats) * Psats
     
     def __call__(self, x, T, P=101325., reduce=False):
         f_reduced = x * self.gamma(x, T)
