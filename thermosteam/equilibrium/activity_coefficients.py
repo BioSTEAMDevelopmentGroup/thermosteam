@@ -131,7 +131,7 @@ def fill_group_psis(group_psis, psis, group_mask):
 @njit(cache=True)
 def gamma_UNIFAC(x, T, interactions, 
                  group_psis, group_mask, qs, rs, Qs,
-                 chemgroups, chem_Qfractions, index, *, P=None):
+                 chemgroups, chem_Qfractions, index, P=None):
     N_chemicals = index.size
     gamma = np.ones(x.size)
     if N_chemicals > 1:
@@ -157,7 +157,7 @@ def gamma_UNIFAC(x, T, interactions,
 @njit(cache=True)
 def gamma_modified_UNIFAC(x, T, interactions, 
                    group_psis, group_mask, qs, rs, Qs,
-                   chemgroups, chem_Qfractions, index, *, P=None):
+                   chemgroups, chem_Qfractions, index, P=None):
     N_chemicals = index.size
     gamma = np.ones(x.size)
     if N_chemicals > 1:
@@ -343,7 +343,10 @@ class GroupActivityCoefficients(ActivityCoefficients):
         
         """
         x = np.asarray(x, float)
-        return self.f(x, T, *self.args)
+        try:
+            return self.f(x, T, *self.args)
+        except:
+            breakpoint()
     
     
 class UNIFACActivityCoefficients(GroupActivityCoefficients):
