@@ -189,7 +189,7 @@ def plot_vle_phase_envelope(
             for DP in DPs
         ]
         ylabel = 'Temperature [K]'
-        xlabel = 'Pressure [Pa]'
+        xlabel = 'Pressure [atm]'
         variable = 'T'
     elif T_range:
         assert P_range is None, "must pass either T_range or P_range, but not both"
