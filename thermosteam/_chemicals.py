@@ -364,8 +364,32 @@ class Chemicals:
     
     kwarray = array = index = indices = must_compile
         
-    def show(self):
-        print(self)
+    def _info(self, N=None):
+        if N is None: 
+            N = 4
+        n = len(self)
+        if n <= N: return str(self)
+        while n < 2 * (N - 1): N -= 1
+        lines = []
+        for i, chemical in enumerate(self):
+            name = chemical.ID
+            if i == 0:
+                line = []
+            elif not i % N:
+                lines.append(line)
+                line = []
+            line.append(name)
+        if line: 
+            for i in range(N - i % N - 1): line.append('')
+            lines.append(line)
+        col_widths = [max([len(item) for item in col]) + 1 for col in zip(*lines)]
+        lines = [" ".join([f"{item+',':<{col_widths[i]}}"
+                           for i, item in enumerate(line) if item])
+                 for line in lines]
+        return f"{type(self).__name__}([\n    {'\n    '.join(lines)}\n])"
+    
+    def show(self, N=4):
+        print(self._info(N))
     _ipython_display_ = show
     
     def __len__(self):

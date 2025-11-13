@@ -8,8 +8,20 @@
 """
 """
 __all__ = ('repr_IDs_data', 'repr_kwargs', 'repr_kwarg', 'repr_couples',
-           'repr_listed_values', 'repr_obj')
+           'repr_listed_values', 'repr_obj', 'repr_names')
     
+def repr_names(names):
+    n = len(names)
+    if n == 0:
+        return 'none'
+    elif n == 1: 
+        return f"{names[0]!r} only"
+    elif n == 2:
+        return ' and '.join(names)
+    else:
+        return ' and '.join([', '.join(names[:-1]), names[-1]])
+    
+
 def repr_IDs_data(IDs, data, dlim=", ", start=None): # Used for Indexer and Stream representation
     rep = dlim.join([f"{ID}={i:.4g}" for ID, i in zip(IDs, data) if i])    
     if not rep:

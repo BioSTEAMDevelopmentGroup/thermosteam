@@ -31,7 +31,7 @@
 #     update_module(chemicals, numba)
 # use_numba_chemicals()
 # del use_numba_chemicals
-__version__ = "0.52.11"
+__version__ = "0.52.12"
 
 from . import thermo
 del thermo

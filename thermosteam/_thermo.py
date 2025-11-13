@@ -15,13 +15,15 @@ from ._chemicals import Chemicals
 from .mixture import Mixture, IdealMixture
 from .utils import read_only, cucumber
 
-__all__ = ('Thermo', 'IdealThermo')
+__all__ = (
+    'Thermo', 'IdealThermo',
+)
 
 @cucumber # Just means you can pickle it
 @read_only
 class Thermo:
     """
-    Create a Thermo object that defines a thermodynamic property package
+    Create a custom thermodynamic property package.
     
     Parameters
     ----------
@@ -41,6 +43,8 @@ class Thermo:
         Whether to skip checks for missing or invalid properties.
     db : str, optional
         Database to load any chemicals.
+    pkg : str, optional
+        Name of property package. Defaults to 'Dortmund-UNIFAC'.
     
     Examples
     --------
@@ -132,16 +136,37 @@ class Thermo:
                  PCF=None,
                  cache=None,
                  skip_checks=False,
+                 pkg=None,
                  db='default'):
-        if Gamma is None: Gamma = eq.DortmundActivityCoefficients
-        if Phi is None: Phi = eq.IdealFugacityCoefficients
-        if PCF is None: PCF = eq.MockPoyintingCorrectionFactors
-        if not isinstance(chemicals, Chemicals): chemicals = Chemicals(chemicals, cache, db=db)
-        if not mixture:
-            mixture = IdealMixture.from_chemicals(chemicals)
-        elif not isinstance(mixture, Mixture): # pragma: no cover
-            raise ValueError(f"mixture must be a '{Mixture.__name__}' object")
+        if not isinstance(chemicals, Chemicals): 
+            chemicals = Chemicals(chemicals, cache, db=db)
         chemicals.compile(skip_checks=skip_checks)
+        if mixture is not None and isinstance(mixture, Mixture):
+            raise ValueError(f"mixture must be a '{Mixture.__name__}' object")
+        if PCF is None: PCF = eq.MockPoyintingCorrectionFactors
+        match pkg:
+            case 'ideal gas':
+                if Gamma is None: Gamma = eq.IdealActivityCoefficients
+                if Phi is None: Phi = eq.IdealFugacityCoefficients
+                if mixture is None: mixture = IdealMixture.from_chemicals(chemicals)
+            case None | 'Dortmund-UNIFAC':
+                if Gamma is None: Gamma = eq.DortmundActivityCoefficients
+                if Phi is None: Phi = eq.IdealFugacityCoefficients
+                if mixture is None: mixture = IdealMixture.from_chemicals(chemicals)
+            case 'Peng Robinson':
+                if Gamma is None: Gamma = eq.IdealActivityCoefficients
+                if Phi is None: Phi = eq.PR78FugacityCoefficients
+                if mixture is None: mixture = tmo.PR78Mixture.from_chemicals(chemicals)
+            case 'Peng Robinson | Dortmund-UNIFAC':
+                if Gamma is None: Gamma = eq.DortmundActivityCoefficients
+                if Phi is None: Phi = eq.PR78FugacityCoefficients
+                if mixture is None: mixture = tmo.PR78Mixture.from_chemicals(chemicals)
+            case _:
+                raise ValueError(
+                    f"property package {pkg!r} not implemented; "
+                    f"only 'ideal gas', 'Peng Robinson', 'Dortmund-UNIFAC', "
+                     "or 'Peng Robinson | Dortmund-UNIFAC' are valid options"
+                )
         issubtype = issubclass
         if not issubtype(Gamma, eq.ActivityCoefficients): # pragma: no cover
             raise ValueError(f"Gamma must be a '{eq.ActivityCoefficients.__name__}' subclass")
@@ -264,8 +289,12 @@ class Thermo:
             mixture_info = self.mixture._info().replace('\n', '\n    ')
         except: # pragma: no cover
             mixture_info = str(self.mixture)
+        try:
+            chemical_info = self.chemicals._info().replace('\n', '\n    ')
+        except: # pragma: no cover
+            chemical_info = str(self.chemicals)
         print(f"{type(self).__name__}(\n"
-              f"    chemicals={self.chemicals},\n"
+              f"    chemicals={chemical_info},\n"
               f"    mixture={mixture_info},\n"
               f"    Gamma={self.Gamma.__name__},\n"
               f"    Phi={self.Phi.__name__},\n"
@@ -273,11 +302,12 @@ class Thermo:
                ")")
     _ipython_display_ = show
     
+
 @cucumber # Just means you can pickle it
 @read_only
 class IdealThermo:
     """
-    Create a Thermo object that defines a thermodynamic property package
+    Create an ideal thermodynamic property package.
     
     Parameters
     ----------
@@ -289,7 +319,6 @@ class IdealThermo:
         Whether or not to use cached chemicals.
     skip_checks : bool, optional
         Whether to skip checks for missing or invalid properties.
-    
     
     Attributes
     ----------
@@ -354,8 +383,15 @@ class IdealThermo:
             mixture_info = self.mixture._info().replace('\n', '\n    ')
         except: # pragma: no cover
             mixture_info = str(self.mixture)
+        try:
+            chemical_info = self.chemicals._info().replace('\n', '\n    ')
+        except: # pragma: no cover
+            chemical_info = str(self.chemicals)
         print(f"{type(self).__name__}(\n"
-              f"    chemicals={self.chemicals},\n"
+              f"    chemicals={chemical_info},\n"
               f"    mixture={mixture_info},\n"
                ")")
     _ipython_display_ = show
+
+
+        

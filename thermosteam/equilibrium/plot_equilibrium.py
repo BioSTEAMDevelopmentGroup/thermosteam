@@ -22,9 +22,11 @@ import flexsolve as flx
 from scipy import interpolate
 from scipy.ndimage.filters import gaussian_filter
 
-__all__ = ('plot_vle_binary_phase_envelope',
-           'plot_lle_ternary_diagram',
-           'ternary_composition_grid',
+__all__ = (
+    'plot_vle_binary_phase_envelope',
+    'plot_vle_phase_envelope',
+    'plot_lle_ternary_diagram',
+    'ternary_composition_grid',
 )
 
 
@@ -135,6 +137,97 @@ def plot_vle_binary_phase_envelope(chemicals, T=None, P=None, vc=None, lc=None, 
     plt.xlabel(f'{chemical_a} molar fraction')
     plt.ylabel(ylabel)
     style_axis(xticks=np.linspace(0, 1, 5), yticks=yticks)
+    
+def plot_vle_phase_envelope(
+        IDs, zs, T_range=None, P_range=None, thermo=None, vc=None, lc=None, 
+        xticks=None, yticks=None, N=None, line_styles=None, labels=None): # pragma: no cover
+    """
+    Plot the binary phase envelope of two chemicals at a given temperature or pressure.
+
+    Parameters
+    ----------
+    IDs : Iterable[str]
+        IDs of chemicals in equilibrium.
+    zs : Iterable[float]
+        Molar fraction of chemicals in equilibrium.
+    T_range : tuple[float, float] optional
+        Temperature [K]. 
+    P_range : tuple[float, float] optional
+        Pressure [atm]. 
+    thermo : Thermo|Iterable[Thermo], optional
+        Thermodynamic property package(s).
+    vc : str, optional
+        Color of vapor line.
+    lc : str, optional
+        Color of liquid line.
+
+    """
+    if line_styles is None: line_styles = ['-', '-.', '--']
+    if thermo is None: 
+        thermo = [tmo.settings.get_thermo()]
+    elif isinstance(thermo, (tmo.Thermo, tmo.IdealThermo)):
+        thermo = [thermo]
+    if labels is None:
+        N_thermo = len(thermo)
+        if N_thermo == 1:
+            labels = ['']
+        else:
+            labels = [str(i) for i in range(N_thermo)]
+    BPs = [tmo.BubblePoint(t.chemicals[IDs], t) for t in thermo]
+    DPs = [tmo.DewPoint(t.chemicals[IDs], t) for t in thermo]
+    if N is None: N = 20
+    if P_range is not None:
+        assert T_range is None, "must pass either T_range or P_range, but not both"
+        xlim = P_range
+        xs = np.linspace(*xlim, N)
+        bpss = [
+            [BP(zs, P=P * 101325) for P in xs]
+            for BP in BPs
+        ]
+        dpss = [
+            [DP(zs, P=P * 101325) for P in xs]
+            for DP in DPs
+        ]
+        ylabel = 'Temperature [K]'
+        xlabel = 'Pressure [Pa]'
+        variable = 'T'
+    elif T_range:
+        assert P_range is None, "must pass either T_range or P_range, but not both"
+        xlim = T_range
+        xs = np.linspace(*xlim, N)
+        bpss = [
+            [BP(zs, T=T) for T in xs]
+            for BP in BPs
+        ]
+        dpss = [
+            [DP(zs, T=T) for T in xs]
+            for DP in DPs
+        ]
+        ylabel = 'Pressure [Pa]'
+        xlabel = 'Temperature [K]'
+        variable = 'P'
+    else:
+        raise AssertionError("must pass either T or P")
+    Lss = np.array([
+        [getattr(bp, variable) for bp in bps]
+        for bps in bpss
+    ])
+    Vss = np.array([
+        [getattr(dp, variable) for dp in dps]
+        for dps in dpss
+    ])
+    plt.figure()
+    if vc is None: vc = colors.red.RGBn
+    if lc is None: lc = colors.blue.RGBn
+    for Vs, Ls, ls, label in zip(Vss, Lss, line_styles, labels):
+        plt.plot(xs, Vs, c=vc, ls=ls, label=', '.join([label, 'vapor']))
+        plt.plot(xs, Ls, c=lc, ls=ls, label=', '.join([label, 'liquid']))
+    plt.xlim(xlim)
+    plt.ylim([min(Lss.min(), Vss.min()), max(Lss.max(), Vss.max())])
+    plt.legend()
+    plt.xlabel(xlabel)
+    plt.ylabel(ylabel)
+    style_axis(xticks=xticks, yticks=yticks)
     
 def plot_lle_ternary_diagram(
         carrier, solvent, solute, T, P=101325, thermo=None, color=None,
