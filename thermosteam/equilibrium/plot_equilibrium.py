@@ -203,7 +203,7 @@ def plot_vle_phase_envelope(
             [DP(zs, T=T) for T in xs]
             for DP in DPs
         ]
-        ylabel = 'Pressure [Pa]'
+        ylabel = 'Pressure [atm]'
         xlabel = 'Temperature [K]'
         variable = 'P'
     else:
