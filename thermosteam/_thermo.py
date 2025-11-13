@@ -141,7 +141,7 @@ class Thermo:
         if not isinstance(chemicals, Chemicals): 
             chemicals = Chemicals(chemicals, cache, db=db)
         chemicals.compile(skip_checks=skip_checks)
-        if mixture is not None and isinstance(mixture, Mixture):
+        if mixture is not None and not isinstance(mixture, Mixture):
             raise ValueError(f"mixture must be a '{Mixture.__name__}' object")
         if PCF is None: PCF = eq.MockPoyintingCorrectionFactors
         match pkg:

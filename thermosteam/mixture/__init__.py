@@ -689,12 +689,20 @@ class EOSMixture(Mixture):
         Cn = self.Cn_ideal(phase, mol, T, P)
         if phase == 's': return Cn
         if phase in self.active_eos:
-            eos, _, _, eos_mol = self.active_eos[phase]
+            eos, index, eos_index, eos_mol = self.active_eos[phase]
         else:
-            eos, _, _, eos_mol = self.eos_args(
+            eos, index, eos_index, eos_mol = self.eos_args(
                 phase, mol, T, P
             )
-        Cn += get_excess_property(eos, 'Cp', phase) * eos_mol
+        excess_ref = sum([
+            mol[eos_index[i]] * get_excess_property(
+                eos.to_TPV_pure(T=T, P=101325, V=None, i=i),
+                'Cp', 
+                phase
+            )
+            for i in range(eos.N)
+        ])
+        Cn += get_excess_property(eos, 'Cp', phase) * eos_mol - excess_ref
         return Cn
     
     def H(self, phase, mol, T, P):
