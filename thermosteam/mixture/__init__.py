@@ -27,7 +27,8 @@ from .ideal_mixture_model import (
 from .._chemicals import Chemical, CompiledChemicals, chemical_data_array
 
 __all__ = ('Mixture', 'IdealMixture')
-        
+
+
 # %% Convenience for EOS
 
 def get_excess_property(eos, free_energy, phase):
@@ -570,9 +571,10 @@ class EOSMixture(Mixture):
         # Ensure consistent equation of state
         eos_chemicals = [i for _, i in eos_chemical_index.values()]
         eos_mix = self.eos_args('g', np.ones(len(eos_chemicals)), 298.15, 101325)[0]
-        for chemical, eos in zip(eos_chemicals, eos_mix.pures()):
-            chemical._eos = eos
-            chemical.reset_free_energies()
+        if eos_mix is not None: 
+            for chemical, eos in zip(eos_chemicals, eos_mix.pures()):
+                chemical._eos = eos
+                chemical.reset_free_energies()
             
         # Populate excess energies
         for name in ('H_excess', 'S_excess'):
@@ -655,16 +657,21 @@ class EOSMixture(Mixture):
                     kijs = IPDB.get_ip_asymmetric_matrix(self.chemsep_db, data.CASs, 'kij')
                 except:
                     kijs = None
-            self.cache[key] = eos = self.EOS(
-                Tcs=data.Tcs, Pcs=data.Pcs, omegas=data.omegas, kijs=kijs,
-                T=T, P=P, zs=zs, only_g=only_g, only_l=only_l,
-                fugacities=False
-            )
+            if key == ():
+                eos = None
+            else:
+                eos = self.EOS(
+                    Tcs=data.Tcs, Pcs=data.Pcs, omegas=data.omegas, kijs=kijs,
+                    T=T, P=P, zs=zs, only_g=only_g, only_l=only_l,
+                    fugacities=False
+                )
+            self.cache[key] = eos
         return eos, index, eos_index, eos_mol
 
     def Hvap(self, mol, T, P):
         phase = 'l'
         eos, _, _, eos_mol = self.eos_args(phase, mol, T, P)
+        if eos is None: return 0
         return eos.Hvap(T) * eos_mol
 
     def dh_dep_dzs(self, phase, mol, T, P):
@@ -694,6 +701,7 @@ class EOSMixture(Mixture):
             eos, index, eos_index, eos_mol = self.eos_args(
                 phase, mol, T, P
             )
+        if eos is None: return Cn
         excess_ref = sum([
             mol[eos_index[i]] * get_excess_property(
                 eos.to_TPV_pure(T=T, P=101325, V=None, i=i),
@@ -715,6 +723,7 @@ class EOSMixture(Mixture):
             eos, _, eos_index, eos_mol = self.eos_args(
                 phase, mol, T, P
             )
+        if eos is None: return H
         H_dep = get_excess_property(eos, 'H', phase)
         H_excess = self.H_excess[phase]
         H_ref = 0
@@ -733,6 +742,7 @@ class EOSMixture(Mixture):
             eos, _, eos_index, eos_mol = self.eos_args(
                 phase, mol, T, P
             )
+        if eos is None: return S
         S_dep = get_excess_property(eos, 'S', phase)
         S_excess = self.S_excess[phase]
         S_ref = 0

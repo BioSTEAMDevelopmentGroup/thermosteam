@@ -21,6 +21,7 @@ from numpy.linalg import lstsq
 import flexsolve as flx
 from scipy import interpolate
 from scipy.ndimage.filters import gaussian_filter
+from typing import Iterable
 
 __all__ = (
     'plot_vle_binary_phase_envelope',
@@ -59,7 +60,7 @@ def as_thermo(thermo, chemicals): # pragma: no cover
 # %% Plot functions
 
 def plot_vle_binary_phase_envelope(chemicals, T=None, P=None, vc=None, lc=None, thermo=None,
-                                   yticks=None): # pragma: no cover
+                                   yticks=None, line_styles=None, N=None): # pragma: no cover
     """
     Plot the binary phase envelope of two chemicals at a given temperature or pressure.
 
@@ -67,9 +68,9 @@ def plot_vle_binary_phase_envelope(chemicals, T=None, P=None, vc=None, lc=None, 
     ----------
     chemicals : Iterable[Chemical or str]
         Chemicals in equilibrium.
-    T : float, optional
+    T : float|list[float], optional
         Temperature [K]. 
-    P : float, optional
+    P : float|list[float], optional
         Pressure [Pa]. 
     vc : str, optional
         Color of vapor line.
@@ -86,53 +87,58 @@ def plot_vle_binary_phase_envelope(chemicals, T=None, P=None, vc=None, lc=None, 
     .. figure:: ../images/water_ethanol_binary_phase_envelope.png
 
     """
+    if line_styles is None: line_styles = ['-', '-.', '--']
     thermo = as_thermo(thermo, chemicals)
     chemical_a, chemical_b = chemicals = [thermo.as_chemical(i) for i in chemicals]
     BP = tmo.BubblePoint(chemicals, thermo)
-    N = 50
+    if N is None: N = 50
     zs_a = np.linspace(0, 1, N)
     zs_b = 1 - zs_a
     zs = np.vstack([zs_a, zs_b]).transpose()
     if P:
+        if not isinstance(P, Iterable): P = [P]
+        Xs = P
+        X_units = 'Pa'
         assert not T, "must pass either T or P, but not both"
-        bps = [BP(z, P=P) for z in zs]
-        ms = [bp.T for bp in bps]
+        bpss = [[BP(z, P=i) for z in zs] for i in P]
+        mss = [[bp.T for bp in bps] for bps in bpss]
         ylabel = 'Temperature [K]'
     elif T:
+        if not isinstance(T, Iterable): T = [T]
         assert not P, "must pass either T or P, but not both"
-        bps = [BP(z, T=T) for z in zs]
-        ms = [bp.P for bp in bps]
+        Xs = T
+        X_units = 'K'
+        bpss = [[BP(z, T=i) for z in zs] for i in T]
+        mss = [[bp.P for bp in bps] for bps in bpss]
         ylabel = 'Pressure [Pa]'
     else:
         raise AssertionError("must pass either T or P")
-    ms = np.array(ms)
-    ys_a = np.array([bp.y[0] for bp in bps])
-    ms_liq = ms.copy()
-    ms_gas = interpolate.interp1d(ys_a, ms, bounds_error=False, kind='slinear')(zs_a)
-    if P:
-        azeotrope = ms_liq > ms_gas
-    elif T:
-        azeotrope = ms_liq < ms_gas
-    ms_liq[0] = 0.5 * (ms_liq[0] + ms_gas[0])
-    ms_liq[-1] = 0.5 * (ms_liq[-1] + ms_gas[-1])
-    if azeotrope.any():
-        index = np.where(azeotrope)[0]
-        left = index[0]
-        right = index[-1]
-        mid = int(np.median(index))
-        azeotrope[left:right] = True
-        azeotrope[mid] = False
-        ms_gas[mid] = ms_liq[mid]
-        ms_gas = interpolate.interp1d(zs_a[~azeotrope], ms_gas[~azeotrope], bounds_error=False, kind='slinear')(zs_a)
-        
-    top, bottom = (chemical_a, chemical_b) if ys_a.mean() > 0.5 else (chemical_a, chemical_b)
     plt.figure()
+    mss = np.array(mss)
+    for X, ms, bps, ls in zip(Xs, mss, bpss, line_styles):
+        ys_a = np.array([bp.y[0] for bp in bps])
+        ms_liq = ms.copy()
+        ms_gas = interpolate.interp1d(ys_a, ms, bounds_error=False, kind='slinear')(zs_a)
+        # if P:
+        #     azeotrope = ms_liq > ms_gas
+        # elif T:
+        #     azeotrope = ms_liq < ms_gas
+        # ms_liq[0] = 0.5 * (ms_liq[0] + ms_gas[0])
+        # ms_liq[-1] = 0.5 * (ms_liq[-1] + ms_gas[-1])
+        # if azeotrope.any():
+        #     index = np.where(azeotrope)[0]
+        #     left = index[0]
+        #     right = index[-1]
+        #     mid = int(np.median(index))
+        #     azeotrope[left:right] = True
+        #     azeotrope[mid] = False
+        #     ms_gas[mid] = ms_liq[mid]
+        #     ms_gas = interpolate.interp1d(zs_a[~azeotrope], ms_gas[~azeotrope], bounds_error=False, kind='slinear')(zs_a)
+        plt.plot(zs_a, ms_gas, c=vc if vc is not None else colors.red.RGBn, label=f'vapor [{int(X)} {X_units}]', ls=ls)
+        plt.plot(zs_a, ms_liq, c=lc if lc is not None else colors.blue.RGBn, label=f'liquid [{int(X)} {X_units}]', ls=ls)
     plt.xlim([0, 1])
-    plt.plot(zs_a, ms_gas, c=vc if vc is not None else colors.red.RGBn, label='vapor')
-    plt.plot(zs_a, ms_liq, c=lc if lc is not None else colors.blue.RGBn, label='liquid')
-    plt.ylim([ms.min(), ms.max()])
+    plt.ylim([mss.min(), mss.max()])
     if yticks is None: yticks, ytext = plt.yticks()
-        
     plt.legend()
     plt.xlabel(f'{chemical_a} molar fraction')
     plt.ylabel(ylabel)

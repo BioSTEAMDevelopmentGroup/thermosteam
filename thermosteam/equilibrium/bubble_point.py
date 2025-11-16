@@ -115,6 +115,11 @@ class BubblePoint:
     maxiter = 100
     T_tol = 1e-12
     P_tol = 1e-6
+    Tmin_factor = 0.1
+    Tmax_factor = 10
+    Pmin_factor = 0.1 
+    Pmax_factor = 10
+    
     def __new__(cls, chemicals=None, thermo=None):
         thermo = settings.get_default_thermo(thermo)
         if chemicals is None: 
@@ -276,7 +281,8 @@ class BubblePoint:
                                       checkiter=False, 
                                       maxiter=self.maxiter)
             except RuntimeError:
-                Tmin = self.Tmin; Tmax = self.Tmax
+                Tmin = max(self.Tmin_factor * T_guess, self.Tmin)
+                Tmax = min(self.Tmax_factor * T_guess, self.Tmax)
                 T = flx.IQ_interpolation(f, Tmin, Tmax,
                                          f(Tmin, *args), f(Tmax, *args),
                                          T_guess, self.T_tol, 5e-12, args, 
@@ -296,7 +302,8 @@ class BubblePoint:
                                       self.T_tol, 5e-12, args,
                                       checkiter=False, maxiter=self.maxiter)
             except RuntimeError:
-                Tmin = self.Tmin; Tmax = self.Tmax
+                Tmin = max(self.Tmin_factor * T_guess, self.Tmin)
+                Tmax = min(self.Tmax_factor * T_guess, self.Tmax)
                 T = flx.IQ_interpolation(f, Tmin, Tmax,
                                          f(Tmin, *args), f(Tmax, *args),
                                          T_guess, self.T_tol, 5e-12, args, 
@@ -361,7 +368,8 @@ class BubblePoint:
                 P = flx.aitken_secant(f, P_guess, P_guess-1, self.P_tol, 1e-9,
                                       args, checkiter=False, maxiter=self.maxiter)
             except RuntimeError:
-                Pmin = self.Pmin; Pmax = self.Pmax
+                Pmin = max(self.Pmin_factor * P_guess, self.Pmin)
+                Pmax = min(self.Pmax_factor * P_guess, self.Pmax)
                 P = flx.IQ_interpolation(f, Pmin, Pmax,
                                          f(Pmin, *args), f(Pmax, *args),
                                          P_guess, self.P_tol, 5e-12, args,
@@ -382,7 +390,8 @@ class BubblePoint:
                                       args, checkiter=False, 
                                       maxiter=self.maxiter)
             except RuntimeError:
-                Pmin = self.Pmin; Pmax = self.Pmax
+                Pmin = max(self.Pmin_factor * P_guess, self.Pmin)
+                Pmax = min(self.Pmax_factor * P_guess, self.Pmax)
                 P = flx.IQ_interpolation(f, Pmin, Pmax,
                                          f(Pmin, *args), f(Pmax, *args),
                                          P_guess, self.P_tol, 5e-12, args,

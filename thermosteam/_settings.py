@@ -115,6 +115,7 @@ class ProcessSettings:
             skip_checks: Optional[bool]=False, 
             ideal: Optional[bool]=False,
             db: Optional[str]='default',
+            pkg=None,
         ):
         """
         Set the default :class:`~thermosteam.Thermo` object. If `thermo` is 
@@ -140,11 +141,13 @@ class ProcessSettings:
             algorithms.
         db : str, optional
             Database to load any chemicals.
+        pkg : str, optional
+            Name of property package. Defaults to 'Dortmund-UNIFAC'.
         
         """
         if not isinstance(thermo, (tmo.Thermo, tmo.IdealThermo)):
             thermo = tmo.Thermo(thermo, mixture=mixture, cache=cache, skip_checks=skip_checks,
-                                Gamma=Gamma, Phi=Phi, PCF=PCF, db=db)
+                                Gamma=Gamma, Phi=Phi, PCF=PCF, db=db, pkg=pkg)
         if ideal: thermo = thermo.ideal()
         self._thermo = thermo
     
