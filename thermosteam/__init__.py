@@ -31,7 +31,7 @@
 #     update_module(chemicals, numba)
 # use_numba_chemicals()
 # del use_numba_chemicals
-__version__ = "0.52.17"
+__version__ = "0.52.18"
 
 from . import thermo
 del thermo
@@ -86,7 +86,10 @@ __all__ = ('Chemical', 'ChemicalData', 'Chemicals', 'CompiledChemicals',
 import numpy as np
 import pandas as pd
 np.set_printoptions(suppress=False)
-np.set_printoptions(precision=3) 
+np.set_printoptions(
+    precision=3, 
+    legacy='1.25',
+) 
 pd.options.display.float_format = '{:.3g}'.format
 pd.set_option('display.max_rows', 50)
 pd.set_option('display.max_columns', 10)
