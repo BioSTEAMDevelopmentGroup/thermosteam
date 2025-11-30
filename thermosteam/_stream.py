@@ -667,7 +667,12 @@ class Stream(AbstractStream):
     def get_impact(self, key):
         """Return hourly rate of the impact indicator given the key."""
         cfs = self.characterization_factors
-        return cfs[key] * self.F_mass if key in cfs else 0.
+        if key in cfs:
+            return cfs[key] * self.F_mass 
+        elif key == 'WU' and self.sink:
+            return self.imass['Water']
+        else:
+            return 0.
 
     def empty_negative_flows(self):
         """

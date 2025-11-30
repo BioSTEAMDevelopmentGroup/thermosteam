@@ -174,41 +174,6 @@ class ProcessSettings:
         """Default mixture package."""
         return self.thermo.mixture
     
-    def define_impact_indicator(self, key: str, units: str):
-        """
-        Define the units of measure for an LCA impact indicator key.
-        
-        Parameters
-        ----------
-        key : 
-            Name of impact indicator.
-        units :
-            Units of measure for impact indicator.
-            
-        Notes
-        -----
-        This method is useful for setting characterization factors of 
-        streams and utilities in different units of measure.
-        
-        LCA displacement allocation tables also use the impact indicator 
-        units of measure defined here.
-        
-        Examples
-        --------
-        :doc:`../tutorial/Life_cycle_assessment`
-        
-        """
-        self.impact_indicators[key] = UnitsOfMeasure(units)
-    
-    def get_impact_indicator_units(self, key):
-        try:
-            return tmo.settings.impact_indicators[key]
-        except KeyError:
-            raise ValueError(
-                f"impact indicator key '{key}' has no defined units; "
-                 "units can be defined through `settings.define_impact_indicator`"
-            )
-    
     def get_default_thermo(self, thermo):
         """
         Return the default :class:`~thermosteam.Thermo` object if `thermo` is None.
