@@ -573,31 +573,31 @@ class VLLE(Equilibrium, phases='Llg'):
         )
         self._data[:, indices] = self._total * new_subdata * z / new_subdata.sum(axis=0)
     
-    def _T_bubble_iter(self, T):
+    def _T_bubble(self):
         thermal_condition = self._thermal_condition
         P = thermal_condition.P
+        Ta, ya = self._bubble_point.solve_Ty(self._z, P, lle=True)
         self.lle(
-            T=T, P=P,
+            T=Ta, P=P,
             top_chemical=self.top_chemical, 
         )
         z = self._data[0, self._indices]
         La = z.sum()
         xa = z / La
-        Ta, ya = self._bubble_point.solve_Ty(xa, P)
         self._yx_bubble = (ya, xa)
         return Ta
      
-    def _P_bubble_iter(self, P):
+    def _P_bubble(self):
         thermal_condition = self._thermal_condition
         T = thermal_condition.T
+        Pa, ya = self._bubble_point.solve_Py(self._z, T, lle=True)
         self.lle(
-            T=T, P=P,
+            T=T, P=Pa,
             top_chemical=self.top_chemical,
         )
         z = self._data[0, self._indices]
         La = z.sum()
         xa = z / La
-        Pa, ya = self._bubble_point.solve_Py(xa, T)
         self._yx_bubble = (ya, xa)
         return Pa
        
@@ -612,15 +612,7 @@ class VLLE(Equilibrium, phases='Llg'):
         g_mol = imol['g']
         l_mol += g_mol
         g_mol[:] = 0
-        thermal_condition.P = flx.wegstein(
-            self._P_bubble_iter, 
-            thermal_condition.P,
-            xtol=1e-6, 
-            convergenceiter=10, 
-            checkconvergence=False,
-            checkiter=False,
-            maxiter=100,
-        )
+        self._P_bubble()
         self._save_bubble_point()
         return thermal_condition.P
     
@@ -635,15 +627,7 @@ class VLLE(Equilibrium, phases='Llg'):
         g_mol = imol['g']
         l_mol += g_mol
         g_mol[:] = 0
-        thermal_condition.T = flx.wegstein(
-            self._T_bubble_iter, 
-            thermal_condition.T,
-            xtol=1e-6, 
-            convergenceiter=10, 
-            checkconvergence=False,
-            checkiter=False,
-            maxiter=100,
-        )
+        self._T_bubble()
         self._save_bubble_point()
         return thermal_condition.T
     

@@ -12,10 +12,11 @@ from ..utils import Cache
 from .equilibrium import Equilibrium
 from ..exceptions import NoEquilibrium
 from .binary_phase_fraction import phase_fraction
-from .tangential_plane_stability import TangentPlaneStabilityAnalysis
+from .tangential_plane_stability import lle_tangential_plan_analysis
 from scipy.optimize import shgo, differential_evolution
 import flexsolve as flx
 import numpy as np
+from scipy.optimize import minimize
 
 __all__ = ('LLE', 'LLECache')
 
@@ -116,6 +117,34 @@ def pseudo_equilibrium(K, phi, z, T, n, f_gamma, gamma_args, inner_loop_options,
         return z/(1. + phi * (K - 1.)) * (1 - phi)
     else:
         return z
+
+# Light weight
+def solve_lle_mol(gamma, z, T, P, sample=None, phi=1):
+    n = z.size
+    stability = lle_tangential_plan_analysis(gamma, z, T, P, sample=sample)
+    if stability.unstable:
+        y = stability.candidate
+        y[y < 1e-64] = 1e-64
+        if stability.sample_unstable: 
+            phi = min(0.99 * (z / y).min(), phi)
+        else:
+            phi = 0.99 * (z / y).min()
+        x = z - phi * y
+        x /= x.sum()
+        K = gamma(y, T) / gamma(x, T)
+    else:
+        return z
+    K[K <= 0] = 1e-9
+    mol = pseudo_equilibrium(
+        K, phi, z, T, n, gamma.f, gamma.args, 
+        LLE.pseudo_equilibrium_inner_loop_options,
+        LLE.pseudo_equilibrium_outer_loop_options,
+    )
+    if mol.any():
+        return mol / mol.sum()
+    else:
+        return z
+    
 
 class LLE(Equilibrium, phases='lL'):
     """
@@ -328,8 +357,7 @@ class LLE(Equilibrium, phases='lL'):
                 sample = x0
             else:
                 sample = None
-            TPSA = TangentPlaneStabilityAnalysis('lL', lle_chemicals, thermo=self.thermo)
-            stability = TPSA(z, T, 101325, sample=sample)
+            stability = lle_tangential_plan_analysis(gamma, z, T, 101325, sample=sample)
             if stability.unstable:
                 y = stability.candidate
                 y[y < 1e-64] = 1e-64

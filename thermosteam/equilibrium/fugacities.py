@@ -56,7 +56,7 @@ class LiquidFugacities:
         return self.gamma(x, T, P) * self.pcf(T, P, Psats) * Psats
     
     def __call__(self, x, T, P=101325., reduce=False):
-        f_reduced = x * self.gamma(x, T)
+        f_reduced = x * self.gamma(x, T, P)
         if reduce: return f_reduced
         Psats = np.array([i.Psat(T) for i in self.chemicals], dtype=float)
         return f_reduced * Psats * self.pcf(T, P, Psats)

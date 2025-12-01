@@ -63,7 +63,6 @@ def edge_points_simplex_masked(z: np.ndarray,
     t = 0.5 * (1 - np.cos(np.pi * k / (points_per_edge - 1)))
 
     pts = []
-
     # edges only among the selected components
     for i, j in combinations(active, 2):
         for tau in t:
@@ -90,6 +89,75 @@ def edge_points_simplex_masked(z: np.ndarray,
 
     return np.array(pts)
 
+# Light weight
+def lle_tangential_plan_analysis(gamma, z, T, P, sample=None):
+    MW = np.array([i.MW for i in gamma.chemicals])
+    logfz = np.log(z * gamma(z, T, P) + 1e-30)
+    
+    def objective(w, T, P, logfz, softmax=False):
+        if softmax:
+            w = np.exp(w - np.max(w)) # Softmax for unconstrained optimization
+            w /= w.sum()
+        return np.dot(w, np.log(w * gamma(w, T, P) + 1e-30) - logfz)
+    
+    args = (T, P, logfz)
+    if sample is None:
+        best_val = np.inf
+        best_result = None
+    else:
+        best_result = sample
+        best_val = objective(sample, *args)
+        result = minimize(
+            objective, 
+            best_result, 
+            method="L-BFGS-B", 
+            options=dict(maxiter=20),
+            args=(*args, True),
+        )
+        value = result.fun
+        if value < best_val:
+            w = result.x
+            w = np.exp(w - np.max(w)) # Softmax for unconstrained optimization
+            w /= w.sum()
+            best_result = w
+            best_val = value
+        unstable = best_val < 0
+        if unstable:
+            return StabilityReport(
+                unstable=unstable,
+                candidate=sample,
+                tpd=best_val,
+                sample_unstable=True,
+            )
+    w = z * MW
+    w /= w.sum()
+    samples = edge_points_simplex_masked(w)
+    samples /= MW
+    samples /= samples.sum(axis=1, keepdims=True)
+    for sample in samples:
+        value = objective(sample, *args)
+        if value < best_val:
+            best_val = value
+            best_result = sample
+            result = minimize(
+                objective, 
+                best_result, 
+                method="L-BFGS-B", 
+                options=dict(maxiter=20),
+                args=(*args, True),
+            )
+            value = result.fun
+            if value < best_val:
+                w = result.x
+                w = np.exp(w - np.max(w)) # Softmax for unconstrained optimization
+                w /= w.sum()
+                best_result = w
+                best_val = value
+    return StabilityReport(
+        unstable=(best_val < 0),
+        candidate=best_result,
+        tpd=best_val
+    )
 
 class TangentPlaneStabilityAnalysis:
     __slots__ = ('fugacity_models', 'MW')
@@ -175,6 +243,6 @@ class TangentPlaneStabilityAnalysis:
 
 
 if __name__ == '__main__':
-    tmo.settings.set_thermo(['Water', 'Octanol'])
+    tmo.settings.set_thermo(['Water', 'Octanol', 'Ethanol'])
     TPSA = TangentPlaneStabilityAnalysis('lL', tmo.settings.chemicals)
-    report = TPSA(np.array([0.2, 0.8]), 298.15, 101325)
+    report = TPSA(np.array([0.25, 0.8, 0.05]), 298.15, 101325)

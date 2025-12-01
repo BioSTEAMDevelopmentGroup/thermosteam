@@ -2338,7 +2338,7 @@ class Stream(AbstractStream):
         z = self.get_normalized_mol(bp.IDs)
         return bp(z, T=T or self.T)
 
-    def bubble_point_at_P(self, P: Optional[float] = None, IDs: Optional[Sequence[str]] = None, vlle=False):
+    def bubble_point_at_P(self, P: Optional[float] = None, IDs: Optional[Sequence[str]] = None, lle=False):
         """
         Return a BubblePointResults object with all data on the bubble point at constant pressure.
 
@@ -2356,27 +2356,9 @@ class Stream(AbstractStream):
         BubblePointValues(T=357.14, P=101325, IDs=('Water', 'Ethanol'), z=[0.836 0.164], y=[0.492 0.508])
 
         """
-        if vlle:
-            phase = self.phase
-            try:
-                # TODO: Optimize
-                vlle = self.vlle
-                vlle.top_chemical = self.chemicals.IDs[self.imol.data.sum(axis=0).argmax()]
-                if P is None: P = self.P
-                vlle.bubble_point_at_P(P)
-                BP = self.get_bubble_point(IDs)
-                x = self.imol['L', BP.IDs]
-                bp = BP(P=P, z=x / x.sum())
-                z = self.imol[bp.IDs]
-                z /= z.sum()
-                bp.z = z / z.sum() 
-            finally:
-                self.phase = phase
-            return bp
-        else:
-            BP = self.get_bubble_point(IDs)
-            z = self.get_normalized_mol(BP.IDs)
-            return BP(z, P=P or self.P)
+        BP = self.get_bubble_point(IDs)
+        z = self.get_normalized_mol(BP.IDs)
+        return BP(z, P=P or self.P, lle=lle)
 
     def dew_point_at_T(self, T: Optional[float] = None, IDs: Optional[Sequence[str]] = None):
         """

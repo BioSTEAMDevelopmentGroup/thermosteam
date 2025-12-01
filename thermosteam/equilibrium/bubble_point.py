@@ -11,6 +11,7 @@ import numpy as np
 import flexsolve as flx
 from .fugacity_coefficients import IdealFugacityCoefficients
 from .domain import vle_domain
+from .lle import solve_lle_mol
 from ..exceptions import InfeasibleRegion
 from .. import functional as fn
 from .._settings import settings
@@ -156,6 +157,18 @@ class BubblePoint:
         y[:] = solve_y(y_phi, self.phi, T, P, y)
         return 1. - y.sum()
     
+    def _T_error_lle(self, T, P, z, y, x):
+        if T <= 0: raise InfeasibleRegion('negative temperature')
+        Psats = np.array([i(T) for i in self.Psats], dtype=float)
+        mol = solve_lle_mol(self.gamma, z, T, P, sample=x)
+        x[:] = mol / mol.sum() if mol.any() else z
+        y_phi =  (x / P
+                  * Psats
+                  * self.gamma(x, T, P) 
+                  * self.pcf(T, P, Psats))
+        y[:] = solve_y(y_phi, self.phi, T, P, y)
+        return 1. - y.sum()
+    
     def _P_error(self, P, T, z_Psat_gamma, Psats, y):
         if P <= 0: raise InfeasibleRegion('negative pressure')
         y_phi = z_Psat_gamma * self.pcf(T, P, Psats) / P
@@ -165,6 +178,14 @@ class BubblePoint:
     def _P_error_dep(self, P, T, z, Psats, z_Psats, y):
         if P <= 0: raise InfeasibleRegion('negative pressure')
         y_phi = z_Psats * self.gamma(z, T, P) * self.pcf(T, P, Psats) / P
+        y[:] = solve_y(y_phi, self.phi, T, P, y)
+        return 1. - y.sum()
+    
+    def _P_error_lle(self, P, T, z, Psats, y, x):
+        if P <= 0: raise InfeasibleRegion('negative pressure')
+        mol = solve_lle_mol(self.gamma, z, T, P, sample=x)
+        x[:] = mol / mol.sum() if mol.any() else z
+        y_phi = Psats * x * self.gamma(x, T, P) * self.pcf(T, P, Psats) / P
         y[:] = solve_y(y_phi, self.phi, T, P, y)
         return 1. - y.sum()
     
@@ -217,13 +238,13 @@ class BubblePoint:
         y = z_Psat_gamma_pcf / P
         return P, y
     
-    def __call__(self, z, *, T=None, P=None, liquid_conversion=None):
+    def __call__(self, z, *, T=None, P=None, liquid_conversion=None, lle=False):
         z = np.asarray(z, float)
         if T:
             if P: raise ValueError("may specify either T or P, not both")
-            P, *args = self.solve_Py(z, T, liquid_conversion)
+            P, *args = self.solve_Py(z, T, liquid_conversion, lle)
         elif P:
-            T, *args = self.solve_Ty(z, P, liquid_conversion)
+            T, *args = self.solve_Ty(z, P, liquid_conversion, lle)
         else:
             raise ValueError("must specify either T or P")
         if liquid_conversion:
@@ -231,7 +252,7 @@ class BubblePoint:
         else:
             return BubblePointValues(T, P, self.IDs, z, *args)
     
-    def solve_Ty(self, z, P, liquid_conversion=None, guess=None):
+    def solve_Ty(self, z, P, liquid_conversion=None, lle=False):
         """
         Bubble point at given composition and pressure.
 
@@ -270,11 +291,15 @@ class BubblePoint:
             y = z.copy()
             return T, fn.normalize(y)
         elif liquid_conversion is None:
-            f = self._T_error
-            z_norm = z / z.sum()
-            z_over_P = z/P
+            z = z / z.sum()
+            z_over_P = z / P
             T_guess, y = self._Ty_ideal(z_over_P)
-            args = (P, z_over_P, z_norm, y)
+            if lle:
+                f = self._T_error_lle
+                args = (P, z, y, y.copy())
+            else:
+                f = self._T_error
+                args = (P, z_over_P, z, y)
             try:
                 T = flx.aitken_secant(f, T_guess, T_guess + 1e-3,
                                       self.T_tol, 5e-12, args,
@@ -311,7 +336,7 @@ class BubblePoint:
                                          maxiter=self.maxiter)
             return T, dz, fn.normalize(y), x
     
-    def solve_Py(self, z, T, liquid_conversion=None):
+    def solve_Py(self, z, T, liquid_conversion=None, lle=False):
         """
         Bubble point at given composition and temperature.
 
@@ -353,17 +378,23 @@ class BubblePoint:
             if T > self.Tmax: T = self.Tmax
             elif T < self.Tmin: T = self.Tmin
             Psats = np.array([i(T) for i in self.Psats])
-            z_norm = z / z.sum()
+            z = z / z.sum()
             if self.gamma.P_dependent:
                 f = self._P_error_dep
-                z_Psats = z_norm * Psats
+                z_Psats = z * Psats
                 P_guess, y = self._Py_ideal(z_Psats)
-                args = (T, z_norm, Psats, z_Psats, y)
+                args = (T, z, Psats, z_Psats, y)
             else:
-                z_Psat_gamma = z_norm * Psats * self.gamma(z_norm, T, 101325)
-                P_guess, y = self._Py_ideal(z_Psat_gamma)
-                f = self._P_error
-                args = (T, z_Psat_gamma, Psats, y)
+                if lle:
+                    z_Psat_gamma = z * Psats * self.gamma(z, T, 101325)
+                    P_guess, y = self._Py_ideal(z_Psat_gamma)
+                    f = self._P_error_lle
+                    args = (P, T, z, Psats, y, y.copy())
+                else:
+                    z_Psat_gamma = z * Psats * self.gamma(z, T, 101325)
+                    P_guess, y = self._Py_ideal(z_Psat_gamma)
+                    f = self._P_error
+                    args = (T, z_Psat_gamma, Psats, y)
             try:
                 P = flx.aitken_secant(f, P_guess, P_guess-1, self.P_tol, 1e-9,
                                       args, checkiter=False, maxiter=self.maxiter)
