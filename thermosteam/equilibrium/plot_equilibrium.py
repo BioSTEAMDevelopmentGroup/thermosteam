@@ -60,7 +60,7 @@ def as_thermo(thermo, chemicals): # pragma: no cover
 # %% Plot functions
 
 def plot_vle_binary_phase_envelope(chemicals, T=None, P=None, vc=None, lc=None, thermo=None,
-                                   yticks=None, line_styles=None, N=None): # pragma: no cover
+                                   yticks=None, line_styles=None, N=None, lle=False): # pragma: no cover
     """
     Plot the binary phase envelope of two chemicals at a given temperature or pressure.
 
@@ -100,7 +100,7 @@ def plot_vle_binary_phase_envelope(chemicals, T=None, P=None, vc=None, lc=None, 
         Xs = P
         X_units = 'Pa'
         assert not T, "must pass either T or P, but not both"
-        bpss = [[BP(z, P=i) for z in zs] for i in P]
+        bpss = [[BP(z, P=i, lle=lle) for z in zs] for i in P]
         mss = [[bp.T for bp in bps] for bps in bpss]
         ylabel = 'Temperature [K]'
     elif T:
@@ -108,7 +108,7 @@ def plot_vle_binary_phase_envelope(chemicals, T=None, P=None, vc=None, lc=None, 
         assert not P, "must pass either T or P, but not both"
         Xs = T
         X_units = 'K'
-        bpss = [[BP(z, T=i) for z in zs] for i in T]
+        bpss = [[BP(z, T=i, lle=lle) for z in zs] for i in T]
         mss = [[bp.P for bp in bps] for bps in bpss]
         ylabel = 'Pressure [Pa]'
     else:
@@ -118,7 +118,7 @@ def plot_vle_binary_phase_envelope(chemicals, T=None, P=None, vc=None, lc=None, 
     for X, ms, bps, ls in zip(Xs, mss, bpss, line_styles):
         ys_a = np.array([bp.y[0] for bp in bps])
         ms_liq = ms.copy()
-        ms_gas = interpolate.interp1d(ys_a, ms, bounds_error=False, kind='slinear')(zs_a)
+        # ms_gas = interpolate.interp1d(ys_a, ms, bounds_error=False, kind='slinear')(zs_a)
         # if P:
         #     azeotrope = ms_liq > ms_gas
         # elif T:
@@ -134,7 +134,7 @@ def plot_vle_binary_phase_envelope(chemicals, T=None, P=None, vc=None, lc=None, 
         #     azeotrope[mid] = False
         #     ms_gas[mid] = ms_liq[mid]
         #     ms_gas = interpolate.interp1d(zs_a[~azeotrope], ms_gas[~azeotrope], bounds_error=False, kind='slinear')(zs_a)
-        plt.plot(zs_a, ms_gas, c=vc if vc is not None else colors.red.RGBn, label=f'vapor [{int(X)} {X_units}]', ls=ls)
+        plt.plot(ys_a, ms, c=vc if vc is not None else colors.red.RGBn, label=f'vapor [{int(X)} {X_units}]', ls=ls)
         plt.plot(zs_a, ms_liq, c=lc if lc is not None else colors.blue.RGBn, label=f'liquid [{int(X)} {X_units}]', ls=ls)
     plt.xlim([0, 1])
     plt.ylim([mss.min(), mss.max()])

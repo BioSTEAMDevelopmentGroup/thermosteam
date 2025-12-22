@@ -135,11 +135,14 @@ def solve_lle_mol(gamma, z, T, P, sample=None, phi=1):
     else:
         return z
     K[K <= 0] = 1e-9
-    mol = pseudo_equilibrium(
-        K, phi, z, T, n, gamma.f, gamma.args, 
-        LLE.pseudo_equilibrium_inner_loop_options,
-        LLE.pseudo_equilibrium_outer_loop_options,
-    )
+    try:
+        mol = pseudo_equilibrium(
+            K, phi, z, T, n, gamma.f, gamma.args, 
+            LLE.pseudo_equilibrium_inner_loop_options,
+            LLE.pseudo_equilibrium_outer_loop_options,
+        )
+    except:
+        breakpoint()
     if mol.any():
         return mol / mol.sum()
     else:

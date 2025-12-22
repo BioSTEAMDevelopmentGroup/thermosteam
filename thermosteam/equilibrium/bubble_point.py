@@ -39,21 +39,50 @@ def solve_y(y_phi, phi, T, P, y_guess):
 # %% Bubble point values container
 
 class BubblePointValues:
-    __slots__ = ('T', 'P', 'IDs', 'z', 'y')
+    __slots__ = ('T', 'P', 'IDs', 'z', 'y', 'α')
     
-    def __init__(self, T, P, IDs, z, y):
+    def __init__(self, T, P, IDs, z, y, α=None):
         self.T = T
         self.P = P
         self.IDs = IDs
         self.z = z
         self.y = y
-        
+        self.α = α
+    
     @property
     def x(self): return self.z
         
     @property
     def K(self):
         return self.y / self.x
+    
+    @property
+    def xα(self):
+        return self.α / self.α.sum()
+    
+    @property
+    def xβ(self):
+        return self.β / self.β.sum()
+    
+    @property
+    def β(self):
+        return self.z - self.α
+    
+    @property
+    def ϕ(self):
+        return self.α.sum()
+    
+    @property
+    def KL(self):
+        return self.xα / self.xβ
+    
+    @property
+    def Kα(self):
+        return self.y / self.xα
+    
+    @property
+    def Kβ(self):
+        return self.y / self.xβ
     
     def __repr__(self):
         return f"{type(self).__name__}(T={self.T:.2f}, P={self.P:.0f}, IDs={self.IDs}, z={self.z}, y={self.y})"
@@ -157,11 +186,14 @@ class BubblePoint:
         y[:] = solve_y(y_phi, self.phi, T, P, y)
         return 1. - y.sum()
     
-    def _T_error_lle(self, T, P, z, y, x):
+    def _T_error_lle(self, T, P, z, y, x, α):
         if T <= 0: raise InfeasibleRegion('negative temperature')
         Psats = np.array([i(T) for i in self.Psats], dtype=float)
-        mol = solve_lle_mol(self.gamma, z, T, P, sample=x)
-        x[:] = mol / mol.sum() if mol.any() else z
+        α[:] = solve_lle_mol(self.gamma, z, T, P, sample=x)
+        if α.any(): 
+            x[:] = α / α.sum()
+        else:
+            x = z
         y_phi =  (x / P
                   * Psats
                   * self.gamma(x, T, P) 
@@ -181,10 +213,13 @@ class BubblePoint:
         y[:] = solve_y(y_phi, self.phi, T, P, y)
         return 1. - y.sum()
     
-    def _P_error_lle(self, P, T, z, Psats, y, x):
+    def _P_error_lle(self, P, T, z, Psats, y, x, α):
         if P <= 0: raise InfeasibleRegion('negative pressure')
-        mol = solve_lle_mol(self.gamma, z, T, P, sample=x)
-        x[:] = mol / mol.sum() if mol.any() else z
+        α[:] = solve_lle_mol(self.gamma, z, T, P, sample=x)
+        if α.any(): 
+            x[:] = α / α.sum()
+        else:
+            x = z
         y_phi = Psats * x * self.gamma(x, T, P) * self.pcf(T, P, Psats) / P
         y[:] = solve_y(y_phi, self.phi, T, P, y)
         return 1. - y.sum()
@@ -242,9 +277,9 @@ class BubblePoint:
         z = np.asarray(z, float)
         if T:
             if P: raise ValueError("may specify either T or P, not both")
-            P, *args = self.solve_Py(z, T, liquid_conversion, lle)
+            P, *args = self.solve_Py(z, T, liquid_conversion, lle, full=True)
         elif P:
-            T, *args = self.solve_Ty(z, P, liquid_conversion, lle)
+            T, *args = self.solve_Ty(z, P, liquid_conversion, lle, full=True)
         else:
             raise ValueError("must specify either T or P")
         if liquid_conversion:
@@ -252,7 +287,7 @@ class BubblePoint:
         else:
             return BubblePointValues(T, P, self.IDs, z, *args)
     
-    def solve_Ty(self, z, P, liquid_conversion=None, lle=False):
+    def solve_Ty(self, z, P, liquid_conversion=None, lle=False, full=False):
         """
         Bubble point at given composition and pressure.
 
@@ -295,10 +330,13 @@ class BubblePoint:
             z_over_P = z / P
             T_guess, y = self._Ty_ideal(z_over_P)
             if lle:
+                x = y.copy()
+                α = x.copy()
                 f = self._T_error_lle
-                args = (P, z, y, y.copy())
+                args = (P, z, y, x, α)
             else:
                 f = self._T_error
+                α= None
                 args = (P, z_over_P, z, y)
             try:
                 T = flx.aitken_secant(f, T_guess, T_guess + 1e-3,
@@ -313,7 +351,8 @@ class BubblePoint:
                                          T_guess, self.T_tol, 5e-12, args, 
                                          checkiter=False, checkbounds=False, 
                                          maxiter=self.maxiter)
-            return T, fn.normalize(y)
+            y = fn.normalize(y)
+            return (T, y, α) if full else (T, y)
         else:
             f = self._T_error_reactive
             z_norm = z / z.sum()
@@ -336,7 +375,7 @@ class BubblePoint:
                                          maxiter=self.maxiter)
             return T, dz, fn.normalize(y), x
     
-    def solve_Py(self, z, T, liquid_conversion=None, lle=False):
+    def solve_Py(self, z, T, liquid_conversion=None, lle=False, full=False):
         """
         Bubble point at given composition and temperature.
 
@@ -379,6 +418,7 @@ class BubblePoint:
             elif T < self.Tmin: T = self.Tmin
             Psats = np.array([i(T) for i in self.Psats])
             z = z / z.sum()
+            α = None
             if self.gamma.P_dependent:
                 f = self._P_error_dep
                 z_Psats = z * Psats
@@ -389,7 +429,9 @@ class BubblePoint:
                     z_Psat_gamma = z * Psats * self.gamma(z, T, 101325)
                     P_guess, y = self._Py_ideal(z_Psat_gamma)
                     f = self._P_error_lle
-                    args = (P, T, z, Psats, y, y.copy())
+                    x = y.copy()
+                    α = x.copy()
+                    args = (P, T, z, Psats, y, x, α)
                 else:
                     z_Psat_gamma = z * Psats * self.gamma(z, T, 101325)
                     P_guess, y = self._Py_ideal(z_Psat_gamma)
@@ -406,7 +448,8 @@ class BubblePoint:
                                          P_guess, self.P_tol, 5e-12, args,
                                          checkiter=False, checkbounds=False, 
                                          maxiter=self.maxiter)
-            return P, fn.normalize(y)
+            y = fn.normalize(y)
+            return (P, y, α) if full else P, y
         else:
             f = self._P_error_reactive
             z_norm = z / z.sum()

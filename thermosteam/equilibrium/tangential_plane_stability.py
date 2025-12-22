@@ -22,7 +22,7 @@ class StabilityReport(NamedTuple):
     sample_unstable: bool = False
 
 def edge_points_simplex_masked(z: np.ndarray,
-                               points_per_edge: int = 8,
+                               points_per_edge: int = 12,
                                epsilon: float = 1e-3,
                                min_active: int = 2) -> np.ndarray:
     """
@@ -121,14 +121,6 @@ def lle_tangential_plan_analysis(gamma, z, T, P, sample=None):
             w /= w.sum()
             best_result = w
             best_val = value
-        unstable = best_val < 0
-        if unstable:
-            return StabilityReport(
-                unstable=unstable,
-                candidate=sample,
-                tpd=best_val,
-                sample_unstable=True,
-            )
     w = z * MW
     w /= w.sum()
     samples = edge_points_simplex_masked(w)
@@ -154,7 +146,7 @@ def lle_tangential_plan_analysis(gamma, z, T, P, sample=None):
                 best_result = w
                 best_val = value
     return StabilityReport(
-        unstable=(best_val < 0),
+        unstable=best_val < 0 and np.abs(best_result - z).sum() > 1e-9,
         candidate=best_result,
         tpd=best_val
     )
@@ -202,14 +194,6 @@ class TangentPlaneStabilityAnalysis:
                 w /= w.sum()
                 best_result = w
                 best_val = value
-            unstable = best_val < 0
-            if unstable:
-                return StabilityReport(
-                    unstable=unstable,
-                    candidate=sample,
-                    tpd=best_val,
-                    sample_unstable=True,
-                )
         MW = self.MW
         w = z * MW
         w /= w.sum()
@@ -236,7 +220,7 @@ class TangentPlaneStabilityAnalysis:
                     best_result = w
                     best_val = value
         return StabilityReport(
-            unstable=(best_val < 0),
+            unstable=best_val < 0 and np.abs(best_result - z).sum() > 1e-9,
             candidate=best_result,
             tpd=best_val
         )

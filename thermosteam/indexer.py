@@ -1423,20 +1423,26 @@ def by_mass(self):
     """Return a ChemicalMassFlowIndexer that references this object's molar data."""
     try:
         mass = self._data_cache['mass']
-    except:
-        chemicals = self.chemicals
-        dct = MassFlowDict(self.data.dct, chemicals.MW)
-        data_cache = self._data_cache
-        data_cache['mass'] = mass = \
-        ChemicalMassFlowIndexer.from_data(
-            SparseVector.from_dict(
-                dct,
-                chemicals.size
-            ),
-            self, 
-            chemicals,
-            False,
-        )
+        # TODO: understand where is this error coming from.
+        # Create test case trying to break it.
+        if mass.data.dct.dct is self.data.dct:
+            return mass
+        else:
+            self._data_cache.clear()
+    except: pass
+    chemicals = self.chemicals
+    dct = MassFlowDict(self.data.dct, chemicals.MW)
+    data_cache = self._data_cache
+    data_cache['mass'] = mass = \
+    ChemicalMassFlowIndexer.from_data(
+        SparseVector.from_dict(
+            dct,
+            chemicals.size
+        ),
+        self, 
+        chemicals,
+        False,
+    )
     return mass
 ChemicalMolarFlowIndexer.by_mass = by_mass
 
