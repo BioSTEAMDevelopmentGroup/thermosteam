@@ -1791,8 +1791,8 @@ class KineticConversion:
 @chemicals_user
 class KineticReaction:
     """
-    Create an abstract KineticReaction object which defines a stoichiometric 
-    reaction. Child classes must implement a `rate(stream)` method that accepts 
+    Create an abstract KineticReaction object which defines a kinetic reaction. 
+    Child classes must implement a `rate(stream)` method that accepts 
     a stream and returns the reaction rate in kmol/m3/hr and a `volume(stream)` 
     method that accepts the same stream and returns the reactive volume in m3. 
     The units of `volume` need not be m3 so long as it is consistent in both 
@@ -1890,28 +1890,6 @@ class KineticReaction:
             self._stoichiometry = SparseVector.from_size(chemicals.size)
         self._rescale()
     
-    def conversion_bounds(self, material):
-        stoichiometry = self._stoichiometry
-        conversion = -material / stoichiometry
-        bounds = (
-            conversion[stoichiometry < 0].min(), # Amount reacted per reactant basis
-            conversion[stoichiometry > 0].max(), # Amount produced per reactant basis
-        )
-        return bounds
-    
-    def _equilibrium_objective(self, conversion, stream, data):
-        stream.mol += conversion * self._stoichiometry
-        rate = self.rate(stream)
-        stream.set_data(data)
-        return rate
-    
-    def equilibrium(self, stream):
-        initial_condition = stream.get_data()
-        f = self._equilibrium_objective
-        args = (stream, initial_condition)
-        conversion = flx.IQ_interpolation(f, *self.conversion_bounds(stream.imol.data), xtol=1e-16, args=args)
-        return conversion
-    
     def conversion_handle(self, stream):
         return KineticConversion(self, stream)
     
@@ -1920,21 +1898,17 @@ class KineticReaction:
     
     def conversion(self, stream, time=None):
         if stream.chemicals is not self.chemicals: self.reset_chemicals(stream.chemicals)
-        if time is None and self.volume: # Ideal continuous stirred tank CSTR
+        if time is None: # Ideal continuous stirred tank CSTR
             conversion = self._rate(stream)
-        elif time is None: # Instantaneous reaction
-            conversion = self.equilibrium(stream)
         else: # Plug flow reaction (PFR)
-            raise NotImplementedError('kinetic integration not yet implemented')
+            raise NotImplementedError('integration of kinetic reaction (for plug-flow reaction configuration) not yet implemented')
         return conversion * self._stoichiometry
     
     def __call__(self, stream, time=None):
         if stream.chemicals is not self.chemicals: self.reset_chemicals(stream.chemicals)
         values = stream.imol.data
-        if time is None and self.volume: # Ideal continuous stirred tank CSTR
+        if time is None: # Ideal continuous stirred tank CSTR
             values += self._rate(stream) * self._stoichiometry
-        elif time is None: # Instantaneous reaction
-            values += self.equilibrium(stream) * self._stoichiometry
         else: # Plug flow reaction (PFR)
             raise NotImplementedError('kinetic integration not yet implemented')
         if tmo.reaction.CHECK_FEASIBILITY:
@@ -1983,7 +1957,125 @@ class KineticReaction:
         info += f"\n{rxn}{rxn_spaces}{cmp}"
         return info
 
-
+@chemicals_user
+class EquilibriumReaction:
+    """
+    Create an abstract EquilibriumReaction object which defines an equilibrium reaction. 
+    Child classes must implement a `rate(stream)` method that accepts 
+    a stream and returns the reaction rate in kmol/hr. 
+    
+    Parameters
+    ----------
+    reaction : dict or str
+               A dictionary of stoichiometric coefficients or a stoichiometric
+               equation written as:
+               i1 R1 + ... + in Rn -> j1 P1 + ... + jm Pm
+    chemicals : Chemicals, optional
+        Chemicals corresponding to each entry in the stoichiometry array. 
+        Defaults to settings.chemicals.
+    
+    Other Parameters
+    ----------------
+    check_mass_balance=False: bool
+        Whether to check if mass is not created or destroyed.
+    correct_mass_balance=False: bool
+        Whether to make sure mass is not created or destroyed by varying the 
+        reactant stoichiometric coefficient.
+    check_atomic_balance=False: bool
+        Whether to check if stoichiometric balance by atoms cancel out.
+    correct_atomic_balance=False: bool
+        Whether to correct the stoichiometry according to the atomic balance.
+    
+    Notes
+    -----
+    A reaction object can react only a stream object (not an array).
+    
+    """
+    rate = AbstractMethod
+    phases = MaterialIndexer.phases
+    __slots__ = (
+        '_phases',
+        '_thermo', 
+        '_stoichiometry', 
+        '_reactant_index',
+    )
+    
+    _basis = 'mol'
+    _X = 1
+    reactant = Reaction.reactant
+    istoichiometry = Reaction.istoichiometry
+    stoichiometry = Reaction.stoichiometry
+    reaction_chemicals = Reaction.reaction_chemicals
+    reset_chemicals = Reaction.reset_chemicals
+    MWs = Reaction.MWs
+    dH = Reaction.dH
+    _rescale = Reaction._rescale
+    _get_stoichiometry_by_wt = Reaction._get_stoichiometry_by_wt
+    _get_stoichiometry_by_mol = Reaction._get_stoichiometry_by_mol
+    mass_balance_error = Reaction.mass_balance_error
+    atomic_balance_error = Reaction.atomic_balance_error
+    check_mass_balance = Reaction.check_mass_balance
+    check_atomic_balance = Reaction.check_atomic_balance
+    correct_atomic_balance = Reaction.correct_atomic_balance
+    correct_mass_balance = Reaction.correct_mass_balance
+    show = _ipython_display_ = Reaction.show
+    to_df = KineticReaction.to_df
+    __repr__ = KineticReaction.__repr__
+    _info = KineticReaction._info
+    
+    __init__ = KineticReaction.__init__
+    
+    def conversion_bounds(self, material):
+        stoichiometry = self._stoichiometry
+        conversion = -material / stoichiometry
+        bounds = (
+            conversion[stoichiometry < 0].min(), # Amount reacted per reactant basis
+            conversion[stoichiometry > 0].max(), # Amount produced per reactant basis
+        )
+        return bounds
+    
+    def _equilibrium_objective(self, conversion, stream, data):
+        stream.mol += conversion * self._stoichiometry
+        rate = self.rate(stream)
+        stream.set_data(data)
+        return rate
+    
+    def equilibrium(self, stream):
+        initial_condition = stream.get_data()
+        f = self._equilibrium_objective
+        args = (stream, initial_condition)
+        conversion = flx.IQ_interpolation(f, *self.conversion_bounds(stream.imol.data), xtol=1e-16, args=args)
+        return conversion
+    
+    def conversion_handle(self, stream):
+        return KineticConversion(self, stream)
+    
+    def conversion(self, stream):
+        if stream.chemicals is not self.chemicals: self.reset_chemicals(stream.chemicals)
+        conversion = self.equilibrium(stream)
+        return conversion * self._stoichiometry
+    
+    def __call__(self, stream):
+        if stream.chemicals is not self.chemicals: self.reset_chemicals(stream.chemicals)
+        values = stream.imol.data
+        values += self.equilibrium(stream) * self._stoichiometry
+        if tmo.reaction.CHECK_FEASIBILITY:
+            has_negatives = values.has_negatives()
+            if has_negatives:
+                negative_index = values.negative_index()
+                negative_values = values[negative_index]
+                if negative_values.sum() < -1e-12:
+                    negative_index = values.negative_keys()
+                    chemicals = self.chemicals.tuple
+                    IDs = [chemicals[i].ID for i in negative_index]
+                    if len(IDs) == 1: IDs = repr(IDs[0])
+                    raise InfeasibleRegion(f'conversion of {IDs} is over 100%; reaction conversion')
+                else:
+                    values[negative_index] = 0.
+        else:
+            fn.remove_negligible_negative_values(values)
+    
+    
 # %% Short-hand conventions
 
 # Extent of reaction

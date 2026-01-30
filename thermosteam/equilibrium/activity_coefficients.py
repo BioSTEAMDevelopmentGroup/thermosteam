@@ -343,10 +343,8 @@ class GroupActivityCoefficients(ActivityCoefficients):
         
         """
         x = np.asarray(x, float)
-        try:
-            return self.f(x, T, *self.args)
-        except:
-            breakpoint()
+        gamma = self.f(x, T, *self.args)
+        return gamma
     
     
 class UNIFACActivityCoefficients(GroupActivityCoefficients):
