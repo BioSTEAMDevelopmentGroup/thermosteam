@@ -375,15 +375,9 @@ class VLE(Equilibrium, phases='lg'):
                 V = B / (1 + B)
         if gas_conversion or liquid_conversion:
             if gas_conversion:
-                if isinstance(gas_conversion, tmo.KineticReaction):
-                    gas_conversion = gas_conversion.conversion_handle(tmo.Stream(thermo=self.thermo))
-                elif isinstance(gas_conversion, (tmo.Reaction, tmo.ReactionItem)):
-                    gas_conversion = gas_conversion.conversion_handle(None)
+                gas_conversion = gas_conversion.conversion_handle(tmo.Stream(thermo=self.thermo))
             if liquid_conversion:
-                if isinstance(liquid_conversion, tmo.KineticReaction):
-                    liquid_conversion = liquid_conversion.conversion_handle(tmo.Stream(thermo=self.thermo))
-                elif isinstance(liquid_conversion, (tmo.Reaction, tmo.ReactionItem)):
-                    liquid_conversion = liquid_conversion.conversion_handle(None)
+                liquid_conversion = liquid_conversion.conversion_handle(tmo.Stream(thermo=self.thermo))
             if x is not None or y is not None:
                 raise ValueError(
                     "can not pass either 'x' or 'y' arguments with reactions preset"

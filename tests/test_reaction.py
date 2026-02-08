@@ -275,21 +275,17 @@ def test_reactive_phase_equilibrium_with_kinetics():
     from numpy.testing import assert_allclose
     tmo.settings.set_thermo(['EthylLactate', 'LacticAcid', 'H2O', 'Ethanol'], cache=True)
     
-    class Esterification(tmo.KineticReaction):
-        
-        def volume(self, stream):
-            return 0.001 # Kg of catalyst
-        
-        def rate(self, stream):
-            T = stream.T
-            if T > 370: return 0 # Prevents multiple steady states.
-            R = tmo.constants.R
-            kf = 6.52e3 * exp(-4.8e4 / (R * T))
-            kr = 2.72e3 * exp(-4.8e4 / (R * T))
-            LaEt, La, H2O, EtOH = stream.mol / stream.F_mol
-            return 3600 * (kf * La * EtOH - kr * LaEt * H2O) # kmol / kg-catalyst / hr
+    def rate(stream):
+        T = stream.T
+        if T > 370: return 0 # Prevents multiple steady states.
+        R = tmo.constants.R
+        kf = 6.52e3 * exp(-4.8e4 / (R * T))
+        kr = 2.72e3 * exp(-4.8e4 / (R * T))
+        LaEt, La, H2O, EtOH = stream.mol / stream.F_mol
+        catalyst = 0.001 # Kg of catalyst
+        return catalyst * 3600 * (kf * La * EtOH - kr * LaEt * H2O) # kmol / kg-catalyst / hr
     
-    rxn = Esterification('LacticAcid + Ethanol -> H2O + EthylLactate', reactant='LacticAcid')
+    rxn = tmo.Reaction('LacticAcid + Ethanol -> H2O + EthylLactate', reactant='LacticAcid', rate=rate)
     stream = tmo.Stream(
         H2O=2, Ethanol=5, LacticAcid=1, T=355,
     )

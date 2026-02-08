@@ -449,7 +449,7 @@ class BubblePoint:
                                          checkiter=False, checkbounds=False, 
                                          maxiter=self.maxiter)
             y = fn.normalize(y)
-            return (P, y, α) if full else P, y
+            return (P, y, α) if full else (P, y)
         else:
             f = self._P_error_reactive
             z_norm = z / z.sum()
