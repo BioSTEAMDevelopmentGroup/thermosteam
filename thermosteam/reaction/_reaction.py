@@ -398,10 +398,13 @@ class Reaction:
         new._rescale()
         return new
     
-    @property
+    def reaction_indices(self):
+        """Return all chemical indices involved in the reaction."""
+        return self.stoichiometry.nonzero_keys()
+    
     def reaction_chemicals(self):
         """Return all chemicals involved in the reaction."""
-        keys = sorted(self._stoichiometry.nonzero_keys())
+        keys = sorted(self.reaction_indices())
         chemicals = self.chemicals
         return [chemicals[i] for i in keys]
     
@@ -1297,6 +1300,12 @@ class ReactionSet:
         reactant_index = [i._reactant_index for i in reactions]
         self._reactant_index = tuple(reactant_index) if self._phases else np.array(reactant_index)
     
+    def reaction_indices(self):
+        """Return all chemical indices involved in the reaction."""
+        keys = []
+        for i in self._stoichiometry: keys.extend(i.set)
+        return set(keys)
+    
     def equilibrium(self, material, T, P, phase):
         raise NotImplementedError('equilibrium of reaction sets not implemented in BioSTEAM (yet)')
         
@@ -1778,8 +1787,15 @@ class ReactionSystem:
         
     force_reaction = Reaction.force_reaction
     adiabatic_reaction = Reaction.adiabatic_reaction
+    reaction_chemicals = Reaction.reaction_chemicals
     __call__ = Reaction.__call__
     show = Reaction.show
+    
+    def reaction_indices(self):
+        """Return all chemical indices involved in the reaction."""
+        keys = []
+        for i in self._reactions: keys.extend(i.reaction_indices)
+        return set(keys)
     
     def equilibrium(self, material, T, P, phase):
         raise NotImplementedError('equilibrium of reaction systems not implemented in BioSTEAM (yet)')
