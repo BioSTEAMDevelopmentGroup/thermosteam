@@ -548,7 +548,7 @@ class Reaction:
         values, config, original = as_material_array(
             material, self._basis, self._phases, self.chemicals
         )
-        if values.ndim == 2 and not isinstance(self._reactant_index, tuple):
+        if values.ndim == 2 and len(self._phases) == 1:
             for i, j in zip(values, material): self._reaction(i, j)
         else:
             self._reaction(values, material)
@@ -1772,9 +1772,10 @@ class ReactionSystem:
     __slots__ = ('_reactions',
                  '_basis',
                  '_chemicals',
-                 '_phases')
+                 '_phases',
+                 '_reactant_index')
     
-    _reactant_index = ()
+    
     
     def __init__(self, *reactions, basis=None):
         if not reactions: raise ValueError('Reactions cannot be empty')
@@ -1785,7 +1786,7 @@ class ReactionSystem:
         except: raise ValueError('all reactions must have the same chemicals')
         self._chemicals = chemicals
         try: self._basis, = set([i._basis for i in reactions])
-        except: raise ValueError('all reactions must have the same basis')
+        except: raise ValueError('all reactions must have the same basis') 
         
     force_reaction = Reaction.force_reaction
     adiabatic_reaction = Reaction.adiabatic_reaction
