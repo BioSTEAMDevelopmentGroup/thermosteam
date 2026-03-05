@@ -1774,6 +1774,8 @@ class ReactionSystem:
                  '_chemicals',
                  '_phases')
     
+    _reactant_index = ()
+    
     def __init__(self, *reactions, basis=None):
         if not reactions: raise ValueError('Reactions cannot be empty')
         self._reactions = reactions
