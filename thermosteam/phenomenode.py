@@ -97,7 +97,7 @@ colors = {
     'vle': '#60c1cf', # blue
     'lle': '#79bf82', # green
     'reaction': '#dd7440', # orange
-    'shortcut': '#00a996', # darker blue 
+    # (old 'shortcut': '#00a996', # darker blue)
     'compression': '#5c5763', # black
 }
 edge_options = dict(
@@ -269,7 +269,7 @@ class PhenomeNode:
 
 
 class PhenomeGraph:
-    __slots__ = ('phenomenodes', 'edges', 'pydot', 'profiles', 'time')
+    __slots__ = ('phenomenodes', 'edges', 'pydot', 'digraph', 'profiles', 'time')
     
     def __init__(self, equations, criteria_selection, stage_tags, variable_profiles, time, file=None):
         phenomenodes = []
@@ -293,17 +293,7 @@ class PhenomeGraph:
         def normalized_profile(errors):
             order = np.array(get_order(errors.sum(axis=1)))
             order_norm = 100 * order / order.max()
-            # breakpoint()
             return order_norm
-            # MSE = errors.sum(axis=1)
-            # # MSE = (errors * errors).mean(axis=1)
-            # mask = np.isnan(MSE)
-            # MSE[mask] = MSE[~mask].max() # Maximum error
-            # MSE[MSE < 1e-16] = 1e-16 # Minimum error
-            # MSE = np.log(MSE)
-            # MSE_zeroed = MSE - MSE.min()
-            # MSE_norm = 100 * MSE_zeroed / MSE_zeroed.max()
-            # return MSE_norm
         
         assert variable_profiles.shape[0] == len(time)
         profiles = [
@@ -315,9 +305,9 @@ class PhenomeGraph:
         self.phenomenodes = phenomenodes
         self.edges = edges
         self.profiles = profiles
-        self.load_pydot()
+        self.load()
         
-    def load_pydot(self, 
+    def load(self, 
             file=None,
             maxiter=None,
             damping=None, 
@@ -327,7 +317,7 @@ class PhenomeGraph:
             try:
                 self.pydot = pydot.graph_from_dot_file(file)[0]
             except:
-                self.load_pydot(None, maxiter, damping, K)
+                self.load(None, maxiter, damping, K)
                 self.write(file)
             return
         if maxiter is None: maxiter = '20000'
@@ -350,8 +340,6 @@ class PhenomeGraph:
             splines='curved', 
             outputorder='edgesfirst', 
             dpi='300',
-            # nodesep='0.2', 
-            # ranksep='0.2',
             overlap='compress', 
             dir='none',
         )
@@ -419,13 +407,12 @@ class PhenomeGraph:
                 color='black',
                 **phenomenode_edge_options,
             )
+        self.digraph = digraph
         dot = digraph.pipe(format='dot') # Pin nodes
         self.pydot = pydot.graph_from_dot_data(dot.decode('utf-8'))[0]
         
     def display(self): # TODO: this does not work, maybe revert back to graphviz  
         source = Source(self.pydot.create_dot().decode('utf-8'))
-        # img = source.pipe('svg')
-        # x = _display.SVG(img)
         x = _display.Image(source.pipe(format='png'))
         return _display.display(x)
         
@@ -434,41 +421,6 @@ class PhenomeGraph:
         method = 'write_' + format
         getattr(self.pydot, method)(file)
         
-    # TODO: plots/gifs
-    # def plot_convergence_profile(self, file=None):
-    #     equation_profiles = self.equation_profiles
-    #     profiles_arr = np.abs(equation_profiles.values)
-    #     equations = sorted(self.equations, key=lambda x: x.category)
-    #     index = [equation_profiles.columns.get_loc(i.name) for i in equations]
-    #     # ps = [*range(0, 101, 1)]
-    #     # percentiles = np.percentile(profiles_arr, ps, axis=0)
-    #     # fs = [interp1d(i, ps) for i in percentiles.T]
-    #     M, N = profiles_arr.shape
-    #     image = np.zeros([M, N, 3])
-    #     # errors_percentiles = np.zeros([M, N])
-    #     # for i in range(M):
-    #     #     for j in index: 
-    #     #         errors_percentiles[i, j] = fs[j](profiles_arr[i, j])
-    #     # errors_percentiles -= errors_percentiles.min(axis=0, keepdims=True)
-    #     profiles_arr[:] = np.log(profiles_arr + 1e-6)
-    #     profiles_arr -= profiles_arr.min(axis=0, keepdims=True)
-    #     max_errors = profiles_arr.max(axis=0, keepdims=True)
-    #     max_errors[max_errors < 1e-9] = 1
-    #     profiles_arr /= max_errors
-    #     for i in range(M):
-    #         for k, (j, eq) in enumerate(zip(index, equations)): 
-    #             # error = errors_percentiles[i, j]
-    #             # if error < 20: error = 0.
-    #             error = 100 * profiles_arr[i, j]
-    #             color = colors[eq.category]
-    #             image[i, k, :] = Color(fg=color).shade(error).RGBn        
-    #     ax = plt.imshow(image)
-    #     plt.axis('off')
-    #     if file:
-    #         for i in ('svg', 'png'):
-    #             plt.savefig(file, dpi=900, transparent=True)
-    #     return ax
-        
     def convergence_gif(
             self, 
             file=None, 
@@ -476,10 +428,9 @@ class PhenomeGraph:
             fps=3,
             **kwargs
         ):
-        digraph = self.pydot
-        digraph.set_maxiter('10') # This speeds up image creation.
-        digraph.set_dpi('100') # Pydot does not seem to save dpi from piped graphviz
-        # breakpoint()
+        pydot = self.pydot
+        pydot.set_maxiter('10') # This speeds up image creation.
+        pydot.set_dpi('100') # Pydot does not seem to save dpi from piped graphviz
         output_file = file
         input_file = os.path.join(folder, 'temp0.png')
         profiles = self.profiles
@@ -490,7 +441,7 @@ class PhenomeGraph:
         interpolators = [interp1d(normalized_time, profiles[name]) for name in profiles]
         phenomenodes = self.phenomenodes
         nodes_dct = {}
-        for subgraph in digraph.get_subgraph_list():
+        for subgraph in pydot.get_subgraph_list():
             if self.depth == 1:
                 for i in subgraph.get_nodes():
                     nodes_dct[i.get_name().strip('"')] = i
@@ -508,7 +459,7 @@ class PhenomeGraph:
                 color = Color(fg=colors[node.category]).shade(error).HEX
                 node = nodes_dct[node.name]
                 node.set_fillcolor(color)
-            digraph.write_png(input_file.replace('0', str(n)))
+            pydot.write_png(input_file.replace('0', str(n)))
             
         if output_file is None: output_file = os.path.join(folder, 'temp.gif')
         elif '.' not in output_file: output_file += '.gif'
@@ -532,7 +483,7 @@ class PhenomeGraph:
             
 
 class BipartitePhenomeGraph:
-    __slots__ = ('name', 'equations', 'variables', 'edges', 
+    __slots__ = ('name', 'equations', 'variables', 'edges', 'digraph',
                  'variable_profiles', 'equation_profiles', 'edge_profiles',
                  'subgraphs', 'pydot', 'time',)
     
@@ -555,7 +506,7 @@ class BipartitePhenomeGraph:
         self.edge_profiles = edge_profiles
         self.time = time
         self.subgraphs = []
-        self.load_pydot(file, **kwargs)
+        self.load(file, **kwargs)
        
     def subgraph(self, 
             name, equations, variables, edges, 
@@ -572,27 +523,16 @@ class BipartitePhenomeGraph:
         subgraph.edge_profiles = edge_profiles
         subgraph.time = self.time
         self.subgraphs.append(subgraph)
-        subgraph.load_pydot(file, parent=self.pydot, **kwargs)
+        subgraph.load(file, parent=self.pydot, **kwargs)
        
-    def load_pydot(self, 
-            file=None,
+    def create_digraph(self, 
             maxiter=None,
-            damping=None, 
+            damping=None,
             K=None,
-            subgraph_units=None,
-            parent=None,
-        ):
-        if file:
-            try:
-                self.pydot = pydot.graph_from_dot_file(file)[0]
-            except:
-                self.load_pydot(None, maxiter, damping, K, subgraph_units, parent)
-                self.write(file)
-            return
-        if maxiter is None: maxiter = '10000'
-        if damping is None: damping = '0.2'
-        if K is None: K = '0.2'
-        # Create a digraph and set direction left to right
+            subgraph_units=None):
+        if maxiter is None: maxiter = '100000'
+        if damping is None: damping = '0.5'
+        if K is None: K = '0.3'
         digraph = Digraph(format='png', strict=True)
         digraph.attr(
             'graph',
@@ -604,14 +544,12 @@ class BipartitePhenomeGraph:
             penwidth='0', 
             color='none', 
             bgcolor='transparent',
-            nodesep='0.02', 
-            ranksep='0.02', 
+            nodesep='0.03', 
+            ranksep='0.03', 
             layout='fdp', 
             splines='curved', 
             outputorder='edgesfirst', 
             dpi='300',
-            # nodesep='0.2', 
-            # ranksep='0.2',
             overlap='compress', 
             dir='none',
         )
@@ -620,7 +558,6 @@ class BipartitePhenomeGraph:
         edges = self.edges
         inner_edges = []
         past_nodes = set()
-        subgraph_units = False
         if subgraph_units:
             for name in subgraph_units:
                 # with digraph.subgraph(name=name) as subgraph:
@@ -640,13 +577,31 @@ class BipartitePhenomeGraph:
         else:
             self.fill_digraph_nodes(digraph, variables, equations)
             self.fill_digraph_edges(digraph, edges)
-        # img = digraph.pipe(format='png') # Pin nodes
-        # f = open(self.name + '.png', 'wb')
-        # f.write(img)
-        # f.close()
+        return digraph
+       
+    def load(self, 
+            file=None,
+            maxiter=None,
+            damping=None, 
+            K=None,
+            subgraph_units=None,
+            parent=None,
+        ):
+        if file:
+            try:
+                self.pydot = pydot.graph_from_dot_file(file)[0]
+                self.digraph = digraph = self.create_digraph(
+                    maxiter, damping, K, subgraph_units,
+                )
+            except:
+                self.load(None, maxiter, damping, K, subgraph_units, parent)
+                self.write(file)
+            return
+        self.digraph = digraph = self.create_digraph(
+            maxiter, damping, K, subgraph_units,
+        )
         dot = digraph.pipe(format='dot') # Pin nodes
         self.pydot = pydot.graph_from_dot_data(dot.decode('utf-8'))[0]
-        # for node in self.pydot.get_nodes(): node.set_pin('false')
         if parent:
             nodes_dct = {i.get_name().strip('"'): i for i in self.pydot.get_nodes()}
             parent_nodes_dct = {i.get_name().strip('"'): i for i in parent.get_nodes()}
@@ -706,49 +661,19 @@ class BipartitePhenomeGraph:
         
     def display(self): # TODO: this does not work, maybe revert back to graphviz  
         source = Source(self.pydot.create_dot().decode('utf-8'))
-        # img = source.pipe('svg')
-        # x = _display.SVG(img)
         x = _display.Image(source.pipe(format='png'))
         return _display.display(x)
         
-    def write(self, file):
+    def write(self, file, pydot=True):
         format = file[file.index('.')+1:]
-        method = 'write_' + format
-        getattr(self.pydot, method)(file)
-        
-    # def plot_convergence_profile(self, file=None):
-    #     equation_profiles = self.equation_profiles
-    #     profiles_arr = np.abs(equation_profiles.values)
-    #     equations = sorted(self.equations, key=lambda x: x.category)
-    #     index = [equation_profiles.columns.get_loc(i.name) for i in equations]
-    #     # ps = [*range(0, 101, 1)]
-    #     # percentiles = np.percentile(profiles_arr, ps, axis=0)
-    #     # fs = [interp1d(i, ps) for i in percentiles.T]
-    #     M, N = profiles_arr.shape
-    #     image = np.zeros([M, N, 3])
-    #     # errors_percentiles = np.zeros([M, N])
-    #     # for i in range(M):
-    #     #     for j in index: 
-    #     #         errors_percentiles[i, j] = fs[j](profiles_arr[i, j])
-    #     # errors_percentiles -= errors_percentiles.min(axis=0, keepdims=True)
-    #     profiles_arr[:] = np.log(profiles_arr + 1e-6)
-    #     profiles_arr -= profiles_arr.min(axis=0, keepdims=True)
-    #     max_errors = profiles_arr.max(axis=0, keepdims=True)
-    #     max_errors[max_errors < 1e-9] = 1
-    #     profiles_arr /= max_errors
-    #     for i in range(M):
-    #         for k, (j, eq) in enumerate(zip(index, equations)): 
-    #             # error = errors_percentiles[i, j]
-    #             # if error < 20: error = 0.
-    #             error = 100 * profiles_arr[i, j]
-    #             color = colors[eq.category]
-    #             image[i, k, :] = Color(fg=color).shade(error).RGBn        
-    #     ax = plt.imshow(image)
-    #     plt.axis('off')
-    #     if file:
-    #         for i in ('svg', 'png'):
-    #             plt.savefig(file, dpi=900, transparent=True)
-    #     return ax
+        if pydot:
+            method = 'write_' + format
+            getattr(self.pydot, method)(file)
+        else:
+            img = self.digraph.pipe(format=format)
+            f = open(file, 'wb')
+            f.write(img)
+            f.close()
         
     def convergence_gif(self, 
             reference, time, profiles, 
@@ -756,20 +681,13 @@ class BipartitePhenomeGraph:
             categorize=True, interpolate=False,
             inverse=False, **kwargs
         ):
-        digraph = self.pydot
+        pydot = self.pydot
         equations = self.equations
-        digraph.set_maxiter('10') # This speeds up image creation.
-        digraph.set_dpi('100') # Pydot does not seem to save dpi from piped graphviz
-        # breakpoint()
+        pydot.set_maxiter('10') # This speeds up image creation.
+        pydot.set_dpi('100') # Pydot does not seem to save dpi from piped graphviz
         output_file = file
         input_file = os.path.join(folder, 'temp0.png')
         time = self.time
-        # profiles = self.variable_profiles
-        # reference = {i: n for n, i in enumerate(profiles)}
-        # profiles = profiles.values
-        # profiles = np.abs(profiles - profiles[-1])
-        # profiles -= profiles.min(axis=0, keepdims=True)
-        # profiles *= 100 / profiles.max()
         pulses = (False, True, False)
         if interpolate:
             raise NotImplementedError('not implemented in BioSTEAM yet')
@@ -780,15 +698,7 @@ class BipartitePhenomeGraph:
             frame_duration = 1 / fps 
             interpolators = [interp1d(normalized_time, i) for i in profiles]
             duration_ms = 1000 * frame_duration
-            # print(duration_ms)
         else:
-            # time = time[:total_frames + 1] - time[0]
-            # normalized_time = time / time[-1] * total_duration
-            # duration_ms = 1000 * np.diff(normalized_time) # in ms
-            # duration_ms = [*duration_ms]
-            # duration_ms = 1 / fps * 1000
-            # print(duration_ms)
-            # breakpoint()
             total_frames = len(profiles[0])
             if total_duration is not None:
                 duration_ms = 1000 * total_duration / total_frames
@@ -800,18 +710,15 @@ class BipartitePhenomeGraph:
                 fps = total_duration / total_frames
             duration_ms = 1000 / (fps * len(pulses))
             print('total_duration', total_duration)
-            # profiles = [i[:total_frames] for i in profiles]
-            # profiles = [i - i.min() for i in profiles]
-            # profiles = [100 * i / (i.max() or 1) for i in profiles]
         total_frames = len(profiles[0])
         print('total frames', total_frames)
         variables = set(self.variables)
-        nodes_dct = {i.get_name().strip('"'): i for i in digraph.get_nodes()}
+        nodes_dct = {i.get_name().strip('"'): i for i in pydot.get_nodes()}
         equation_names = set([i.name for i in equations])
         variable_names = set([i.name for i in variables])
         edges_dct = {
             (i.get_source().replace(':c', '').strip('"'), i.get_destination().replace(':c', '').strip('"')): i
-            for i in digraph.get_edges()
+            for i in pydot.get_edges()
         }
         if interpolate: 
             t = 0
@@ -862,10 +769,10 @@ class BipartitePhenomeGraph:
                         var = nodes_dct[var.name]
                         var.set_color(color)
                 if pulse: 
-                    digraph.write_png(pulse_nfile)
+                    pydot.write_png(pulse_nfile)
                     filenames.append(pulse_nfile)
                 else:
-                    digraph.write_png(nfile)
+                    pydot.write_png(nfile)
                     filenames.append(nfile)
                 done.add((n, pulse))
                 
