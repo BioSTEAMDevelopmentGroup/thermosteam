@@ -12,7 +12,7 @@ from ..utils import Cache
 from .equilibrium import Equilibrium
 from ..exceptions import NoEquilibrium
 from .binary_phase_fraction import phase_fraction
-from .tangential_plane_stability import lle_tangential_plan_analysis
+from .tangential_plane_stability import lle_tangential_plane_analysis
 from scipy.optimize import shgo, differential_evolution
 import flexsolve as flx
 import numpy as np
@@ -121,28 +121,22 @@ def pseudo_equilibrium(K, phi, z, T, n, f_gamma, gamma_args, inner_loop_options,
 # Light weight
 def solve_lle_mol(gamma, z, T, P, sample=None, phi=1):
     n = z.size
-    stability = lle_tangential_plan_analysis(gamma, z, T, P, sample=sample)
+    stability = lle_tangential_plane_analysis(gamma, z, T, P, samples=sample)
     if stability.unstable:
         y = stability.candidate
         y[y < 1e-64] = 1e-64
-        if stability.sample_unstable: 
-            phi = min(0.99 * (z / y).min(), phi)
-        else:
-            phi = 0.99 * (z / y).min()
+        phi = 0.99 * (z / y).min()
         x = z - phi * y
         x /= x.sum()
         K = gamma(y, T) / gamma(x, T)
     else:
         return z
     K[K <= 0] = 1e-9
-    try:
-        mol = pseudo_equilibrium(
-            K, phi, z, T, n, gamma.f, gamma.args, 
-            LLE.pseudo_equilibrium_inner_loop_options,
-            LLE.pseudo_equilibrium_outer_loop_options,
-        )
-    except:
-        breakpoint()
+    mol = pseudo_equilibrium(
+        K, phi, z, T, n, gamma.f, gamma.args, 
+        LLE.pseudo_equilibrium_inner_loop_options,
+        LLE.pseudo_equilibrium_outer_loop_options,
+    )
     if mol.any():
         return mol / mol.sum()
     else:
@@ -357,22 +351,32 @@ class LLE(Equilibrium, phases='lL'):
                 K = self._K
                 phi = self._phi
                 x0 = z / (1. + phi * (K - 1.))
+                x0 /= x0.sum()
                 sample = x0
             else:
                 sample = None
-            stability = lle_tangential_plan_analysis(gamma, z, T, 101325, sample=sample)
+            stability = lle_tangential_plane_analysis(gamma, z, T, 101325, sample=sample)
             if stability.unstable:
                 y = stability.candidate
-                y[y < 1e-64] = 1e-64
-                if stability.sample_unstable: 
-                    phi = min(0.99 * (z / y).min(), phi)
-                else:
-                    phi = 0.99 * (z / y).min()
+                y[y < 1e-32] = 1e-32
+                phi = 0.999 * (z / y).min()
                 x = z - phi * y
                 x /= x.sum()
                 K = gamma(y, T) / gamma(x, T)
             else:
-                return z
+                indices = np.argsort(z * np.array([i.MW for i in lle_chemicals]))
+                x = z.copy()
+                y = z.copy()
+                a = indices[-1]
+                b = indices[-2]
+                x[a] = 0.99
+                y[a] = 1e-3
+                x[b] = 1e-3
+                y[b] = 0.99
+                x /= x.sum()
+                y /= y.sum()
+                K = gamma(y, T) / gamma(x, T)
+                phi = 0.5
             if single_loop:
                 f_gamma = gamma.f
                 gamma_args = gamma.args

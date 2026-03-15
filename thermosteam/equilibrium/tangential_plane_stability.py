@@ -19,7 +19,6 @@ class StabilityReport(NamedTuple):
     unstable: bool
     candidate: np.ndarray
     tpd: float
-    sample_unstable: bool = False
 
 def edge_points_simplex_masked(z: np.ndarray,
                                points_per_edge: int = 12,
@@ -90,7 +89,7 @@ def edge_points_simplex_masked(z: np.ndarray,
     return np.array(pts)
 
 # Light weight
-def lle_tangential_plan_analysis(gamma, z, T, P, sample=None):
+def lle_tangential_plane_analysis(gamma, z, T, P, sample=None):
     MW = np.array([i.MW for i in gamma.chemicals])
     logfz = np.log(z * gamma(z, T, P) + 1e-30)
     
@@ -148,7 +147,7 @@ def lle_tangential_plan_analysis(gamma, z, T, P, sample=None):
     return StabilityReport(
         unstable=best_val < 0 and np.abs(best_result - z).sum() > 1e-9,
         candidate=best_result,
-        tpd=best_val
+        tpd=best_val,
     )
 
 class TangentPlaneStabilityAnalysis:
