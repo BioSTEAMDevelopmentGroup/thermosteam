@@ -358,11 +358,12 @@ class LLE(Equilibrium, phases='lL'):
             stability = lle_tangential_plane_analysis(gamma, z, T, 101325, sample=sample)
             if stability.unstable:
                 y = stability.candidate
-                y[y < 1e-32] = 1e-32
-                phi = 0.999 * (z / y).min()
-                x = z - phi * y
-                x /= x.sum()
-                K = gamma(y, T) / gamma(x, T)
+                if not stability.stable_sample:
+                    y[y < 1e-32] = 1e-32
+                    phi = 0.999 * (z / y).min()
+                    x = z - phi * y
+                    x /= x.sum()
+                    K = gamma(y, T) / gamma(x, T)
             else:
                 indices = np.argsort(z * np.array([i.MW for i in lle_chemicals]))
                 x = z.copy()
