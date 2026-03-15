@@ -553,7 +553,7 @@ class Chemical:
             except LookupError as error:
                 # Try BioSTEAM
                 self = search_biorefinery_chemicals(search_ID, error)
-                if CAS is not None: self._CAS = CAS
+            if CAS is not None: self._CAS = CAS
         elif db in ('biosteam', 'thermosteam'):
             self = search_biorefinery_chemicals(search_ID)
             if CAS is not None: self._CAS = CAS
