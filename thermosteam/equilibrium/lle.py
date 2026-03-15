@@ -350,15 +350,17 @@ class LLE(Equilibrium, phases='lL'):
             if self._K is not None and 0 < self._phi < 1:
                 K = self._K
                 phi = self._phi
-                x0 = z / (1. + phi * (K - 1.))
-                x0 /= x0.sum()
-                sample = x0
+                x = z / (1. + phi * (K - 1.))
+                x /= x.sum()
+                y = x * K
+                y /= y.sum()
+                samples = [x, y] 
             else:
-                sample = None
-            stability = lle_tangential_plane_analysis(gamma, z, T, 101325, sample=sample)
+                samples = ()
+            stability = lle_tangential_plane_analysis(gamma, z, T, 101325, samples=samples)
             if stability.unstable:
                 y = stability.candidate
-                if not stability.stable_sample:
+                if not stability.early_exit:
                     y[y < 1e-32] = 1e-32
                     phi = 0.999 * (z / y).min()
                     x = z - phi * y

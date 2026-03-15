@@ -19,7 +19,7 @@ class StabilityReport(NamedTuple):
     unstable: bool
     candidate: np.ndarray
     tpd: float
-    stable_sample: bool
+    early_exit: bool = False
 
 def edge_points_simplex_masked(z: np.ndarray,
                                points_per_edge: int = 12,
@@ -90,9 +90,10 @@ def edge_points_simplex_masked(z: np.ndarray,
     return np.array(pts)
 
 # Light weight
-def lle_tangential_plane_analysis(gamma, z, T, P, sample=None):
+def lle_tangential_plane_analysis(gamma, z, T, P, samples=None):
     MW = np.array([i.MW for i in gamma.chemicals])
     logfz = np.log(z * gamma(z, T, P) + 1e-30)
+    if samples is None: samples = ()
     
     def objective(w, T, P, logfz, softmax=False):
         if softmax:
@@ -101,29 +102,20 @@ def lle_tangential_plane_analysis(gamma, z, T, P, sample=None):
         return np.dot(w, np.log(w * gamma(w, T, P) + 1e-30) - logfz)
     
     args = (T, P, logfz)
-    if sample is None:
-        best_val = np.inf
-        best_result = None
-        stable_sample = False
-    else:
-        best_result = sample
-        best_val = objective(sample, *args)
-        stable_sample = best_val < 0 and np.abs(best_result - z).sum() > 1e-9
-        if not stable_sample:
-            result = minimize(
-                objective, 
-                best_result, 
-                method="L-BFGS-B", 
-                options=dict(maxiter=20),
-                args=(*args, True),
+    best_val = np.inf
+    best_result = None
+    for sample in samples:
+        val = objective(sample, *args)
+        if val < best_val:
+            best_result = sample
+            best_val = val
+        if best_val < 0 and np.abs(best_result - z).sum() > 1e-9:
+            return StabilityReport(
+                unstable=True,
+                candidate=sample,
+                tpd=best_val,
+                early_exit=True,
             )
-            value = result.fun
-            if value < best_val:
-                w = result.x
-                w = np.exp(w - np.max(w)) # Softmax for unconstrained optimization
-                w /= w.sum()
-                best_result = w
-                best_val = value
     w = z * MW
     w /= w.sum()
     samples = edge_points_simplex_masked(w)
@@ -152,7 +144,6 @@ def lle_tangential_plane_analysis(gamma, z, T, P, sample=None):
         unstable=best_val < 0 and np.abs(best_result - z).sum() > 1e-9,
         candidate=best_result,
         tpd=best_val,
-        stable_sample=stable_sample,
     )
 
 class TangentPlaneStabilityAnalysis:
@@ -171,36 +162,28 @@ class TangentPlaneStabilityAnalysis:
             w /= w.sum()
         return np.dot(w, np.log(model(w, T, P, reduce) + 1e-30) - logfz)
     
-    def __call__(self, z, T, P, reference_phase='l', potential_phase='L', sample=None):
+    def __call__(self, z, T, P, reference_phase='l', potential_phase='L', samples=None):
         reference_model = self.fugacity_models[reference_phase]
         same_phase = reference_phase.lower() == potential_phase.lower()
         logfz = np.log(reference_model(z, T, P, same_phase) + 1e-30)
         objective = self.objective
         model = self.fugacity_models[potential_phase]
         args = (T, P, model, logfz, same_phase)
-        if sample is None:
-            best_val = np.inf
-            best_result = None
-            stable_sample = False
-        else:
-            best_result = sample
-            best_val = objective(sample, *args)
-            stable_sample = best_val < 0 and np.abs(best_result - z).sum() > 1e-9
-            if not stable_sample:
-                result = minimize(
-                    objective, 
-                    best_result, 
-                    method="L-BFGS-B", 
-                    options=dict(maxiter=20),
-                    args=(*args, True),
+        if samples is None: samples = ()
+        best_val = np.inf
+        best_result = None
+        for sample in samples:
+            val = objective(sample, *args)
+            if val < best_val:
+                best_result = sample
+                best_val = val
+            if best_val < 0 and np.abs(best_result - z).sum() > 1e-9:
+                return StabilityReport(
+                    unstable=True,
+                    candidate=sample,
+                    tpd=best_val,
+                    early_exit=True,
                 )
-                value = result.fun
-                if value < best_val:
-                    w = result.x
-                    w = np.exp(w - np.max(w)) # Softmax for unconstrained optimization
-                    w /= w.sum()
-                    best_result = w
-                    best_val = value
         MW = self.MW
         w = z * MW
         w /= w.sum()
@@ -230,7 +213,6 @@ class TangentPlaneStabilityAnalysis:
             unstable=best_val < 0 and np.abs(best_result - z).sum() > 1e-9,
             candidate=best_result,
             tpd=best_val,
-            stable_sample=stable_sample,
         )
 
 
