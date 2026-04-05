@@ -42,6 +42,7 @@ class DisplayPreferences:
     tooltips_full_results: False
     graphviz_html_height: {'big-system': ('600px', '900px'), 'huge-system': ('800px', '1200px'), 'system': ('400px', '600px'), 'unit': ('225px', '400px')}
     show_all_streams: True
+    ID_inference: False
     flow: 'kmol/hr:.3g'
     T: 'K:.5g'
     P: 'Pa:.6g'
@@ -55,7 +56,7 @@ class DisplayPreferences:
                  'label_color', 'label_color', 'depth_colors', 'stream_width',
                  'unit_color', 'unit_label_color', 'unit_periphery_color',
                  'fill_cluster', 'graphviz_format', 'tooltips_full_results',
-                 'graphviz_html_height', 'show_all_streams')
+                 'graphviz_html_height', 'show_all_streams', 'ID_inference')
     
     def __init__(self):
         #: Whether to label the ID of streams with sources and sinks in process 
@@ -80,16 +81,16 @@ class DisplayPreferences:
         self.raise_exception: bool = False
         
         #: Background color in graphviz diagrams.
-        self.background_color: str = 'transparent'
+        self.background_color: str = '#000000'
         
         #: Color of streams in graphviz diagrams.
-        self.stream_color: str = '#90918e'
+        self.stream_color: str = '#98a2ad'
         
         #: Color of stream labels in graphviz diagrams.
-        self.label_color: str = '#90918e'
+        self.label_color: str = '#e5e5e5'
         
         #: Color of subsystem clusters in BioSTEAM graphviz diagrams.
-        self.depth_colors: list[str] = ['#f98f609f']
+        self.depth_colors: list[str] = ['#5172512f', '#1111112f']
         
         #: Property to scale stream widths in BioSTEAM graphviz diagrams.
         self.stream_width: str = 'F_mass'
@@ -101,7 +102,7 @@ class DisplayPreferences:
         self.unit_label_color: str = 'white'
         
         #: Unit node periphery color in BioSTEAM graphviz diagrams.
-        self.unit_periphery_color: str = '#90918e'
+        self.unit_periphery_color: str = 'none'
         
         #: Whether to fill subsystem boxes in BioSTEAM 'cluster' diagrams.
         self.fill_cluster: bool = False
@@ -122,6 +123,9 @@ class DisplayPreferences:
         
         #: Whether to show all streams, including empty feeds and products.
         self.show_all_streams = True
+        
+        #: Whether to infer ID of unit operations, streams, and systems by variable name.
+        self.ID_inference = True
         
     def temporary(self):
         """Return a TemporaryPreferences object that will revert back to original
@@ -217,22 +221,7 @@ class DisplayPreferences:
         self.fill_cluster = fill_cluster
         if save: self.save()
     
-    def classic_mode(self, 
-                     stream='#90918e', 
-                     label='#90918e', 
-                     bg='transparent',
-                     cluster=('#f98f609f',),
-                     unit_color='#555f69',
-                     unit_label_color='white',
-                     unit_periphery_color='none',
-                     fill_cluster=False,
-                     save=False):
-        """Set diagram display colors to classic mode."""
-        self._set_mode(stream, label, bg, cluster, unit_color, 
-                       unit_label_color, unit_periphery_color,
-                       fill_cluster, save)
-    
-    def dark_mode(self, stream='#98a2ad', label='#e5e5e5', bg='transparent',
+    def dark_mode(self, stream='#98a2ad', label='#e5e5e5', bg='#000000',
                   cluster=['#5172512f', '#1111112f'], unit_color='#555f69', 
                   unit_label_color='white', unit_periphery_color='none',
                   fill_cluster=True, save=False):
@@ -268,7 +257,6 @@ class DisplayPreferences:
         dct['composition'] = self.composition
         dct['N'] = self.N
         dct['sort'] = self.sort
-        
         return dct
         
     def save(self):

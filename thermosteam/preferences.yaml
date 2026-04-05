@@ -1,8 +1,9 @@
+ID_inference: true
 N: 7
 P: Pa:.6g
 T: K:.5g
 autodisplay: true
-background_color: transparent
+background_color: '#000000'
 composition: false
 depth_colors:
 - '#5172512f'

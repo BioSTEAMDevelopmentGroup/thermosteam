@@ -8,6 +8,7 @@
 """
 """
 from __future__ import annotations
+import thermosteam as tmo
 from ._thermo import Thermo
 from ._stream import Stream
 from ._thermal_condition import ThermalCondition
@@ -248,6 +249,9 @@ class MultiStream(Stream):
             if total_flow: self._imol.data *= total_flow / self.F_mol
         self._sink = self._source = None
         self.reset_cache()
+        
+        if tmo.preferences.ID_inference and ID == '': ID = tmo.utils.infer_variable_assignment(self.__class__)
+        
         self._register(ID)
         if vlle: self.vlle(T=T, P=P)
         

@@ -53,7 +53,7 @@ def _register(self, ID):
         if '.' in ID:
             if hasattr(self, '_ID') and data.get(ID_old:=self._ID) is self: del data[ID_old]
             self._ID = ID.lstrip('.')
-        elif ID:
+        elif ID and ID != '-':
             registry.register_safely(ID, self) 
         elif self.autonumber:
             ID = self._take_ticket()

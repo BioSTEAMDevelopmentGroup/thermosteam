@@ -17,6 +17,7 @@ from . import colors
 from . import plots
 from . import stream_filters
 from . import abstract_method
+from . import variable_assignment_inference
 
 __all__ = (*pickle.__all__,
            *representation.__all__,
@@ -28,6 +29,7 @@ __all__ = (*pickle.__all__,
            *plots.__all__,
            *stream_filters.__all__,
            *abstract_method.__all__,
+           *variable_assignment_inference.__all__,
 )
 
 from .pickle import *
@@ -40,3 +42,4 @@ from .colors import *
 from .plots import *
 from .stream_filters import *
 from .abstract_method import *
+from .variable_assignment_inference import *
