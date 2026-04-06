@@ -42,7 +42,6 @@ class DisplayPreferences:
     tooltips_full_results: False
     graphviz_html_height: {'big-system': ('600px', '900px'), 'huge-system': ('800px', '1200px'), 'system': ('400px', '600px'), 'unit': ('225px', '400px')}
     show_all_streams: True
-    ID_inference: False
     flow: 'kmol/hr:.3g'
     T: 'K:.5g'
     P: 'Pa:.6g'
@@ -56,7 +55,7 @@ class DisplayPreferences:
                  'label_color', 'label_color', 'depth_colors', 'stream_width',
                  'unit_color', 'unit_label_color', 'unit_periphery_color',
                  'fill_cluster', 'graphviz_format', 'tooltips_full_results',
-                 'graphviz_html_height', 'show_all_streams', 'ID_inference')
+                 'graphviz_html_height', 'show_all_streams')
     
     def __init__(self):
         #: Whether to label the ID of streams with sources and sinks in process 
@@ -123,9 +122,6 @@ class DisplayPreferences:
         
         #: Whether to show all streams, including empty feeds and products.
         self.show_all_streams = True
-        
-        #: Whether to infer ID of unit operations, streams, and systems by variable name.
-        self.ID_inference = True
         
     def temporary(self):
         """Return a TemporaryPreferences object that will revert back to original

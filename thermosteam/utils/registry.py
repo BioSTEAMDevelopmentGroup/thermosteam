@@ -91,10 +91,12 @@ class Registry: # pragma: no cover
                         num = int(num)
                     except:
                         other.ID = ID + '_1'
-                    else:
-                        other.ID = base + '_' + str(num + 1) 
-                    base, num = other.ID.rsplit('_', 1)
-                    ID = base + '_' + str(int(num) + 1)
+                        base = ID
+                        num = 1
+                    ID = base + '_' + str(num + 1)
+                    while ID in data:
+                        num += 1
+                        ID = base + '_' + str(num)
                 elif ID_old:
                     warning = RuntimeWarning(
                         f"upon renaming, {obj!r} replaced {other!r} "

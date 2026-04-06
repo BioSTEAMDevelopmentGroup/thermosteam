@@ -121,6 +121,7 @@ def pseudo_equilibrium(K, phi, z, T, n, f_gamma, gamma_args, inner_loop_options,
 # Light weight
 def solve_lle_mol(gamma, z, T, P, sample=None, phi=1):
     n = z.size
+    if sample is not None: sample = (sample,)
     stability = lle_tangential_plane_analysis(gamma, z, T, P, samples=sample)
     if stability.unstable:
         y = stability.candidate

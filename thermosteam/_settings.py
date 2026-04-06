@@ -101,6 +101,7 @@ class ProcessSettings:
     __slots__ = (
         '_thermo',
         '_flashpkg',
+        'ID_magic',
     )
     
     def __new__(cls):
@@ -281,3 +282,6 @@ class ProcessSettings:
 
 #: 
 settings: ProcessSettings = object.__new__(ProcessSettings)
+
+#: Whether to infer ID of unit operations, streams, and systems by variable assignment.
+settings.ID_magic = True 

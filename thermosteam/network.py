@@ -2514,10 +2514,8 @@ class Network:
             recycle_ends.update(disjunction_streams)
             recycle_ends.update(network.get_all_recycles())
             recycle_ends.update(tmo.utils.products_from_units(network.units))
-            # network.sort_without_recycle(recycle_ends)
             if recycles: network.reduce_recycles()
             network.sort(recycle_ends)
-            # network._add_interaction_units({}, [])
             if interaction: network.add_interaction_units(old_connections, ends)
         return network
     
@@ -2607,7 +2605,7 @@ class Network:
                             try:
                                 unext = next_units[0]
                             except:
-                                continue
+                                unext = None
                         else:
                             unext = path[inext]
                         if isa(unext, Network): unext = unext.get_first_unit()

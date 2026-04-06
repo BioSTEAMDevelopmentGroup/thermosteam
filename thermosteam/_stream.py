@@ -401,7 +401,7 @@ class Stream(AbstractStream):
         self._sink = self._source = None
         self.reset_cache()
         
-        if tmo.preferences.ID_inference and ID == '': ID = tmo.utils.infer_variable_assignment(self.__class__)
+        if tmo.settings.ID_magic and ID == '': ID = tmo.utils.infer_variable_assignment(self.__class__)
         self._register(ID)
         if vlle:
             self.vlle(T=T, P=P)

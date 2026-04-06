@@ -86,7 +86,7 @@ def infer_variable_assignment(caller):
             variable_name = names[-1]
             valid_variable_name = all([i.isidentifier() for i in names])
         if valid_variable_name:
-            # Make sure not a nested call
+            # Make sure caller is correct (e.g., not a nested call)
             callside = callside.strip()
             name = callside.split('(', 1)[0]
             key, *other = name.split('.')
