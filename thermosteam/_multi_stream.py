@@ -46,8 +46,10 @@ class MultiStream(Stream):
     Parameters
     ----------
     ID : 
-        A unique identification. If ID is None, stream will not be registered.
-        If no ID is given, stream will be registered with a unique ID.
+        A unique identification. If ID is None, the stream will not be
+        registered in flowsheet. The ID defaults to the variable assigned in 
+        the source code. If no variable is assigned, a unique ID will be 
+        chosen.
     flow : 
         All flow rates corresponding to `phases` by row and chemical IDs by column.
     T : 
