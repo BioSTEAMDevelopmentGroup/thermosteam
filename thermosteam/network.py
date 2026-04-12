@@ -235,7 +235,7 @@ class AbstractMissingStream:
 # %% Utilities for docking
 
 def n_missing(ub, N):
-    if ub < N: raise RuntimeError(f"size exceeds {ub}")
+    if ub < N: raise RuntimeError(f"at most {ub} streams expected; {N} given")
     return ub - N
 
 DOCKING_WARNINGS = True

@@ -1282,7 +1282,7 @@ class ReactionSet:
     __call__ = Reaction.__call__
     conversion = Reaction.conversion
     
-    def __init__(self, reactions):
+    def __init__(self, reactions, basis=None):
         if not reactions: raise ValueError('no reactions passed')
         phases_set = set([i.phases for i in reactions])
         if len(phases_set) > 1:
@@ -1291,9 +1291,15 @@ class ReactionSet:
         try: chemicals, = {i.chemicals for i in reactions}
         except: raise ValueError('all reactions must have the same chemicals')
         self._chemicals = chemicals
-        basis = {i._basis for i in reactions}
-        try: self._basis, = basis
-        except: raise ValueError('all reactions must have the same basis')
+        if basis is None:
+            basis = {i._basis for i in reactions}
+            try: self._basis, = basis
+            except: raise ValueError('all reactions must have the same basis')
+        elif basis in ('mol', 'wt'):
+            self._basis = basis
+            for i in reactions: i.basis = basis
+        else:
+            raise ValueError(f"basis must be either 'mol' or 'wt', not {basis!r}")
         self._stoichiometry = [i._stoichiometry for i in reactions]
         self._X = np.array([i.X for i in reactions])
         self._rate = [i.rate for i in reactions]
@@ -1785,8 +1791,15 @@ class ReactionSystem:
         try: chemicals, = set([i.chemicals for i in reactions])
         except: raise ValueError('all reactions must have the same chemicals')
         self._chemicals = chemicals
-        try: self._basis, = set([i._basis for i in reactions])
-        except: raise ValueError('all reactions must have the same basis') 
+        if basis is None:
+            basis = {i._basis for i in reactions}
+            try: self._basis, = basis
+            except: raise ValueError('all reactions must have the same basis')
+        elif basis in ('mol', 'wt'):
+            self._basis = basis
+            for i in reactions: i.basis = basis
+        else:
+            raise ValueError(f"basis must be either 'mol' or 'wt', not {basis!r}")
         
     force_reaction = Reaction.force_reaction
     adiabatic_reaction = Reaction.adiabatic_reaction
