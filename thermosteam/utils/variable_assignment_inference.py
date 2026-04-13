@@ -64,7 +64,7 @@ def infer_variable_assignment(caller):
         variable_cache = None if lines is None else {}
         cache[filename] = lines, variable_cache, crossout
         if cache.__len__() > max_filecache:
-            cache.popitem(cache.__iter__().__next__())
+            del cache[cache.__iter__().__next__()]
     if lines is None: return default
     n = frame.f_lineno - 1
     if n in variable_cache:
