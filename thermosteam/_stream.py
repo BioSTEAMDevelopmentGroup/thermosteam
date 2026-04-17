@@ -2040,6 +2040,12 @@ class Stream(AbstractStream):
         Prices, and LCA characterization factors are not copied.
 
         """
+        if tmo.settings.ID_magic:
+            if ID == None:
+                ID = tmo.utils.infer_variable_assignment(self.copy)
+                if ID != '-': ID = '.' + ID
+            elif ID == '': 
+                ID = tmo.utils.infer_variable_assignment(self.copy)
         cls = self.__class__
         if thermo is not None:
             new = cls(ID=ID, thermo=thermo)
