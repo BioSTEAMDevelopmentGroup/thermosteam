@@ -298,8 +298,8 @@ class MultiStream(Stream):
         >>> s1.show('cwt')
         MultiStream: s1
         phases: ('g', 'l', 's'), T: 298.15 K, P: 101325 Pa
-        composition (%): (g) Ethanol  100
-                             -------  2 kg/hr
+        flow (%): (g) Ethanol  100
+                      -------  2 kg/hr
         
         """
         imol = self._imol
@@ -1049,7 +1049,7 @@ class MultiStream(Stream):
         maxlen = max(all_lengths) + 2
         
         if composition:
-            first_line = "composition (%):"
+            first_line = "flow (%):"
         else:
             first_line = f'flow ({flow_units}):'
         first_line_spaces = len(first_line)*" "

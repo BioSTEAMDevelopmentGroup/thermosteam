@@ -3,6 +3,7 @@
 """
 import thermosteam as tmo
 from chemicals.identifiers import pubchem_db
+from chemicals import atoms_to_Hill
 
 biorefinery_chemicals = {}
 
@@ -74,6 +75,14 @@ def Flocculant(ID, **kwargs):
 def Solids(ID, **kwargs):
     return tmo.Chemical(ID, MW=1., phase='s', db=None,
                         Cp=1.100, **kwargs)
+
+@register
+def H3PO4(ID, **kwargs):
+    return tmo.Chemical(ID, search_ID='H3PO4', phase='s', db='ChEDL', **kwargs)
+
+@register
+def P4O10(ID, **kwargs):
+    return tmo.Chemical(ID, search_ID='P4O10', phase='s', db='ChEDL', **kwargs)
 
 # %% Microbes and cellular components
 
@@ -189,12 +198,3 @@ def Cellobiose(ID, **kwargs):
     return tmo.Chemical(ID, formula='C12H22O11', phase='l', db=None,
                         Hf=-480900*cal2joule, rho=rho_solid, Cp=Cp_cellulosic, 
                         **kwargs)
-
-@register
-def H3PO4(ID, **kwargs):
-    return tmo.Chemical(ID, search_ID='H3PO4', phase='s', db='ChEDL', **kwargs)
-
-@register
-def P4O10(ID, **kwargs):
-    return tmo.Chemical(ID, search_ID='P4O10', phase='s', db='ChEDL', **kwargs)
- 

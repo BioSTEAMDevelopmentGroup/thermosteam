@@ -32,6 +32,73 @@ folder = identifiers.folder
 searchable_format = re.compile(r"\B([A-Z])")
 
 @forward(identifiers)
+class ChemicalDataDictionary(dict):
+    """
+    Dictionary where chemical aliases can be used as keys.
+    
+    """
+    __slots__ = ('_cache',)
+    
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self._cache = {}
+    
+    def __contains__(self, name):
+        dct = super()
+        if dct.__contains__(name):
+            return True
+        elif name in self._cache:
+            return True
+        else:
+            metadata = pubchem_db.search(name)
+            names = (
+                'CAS',
+                'formula',
+                'smiles',
+                'InChI',
+                'InChI_key',
+                'iupac_name',
+                'common_name',
+            )
+            for i in names:
+                if dct.__contains__(getattr(metadata, i)):
+                    self._cache[name] = dct.__getitem__(i)
+                    return True
+            for i in metadata.synonyms:
+                if dct.__contains__(i):
+                    self._cache[name] = dct.__getitem__(i)
+                    return True
+            return False
+            
+    def __getitem__(self, name):
+        dct = super()
+        if dct.__contains__(name):
+            return dct.__getitem__(name)
+        elif name in self._cache:
+            return self._cache[name]
+        else:
+            metadata = pubchem_db.search(name)
+            names = (
+                'CAS',
+                'formula',
+                'smiles',
+                'InChI',
+                'InChI_key',
+                'iupac_name',
+                'common_name',
+            )
+            for i in names:
+                if dct.__contains__(getattr(metadata, i)):
+                    self._cache[name] = value = dct.__getitem__(i)
+                    return value
+            for i in metadata.synonyms:
+                if dct.__contains__(i):
+                    self._cache[name] = value = dct.__getitem__(i)
+                    return value
+            raise KeyError(name)
+
+
+@forward(identifiers)
 def spaceout_words(ID):
     return searchable_format.sub(r" \1", ID)
 

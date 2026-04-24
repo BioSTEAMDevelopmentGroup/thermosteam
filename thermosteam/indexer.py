@@ -535,7 +535,7 @@ class ChemicalIndexer(Indexer):
         return old_data
     
     def __reduce__(self):
-        return self.from_data, (self.data, self._phase, self._chemicals, False, self._parent)
+        return self.from_data, (self.data, self._phase, self._chemicals, False, self._parent)    
     
     def __getitem__(self, key):
         return get_sparse_chemical_data(self.data, *self._chemicals._get_index_and_kind(key))

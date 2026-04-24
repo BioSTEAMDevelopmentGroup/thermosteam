@@ -179,9 +179,9 @@ class Stream(AbstractStream):
     >>> s1.show(composition=True, flow='kg/hr') # Its also possible to show by composition
     Stream: s1
     phase: 'l', T: 298.15 K, P: 101325 Pa
-    composition (%): Water    66.7
-                     Ethanol  33.3
-                     -------  30 kg/hr
+    flow (%): Water    66.7
+              Ethanol  33.3
+              -------  30 kg/hr
 
     All flow rates are stored as a sparse array in the `mol` attribute.
     These arrays work just like numpy arrays, but are more scalable
@@ -567,8 +567,7 @@ class Stream(AbstractStream):
         >>> s1.show('cwt')
         Stream: s1
         phase: 'g', T: 300.1 K, P: 101325 Pa
-        composition (%): Ethanol  100
-                         -------  2 kg/hr
+        flow: 2 kg/hr Ethanol
 
         """
         self.reset_flow(**flows)
@@ -590,8 +589,7 @@ class Stream(AbstractStream):
         >>> s1.show('cwt')
         Stream: s1
         phase: 'g', T: 298.15 K, P: 101325 Pa
-        composition (%): Ethanol  100
-                         -------  2 kg/hr
+        flow: 2 kg/hr Ethanol
 
         """
         imol = self._imol
@@ -691,7 +689,7 @@ class Stream(AbstractStream):
         >>> s1.show()
         Stream: s1
         phase: 'l', T: 298.15 K, P: 101325 Pa
-        flow (kmol/hr): Water  1
+        flow: 1 kmol/hr Water
 
         """
         self._imol.data.remove_negatives()
@@ -758,7 +756,7 @@ class Stream(AbstractStream):
         >>> stream.show()
         Stream: stream
         phase: 'l', T: 298.15 K, P: 101325 Pa
-        flow (kmol/hr): Water  10
+        flow: 10 kmol/hr Water
         >>> stream.set_data(data_vle)
         >>> stream.show()
         MultiStream: stream
@@ -1614,7 +1612,7 @@ class Stream(AbstractStream):
         >>> s_mix.show(flow='kg/hr')
         Stream: s_mix
         phase: 'l', T: 298.15 K, P: 101325 Pa
-        flow (kg/hr): Water  40
+        flow: 40 kg/hr Water
 
         Removing empty streams is fine too:
 
@@ -1622,7 +1620,7 @@ class Stream(AbstractStream):
         >>> s_mix.show(flow='kg/hr')
         Stream: s_mix
         phase: 'l', T: 298.15 K, P: 101325 Pa
-        flow (kg/hr): Water  40
+        flow: 40 kg/hr Water
 
         """
         if other:
@@ -1805,7 +1803,7 @@ class Stream(AbstractStream):
         >>> s1.show(flow='kg/hr')
         Stream: s1
         phase: 'l', T: 298.15 K, P: 101325 Pa
-        flow (kg/hr): Water  2
+        flow: 2 kg/hr Water
 
         Copy data from another stream with a different property package:
 
@@ -1818,7 +1816,7 @@ class Stream(AbstractStream):
         >>> s1.show(flow='kg/hr')
         Stream: s1
         phase: 'l', T: 298.15 K, P: 101325 Pa
-        flow (kg/hr): Water  2
+        flow: 2 kg/hr Water
 
         """
         if isinstance(other.imol, MaterialIndexer):
@@ -1851,7 +1849,7 @@ class Stream(AbstractStream):
         >>> s1.show(flow='kg/hr')
         Stream: s1
         phase: 'l', T: 300 K, P: 101325 Pa
-        flow (kg/hr): Water  2
+        flow: 2 kg/hr Water
 
         """
         self._thermal_condition.copy_like(other._thermal_condition)
@@ -1910,7 +1908,7 @@ class Stream(AbstractStream):
         >>> s2.show(flow='kg/hr')
         Stream: s2
         phase: 'l', T: 298.15 K, P: 101325 Pa
-        flow (kg/hr): Water  20
+        flow: 20 kg/hr Water
 
         Reset and copy all flows except water:
 
@@ -1919,7 +1917,7 @@ class Stream(AbstractStream):
         >>> s2.show(flow='kg/hr')
         Stream: s2
         phase: 'l', T: 298.15 K, P: 101325 Pa
-        flow (kg/hr): Ethanol  10
+        flow: 10 kg/hr Ethanol
 
         Cut and paste flows:
 
@@ -1943,7 +1941,7 @@ class Stream(AbstractStream):
         >>> s2.show()
         Stream: s2
         phase: 'l', T: 298.15 K, P: 101325 Pa
-        flow (kmol/hr): Water  10
+        flow: 10 kmol/hr Water
         >>> s1.show()
         MultiStream: s1
         phases: ('g', 'l'), T: 298.15 K, P: 101325 Pa
@@ -1957,11 +1955,11 @@ class Stream(AbstractStream):
         >>> s1.show('wt')
         Stream: s1
         phase: 'l', T: 298.15 K, P: 101325 Pa
-        flow (kg/hr): Water  20
+        flow: 20 kg/hr Water
         >>> s2.show('wt')
         Stream: s2
         phase: 'l', T: 298.15 K, P: 101325 Pa
-        flow (kg/hr): Ethanol  10
+        flow: 10 kg/hr Ethanol
 
         """
         other_mol = other.mol
@@ -2602,7 +2600,12 @@ class Stream(AbstractStream):
             return 0
         return F_l(x, self.T).sum()
 
-    def receive_vent(self, other, energy_balance=True, ideal=False):
+    def receive_vent(
+            self, 
+            other, 
+            energy_balance=True, 
+            ideal=False,
+        ):
         """
         Receive vapors from another stream by vapor-liquid equilibrium between 
         a gas and liquid stream assuming only a small amount of chemicals
@@ -2810,7 +2813,7 @@ class Stream(AbstractStream):
             flow_array = factor * indexer[all_IDs]
             if composition:
                 total_flow = flow_array.sum()
-                beginning = "composition (%): "
+                beginning = "flow (%): "
                 new_line = '\n' + len(beginning) * ' '
                 flow_array = 100 * flow_array/total_flow
             else:
@@ -3026,10 +3029,10 @@ class Stream(AbstractStream):
         >>> stream.show('cwt2s') # Alternatively: stream.show(composition=True, flow='kg/hr', N=2, sort=True)
         Stream: stream
         phase: 'l', T: 298.15 K, P: 101325 Pa
-        composition (%): Ethanol  60
-                         Water    20
-                         ...      20
-                         -------  2.5 kg/hr
+        flow (%): Ethanol  60
+                  Water    20
+                  ...      20
+                  -------  2.5 kg/hr
 
         """
         print(self._info(layout, T, P, flow, composition, N, IDs, sort, df))

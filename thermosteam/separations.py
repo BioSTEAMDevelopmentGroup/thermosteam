@@ -97,7 +97,7 @@ def mix_and_split_with_moisture_content(ins, retentate, permeate,
     >>> permeate.show(flow='kg/hr')
     Stream: permeate
     phase: 'l', T: 298.15 K, P: 101325 Pa
-    flow (kg/hr): Water  100
+    flow: 100 kg/hr Water
 
     """
     mix_and_split(ins, retentate, permeate, split)
