@@ -8,6 +8,7 @@
 """
 """
 from ..base import display_asfunctor, SparseVector
+from ..constants import R
 from math import log
 
 __all__ = (
@@ -108,7 +109,7 @@ class IdealEntropyModel:
         if mol.__class__ is not SparseVector: mol = SparseVector(mol)
         total_mol = mol.sum()
         models = self.models
-        return sum([j * models[i](phase, T, P) + j * log(j / total_mol) for i, j in mol.dct.items()])
+        return sum([j * (models[i](phase, T, P) - R * log(j / total_mol)) for i, j in mol.dct.items()])
     
 
 class IdealTMixtureModel:

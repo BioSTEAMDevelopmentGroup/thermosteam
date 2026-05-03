@@ -1574,8 +1574,7 @@ class Stream(AbstractStream):
                       Ethanol  20
         """
         new = cls(ID, thermo=thermo)
-        if streams:
-            new.copy_thermal_condition(streams[0])
+        if streams: new.copy_thermal_condition(streams[0])
         new.mix_from(streams, energy_balance, vle, Q, conserve_phases)
         return new
 
@@ -1631,6 +1630,15 @@ class Stream(AbstractStream):
             self._imol.separate_out(other._imol)
             if energy_balance:
                 self.H = H_new
+
+    def mix_flows(self, others):
+        """
+        Mix all other streams into this one, ignoring its initial contents. This
+        method does not alter the stream phase and ignores the pressure and 
+        energy balances.
+        
+        """
+        self._imol.mix_from([i._imol for i in others])
 
     def mix_from(self, others, energy_balance=True, vle=False, Q=0., conserve_phases=False):
         """
@@ -1701,6 +1709,7 @@ class Stream(AbstractStream):
                 self.copy_like(streams[0])
             else:
                 self.copy_flow(streams[0])
+                self.P = streams[0].P
         else:
             self.P = P = min([i.P for i in streams])
             if conserve_phases:
