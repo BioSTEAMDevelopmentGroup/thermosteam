@@ -23,9 +23,9 @@ def define_units_of_measure(dct, cls=None):
     return cls
     
 @classmethod
-def define_property(cls, name, units, fget, fset=None):
+def define_property(cls, name, units, fget, fset=None, safe=True):
     cls._units_of_measure[name] = tmo.units_of_measure.UnitsOfMeasure(units)
-    if hasattr(cls, name): raise ValueError(f"property with name '{name}' already exists")
+    if safe and hasattr(cls, name): raise ValueError(f"property with name '{name}' already exists")
     setattr(cls, name, property(fget, fset))
 
 def get_property(self, name: str, units: Optional[str]=None):
