@@ -97,7 +97,6 @@ colors = {
     'vle': '#60c1cf', # blue
     'lle': '#79bf82', # green
     'reaction': '#dd7440', # orange
-    # (old 'shortcut': '#00a996', # darker blue)
     'compression': '#5c5763', # black
 }
 edge_options = dict(
@@ -107,11 +106,9 @@ edge_options = dict(
     headport='c', 
     tailport='c', 
     len='0.5',
-    # minlen='0.5',
     dir='none',
     penwidth='3',
     style='solid',
-    # pin='true',
 )
 folder = os.path.dirname(__file__)
 folder = os.path.join(folder, 'temporary_images')
@@ -156,7 +153,7 @@ class EquationNode:
     __slots__ = ('name', 'inputs', 'outputs', 'tracked_outputs')
     
     def __init__(self, name):
-        self.name = name    
+        self.name = name
     
     @property
     def category(self):
@@ -230,7 +227,7 @@ class Criteria:
     
     def __init__(self, names):
         if isinstance(names, str): names = [names]
-        self.names = names
+        self.names = [i.replace('phenomena', 'phenomen') for i in names] # 'phenomenode' and 'phenomena' are equivalent criterial
         
     def match(self, full_name):
         return all([i in full_name for i in self.names])
@@ -244,6 +241,8 @@ class CriteriaSelection:
     def get_criteria(self, full_name):
         for criteria in self.criterias:
             if criteria.match(full_name): return criteria
+        raise ValueError(f'{full_name:!r} could not be categorized as a phenomena or as a material/energy balance')
+
 
 class PhenomeNode:
     __slots__ = ('name', 'size', 'equations', 'neighbors', 'criteria')
@@ -305,7 +304,9 @@ class PhenomeGraph:
         self.phenomenodes = phenomenodes
         self.edges = edges
         self.profiles = profiles
-        self.load()
+        try: self.load()
+        except: warn('unable to load graphviz graphs', RuntimeWarning)
+            
         
     def load(self, 
             file=None,
