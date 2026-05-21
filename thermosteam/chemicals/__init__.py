@@ -19,6 +19,7 @@ from . import (
     elements,
     identifiers,
     reaction,
+    combustion
 )
 import chemicals
 from chemicals import *

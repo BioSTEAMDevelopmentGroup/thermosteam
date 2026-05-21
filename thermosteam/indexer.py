@@ -1147,9 +1147,6 @@ class MaterialIndexer(Indexer):
     
     def __setitem__(self, key, data):
         index, kind, sum_across_phases = self._get_index_data(key)
-        if sum_across_phases:
-            raise IndexError("multiple phases present; must include phase key "
-                             "to set chemical data")
         if kind is None:
             if index is None:
                 self.data[:] = data
@@ -1165,8 +1162,16 @@ class MaterialIndexer(Indexer):
             else:
                 reset_sparse_chemical_data(self.data.rows[index], data)
         else:
-            phase_index, chemical_index = index
-            _, key = key
+            if sum_across_phases:
+                if np.any(data):
+                    raise IndexError("multiple phases present; must include phase key "
+                                     "to set chemical data")
+                else:
+                    chemical_index = index
+                    phase_index = None
+            else:
+                phase_index, chemical_index = index
+                _, key = key
             if phase_index is None:
                 if kind in (0, 3):
                     self.data[:, chemical_index] = data

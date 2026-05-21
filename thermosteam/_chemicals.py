@@ -667,6 +667,7 @@ class CompiledChemicals(Chemicals):
         dct['Hf'] = chemical_data_array(chemicals, 'Hf')
         dct['LHV'] = chemical_data_array(chemicals, 'LHV')
         dct['HHV'] = chemical_data_array(chemicals, 'HHV')
+        if '_formula_array' in dct: del dct['_formula_array']
 
     def get_combustion_reactions(self):
         """

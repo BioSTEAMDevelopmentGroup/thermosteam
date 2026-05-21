@@ -39,6 +39,16 @@ def test_copy_like():
     s.copy_like(ms)
     assert (s.imol.data == ms.imol.data).all()
 
+def test_empty_chemical():
+    tmo.settings.set_thermo(['Water', 'Ethanol'], cache=True)
+    s = tmo.Stream(Water=1, Ethanol=1)
+    s.vle(V=0.5, P=101325)
+    s.imol['Water'] = 0
+    assert s.imol['Water'] == 0
+    s.imol['g', 'Water'] = 1
+    s.imol['Ethanol', 'Water'] = 0
+    assert (s.imol['Water', 'Ethanol'] == [0, 0]).all()
+
 # def test_vlle():
 #     import thermosteam as tmo
 #     from numpy.testing import assert_allclose
@@ -555,6 +565,7 @@ def test_vle_critical_pure_component():
     assert s.phase == 'g'
     
 if __name__ == '__main__':
+    test_empty_chemical()
     test_registration_bypass()
     test_registration_alias()
     test_stream()

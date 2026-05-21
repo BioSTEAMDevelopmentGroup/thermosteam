@@ -235,7 +235,8 @@ _names = ('_CAS',
 _groups = ('_Dortmund',
            '_UNIFAC', 
            '_PSRK',
-           '_NIST')
+           '_NIST',
+           '_atoms')
 
 _model_handles = ('_Psat', '_Hvap', '_sigma', '_epsilon', '_Hsub', '_Psub')
     
@@ -252,7 +253,7 @@ _handles = _model_and_phase_handles + _energy_handles
 
 _data = ('_MW', '_Tm', '_Tb', '_Tt', '_Tc', '_Pt', '_Pc', '_Vc',
          '_Hf', '_S0', '_LHV', '_HHV', '_Hfus', '_Sfus', '_omega', '_dipole',
-         '_similarity_variable', '_iscyclic_aliphatic', '_combustion',)
+         '_similarity_variable', '_iscyclic_aliphatic', '_combustion')
 
 _functor_data = {'MW', 'Tm', 'Tb', 'Tt', 'Pt', 'Tc', 'Pc', 'Vc',
                  'Hfus', 'Sfus', 'omega', 'dipole',
@@ -711,6 +712,7 @@ class Chemical:
         self._Dortmund = DortmundGroupCounts()
         self._PSRK = PSRKGroupCounts()
         self._NIST = NISTGroupCounts()
+        self._atoms = {}
         self.aliases = aliases or ()
         if synonyms: 
             if isinstance(synonyms, str):
@@ -724,7 +726,7 @@ class Chemical:
         self._phase_ref = phase_ref or phase
         self._CAS = CAS or ID
         if formula: self.formula = formula
-        if atoms: self.atoms = atoms
+        if atoms is not None: self.atoms = atoms
         for i,j in data.items(): 
             setfield(self, '_' + i , self._fix_units(i, j))
         self._eos = create_eos(self.EOS_default, self._Tc, self._Pc, self._omega)
@@ -1003,10 +1005,16 @@ class Chemical:
     @formula.setter
     def formula(self, formula):
         if isinstance(formula, dict):
+            atoms = formula
             formula = ''.join([f'{j}{i}' for i, j in formula.items()])
-        self._formula = str(formula)
-        self._MW = compute_molecular_weight(self.atoms)
-        if self._Hf: self.reset_combustion_data()
+        else:
+            formula = str(formula)
+            atoms = get_atoms(formula)
+        self._formula = formula
+        self._atoms = atoms
+        self._MW = MW = compute_molecular_weight(atoms)
+        reset_constant(self, 'MW', float(MW))
+        self.reset_combustion_data()
     
     ### Functional groups ###
     
@@ -1160,8 +1168,7 @@ class Chemical:
         return self._MW
     @MW.setter
     def MW(self, MW):
-        if self._MW: raise AttributeError('cannot set molecular weight')
-        reset_constant(self, 'MW', float(MW))
+        raise AttributeError('cannot set molecular weight')
     
     @property
     def Tm(self):
@@ -1351,12 +1358,15 @@ class Chemical:
     @property
     def atoms(self):
         """dict[str: int] Atom-count pairs based on formula."""
-        formula = self._formula
-        return get_atoms(formula).copy() if formula else {}
+        return self._atoms
     @atoms.setter
     def atoms(self, atoms):
         """dict[str: int] Atom-count pairs based on formula."""
-        self.formula = atoms_to_Hill(atoms)
+        self._formula = atoms_to_Hill(atoms)
+        self._atoms = atoms
+        self._MW = MW = compute_molecular_weight(atoms)
+        reset_constant(self, 'MW', float(MW))
+        self.reset_combustion_data()
     
     def get_combustion_reaction(self, chemicals=None, conversion=1.0):
         """Return a Reaction object defining the combustion of this chemical.
@@ -1424,7 +1434,7 @@ class Chemical:
               HHV=None, Hfus=None, dipole=None,
               similarity_variable=None, iscyclic_aliphatic=None, aliases=None,
               synonyms=None, *, metadata=None, phase=None,
-              free_energies=None, N_solutes=None,
+              free_energies=None, N_solutes=None, atoms=None,
         ):
         """
         Reset all chemical properties.
@@ -1473,7 +1483,6 @@ class Chemical:
         self._init_groups(InChI_key)
         if CAS == '56-81-5': # TODO: Make this part of data
             self._Dortmund = DortmundGroupCounts({2: 2, 3: 1, 14: 2, 81: 1})
-        atoms = self.atoms
         self._init_data(CAS, MW, Tm, Tb, Tc, Pc, Vc, omega, Pt, Tt, Hfus,
                         dipole, atoms, similarity_variable, iscyclic_aliphatic)
         self._init_eos(eos, self._Tc, self._Pc, self._omega)
@@ -1490,11 +1499,11 @@ class Chemical:
             self.at_state(phase, reset_free_energies=False)
         else:
             self._set_phase_ref(phase_ref, self._Tm, self._Tb)
-        self._init_reactions(Hf, S0, LHV, HHV, combustion, atoms)
+        self._init_reactions(Hf, S0, LHV, HHV, combustion, self._atoms)
         if free_energies:
             self._init_energies(self._Cn, self._Hvap, self._Psat, self._Hfus, self._Sfus,
                                 self._Tm, self._Tb, self._eos, self._phase_ref, self._S0)
-        if self._formula and self._Hf is not None: self.reset_combustion_data()
+        if self._atoms is not None: self.reset_combustion_data()
         TDependentProperty.RAISE_PROPERTY_CALCULATION_ERROR = True
 
     def _set_phase_ref(self, phase_ref, Tm, Tb):
@@ -1511,13 +1520,30 @@ class Chemical:
                 phase_ref = 'l'
         self._phase_ref = phase_ref
 
-    def reset_combustion_data(self, method="Stoichiometry"):
-        """Reset combustion data (LHV, HHV, and combustion attributes)
-        based on the molecular formula and the heat of formation."""
-        cd = combustion_data(self.atoms, Hf=self._Hf, MW=self._MW, method=method)
-        if not self._MW: self._MW = cd.MW
-        self._LHV = - cd.LHV
-        self._HHV = - cd.HHV
+    def reset_combustion_data(self, method=None, formula=None, Hf=None, LHV=None, HHV=None):
+        """Reset heat of formation and/or combustion data (LHV, HHV, and combustion attributes)
+        based on the molecular formula."""
+        if formula is not None:
+            if isinstance(formula, dict):
+                atoms = formula
+                formula = ''.join([f'{j}{i}' for i, j in formula.items()])
+            else:
+                formula = str(formula)
+                atoms = get_atoms(formula)
+            self._formula = formula
+            self._atoms = atoms
+            self._MW = MW = compute_molecular_weight(atoms)
+            reset_constant(self, 'MW', float(MW))
+        cd = combustion_data(
+            self._atoms, 
+            Hf=self._Hf if Hf is None else Hf, 
+            HHV=self._HHV if HHV is None else HHV,
+            LHV=self._LHV if LHV is None else LHV, 
+            method=method
+        )
+        self._Hf = cd.Hf
+        self._LHV = -cd.LHV
+        self._HHV = -cd.HHV
         self._combustion = cd.stoichiometry
     
     def reset_free_energies(self):
@@ -1587,9 +1613,16 @@ class Chemical:
         
         # Other
         self._dipole = dipole or dipole_moment(CAS)
-        atoms = atoms or self.atoms
-        if atoms and not similarity_variable:
-            similarity_variable = compute_similarity_variable(atoms, MW)
+        if atoms is None:
+            if self._formula is None:
+                atoms = {}
+            else:
+                atoms = get_atoms(self._formula)
+        self._atoms = atoms
+        if atoms:
+            if MW is None: MW = compute_molecular_weight(atoms)    
+            if similarity_variable is None: similarity_variable = compute_similarity_variable(self._atoms, MW)
+        self._MW = MW
         self._similarity_variable = similarity_variable
         self._iscyclic_aliphatic = iscyclic_aliphatic or False
 
@@ -1949,7 +1982,7 @@ class Chemical:
                 kappa.l.add_method(0.5942)
             if not kappa:
                 kappa.add_method(0.5942)
-        if self._formula:
+        if self._atoms:
             if any([i in properties for i in ('HHV', 'LHV', 'combustion', 'Hf')]):
                 if 'Hf' in properties:
                     method = 'Dulong'

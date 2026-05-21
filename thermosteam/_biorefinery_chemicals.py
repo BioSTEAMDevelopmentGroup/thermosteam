@@ -198,3 +198,38 @@ def Cellobiose(ID, **kwargs):
     return tmo.Chemical(ID, formula='C12H22O11', phase='l', db=None,
                         Hf=-480900*cal2joule, rho=rho_solid, Cp=Cp_cellulosic, 
                         **kwargs)
+
+@register
+def Rubber(ID, **kwargs):
+    chemical = tmo.Chemical(
+        ID, phase='s', search_db=False, 
+        rho=rho_solid, # Approximately the same for rubber
+        Cp=Cp_cellulosic, # Approximately the same for rubber
+        **kwargs
+    )
+    chemical.reset_combustion_data(
+        method='Boie', 
+        formula={
+            'C': 0.8033 / 12.011, 
+            'H': 0.0766 / 1.008, 
+            'S': 0.0087 / 32.07, 
+            'N': 0.0035 / 14.007, 
+            'O': 0.1079 / 15.999,
+        }
+    )
+    return chemical
+    
+@register('Char', 'RawCarbonBlack', 'ActivatedCarbon')
+def CarbonBlack(ID, **kwargs):
+    chemical = tmo.Chemical(
+        ID, phase='s', search_db=False, 
+        rho=400, # Between 300 - 500
+        Cp=0.71, 
+        **kwargs
+    )
+    chemical.reset_combustion_data(
+        method='Specification', 
+        formula={'C': 1},
+        HHV=-393500, # kJ / kmol
+    )
+    return chemical
