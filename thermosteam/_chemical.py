@@ -1285,7 +1285,7 @@ class Chemical:
     @Hf.setter
     def Hf(self, Hf):
         self._Hf = float(Hf)
-        if self._formula: self.reset_combustion_data()
+        if self._formula: self.reset_combustion_data(LHV=None, HHV=None)
     
     @property
     def S0(self):
@@ -1520,7 +1520,7 @@ class Chemical:
                 phase_ref = 'l'
         self._phase_ref = phase_ref
 
-    def reset_combustion_data(self, method=None, formula=None, Hf=None, LHV=None, HHV=None):
+    def reset_combustion_data(self, method=None, formula=None, **kwargs):
         """Reset heat of formation and/or combustion data (LHV, HHV, and combustion attributes)
         based on the molecular formula."""
         if formula is not None:
@@ -1534,11 +1534,15 @@ class Chemical:
             self._atoms = atoms
             self._MW = MW = compute_molecular_weight(atoms)
             reset_constant(self, 'MW', float(MW))
+        HHV = kwargs['HHV'] if 'HHV' in kwargs else self._HHV
+        LHV = kwargs['LHV'] if 'LHV' in kwargs else self._LHV
+        if HHV is not None: HHV *= -1
+        if LHV is not None: LHV *= -1
         cd = combustion_data(
             self._atoms, 
-            Hf=self._Hf if Hf is None else Hf, 
-            HHV=self._HHV if HHV is None else HHV,
-            LHV=self._LHV if LHV is None else LHV, 
+            Hf=kwargs['Hf'] if 'Hf' in kwargs else self._Hf, 
+            HHV=HHV,
+            LHV=LHV, 
             method=method
         )
         self._Hf = cd.Hf
@@ -2114,6 +2118,7 @@ class Chemical:
     def locked_state(self):
         """[str] Constant phase of chemical."""
         return self._locked_state
+    phase = locked_state
     
     @property
     def N_solutes(self):

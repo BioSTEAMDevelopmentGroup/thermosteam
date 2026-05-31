@@ -227,9 +227,11 @@ def CarbonBlack(ID, **kwargs):
         Cp=0.71, 
         **kwargs
     )
+    # https://www.sciencedirect.com/science/article/pii/S0973082612000944
+    # A feasibility study of using carbon black as a substitute to coal in cement industry
     chemical.reset_combustion_data(
         method='Specification', 
         formula={'C': 1},
-        HHV=-393500, # kJ / kmol
+        HHV=29856 * 12, # kJ / kmol
     )
     return chemical
