@@ -35,7 +35,7 @@ def xy(x, Ks):
     y /= y.sum()
     return x, y
 
-def phase_stability_score(K, z, z_light=0, z_heavy=0, score_limit=100):
+def phase_stability_score(K, z, z_light=0, z_heavy=0, score_limit=1000):
     K = K.copy()
     K[K > score_limit] = score_limit
     inv_limit = 1 / score_limit
@@ -48,7 +48,7 @@ def phase_stability_score(K, z, z_light=0, z_heavy=0, score_limit=100):
         score += z_heavy * score_limit
     return score
     
-def stable_phase(K, z, z_light=0, z_heavy=0, score_limit=100, heuristic_score=15):
+def stable_phase(K, z, z_light=0, z_heavy=0, score_limit=1000, heuristic_score=100):
     score = phase_stability_score(K, z, z_light, z_heavy, score_limit)
     return score > heuristic_score
 
