@@ -1538,7 +1538,7 @@ class Chemical:
             atoms = self._atoms
             combustible_atoms = {i: atoms[i] for i in combustible_elements if i in atoms}
             wt_combustible = compute_molecular_weight(combustible_atoms)
-            if wt_combustible < 0.4 * self._MW: return # Should not combust
+            if wt_combustible < 0.9 * self._MW: return # Should not combust
         HHV = kwargs['HHV'] if 'HHV' in kwargs else self._HHV
         LHV = kwargs['LHV'] if 'LHV' in kwargs else self._LHV
         if HHV is not None: HHV *= -1
