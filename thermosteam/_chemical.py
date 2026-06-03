@@ -24,7 +24,7 @@ from chemicals.acentric import (omega as acentric_factor,
                                 Stiel_polar_factor as compute_Stiel_Polar)
 from chemicals.triple import (Tt as triple_point_temperature,
                               Pt as triple_point_pressure)
-from chemicals.combustion import combustion_data, combustion_stoichiometry
+from chemicals.combustion import combustible_elements, combustion_data, combustion_stoichiometry
 from chemicals.reaction import (
     Hf as heat_of_formation,
     S0 as absolute_entropy_of_formation
@@ -1520,7 +1520,7 @@ class Chemical:
                 phase_ref = 'l'
         self._phase_ref = phase_ref
 
-    def reset_combustion_data(self, method=None, formula=None, **kwargs):
+    def reset_combustion_data(self, method=None, formula=None, check_combustible=True, **kwargs):
         """Reset heat of formation and/or combustion data (LHV, HHV, and combustion attributes)
         based on the molecular formula."""
         if formula is not None:
@@ -1534,13 +1534,11 @@ class Chemical:
             self._atoms = atoms
             self._MW = MW = compute_molecular_weight(atoms)
             reset_constant(self, 'MW', float(MW))
-        atoms = self._atoms
-        wt_combustible = (
-            12.011 * atoms.get('C', 0) + 
-            1.008 * atoms.get('H', 0) + 
-            15.999 * atoms.get('O', 0)
-        )
-        if not wt_combustible > 0.6 * self._MW: return # Should not combust
+        if check_combustible:
+            atoms = self._atoms
+            combustible_atoms = {i: atoms[i] for i in combustible_elements if i in atoms}
+            wt_combustible = compute_molecular_weight(combustible_atoms)
+            if wt_combustible < 0.4 * self._MW: return # Should not combust
         HHV = kwargs['HHV'] if 'HHV' in kwargs else self._HHV
         LHV = kwargs['LHV'] if 'LHV' in kwargs else self._LHV
         if HHV is not None: HHV *= -1
