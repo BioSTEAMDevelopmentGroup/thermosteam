@@ -84,6 +84,7 @@ def ID(self):
     return self._ID
  
 def register_alias(self, alias, override=None, safe=True):
+    """Register object using a new alias."""
     if safe:
         self.registry.register_alias_safely(alias, self, override) 
     else:
