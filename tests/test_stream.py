@@ -563,7 +563,41 @@ def test_vle_critical_pure_component():
     assert s.phase == 'g'
     s.vle(P=N2.Pc, S=s.S + 10)
     assert s.phase == 'g'
-    
+
+def test_vle_PH_locked_phase_only():
+    # A stream composed entirely of locked-phase chemicals (e.g. a permanent
+    # gas modeled with a fixed phase) has no chemicals eligible for VLE, so
+    # `VLE._setup` raises `NoEquilibrium` before `VLE._N` is (re)assigned.
+    # `VLE.set_PH`'s own `self._N == 0` branch already handles this case
+    # correctly (solving for T via a direct single-phase enthalpy balance),
+    # but was unreachable through this path -- `set_PH` used to silently
+    # leave the stream's temperature completely unchanged instead of
+    # raising or solving for the requested duty. Fixed in VLE.set_PH by
+    # catching NoEquilibrium from _setup and falling back to the same
+    # xsolve_T_at_HP call as the self._N == 0 branch.
+    H2 = tmo.Chemical('H2', phase='g', cache=True)
+    tmo.settings.set_thermo(
+        [H2, 'Water', 'Ethanol', 'Octane', 'Nonane', 'Decane',
+         'Dodecane', 'Hexadecane', 'Octadecane'], cache=True,
+    )
+    s = tmo.Stream(None, H2=1, units='kg/hr', T=638.15, P=7134008.172, phase='g')
+    s.vle(T=s.T, P=s.P)
+    H_start = s.H
+    T_start = s.T
+
+    # A modest, unambiguous heating request (T should increase).
+    target_H = H_start + 3705.25
+    s.vle(H=target_H, P=s.P)
+    assert_allclose(s.H, target_H, rtol=0, atol=1.)
+    assert s.T > T_start
+
+    # A modest cooling request too, for symmetry.
+    s.vle(T=T_start, P=s.P)
+    target_H = s.H - 3705.25
+    s.vle(H=target_H, P=s.P)
+    assert_allclose(s.H, target_H, rtol=0, atol=1.)
+    assert s.T < T_start
+
 if __name__ == '__main__':
     test_empty_chemical()
     test_registration_bypass()
@@ -577,6 +611,7 @@ if __name__ == '__main__':
     stream_methods()
     test_stream_property_cache()
     test_vle_critical_pure_component()
+    test_vle_PH_locked_phase_only()
     test_critical()
     test_mixture()
     test_mixing_phases()

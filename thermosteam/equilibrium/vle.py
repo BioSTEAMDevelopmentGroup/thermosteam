@@ -1133,10 +1133,26 @@ class VLE(Equilibrium, phases='lg'):
         self._S_hat = S_hat
     
     def set_PH(self, P, H, gas_conversion=None, liquid_conversion=None):
-        self._setup(gas_conversion, liquid_conversion)
+        try:
+            self._setup(gas_conversion, liquid_conversion)
+        except NoEquilibrium:
+            # `_setup` raises before `self._N` is (re)assigned whenever there
+            # is flow but none of it belongs to VLE-eligible chemicals (e.g.,
+            # a stream composed entirely of locked-phase chemicals), so the
+            # `self._N == 0` branch below is unreachable through the normal
+            # path for that case even though it already handles it correctly.
+            # `self._phase_data` is set unconditionally at the top of
+            # `_setup`, before either of its two `NoEquilibrium` raises, so
+            # it's safe to use here.
+            thermal_condition = self._thermal_condition
+            thermal_condition.P = self._P = P
+            thermal_condition.T = self.mixture.xsolve_T_at_HP(
+                self._phase_data, H, thermal_condition.T, P
+            )
+            return
         thermal_condition = self._thermal_condition
         thermal_condition.P = self._P = P
-        if self._N == 0: 
+        if self._N == 0:
             thermal_condition.T = self.mixture.xsolve_T_at_HP(
                 self._phase_data, H, thermal_condition.T, P
             )
