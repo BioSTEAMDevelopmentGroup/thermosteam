@@ -1133,10 +1133,13 @@ class VLE(Equilibrium, phases='lg'):
         self._S_hat = S_hat
     
     def set_PH(self, P, H, gas_conversion=None, liquid_conversion=None):
-        self._setup(gas_conversion, liquid_conversion)
+        try:
+            self._setup(gas_conversion, liquid_conversion)
+        except NoEquilibrium:
+            self._N = 0 # no chemicals or no vle chemicals
         thermal_condition = self._thermal_condition
         thermal_condition.P = self._P = P
-        if self._N == 0: 
+        if self._N == 0:
             thermal_condition.T = self.mixture.xsolve_T_at_HP(
                 self._phase_data, H, thermal_condition.T, P
             )
