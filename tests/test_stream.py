@@ -200,6 +200,42 @@ def stream_methods():
     s3.mix_from([s1, s2], vle=True)
     assert s3.P == min([s1.P, s2.P])
 
+def test_vle_no_equilibrium():
+    tmo.settings.set_thermo(
+        [tmo.Chemical('N2', phase='g'), 
+         tmo.Chemical('Tripalmitin', phase='l')],
+        cache=True
+    )
+    s1 = tmo.Stream(None, N2=1, Tripalmitin=1, phase='s')
+    P = 101325
+    T = 300
+    s1.vle(P=101325, T=300)
+    assert s1.P == P
+    assert s1.T == T
+    assert s1.imol['g', 'N2'] == 1
+    assert s1.imol['l', 'Tripalmitin'] == 1
+    assert s1.F_mol == 2
+    S = s1.S
+    H = s1.H
+    s1.T = 301 # change conditions before rerunning equilibrium to make sure calculations are running
+    s1.vle(P=P, H=H)
+    assert_allclose(s1.H, H)
+    assert_allclose(s1.S, S)
+    assert_allclose(s1.T, T)
+    assert s1.P == 101325
+    assert s1.imol['g', 'N2'] == 1
+    assert s1.imol['l', 'Tripalmitin'] == 1
+    assert s1.F_mol == 2
+    s1.T = 301 # change conditions before rerunning equilibrium to make sure calculations are running
+    s1.vle(P=P, S=S)
+    assert_allclose(s1.H, H)
+    assert_allclose(s1.S, S)
+    assert_allclose(s1.T, T)
+    assert s1.P == 101325
+    assert s1.imol['g', 'N2'] == 1
+    assert s1.imol['l', 'Tripalmitin'] == 1
+    assert s1.F_mol == 2
+
 def test_critical():
     tmo.settings.set_thermo(['CO2', 'O2', 'CH4'], cache=True)
     

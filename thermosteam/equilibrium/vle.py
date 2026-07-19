@@ -401,18 +401,9 @@ class VLE(Equilibrium, phases='lg'):
         # Run equilibrium
         if T_spec:
             if P_spec:
-                try:
-                    self.set_TP(T, P, gas_conversion, liquid_conversion)
-                except NoEquilibrium:
-                    thermal_condition = self._thermal_condition
-                    thermal_condition.T = T
-                    thermal_condition.P = P
+                self.set_TP(T, P, gas_conversion, liquid_conversion)
             elif V_spec:
-                try:
-                    self.set_TV(T, V, gas_conversion, liquid_conversion, wt=wt)
-                except NoEquilibrium:
-                    thermal_condition = self._thermal_condition
-                    thermal_condition.T = T
+                self.set_TV(T, V, gas_conversion, liquid_conversion, wt=wt)
             elif H_spec:
                 self.set_TH(T, H, gas_conversion, liquid_conversion)
             elif S_spec:
@@ -423,26 +414,11 @@ class VLE(Equilibrium, phases='lg'):
                 self.set_Ty(T, np.asarray(y))
         elif P_spec:
             if V_spec:
-                try:
-                    self.set_PV(P, V, gas_conversion, liquid_conversion, wt=wt)
-                except NoEquilibrium:
-                    thermal_condition = self._thermal_condition
-                    thermal_condition.P = P
+                self.set_PV(P, V, gas_conversion, liquid_conversion, wt=wt)
             elif H_spec:
-                try:
-                    self.set_PH(P, H, gas_conversion, liquid_conversion)
-                except NoEquilibrium:
-                    thermal_condition = self._thermal_condition
-                    thermal_condition.P = P
+                self.set_PH(P, H, gas_conversion, liquid_conversion)
             elif S_spec:
-                try:
-                    self.set_PS(P, S, gas_conversion, liquid_conversion)
-                except:
-                    try:
-                        self.set_PS(P, S, gas_conversion, liquid_conversion)
-                    except NoEquilibrium:
-                        thermal_condition = self._thermal_condition
-                        thermal_condition.P = P
+                self.set_PS(P, S, gas_conversion, liquid_conversion)
             elif x_spec:
                 self.set_Px(P, np.asarray(x))
             else: # y_spec
@@ -723,7 +699,7 @@ class VLE(Equilibrium, phases='lg'):
         self._setup(gas_conversion, liquid_conversion)
         thermal_condition = self._thermal_condition
         thermal_condition.T = self._T = T
-        if self._N == 0: raise RuntimeError('no chemicals present to perform VLE')
+        if self._N == 0: raise NoEquilibrium('no chemicals to perform equilibrium')
         if self._N == 1: return self._set_TV_chemical(T, V)
         if self._F_mol_heavy and V == 1.: V = 1. - 1e-3
         if self._F_mol_light and V == 0.: V = 1e-3
@@ -816,7 +792,7 @@ class VLE(Equilibrium, phases='lg'):
 
     def set_TH(self, T, H, gas_conversion=None, liquid_conversion=None):
         self._setup(gas_conversion, liquid_conversion)
-        if self._N == 0: raise RuntimeError('no chemicals present to perform VLE')
+        if self._N == 0: raise NoEquilibrium('no chemicals to perform equilibrium')
         if self._N == 1: return self._set_TH_chemical(T, H)
         self._T = T
         index = self._index
@@ -867,7 +843,7 @@ class VLE(Equilibrium, phases='lg'):
     
     def set_TS(self, T, S, gas_conversion=None, liquid_conversion=None):
         self._setup(gas_conversion, liquid_conversion)
-        if self._N == 0: raise RuntimeError('no chemicals present to perform VLE')
+        if self._N == 0: raise NoEquilibrium('no chemicals to perform equilibrium')
         if self._N == 1: return self._set_TS_chemical(T, S)
         self._T = T
         index = self._index
@@ -919,7 +895,7 @@ class VLE(Equilibrium, phases='lg'):
     def set_PV(self, P, V, gas_conversion=None, liquid_conversion=None, wt=False):
         self._setup(gas_conversion, liquid_conversion)
         self._thermal_condition.P = self._P = P
-        if self._N == 0: raise RuntimeError('no chemicals present to perform VLE')
+        if self._N == 0: raise NoEquilibrium('no chemicals to perform equilibrium')
         if self._N == 1: return self._set_PV_chemical(P, V)
         
         # Setup bounderies
@@ -1443,7 +1419,6 @@ class VLE(Equilibrium, phases='lg'):
         self._liquid_mol = liquid_mol = imol['l']
         self._vapor_mol = vapor_mol = imol['g']
         mol = liquid_mol + vapor_mol
-        if not mol.any(): raise NoEquilibrium('no chemicals to perform equilibrium')
         nonzero = set(mol.nonzero_keys())
         if gas_conversion:
             nonzero.update(
@@ -1484,10 +1459,10 @@ class VLE(Equilibrium, phases='lg'):
         vapor_mol[LNK_index] = light_mol = mol[LNK_index]
         liquid_mol[LNK_index] = 0
         liquid_mol[HNK_index] = heavy_mol = mol[HNK_index]
-        if not mol_vle.any(): raise NoEquilibrium('no chemicals to perform equilibrium')
         self._F_mol_light = F_mol_light = light_mol.sum()
         self._F_mol_heavy = F_mol_heavy = (heavy_mol * chemicals._heavy_solutes).sum()
         self._F_mol_vle = F_mol_vle = mol_vle.sum()
+        if F_mol_vle == 0: F_mol_vle = 1e-16
         self._F_mol = F_mol = F_mol_vle + F_mol_light + F_mol_heavy
         self._z = mol_vle / F_mol
         self._z_light = z_light = F_mol_light / F_mol
