@@ -29,10 +29,10 @@ class DisplayPreferences:
     number_path: False
     profile: False
     raise_exception: False
-    background_color: 'transparent'
+    background_color: '#000000'
     stream_color: '#98a2ad'
     label_color: '#e5e5e5'
-    depth_colors: ['#5172512f', '#1111112f']
+    depth_colors: ['#111111', '#0000003f']
     stream_width: 'F_mass'
     unit_color: '#555f69'
     unit_label_color: 'white'
@@ -89,7 +89,7 @@ class DisplayPreferences:
         self.label_color: str = '#e5e5e5'
         
         #: Color of subsystem clusters in BioSTEAM graphviz diagrams.
-        self.depth_colors: list[str] = ['#5172512f', '#1111112f']
+        self.depth_colors: list[str] = ['#111111', '#0000003f']
         
         #: Property to scale stream widths in BioSTEAM graphviz diagrams.
         self.stream_width: str = 'F_mass'
@@ -218,7 +218,7 @@ class DisplayPreferences:
         if save: self.save()
     
     def dark_mode(self, stream='#98a2ad', label='#e5e5e5', bg='#000000',
-                  cluster=['#5172512f', '#1111112f'], unit_color='#555f69', 
+                  cluster=['#111111', '#0000003f'], unit_color='#555f69', 
                   unit_label_color='white', unit_periphery_color='none',
                   fill_cluster=True, save=False):
         """Set diagram display colors to dark mode."""
