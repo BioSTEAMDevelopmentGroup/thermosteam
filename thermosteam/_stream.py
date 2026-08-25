@@ -2813,10 +2813,6 @@ class Stream(AbstractStream):
         N_IDs = len(all_IDs)
         if N_IDs == 0:
             return basic_info + 'flow: 0'
-        elif N_IDs == 1:
-            flow_rate = factor * indexer[all_IDs]
-            beginning = ''
-            flow_rates = f'flow: {flow_rate[0]:{flow_notation}} {flow_units} {all_IDs[0]}'
         else:
             # Remaining lines (all flow rates)
             flow_array = factor * indexer[all_IDs]
