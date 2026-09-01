@@ -86,19 +86,34 @@ def P4O10(ID, **kwargs):
 
 # %% Microbes and cellular components
 
+@register('DryBacteria')
+def Bacteria(ID, **kwargs):
+    return tmo.Chemical(ID, formula='CH1.8O0.5', rho=1112.6,
+                        phase='s', db=None, 
+                        Hf=(-7055.556554690305, 'J/g'),
+                        aliases=['Bacteria', 'Cellmass'], **kwargs)
+
+@register('NBacteria')
+def NitrogenBacteria(ID, **kwargs):
+    return tmo.Chemical(ID, formula='CH1.8O0.5N0.2', rho=1112.6,
+                        phase='s', db=None, 
+                        Hf=(-7055.556554690305, 'J/g'),
+                        aliases=['Bacteria', 'Cellmass'], **kwargs)
+
+
 @register('DryYeast')
 def Yeast(ID, **kwargs):
     return tmo.Chemical(ID, formula='CH1.61O0.56', rho=1112.6,
                         phase='s', db=None, 
                         Hf=(-7055.556554690305, 'J/g'),
-                        aliases=['DryYeast', 'Yeast'], **kwargs)
+                        aliases=['DryYeast', 'Yeast', 'Cellmass'], **kwargs)
 
 @register('NYeast')
 def NitrogenYeast(ID, **kwargs):
     return tmo.Chemical(ID, formula='CH1.61O0.56N0.16', phase='s',
                         rho=1112.6, db=None, 
                         Hf=(-7055.556554690305, 'J/g'),
-                        aliases=['DryYeast', 'Yeast'], **kwargs)
+                        aliases=['DryYeast', 'Yeast', 'Cellmass'], **kwargs)
 
 @register('WWTsludge')
 def Sluge(ID, **kwargs):
