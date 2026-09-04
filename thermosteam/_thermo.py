@@ -154,7 +154,7 @@ class Thermo:
                 if Phi is None: Phi = eq.IdealFugacityCoefficients
                 if mixture is None: mixture = IdealMixture.from_chemicals(chemicals)
             case 'Peng Robinson':
-                if Gamma is None: Gamma = eq.IdealActivityCoefficients
+                if Gamma is None: Gamma = None
                 if Phi is None: Phi = eq.PR78FugacityCoefficients
                 if mixture is None: mixture = tmo.PR78Mixture.from_chemicals(chemicals)
             case 'Peng Robinson | Dortmund-UNIFAC':
@@ -168,7 +168,7 @@ class Thermo:
                      "or 'Peng Robinson | Dortmund-UNIFAC' are valid options"
                 )
         issubtype = issubclass
-        if not issubtype(Gamma, eq.ActivityCoefficients): # pragma: no cover
+        if not (Gamma is None or issubtype(Gamma, eq.ActivityCoefficients)): # pragma: no cover
             raise ValueError(f"Gamma must be a '{eq.ActivityCoefficients.__name__}' subclass")
         if not issubtype(Phi, eq.FugacityCoefficients): # pragma: no cover
             raise ValueError(f"Phi must be a '{eq.FugacityCoefficients.__name__}' subclass")
@@ -296,7 +296,7 @@ class Thermo:
         print(f"{type(self).__name__}(\n"
               f"    chemicals={chemical_info},\n"
               f"    mixture={mixture_info},\n"
-              f"    Gamma={self.Gamma.__name__},\n"
+              f"    Gamma={None if self.Gamma is None else self.Gamma.__name__},\n"
               f"    Phi={self.Phi.__name__},\n"
               f"    PCF={self.PCF.__name__}\n"
                ")")

@@ -46,18 +46,23 @@ class IdealFugacityCoefficients(FugacityCoefficients):
     chemicals : Iterable[:class:`~thermosteam.Chemical`]
     
     """
-    __slots__ = ('_chemicals')
+    __slots__ = ('_chemicals', '_phase')
     
-    def __init__(self, chemicals):
-        self.chemicals = chemicals
+    def __init__(self, chemicals, phase):
+        self._chemicals = tuple(chemicals)
+        if phase not in 'lg': 
+            raise ValueError(f"phase must be either 'g' or 'l', not {phase:r!}")
+        self._phase = phase
     
     @property
     def chemicals(self):
         """tuple[Chemical] All chemicals involved in the calculation of fugacity coefficients."""
         return self._chemicals
-    @chemicals.setter
-    def chemicals(self, chemicals):
-        self._chemicals = tuple(chemicals)
+
+    @property
+    def phase(self):
+        """[str] Phase of fugacity coefficients."""
+        return self._phase
 
     def __call__(self, y, T, P):
         return 1.
@@ -73,20 +78,23 @@ class GCEOSFugacityCoefficients(FugacityCoefficients):
     chemicals : Iterable[:class:`~thermosteam.Chemical`]
     
     """
-    __slots__ = ('_chemicals', '_eos')
+    __slots__ = ('_chemicals', '_eos', '_phase')
     EOS = None # type[GCEOSMIX] Subclasses must implement this attribute.
     cache = None # [dict] Subclasses must implement this attribute.
     chemsep_db = None # Optional[str] Name of chemsep data base for interaction parameters.
     
-    def __new__(cls, chemicals):
+    def __new__(cls, chemicals, phase):
         chemicals = tuple(chemicals)
         cache = cls.cache
         if chemicals in cache:
-            return cache[chemicals]
+            return cache[chemicals, phase]
+        elif phase not in 'lg': 
+            raise ValueError(f"phase must be either 'g' or 'l', not {phase:r!}")
         else:
             self = super().__new__(cls)
             self._chemicals = chemicals
-            cache[chemicals] = self
+            self._phase = phase
+            cache[chemicals, phase] = self
             return self
     
     @classmethod
@@ -99,10 +107,26 @@ class GCEOSFugacityCoefficients(FugacityCoefficients):
         """tuple[Chemical] All chemicals involved in the calculation of fugacity coefficients."""
         return self._chemicals
     
+    @property
+    def phase(self):
+        """[str] Phase of fugacity coefficients."""
+        return self._phase
+    
     def eos(self, zs, T, P):
         if zs.__class__ is np.ndarray: zs = [float(i) for i in zs]
+        phase = self._phase
+        if phase == 'g':
+            only_g = True
+            only_l = False
+        else:
+            only_g = False
+            only_l = True
         try:
-            self._eos = eos = self._eos.to_TP_zs_fast(T=T, P=P, zs=zs, only_g=True, full_alphas=False)
+            self._eos = eos = self._eos.to_TP_zs_fast(
+                T=T, P=P, zs=zs, 
+                only_g=only_g, only_l=only_l, 
+                full_alphas=False
+            )
         except:
             data = tmo.ChemicalData(self.chemicals)
             if self.chemsep_db is None:
@@ -113,15 +137,19 @@ class GCEOSFugacityCoefficients(FugacityCoefficients):
                 except:
                     kijs = None
             self._eos = eos = self.EOS(
-                zs=zs, T=T, P=P, Tcs=data.Tcs, Pcs=data.Pcs, omegas=data.omegas, kijs=kijs,
-                only_g=True
+                T=T, P=P, zs=zs, 
+                Tcs=data.Tcs, Pcs=data.Pcs, omegas=data.omegas, kijs=kijs,
+                only_g=only_g, only_l=only_l, 
             )
         return eos
     
     def __call__(self, x, T, P):
         eos = self.eos(x, T, P)
         try:
-            log_phis = np.array(eos.dlnphi_dns(eos.Z_g)) + eos.G_dep_g * R_inv / T
+            if self._phase == 'g':
+                log_phis = np.array(eos.dlnphi_dns(eos.Z_g)) + eos.G_dep_g * R_inv / T
+            else:
+                log_phis = np.array(eos.dlnphi_dns(eos.Z_l)) + eos.G_dep_l * R_inv / T
             return np.exp(log_phis)
         except:
             return 1.
@@ -143,5 +171,6 @@ for name in ('PRMIX', 'SRKMIX', 'PR78MIX', 'VDWMIX', 'PRSVMIX',
     dct[clsname] = cls
 
 dct['PRFugacityCoefficients'].chemsep_db = 'ChemSep PR'
+dct['PR78FugacityCoefficients'].chemsep_db = 'ChemSep PR'
 __all__ = (*__all__, *clsnames, 'fugacity_coefficient_classes')
 del dct, clsnames

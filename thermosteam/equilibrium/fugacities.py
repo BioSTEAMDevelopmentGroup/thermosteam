@@ -9,6 +9,7 @@
 """
 import thermosteam as tmo
 import numpy as np
+from .poyinting_correction_factors import MockPoyintingCorrectionFactors
 
 __all__ = ('LiquidFugacities', 'GasFugacities', 'Fugacities',
            'fugacities_by_phase')
@@ -43,23 +44,44 @@ class LiquidFugacities:
     array([43338.226, 57731.001])
     
     """
-    __slots__ = ('gamma', 'chemicals', 'pcf')
+    __slots__ = ('gamma', 'chemicals', 'pcf', 'phi')
     
     def __init__(self, chemicals, thermo=None):
         thermo = tmo.settings.get_default_thermo(thermo)
         self.chemicals = chemicals = tuple(chemicals)
-        self.gamma = thermo.Gamma(chemicals)
+        if thermo.Gamma is None:
+            self.phi = thermo.Phi(chemicals, phase='l')
+            self.gamma = None
+        else:
+            self.gamma = thermo.Gamma(chemicals)
+            self.phi = None
         self.pcf = thermo.PCF(chemicals)
     
     def unweighted(self, x, T, P=101325.):
-        Psats = np.array([i.Psat(T) for i in self.chemicals], dtype=float)
-        return self.gamma(x, T, P) * self.pcf(T, P, Psats) * Psats
+        if self.phi is None:
+            Psats = np.array([i.Psat(T) for i in self.chemicals], dtype=float)
+            return self.gamma(x, T, P) * self.pcf(T, P, Psats) * Psats
+        elif self.gamma is None:
+            return self.phi(x, T, P) * self.pcf(T, P, Psats) * P
+        else:
+            raise RuntimeError('cannot use both activity coefficient and fugacity coefficient models')
     
     def __call__(self, x, T, P=101325., reduce=False):
-        f_reduced = x * self.gamma(x, T, P)
-        if reduce: return f_reduced
-        Psats = np.array([i.Psat(T) for i in self.chemicals], dtype=float)
-        return f_reduced * Psats * self.pcf(T, P, Psats)
+        if self.phi is None:
+            f_reduced = x * self.gamma(x, T, P)
+            if reduce: return f_reduced
+            Psats = np.array([i.Psat(T) for i in self.chemicals], dtype=float)
+            return f_reduced * Psats * self.pcf(T, P, Psats)
+        elif self.gamma is None:
+            f_reduced = x * self.phi(x, T, P) 
+            if reduce: return f_reduced
+            if isinstance(self.pcf, MockPoyintingCorrectionFactors):
+                return f_reduced * P
+            else:
+                Psats = np.array([i.Psat(T) for i in self.chemicals], dtype=float)
+                return f_reduced * P * self.pcf(T, P, Psats)
+        else:
+            raise RuntimeError('cannot use both activity coefficient and fugacity coefficient models')
     
     def __repr__(self):
         chemicals = ", ".join([i.ID for i in self.chemicals])
@@ -101,7 +123,7 @@ class GasFugacities:
     def __init__(self, chemicals, thermo=None):
         thermo = tmo.settings.get_default_thermo(thermo)
         self.chemicals = chemicals = tuple(chemicals)
-        self.phi = thermo.Phi(chemicals)
+        self.phi = thermo.Phi(chemicals, 'g')
     
     def unweighted(self, y, T, P):
         return P * self.phi(y, T, P)

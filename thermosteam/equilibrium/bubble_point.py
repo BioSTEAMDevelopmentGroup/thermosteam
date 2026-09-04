@@ -9,6 +9,7 @@
 """
 import numpy as np
 import flexsolve as flx
+from .poyinting_correction_factors import MockPoyintingCorrectionFactors
 from .fugacity_coefficients import IdealFugacityCoefficients
 from .domain import vle_domain
 from .lle import solve_lle_mol
@@ -58,31 +59,31 @@ class BubblePointValues:
     
     @property
     def xα(self):
-        return self.α / self.α.sum()
+        return None if self.alpha is None else self.α / self.α.sum()
     
     @property
     def xβ(self):
-        return self.β / self.β.sum()
+        return None if self.alpha is None else self.β / self.β.sum()
     
     @property
     def β(self):
-        return self.z - self.α
+        return None if self.alpha is None else self.z - self.α
     
     @property
     def ϕ(self):
-        return self.α.sum()
+        return None if self.alpha is None else self.α.sum()
     
     @property
     def KL(self):
-        return self.xα / self.xβ
+        return None if self.alpha is None else self.xα / self.xβ
     
     @property
     def Kα(self):
-        return self.y / self.xα
+        return None if self.alpha is None else self.y / self.xα
     
     @property
     def Kβ(self):
-        return self.y / self.xβ
+        return None if self.alpha is None else self.y / self.xβ
     
     def __repr__(self):
         return f"{type(self).__name__}(T={self.T:.2f}, P={self.P:.0f}, IDs={self.IDs}, z={self.z}, y={self.y})"
@@ -139,7 +140,7 @@ class BubblePoint:
     BubblePointValues(T=353.03, P=101325, IDs=('Water', 'Ethanol'), z=[0.5 0.5], y=[0.343 0.657])
     
     """
-    __slots__ = ('chemicals', 'IDs', 'gamma', 'phi', 'pcf',
+    __slots__ = ('chemicals', 'IDs', 'gamma', 'phi_g', 'phi_l', 'pcf',
                  'Psats', 'Tmin', 'Tmax', 'Pmin', 'Pmax')
     _cached = {}
     maxiter = 100
@@ -163,8 +164,13 @@ class BubblePoint:
         else:
             self = super().__new__(cls)
             self.IDs = tuple([i.ID for i in chemicals])
-            self.gamma = thermo.Gamma(chemicals)
-            self.phi = thermo.Phi(chemicals)
+            if thermo.Gamma is None:
+                self.gamma = None
+                self.phi_l = thermo.Phi(chemicals, 'l')
+            else:
+                self.gamma = thermo.Gamma(chemicals)
+                self.phi_l = None
+            self.phi_g = thermo.Phi(chemicals, 'g')
             self.pcf = thermo.PCF(chemicals)
             self.Psats = Psats = [i.Psat for i in chemicals]
             Tmin, Tmax = vle_domain(chemicals)
@@ -176,17 +182,28 @@ class BubblePoint:
             cached[key] = self
             return self
     
-    def _T_error(self, T, P, z_over_P, z_norm, y):
+    def _T_error_phi(self, T, P, z, y):
+        if T <= 0: raise InfeasibleRegion('negative temperature')
+        if isinstance(self.pcf, MockPoyintingCorrectionFactors):
+            y_phi = z * self.phi_l(z, T, P)
+        else:
+            Psats = np.array([i(T) for i in self.Psats], dtype=float)
+            pcf = self.pcf(T, P, Psats)
+            y_phi = z * self.phi_l(z, T, P) * pcf
+        y[:] = solve_y(y_phi, self.phi_g, T, P, y)
+        return 1. - y.sum()
+    
+    def _T_error_gamma(self, T, P, z_over_P, z, y):
         if T <= 0: raise InfeasibleRegion('negative temperature')
         Psats = np.array([i(T) for i in self.Psats], dtype=float)
         y_phi =  (z_over_P
                   * Psats
-                  * self.gamma(z_norm, T, P) 
+                  * self.gamma(z, T, P) 
                   * self.pcf(T, P, Psats))
-        y[:] = solve_y(y_phi, self.phi, T, P, y)
+        y[:] = solve_y(y_phi, self.phi_g, T, P, y)
         return 1. - y.sum()
     
-    def _T_error_lle(self, T, P, z, y, x, α):
+    def _T_error_lle_gamma(self, T, P, z, y, x, α):
         if T <= 0: raise InfeasibleRegion('negative temperature')
         Psats = np.array([i(T) for i in self.Psats], dtype=float)
         α[:] = solve_lle_mol(self.gamma, z, T, P, sample=x)
@@ -198,22 +215,32 @@ class BubblePoint:
                   * Psats
                   * self.gamma(x, T, P) 
                   * self.pcf(T, P, Psats))
-        y[:] = solve_y(y_phi, self.phi, T, P, y)
+        y[:] = solve_y(y_phi, self.phi_g, T, P, y)
         return 1. - y.sum()
     
-    def _P_error(self, P, T, z_Psat_gamma, Psats, y):
+    def _P_error_phi(self, P, T, z, Psats, y):
+        if P <= 0: raise InfeasibleRegion('negative pressure')
+        if isinstance(self.pcf, MockPoyintingCorrectionFactors):
+            y_phi = z * self.phi_l(z, T, P)
+        else:
+            pcf = self.pcf(T, P, Psats)
+            y_phi = z * self.phi_l(z, T, P) * pcf
+        y[:] = solve_y(y_phi, self.phi_g, T, P, y)
+        return 1. - y.sum()
+    
+    def _P_error_gamma(self, P, T, z_Psat_gamma, Psats, y):
         if P <= 0: raise InfeasibleRegion('negative pressure')
         y_phi = z_Psat_gamma * self.pcf(T, P, Psats) / P
-        y[:] = solve_y(y_phi, self.phi, T, P, y)
+        y[:] = solve_y(y_phi, self.phi_g, T, P, y)
         return 1. - y.sum()
         
-    def _P_error_dep(self, P, T, z, Psats, z_Psats, y):
+    def _P_error_gamma_dep(self, P, T, z, Psats, z_Psats, y):
         if P <= 0: raise InfeasibleRegion('negative pressure')
         y_phi = z_Psats * self.gamma(z, T, P) * self.pcf(T, P, Psats) / P
-        y[:] = solve_y(y_phi, self.phi, T, P, y)
+        y[:] = solve_y(y_phi, self.phi_g, T, P, y)
         return 1. - y.sum()
     
-    def _P_error_lle(self, P, T, z, Psats, y, x, α):
+    def _P_error_lle_gamma(self, P, T, z, Psats, y, x, α):
         if P <= 0: raise InfeasibleRegion('negative pressure')
         α[:] = solve_lle_mol(self.gamma, z, T, P, sample=x)
         if α.any(): 
@@ -221,10 +248,10 @@ class BubblePoint:
         else:
             x = z
         y_phi = Psats * x * self.gamma(x, T, P) * self.pcf(T, P, Psats) / P
-        y[:] = solve_y(y_phi, self.phi, T, P, y)
+        y[:] = solve_y(y_phi, self.phi_g, T, P, y)
         return 1. - y.sum()
     
-    def _T_error_reactive(self, T, P, z, dz, y, x, liquid_conversion):
+    def _T_error_reactive_gamma(self, T, P, z, dz, y, x, liquid_conversion):
         if T <= 0: raise InfeasibleRegion('negative temperature')
         dz[:] = liquid_conversion(z, T, P, 'l')
         x[:] = z + dz
@@ -234,17 +261,17 @@ class BubblePoint:
                   * Psats
                   * self.gamma(x, T, P) 
                   * self.pcf(T, P, Psats))
-        y[:] = solve_y(y_phi, self.phi, T, P, y)
+        y[:] = solve_y(y_phi, self.phi_g, T, P, y)
         return 1. - y.sum()
     
-    def _P_error_reactive(self, P, T, Psats, z, dz, y, x, liquid_conversion):
+    def _P_error_reactive_gamma(self, P, T, Psats, z, dz, y, x, liquid_conversion):
         if P <= 0: raise InfeasibleRegion('negative pressure')
         dz[:] = liquid_conversion(z, T, P, 'l')
         x[:] = z + dz
         x /= x.sum()
         z_Psat_gamma = x * Psats * self.gamma(x, T, P)
         y_phi = z_Psat_gamma * self.pcf(T, P, Psats) / P
-        y[:] = solve_y(y_phi, self.phi, T, P, y)
+        y[:] = solve_y(y_phi, self.phi_g, T, P, y)
         return 1. - y.sum()
     
     def _T_error_ideal(self, T, z_over_P, y):
@@ -329,15 +356,23 @@ class BubblePoint:
             z = z / z.sum()
             z_over_P = z / P
             T_guess, y = self._Ty_ideal(z_over_P)
-            if lle:
-                x = y.copy()
-                α = x.copy()
-                f = self._T_error_lle
-                args = (P, z, y, x, α)
+            if self.gamma is None:
+                if lle:
+                    raise NotImplementedError('lle phi-phi algorithm not implemented yet')
+                else:
+                    f = self._T_error_phi
+                    α = None
+                    args = (P, z, y)
             else:
-                f = self._T_error
-                α= None
-                args = (P, z_over_P, z, y)
+                if lle:
+                    x = y.copy()
+                    α = x.copy()
+                    f = self._T_error_lle_gamma
+                    args = (P, z, y, x, α)
+                else:
+                    f = self._T_error_gamma
+                    α = None
+                    args = (P, z_over_P, z, y)
             try:
                 T = flx.aitken_secant(f, T_guess, T_guess + 1e-3,
                                       self.T_tol, 5e-12, args,
@@ -354,13 +389,16 @@ class BubblePoint:
             y = fn.normalize(y)
             return (T, y, α) if full else (T, y)
         else:
-            f = self._T_error_reactive
             z_norm = z / z.sum()
             x = z_norm.copy()
             dz = z_norm.copy()
             z_over_P = z / P
             T_guess, y = self._Ty_ideal(z_over_P)
-            args = (P, z_norm, dz, y, x, liquid_conversion)
+            if self.gamma is None:
+                raise NotImplementedError('reactive phi-phi algorithm not implemented yet')
+            else:
+                f = self._T_error_reactive_gamma
+                args = (P, z_norm, dz, y, x, liquid_conversion)
             try:
                 T = flx.aitken_secant(f, T_guess, T_guess + 1e-3,
                                       self.T_tol, 5e-12, args,
@@ -419,24 +457,31 @@ class BubblePoint:
             Psats = np.array([i(T) for i in self.Psats])
             z = z / z.sum()
             α = None
-            if self.gamma.P_dependent:
-                f = self._P_error_dep
-                z_Psats = z * Psats
-                P_guess, y = self._Py_ideal(z_Psats)
-                args = (T, z, Psats, z_Psats, y)
-            else:
+            if self.gamma is None:
                 if lle:
-                    z_Psat_gamma = z * Psats * self.gamma(z, T, 101325)
-                    P_guess, y = self._Py_ideal(z_Psat_gamma)
-                    f = self._P_error_lle
-                    x = y.copy()
-                    α = x.copy()
-                    args = (P, T, z, Psats, y, x, α)
+                    raise NotImplementedError('lle phi-phi algorithm not implemented yet')
                 else:
-                    z_Psat_gamma = z * Psats * self.gamma(z, T, 101325)
-                    P_guess, y = self._Py_ideal(z_Psat_gamma)
-                    f = self._P_error
-                    args = (T, z_Psat_gamma, Psats, y)
+                    z_Psats = z * Psats
+                    P_guess, y = self._Py_ideal(z_Psats)
+                    f = self._P_error_phi
+                    α = None
+                    args = (P, z, Psats, y)
+            else:
+                z_Psats = z * Psats
+                z_Psat_gamma = z_Psats * self.gamma(z, T, 101325)
+                P_guess, y = self._Py_ideal(z_Psat_gamma)
+                if self.gamma.P_dependent:
+                    f = self._P_error_gamma_dep
+                    args = (T, z, Psats, z_Psats, y)
+                else:
+                    if lle:
+                        f = self._P_error_lle
+                        x = y.copy()
+                        α = x.copy()
+                        args = (P, T, z, Psats, y, x, α)
+                    else:
+                        f = self._P_error_gamma
+                        args = (T, z_Psat_gamma, Psats, y)
             try:
                 P = flx.aitken_secant(f, P_guess, P_guess-1, self.P_tol, 1e-9,
                                       args, checkiter=False, maxiter=self.maxiter)
@@ -451,14 +496,17 @@ class BubblePoint:
             y = fn.normalize(y)
             return (P, y, α) if full else (P, y)
         else:
-            f = self._P_error_reactive
-            z_norm = z / z.sum()
-            Psats = np.array([i(T) for i in self.Psats])
-            x = z_norm.copy()
-            dz = z_norm.copy()
-            z_Psat_gamma = z * Psats * self.gamma(z_norm, T, 101325)
-            P_guess, y = self._Py_ideal(z_Psat_gamma)
-            args = (T, Psats, z_norm, dz, y, x, liquid_conversion)
+            if self.gamma is None:
+                raise NotImplementedError('reactive phi-phi algorithm not implemented yet')
+            else:
+                f = self._P_error_reactive_gamma
+                z_norm = z / z.sum()
+                Psats = np.array([i(T) for i in self.Psats])
+                x = z_norm.copy()
+                dz = z_norm.copy()
+                z_Psat_gamma = z * Psats * self.gamma(z_norm, T, 101325)
+                P_guess, y = self._Py_ideal(z_Psat_gamma)
+                args = (T, Psats, z_norm, dz, y, x, liquid_conversion)
             try:
                 P = flx.aitken_secant(f, P_guess, P_guess-1, self.P_tol, 1e-9,
                                       args, checkiter=False, 

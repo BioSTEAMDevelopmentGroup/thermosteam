@@ -52,60 +52,6 @@ def stable_phase(K, z, z_light=0, z_heavy=0, score_limit=1000, heuristic_score=8
     score = phase_stability_score(K, z, z_light, z_heavy, score_limit)
     return score > heuristic_score
 
-def xVlogK_iter_2n(xVlogK, pcf_Psat_over_P, T, P, z, f_gamma, gamma_args, f_phi, n,
-                  gas_conversion, liquid_conversion):
-    xVlogK = xVlogK.copy()
-    x = xVlogK[:n]
-    Ks = np.exp(xVlogK[n+1:])
-    x, y = xy(x, Ks)
-    Ks[:] = pcf_Psat_over_P * f_gamma(x, T, *gamma_args) / f_phi(y, T, P)
-    if gas_conversion or liquid_conversion:
-        V = xVlogK[n]
-        if V < 0.: V = 0.
-        elif V > 1.: V = 1.
-        V = binary.compute_phase_fraction_2N(z, Ks)
-        if gas_conversion: 
-            z = z + gas_conversion(material=y * V, T=T, P=P, phase='g')
-            z[z <= 0] = 1e-64
-            z /= z.sum()
-        if liquid_conversion:
-            z = z + liquid_conversion(material=x * (1 - V), T=T, P=P, phase='l')
-            z[z <= 0] = 1e-64
-            z /= z.sum()
-    Ks[Ks < 1e-64] = 1e-64
-    xVlogK[n] = V = binary.compute_phase_fraction_2N(z, Ks)
-    xVlogK[:n] = z/(1. + V * (Ks - 1.))
-    xVlogK[n+1:] = np.log(Ks)
-    return xVlogK
-
-def xVlogK_iter(
-        xVlogK, pcf_Psat_over_P, T, P,
-        z, z_light, z_heavy, f_gamma, gamma_args,
-        f_phi, n, gas_conversion, liquid_conversion
-    ):
-    xVlogK = xVlogK.copy()
-    x = xVlogK[:n]
-    Ks = np.exp(xVlogK[n+1:])
-    x, y = xy(x, Ks)
-    Ks[:] = pcf_Psat_over_P * f_gamma(x, T, *gamma_args, P=P) / f_phi(y, T, P)
-    V = xVlogK[n]
-    if V < 0.: V = 0.
-    elif V > 1.: V = 1.
-    if gas_conversion or liquid_conversion:
-        if gas_conversion: 
-            z = z + gas_conversion(material=y * V, T=T, P=P, phase='g')
-            z[z <= 0] = 1e-64
-            z /= z.sum()
-        if liquid_conversion:
-            z = z + liquid_conversion(material=x * (1 - V), T=T, P=P, phase='l')
-            z[z <= 0] = 1e-64
-            z /= z.sum()
-    Ks[Ks < 1e-64] = 1e-64
-    xVlogK[n] = V = binary.solve_phase_fraction_Rashford_Rice(z, Ks, V, z_light, z_heavy)
-    xVlogK[:n] = z / (1. + V * (Ks - 1.))
-    xVlogK[n+1:] = np.log(Ks)
-    return xVlogK
-
 def set_flows(vapor_mol, liquid_mol, index, vapor_data, total_data):
     vapor_mol[index] = vapor_data
     liquid_mol[index] = total_data - vapor_data
@@ -287,7 +233,8 @@ class VLE(Equilibrium, phases='lg'):
         '_bubble_point', # [BubblePoint] Solves for bubble point.
         '_y', # [1d array] Vapor composition.
         '_z_last', # tuple[1d array] Last bulk composition.
-        '_phi', # [FugacityCoefficients] Estimates fugacity coefficients of gas.
+        '_phi_g', # [FugacityCoefficients] Estimates fugacity coefficients of gas.
+        '_phi_l', # [FugacityCoefficients] Estimates fugacity coefficients of liquid.
         '_pcf', # [PoyintingCorrectionFactors] Estimates the PCF of a liquid.
         '_gamma', # [ActivityCoefficients] Estimates activity coefficients of a liquid.
         '_liquid_mol', # [1d array] Liquid molar data.
@@ -1328,10 +1275,11 @@ class VLE(Equilibrium, phases='lg'):
         """Solve for vapor mol"""
         method = self.method
         if method == 'shgo':
+            if self._phi_l is not None: raise NotImplementedError('shgo using phi-phi model is not supported')
             if gas_conversion or liquid_conversion:
                 raise RuntimeError('shgo is not a valid method (yet) when reactions are present')
             gamma = self._gamma
-            phi = self._phi
+            phi = self._phi_g
             Psats = np.array([i(T) for i in self._bubble_point.Psats]) 
             pcf = self._pcf(T, P, Psats)
             F_mol_vle = self._F_mol_vle
@@ -1343,12 +1291,9 @@ class VLE(Equilibrium, phases='lg'):
             )
             self._z_last = z
         elif method == 'fixed-point':
-            Psats = np.array([i(T) for i in
-                              self._bubble_point.Psats])
-            pcf_Psats_over_P = self._pcf(T, P, Psats) * Psats / P
             self._T = T
             self._v = v = self._solve_v_fixed_point(
-                pcf_Psats_over_P, T, P, 
+                T, P, 
                 gas_conversion, liquid_conversion, 
                 single_loop
             )
@@ -1363,24 +1308,95 @@ class VLE(Equilibrium, phases='lg'):
             raise RuntimeError(f"invalid method '{method}'")
         return v
     
-    def _solve_v_fixed_point(self, pcf_Psat_over_P, T, P, 
+    def xVlogK_iter_2n(
+            self, xVlogK, factor, T, P, z, n,
+            gas_conversion, liquid_conversion):
+        xVlogK = xVlogK.copy()
+        x = xVlogK[:n]
+        Ks = np.exp(xVlogK[n+1:])
+        x, y = xy(x, Ks)
+        if self._gamma is None:
+            top = self._phi_l(x, T, P)
+        else:
+            top = self._gamma(x, T, P)
+        Ks[:] = factor * top / self._phi_g(y, T, P)
+        if gas_conversion or liquid_conversion:
+            V = xVlogK[n]
+            if V < 0.: V = 0.
+            elif V > 1.: V = 1.
+            V = binary.compute_phase_fraction_2N(z, Ks)
+            if gas_conversion: 
+                z = z + gas_conversion(material=y * V, T=T, P=P, phase='g')
+                z[z <= 0] = 1e-64
+                z /= z.sum()
+            if liquid_conversion:
+                z = z + liquid_conversion(material=x * (1 - V), T=T, P=P, phase='l')
+                z[z <= 0] = 1e-64
+                z /= z.sum()
+        Ks[Ks < 1e-64] = 1e-64
+        xVlogK[n] = V = binary.compute_phase_fraction_2N(z, Ks)
+        xVlogK[:n] = z/(1. + V * (Ks - 1.))
+        xVlogK[n+1:] = np.log(Ks)
+        return xVlogK
+
+    def xVlogK_iter(
+            self, xVlogK, factor, T, P,
+            z, z_light, z_heavy, n,
+            gas_conversion, liquid_conversion
+        ):
+        xVlogK = xVlogK.copy()
+        x = xVlogK[:n]
+        Ks = np.exp(xVlogK[n+1:])
+        x, y = xy(x, Ks)
+        if self._gamma is None:
+            top = self._phi_l(x, T, P)
+        else:
+            top = self._gamma(x, T, P)
+        Ks[:] = factor * top / self._phi_g(y, T, P)
+        V = xVlogK[n]
+        if V < 0.: V = 0.
+        elif V > 1.: V = 1.
+        if gas_conversion or liquid_conversion:
+            if gas_conversion: 
+                z = z + gas_conversion(material=y * V, T=T, P=P, phase='g')
+                z[z <= 0] = 1e-64
+                z /= z.sum()
+            if liquid_conversion:
+                z = z + liquid_conversion(material=x * (1 - V), T=T, P=P, phase='l')
+                z[z <= 0] = 1e-64
+                z /= z.sum()
+        Ks[Ks < 1e-64] = 1e-64
+        xVlogK[n] = V = binary.solve_phase_fraction_Rashford_Rice(z, Ks, V, z_light, z_heavy)
+        xVlogK[:n] = z / (1. + V * (Ks - 1.))
+        xVlogK[n+1:] = np.log(Ks)
+        return xVlogK
+    
+    def _solve_v_fixed_point(self, T, P, 
                              gas_conversion, liquid_conversion,
                              single_loop=False):
-        gamma = self._gamma
+        if self._gamma is None:
+            if isinstance(self._pcf, MockPoyintingCorrectionFactors):
+                factor = 1
+            else:
+                Psats = np.array([i(T) for i in
+                                  self._bubble_point.Psats])
+                factor = self._pcf(T, P, Psats)
+        else:
+            Psats = np.array([i(T) for i in
+                              self._bubble_point.Psats])
+            factor = self._pcf(T, P, Psats) * Psats / P
         z = self._z
         K = self._K # pcf_Psat_over_P
         n = z.size
         if n > 2 or self._z_light or self._z_heavy:
-            f = xVlogK_iter
-            args = (pcf_Psat_over_P, T, P, z, 
+            f = self.xVlogK_iter
+            args = (factor, T, P, z, 
                     self._z_light, self._z_heavy, 
-                    gamma.f, gamma.args, self._phi, n,
-                    gas_conversion, liquid_conversion)
+                    n, gas_conversion, liquid_conversion)
         else:
-            f = xVlogK_iter_2n
-            args = (pcf_Psat_over_P, T, P, z, 
-                    gamma.f, gamma.args, self._phi, n,
-                    gas_conversion, liquid_conversion)
+            f = self.xVlogK_iter_2n
+            args = (factor, T, P, z, 
+                    n, gas_conversion, liquid_conversion)
         xVlogK = np.zeros(2 * n + 1)
         xVlogK[n] = V = self._V
         K[K < 1e-64] = 1e-64
@@ -1475,7 +1491,7 @@ class VLE(Equilibrium, phases='lg'):
         self._N = N
         if reset:
             if N == 0:
-                self._phi = self._gamma = self._pcf = self._dew_point = self._bubble_point = None
+                self._phi_g = self._phi_l = self._gamma = self._pcf = self._dew_point = self._bubble_point = None
             elif N == 1:
                 self._chemical, = eq_chems
             else:
@@ -1485,7 +1501,8 @@ class VLE(Equilibrium, phases='lg'):
                 self._dew_point = DewPoint(eq_chems, thermo)
                 self._pcf = bp.pcf
                 self._gamma = bp.gamma
-                self._phi = bp.phi
+                self._phi_g = bp.phi_g
+                self._phi_l = bp.phi_l
 
 
 class VLECache(Cache): load = VLE

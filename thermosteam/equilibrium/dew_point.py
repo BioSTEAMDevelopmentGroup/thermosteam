@@ -10,6 +10,7 @@
 import numpy as np
 import flexsolve as flx
 from numba import njit
+from .poyinting_correction_factors import MockPoyintingCorrectionFactors
 from .. import functional as fn
 from ..exceptions import InfeasibleRegion
 from .._settings import settings
@@ -20,32 +21,32 @@ __all__ = ('DewPoint',)
 # %% Solvers
 
 # @njit(cache=True)
-def gamma_iter(gamma, x_gamma, T, P, f_gamma, gamma_args):
+def g_iter(g, x_g, T, P, f_g, g_args): # g(x = x_g / g)
     try:
-        x = x_gamma / gamma
+        x = x_g / g
     except FloatingPointError:
-        gamma[gamma < 1e-32] = 1e-32
-        x = x_gamma / gamma
+        g[g < 1e-32] = 1e-32
+        x = x_g / g
     # Add back trace amounts for activity coefficients at infinite dilution
     mask = x < 1e-32
     x[mask] = 1e-32
     x = fn.normalize(x)
-    return f_gamma(x, T, *gamma_args, P=P)
+    return f_g(x, T, *g_args, P=P)
 
-def solve_x(x_guess, x_gamma, T, P, f_gamma, gamma_args):
+def solve_x(x_guess, x_g, T, P, f_g, g_args): # x = x_g / g(x)
     mask = x_guess < 1e-32
     x_guess[mask] = 1e-32
     x_guess = fn.normalize(x_guess)
-    gamma = f_gamma(x_guess, T, *gamma_args, P=P)
-    args = (x_gamma, T, P, f_gamma, gamma_args)
-    gamma = flx.wegstein(
-        gamma_iter, gamma, 1e-12, args=args, checkiter=False,
+    g = f_g(x_guess, T, *g_args, P=P)
+    args = (x_g, T, P, f_g, g_args)
+    g = flx.wegstein(
+        g_iter, g, 1e-12, args=args, checkiter=False,
         checkconvergence=False, convergenceiter=5, maxiter=DewPoint.maxiter
     )
     try:
-        return x_gamma / gamma
+        return x_g / g
     except:
-        return x_gamma / gamma_iter(gamma, *args)
+        return x_g / g_iter(g, *args)
 
 # %% Dew point values container
 
@@ -114,7 +115,7 @@ class DewPoint:
     DewPointValues(T=376.25, P=202648, IDs=('Water', 'Ethanol'), z=[0.5 0.5], x=[0.83 0.17])
 
     """
-    __slots__ = ('chemicals', 'phi', 'gamma', 'IDs', 
+    __slots__ = ('chemicals', 'phi_g', 'phi_l', 'gamma', 'IDs', 
                  'pcf', 'Psats', 'Tmin', 'Tmax', 'Pmin', 'Pmax')
     _cached = {}
     maxiter = 50
@@ -138,8 +139,13 @@ class DewPoint:
         else:
             self = super().__new__(cls)
             self.IDs = tuple([i.ID for i in chemicals])
-            self.gamma = thermo.Gamma(chemicals)
-            self.phi = thermo.Phi(chemicals)
+            if thermo.Gamma is None:
+                self.phi_l = thermo.Phi(chemicals, 'l')
+                self.gamma = None
+            else:
+                self.phi_l = None
+                self.gamma = thermo.Gamma(chemicals)
+            self.phi_g = thermo.Phi(chemicals, 'g')
             self.pcf = thermo.PCF(chemicals)
             self.Psats = Psats = [i.Psat for i in chemicals]
             Tmin, Tmax = vle_domain(chemicals)
@@ -151,30 +157,46 @@ class DewPoint:
             cached[key] = self
             return self
     
-    def _solve_x(self, x_gamma, T, P, x):
+    def _solve_x(self, x_g, T, P, x):
         gamma = self.gamma
-        return solve_x(x, x_gamma, T, P, gamma.f, gamma.args)
+        if gamma is None:
+            return solve_x(x, x_g, T, P, self.phi_l, ())
+        else:
+            return solve_x(x, x_g, T, P, gamma.f, gamma.args)
     
-    def _T_error(self, T, P, z_norm, zP, x):
+    def _T_error_phi(self, T, P, z, x):
+        if T <= 0: raise InfeasibleRegion('negative temperature')
+        phi_g = self.phi_g(z, T, P)
+        if isinstance(self.pcf, MockPoyintingCorrectionFactors):
+            Psats = np.array([i(T) for i in self.Psats])
+            Psats[Psats < 1e-16] = 1e-16 # Prevent floating point error
+            pcf = self.pcf(T, P, Psats)
+            x_phi = phi_g * z / pcf
+        else:
+            x_phi = phi_g * z
+        x[:] = self._solve_x(x_phi, T, P, x)
+        return 1 - x.sum()
+    
+    def _T_error_gamma(self, T, P, z, zP, x):
         if T <= 0: raise InfeasibleRegion('negative temperature')
         Psats = np.array([i(T) for i in self.Psats])
         Psats[Psats < 1e-16] = 1e-16 # Prevent floating point error
-        phi = self.phi(z_norm, T, P)
+        phi_g = self.phi_g(z, T, P)
         pcf = self.pcf(T, P, Psats)
-        x_gamma = phi * zP / Psats / pcf
+        x_gamma = phi_g * zP / Psats / pcf
         x[:] = self._solve_x(x_gamma, T, P, x)
         return 1 - x.sum()
     
-    def _T_error_reactive(self, T, P, z, dz, y, x, gas_conversion):
+    def _T_error_reactive_gamma(self, T, P, z, dz, y, x, gas_conversion):
         if T <= 0: raise InfeasibleRegion('negative temperature')
         dz[:] = gas_conversion(z, T, P, 'g')
         y[:] = z + dz
         y /= y.sum()
         Psats = np.array([i(T) for i in self.Psats])
         Psats[Psats < 1e-16] = 1e-16 # Prevent floating point error
-        phi = self.phi(y, T, P)
+        phi_g = self.phi_g(y, T, P)
         pcf = self.pcf(T, P, Psats)
-        x_gamma = phi * y * P / Psats / pcf
+        x_gamma = phi_g * y * P / Psats / pcf
         x[:] = self._solve_x(x_gamma, T, P, x)
         return 1 - x.sum()
     
@@ -184,18 +206,24 @@ class DewPoint:
         x[:] = zP / Psats
         return 1 - x.sum()
     
-    def _P_error(self, P, T, z_norm, z_over_Psats, Psats, x):
+    def _P_error_phi(self, P, T, z, Psats, x):
         if P <= 0: raise InfeasibleRegion('negative pressure')
-        x_gamma = z_over_Psats * P * self.phi(z_norm, T, P) / self.pcf(T, P, Psats)
+        x_phi = z * self.phi_g(z, T, P) / self.pcf(T, P, Psats)
+        x[:] = self._solve_x(x_phi, T, P, x)
+        return 1 - x.sum()
+    
+    def _P_error_gamma(self, P, T, z, z_over_Psats, Psats, x):
+        if P <= 0: raise InfeasibleRegion('negative pressure')
+        x_gamma = z_over_Psats * P * self.phi_g(z, T, P) / self.pcf(T, P, Psats)
         x[:] = self._solve_x(x_gamma, T, P, x)
         return 1 - x.sum()
     
-    def _P_error_reactive(self, P, T, Psats, z, dz, y, x, gas_conversion):
+    def _P_error_reactive_gamma(self, P, T, Psats, z, dz, y, x, gas_conversion):
         if P <= 0: raise InfeasibleRegion('negative pressure')
         dz[:] = gas_conversion(z, T, P, 'g')
         y[:] = z + dz
         y /= y.sum()
-        x_gamma = y / Psats * P * self.phi(y, T, P) / self.pcf(T, P, Psats)
+        x_gamma = y / Psats * P * self.phi_g(y, T, P) / self.pcf(T, P, Psats)
         x[:] = self._solve_x(x_gamma, T, P, x)
         return 1 - x.sum()
     
@@ -273,7 +301,6 @@ class DewPoint:
             x = z.copy()
             return T, fn.normalize(x)
         elif gas_conversion is None:
-            f = self._T_error
             z_norm = z/z.sum()
             zP = z * P
             if guess is None:
@@ -281,7 +308,12 @@ class DewPoint:
                 T_guess1 = T_guess0 + 1e-3
             else:
                 T_guess0, x, T_guess1 = guess
-            args = (P, z_norm, zP, x)
+            if self.gamma is None:
+                f = self._T_error_phi
+                args = (P, z_norm, x)
+            else:
+                f = self._T_error_gamma
+                args = (P, z_norm, zP, x)
             try:
                 T = flx.aitken_secant(f, T_guess0, T_guess1,
                                       self.T_tol, 5e-12, args,
@@ -297,7 +329,10 @@ class DewPoint:
                                          maxiter=self.maxiter)
             return T, fn.normalize(x)
         else:
-            f = self._T_error_reactive
+            if self.gamma is None:
+                raise NotImplementedError('reactive phi-phi algorithm not implemented yet')
+            else:
+                f = self._T_error_reactive_gamma
             z_norm = z / z.sum()
             x = z_norm.copy()
             dz = z_norm.copy()
@@ -364,8 +399,12 @@ class DewPoint:
                 P_guess1 = P_guess0 - 10
             else:
                 P_guess0, x, P_guess1 = guess
-            args = (T, z_norm, z_over_Psats, Psats, x)
-            f = self._P_error
+            if self.gamma is None:
+                f = self._P_error_phi
+                args = (P, z_norm, Psats, x)
+            else:
+                args = (T, z_norm, z_over_Psats, Psats, x)
+                f = self._P_error_gamma
             try:
                 P = flx.aitken_secant(f, P_guess0, P_guess1, self.P_tol, 5e-12, args,
                                       checkiter=False, maxiter=self.maxiter)
@@ -379,7 +418,10 @@ class DewPoint:
                                          maxiter=self.maxiter)
             return P, fn.normalize(x)
         else:
-            f = self._P_error_reactive
+            if self.gamma is None:
+                raise NotImplementedError('reactive phi-phi algorithm not implemented yet')
+            else:
+                f = self._P_error_reactive_gamma
             z_norm = z / z.sum()
             y = z_norm.copy()
             dz = z_norm.copy()
