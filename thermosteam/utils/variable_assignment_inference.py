@@ -70,7 +70,12 @@ def infer_variable_assignment(caller):
     if n in variable_cache:
         return variable_cache[n]
     else:
-        line = lines[n]
+        caller_source = caller.__func__ if hasattr(caller, '__func__') else caller
+        key = (n, caller_source)
+        if key in variable_cache:
+            return variable_cache[key]
+        else:
+            line = lines[n]
     
     # Attempt to infer name
     try: 
@@ -99,10 +104,12 @@ def infer_variable_assignment(caller):
                 variable_cache[n] = default
                 return default # NameError by user
             for key in other: obj = getattr(obj, key)
-            if obj != caller: variable_name = default # No assignment
+            if obj == caller: 
+                variable_cache[n] = variable_name
+            else:
+                variable_cache[n, caller_source] = variable_name = default # No assignment
         else:
-            variable_name = default # No assignment
-        variable_cache[n] = variable_name
+            variable_cache[n] = variable_name = default # No assignment
         return variable_name
     except:
         if crossout: lines[n] = None

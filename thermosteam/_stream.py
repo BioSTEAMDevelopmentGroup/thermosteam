@@ -1573,6 +1573,12 @@ class Stream(AbstractStream):
         flow (kg/hr): Water    40
                       Ethanol  20
         """
+        if tmo.settings.ID_magic:
+            if ID == None:
+                ID = tmo.utils.infer_variable_assignment(cls.sum)
+                if ID != '-': ID = '.' + ID
+            elif ID == '': 
+                ID = tmo.utils.infer_variable_assignment(cls.sum)
         new = cls(ID, thermo=thermo)
         if streams: new.copy_thermal_condition(streams[0])
         new.mix_from(streams, energy_balance, vle, Q, conserve_phases)
