@@ -401,7 +401,7 @@ class DewPoint:
                 P_guess0, x, P_guess1 = guess
             if self.gamma is None:
                 f = self._P_error_phi
-                args = (P, z_norm, Psats, x)
+                args = (T, z_norm, Psats, x)
             else:
                 args = (T, z_norm, z_over_Psats, Psats, x)
                 f = self._P_error_gamma
