@@ -465,7 +465,7 @@ class BubblePoint:
                     P_guess, y = self._Py_ideal(z_Psats)
                     f = self._P_error_phi
                     α = None
-                    args = (P, z, Psats, y)
+                    args = (T, z, Psats, y)
             else:
                 z_Psats = z * Psats
                 z_Psat_gamma = z_Psats * self.gamma(z, T, 101325)
@@ -475,7 +475,7 @@ class BubblePoint:
                     args = (T, z, Psats, z_Psats, y)
                 else:
                     if lle:
-                        f = self._P_error_lle
+                        f = self._P_error_lle_gamma
                         x = y.copy()
                         α = x.copy()
                         args = (P, T, z, Psats, y, x, α)
