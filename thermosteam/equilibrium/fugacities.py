@@ -62,7 +62,11 @@ class LiquidFugacities:
             Psats = np.array([i.Psat(T) for i in self.chemicals], dtype=float)
             return self.gamma(x, T, P) * self.pcf(T, P, Psats) * Psats
         elif self.gamma is None:
-            return self.phi(x, T, P) * self.pcf(T, P, Psats) * P
+            if isinstance(self.pcf, MockPoyintingCorrectionFactors):
+                return self.phi(x, T, P) * P
+            else:
+                Psats = np.array([i.Psat(T) for i in self.chemicals], dtype=float)
+                return self.phi(x, T, P) * self.pcf(T, P, Psats) * P
         else:
             raise RuntimeError('cannot use both activity coefficient and fugacity coefficient models')
     
