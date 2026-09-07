@@ -19,7 +19,7 @@ from . import (
 )
 from ..utils import chemicals_user, thermo_user, AbstractMethod
 from .._phase import phase_tuple
-from ..indexer import ChemicalIndexer, MaterialIndexer
+from ..indexer import Indexer, ChemicalIndexer, MaterialIndexer
 from ..exceptions import InfeasibleRegion
 import numpy as np
 import pandas as pd
@@ -93,6 +93,14 @@ def as_material_array(material, basis, phases, chemicals):
                 return material.copy(), None, None
         else:
             raise Exception('unknown error')
+    elif isa(material, Indexer):
+        if phases and material.phases != phases:
+            raise ValueError("reaction and indexer phases do not match")
+        if material.chemicals is chemicals:
+            config = None
+        else:
+            config = material.chemicals, material.reset_chemicals(chemicals)
+        return material.data, config, None
     elif phases:
         return SparseArray(material), None, material
     else:
