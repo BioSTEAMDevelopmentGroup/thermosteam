@@ -175,8 +175,8 @@ def style_axis(ax=None, xticks=None, yticks=None,
     return axes
     
 def style_plot_limits(xticks, yticks): # pragma: no cover
-    plt.xlim([xticks[0], xticks[-1]])
-    plt.ylim([yticks[0], yticks[-1]])
+    if xticks is not None: plt.xlim([xticks[0], xticks[-1]])
+    if yticks is not None: plt.ylim([yticks[0], yticks[-1]])
     
 def fill_plot(color='k'): # pragma: no cover
     y_lb, y_ub = plt.ylim()
