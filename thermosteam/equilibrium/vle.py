@@ -596,7 +596,7 @@ class VLE(Equilibrium, phases='lg'):
         self._lever_rule(x, y)
         
     def set_TP(self, T, P, gas_conversion=None, liquid_conversion=None):
-        self._setup(gas_conversion, liquid_conversion)
+        self._setup(gas_conversion, liquid_conversion, T, P)
         thermal_condition = self._thermal_condition
         self._T = thermal_condition.T = T
         self._P = thermal_condition.P = P
@@ -1429,7 +1429,7 @@ class VLE(Equilibrium, phases='lg'):
             v = self._F_mol * V * x * K
         return v
     
-    def _setup(self, gas_conversion=None, liquid_conversion=None):
+    def _setup(self, gas_conversion=None, liquid_conversion=None, T=None, P=None):
         imol = self._imol
         self._phase_data = tuple(imol)
         self._liquid_mol = liquid_mol = imol['l']
@@ -1445,19 +1445,41 @@ class VLE(Equilibrium, phases='lg'):
                 liquid_conversion.reaction.stoichiometry.nonzero_keys()
             )
         chemicals = self.chemicals
+        index = chemicals.get_vle_indices(nonzero)
+        LNK_index = chemicals._light_indices
+        HNK_index = chemicals._heavy_indices
+        if self._thermo.Gamma is not None:
+            if T is not None:
+                new_light_chems = []
+                for i in index:
+                    chemical = chemicals.tuple[i]
+                    if T > chemical.Tc:
+                        nonzero.remove(i) # Exclude from VLE
+                        new_light_chems.append(i)
+                if LNK_index: LNK_index = np.concatenate([LNK_index, new_light_chems], dtype=int)
+            if P is not None:
+                new_heavy_chems = []
+                for i in index:
+                    chemical = chemicals.tuple[i]
+                    if P > chemical.Pc:
+                        nonzero.remove(i) # Exclude from VLE
+                        new_heavy_chems.append(i)
+                if HNK_index: HNK_index = np.concatenate([HNK_index, new_heavy_chems], dtype=int)
+        
         if self._nonzero == nonzero:
             index = self._index
             eq_chems = chemicals.tuple
             eq_chems = [eq_chems[i] for i in index]
             reset = False
         else:
-            # Set up indices for both equilibrium and non-equilibrium species
             index = chemicals.get_vle_indices(nonzero)
+            # Set up indices for both equilibrium and non-equilibrium species
             eq_chems = chemicals.tuple
             eq_chems = [eq_chems[i] for i in index]
             reset = True     
             self._nonzero = nonzero
             self._index = index
+        
         self._vle_chemicals = eq_chems
         if gas_conversion and [i.ID for i in eq_chems] != [i.ID for i in gas_conversion.reaction.chemicals]:
             gas_conversion.set_chemicals(eq_chems)
@@ -1469,8 +1491,6 @@ class VLE(Equilibrium, phases='lg'):
         self._mol_vle = mol_vle = mol[index]
 
         # Set light and heavy keys
-        LNK_index = chemicals._light_indices
-        HNK_index = chemicals._heavy_indices
         vapor_mol[HNK_index] = 0
         vapor_mol[LNK_index] = light_mol = mol[LNK_index]
         liquid_mol[LNK_index] = 0
