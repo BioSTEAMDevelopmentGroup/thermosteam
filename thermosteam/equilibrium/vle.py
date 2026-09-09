@@ -1456,7 +1456,11 @@ class VLE(Equilibrium, phases='lg'):
                     if T > chemical.Tc:
                         nonzero.remove(i) # Exclude from VLE
                         new_light_chems.append(i)
-                if LNK_index: LNK_index = np.concatenate([LNK_index, new_light_chems], dtype=int)
+                if new_light_chems:
+                    if HNK_index: 
+                        LNK_index = [*LNK_index, *new_light_chems]
+                    else:
+                        LNK_index = new_light_chems
             if P is not None:
                 new_heavy_chems = []
                 for i in index:
@@ -1464,7 +1468,11 @@ class VLE(Equilibrium, phases='lg'):
                     if P > chemical.Pc:
                         nonzero.remove(i) # Exclude from VLE
                         new_heavy_chems.append(i)
-                if HNK_index: HNK_index = np.concatenate([HNK_index, new_heavy_chems], dtype=int)
+                if new_heavy_chems:
+                    if HNK_index: 
+                        HNK_index = [*HNK_index, *new_heavy_chems]
+                    else:
+                        HNK_index = new_heavy_chems
         
         if self._nonzero == nonzero:
             index = self._index
