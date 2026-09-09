@@ -382,6 +382,12 @@ class Reaction:
             self._stoichiometry = SparseVector.from_size(chemicals.size)
             self._reactant_index = chemicals.index(reactant)
     
+    @property
+    def all_reactants(self):
+        reactants_index, = self._stoichiometry.negative_index()
+        IDs = self.chemicals.IDs
+        return [IDs[i] for i in reactants_index]
+    
     def backwards(self, reactant=None, X=None, rate=None):
         new = self.copy()
         if reactant is None:
