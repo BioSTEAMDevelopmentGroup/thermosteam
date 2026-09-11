@@ -12,7 +12,7 @@ from thermosteam import functional as fn
 import flexsolve as flx
 from chemicals import elements
 from warnings import warn
-from ..base import SparseVector, SparseArray, DictionaryView
+from ..base import SparseVector, SparseArray, DictionaryView, sparse
 from . import (
     _parse as prs,
     _xparse as xprs,
@@ -340,7 +340,11 @@ class Reaction:
         self.X = X
         self.rate = rate
         chemicals = self._load_chemicals(chemicals)
-        if reaction:
+        if reaction is None:
+            self._phases = ()
+            self._stoichiometry = SparseVector.from_size(chemicals.size)
+            self._reactant_index = chemicals.index(reactant)
+        else:
             self._phases = phases = phase_tuple(phases) if phases else xprs.get_phases(reaction)
             if phases:
                 self._stoichiometry = stoichiometry = xprs.get_stoichiometric_array(reaction, phases, chemicals)
@@ -377,18 +381,14 @@ class Reaction:
                     self.check_mass_balance()
                 if check_atomic_balance:
                     self.check_atomic_balance()
-        else:
-            self._phases = ()
-            self._stoichiometry = SparseVector.from_size(chemicals.size)
-            self._reactant_index = chemicals.index(reactant)
     
     @property
     def all_reactants(self):
-        reactants_index, = self._stoichiometry.negative_index()
+        negative_keys = sparse(self._stoichiometry).negative_keys()
         IDs = self.chemicals.IDs
-        return [IDs[i] for i in reactants_index]
+        return [IDs[i] for i in negative_keys]
     
-    def backwards(self, reactant=None, X=None, rate=None):
+    def backwards(self, reactant=None):
         new = self.copy()
         if reactant is None:
             if new._phases:
@@ -407,8 +407,7 @@ class Reaction:
                     raise ValueError('must pass reactant when multiple reactants are involved')
         else:
             new._reactant_index = new.chemicals.index(reactant)
-        if X is not None: new.X = X
-        if rate is not None: new.rate = rate
+        new.X = 1
         new._rescale()
         return new
     
@@ -1295,6 +1294,7 @@ class ReactionSet:
     reaction_chemicals = Reaction.reaction_chemicals
     __call__ = Reaction.__call__
     conversion = Reaction.conversion
+    all_reactants = Reaction.all_reactants
     
     def __init__(self, reactions, basis=None):
         if not reactions: raise ValueError('no reactions passed')
@@ -1319,6 +1319,14 @@ class ReactionSet:
         self._rate = [i.rate for i in reactions]
         reactant_index = [i._reactant_index for i in reactions]
         self._reactant_index = tuple(reactant_index) if self._phases else np.array(reactant_index)
+    
+    def backwards(self, reactant):
+        try:
+            product, = frozenset(self.reactants)
+        except:
+            raise RuntimeError('cannot reverse a reaction with multiple reactants')
+        stoichiometry = self._conversion(self._chemicals.array([product], [1]))
+        return Reaction(stoichiometry, reactant, 1, self._chemicals)
     
     def reaction_indices(self):
         """Return all chemical indices involved in the reaction."""

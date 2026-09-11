@@ -18,7 +18,7 @@ from numpy.testing import assert_allclose
 def test_reaction():
     # Test corners in code
     tmo.settings.set_thermo(['H2O', 'H2', 'O2'], cache=True)
-    reaction = tmo.Reaction('', reactant='H2O', X=1.,
+    reaction = tmo.Reaction(None, reactant='H2O', X=1.,
                             correct_atomic_balance=True)
     assert not reaction.stoichiometry.any()
     
