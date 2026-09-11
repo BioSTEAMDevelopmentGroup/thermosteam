@@ -381,10 +381,30 @@ def sparse_array(arr, copy=False, vector_size=None):
     else:
         return SparseArray(arr, vector_size)
 
-def sparse(arr, copy=False, vector_size=None):
+class SparseType(type):
+    def __instancecheck__(cls, instance):
+        return instance.__class__ in SparseSet
+
+class sparse(metaclass=SparseType):
     """
     Create a sparse array that can be used for array-like arithmetic operations
-    (i.e., +, -, *, /) of sparse 1 or 2-dimensional arrays.  
+    (i.e., +, -, *, /) of sparse 1 or 2-dimensional arrays. 
+    
+    Data is stored internally as dictionaries (1d array) or a list of dictionaries (2d array).
+    For 2d arrays, each dictionary represents a row of chemical data for a given
+    phase. This data structure is specialized for storing chemical data within 
+    a limited set of phases; it allows for fast indexing and math operations 
+    while saving storage space.
+    
+    For example, one can define thousands of chemicals and yet only encounter
+    2 chemicals within an arbitrary stream; instead of storing thousands
+    of 0s within an array, the sparse array stores 2 values within a dictionary. 
+    This advantage also allows for caching mixture properties with minimal overhead
+    in data storage and computation time.
+    
+    These sparce arrays are meant for simple mathematical operations. For a broader 
+    range of matrix operations, it is recommended to convert to Numpy arrays or 
+    Scipy sparce arrays.
     
     Parameters
     ----------
@@ -437,20 +457,21 @@ def sparse(arr, copy=False, vector_size=None):
             [ True, False, False,  True]])
     
     """
-    if arr.__class__ in SparseSet:
-        return arr
-    else:
-        ndim = get_ndim(arr)
-        if ndim == 1:
-            for i in arr:
-                if i.__class__ in bools:
-                    return SparseLogicalVector(arr, vector_size)
-            return SparseVector(arr, vector_size)
-        elif ndim == 2:
-            return SparseArray(arr, vector_size)
+    def __new__(cls, arr, copy=False, vector_size=None):
+        if arr.__class__ in SparseSet:
+            return arr
         else:
-            raise ValueError(f'cannot convert {ndim}-d object to a sparse array or vector')
-    
+            ndim = get_ndim(arr)
+            if ndim == 1:
+                for i in arr:
+                    if i.__class__ in bools:
+                        return SparseLogicalVector(arr, vector_size)
+                return SparseVector(arr, vector_size)
+            elif ndim == 2:
+                return SparseArray(arr, vector_size)
+            else:
+                raise ValueError(f'cannot convert {ndim}-d object to a sparse array or vector')
+
 def get_ndim(value):
     if hasattr(value, 'ndim'): return value.ndim
     ndim = 0

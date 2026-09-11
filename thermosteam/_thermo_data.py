@@ -114,7 +114,7 @@ class ThermoData:
             default: True
           Octane:
     
-    Then we could create the chemicals in just a few lines:
+    Then we can create the chemicals in just a few lines:
     
     >>> # thermo_data = tmo.ThermoData.from_yaml('example_chemicals.yaml')
     >>> # thermo_data.create_chemicals()
