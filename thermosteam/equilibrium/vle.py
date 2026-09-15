@@ -1458,7 +1458,7 @@ class VLE(Equilibrium, phases='lg'):
                         nonzero.remove(i) # Exclude from VLE
                         new_light_chems.append(i)
                 if new_light_chems:
-                    if HNK_index:
+                    if LNK_index:
                         LNK_index = [*LNK_index, *new_light_chems]
                     else:
                         LNK_index = new_light_chems
