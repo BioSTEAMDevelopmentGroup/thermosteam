@@ -1449,27 +1449,31 @@ class VLE(Equilibrium, phases='lg'):
         LNK_index = chemicals._light_indices
         HNK_index = chemicals._heavy_indices
         if self._thermo.Gamma is not None:
+            new_light_chems = []
             if T is not None:
-                new_light_chems = []
                 for i in index:
                     chemical = chemicals.tuple[i]
-                    if T > chemical.Tc:
+                    Tc = chemical.Tc
+                    if Tc is not None and T > Tc:
                         nonzero.remove(i) # Exclude from VLE
                         new_light_chems.append(i)
                 if new_light_chems:
-                    if HNK_index: 
+                    if HNK_index:
                         LNK_index = [*LNK_index, *new_light_chems]
                     else:
                         LNK_index = new_light_chems
             if P is not None:
                 new_heavy_chems = []
                 for i in index:
+                    if i in new_light_chems:
+                        continue
                     chemical = chemicals.tuple[i]
-                    if P > chemical.Pc:
+                    Pc = chemical.Pc
+                    if Pc is not None and P > Pc:
                         nonzero.remove(i) # Exclude from VLE
                         new_heavy_chems.append(i)
                 if new_heavy_chems:
-                    if HNK_index: 
+                    if HNK_index:
                         HNK_index = [*HNK_index, *new_heavy_chems]
                     else:
                         HNK_index = new_heavy_chems
