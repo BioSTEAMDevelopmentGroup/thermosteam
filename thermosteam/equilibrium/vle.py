@@ -1448,6 +1448,7 @@ class VLE(Equilibrium, phases='lg'):
         index = chemicals.get_vle_indices(nonzero)
         LNK_index = chemicals._light_indices
         HNK_index = chemicals._heavy_indices
+        heavy_solutes = chemicals._heavy_solutes
         if self._thermo.Gamma is not None:
             new_light_chems = []
             if T is not None:
@@ -1473,6 +1474,11 @@ class VLE(Equilibrium, phases='lg'):
                         nonzero.remove(i) # Exclude from VLE
                         new_heavy_chems.append(i)
                 if new_heavy_chems:
+                    # Newly-excluded chemicals are not literal solutes;
+                    # treat each as contributing 1 solute-equivalent.
+                    heavy_solutes = np.concatenate(
+                        [heavy_solutes, np.ones(len(new_heavy_chems))]
+                    )
                     if HNK_index:
                         HNK_index = [*HNK_index, *new_heavy_chems]
                     else:
@@ -1508,7 +1514,7 @@ class VLE(Equilibrium, phases='lg'):
         liquid_mol[LNK_index] = 0
         liquid_mol[HNK_index] = heavy_mol = mol[HNK_index]
         self._F_mol_light = F_mol_light = light_mol.sum()
-        self._F_mol_heavy = F_mol_heavy = (heavy_mol * chemicals._heavy_solutes).sum()
+        self._F_mol_heavy = F_mol_heavy = (heavy_mol * heavy_solutes).sum()
         self._F_mol_vle = F_mol_vle = mol_vle.sum()
         if F_mol_vle == 0: F_mol_vle = 1e-16
         self._F_mol = F_mol = F_mol_vle + F_mol_light + F_mol_heavy
