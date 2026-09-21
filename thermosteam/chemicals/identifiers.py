@@ -61,8 +61,9 @@ class ChemicalDataDictionary(dict):
                 'common_name',
             )
             for i in names:
-                if dct.__contains__(getattr(metadata, i)):
-                    self._cache[name] = dct.__getitem__(i)
+                name = getattr(metadata, i)
+                if dct.__contains__(name):
+                    self._cache[name] = dct.__getitem__(name)
                     return True
             for i in metadata.synonyms:
                 if dct.__contains__(i):
@@ -88,8 +89,9 @@ class ChemicalDataDictionary(dict):
                 'common_name',
             )
             for i in names:
-                if dct.__contains__(getattr(metadata, i)):
-                    self._cache[name] = value = dct.__getitem__(i)
+                name = getattr(metadata, i)
+                if dct.__contains__(name):
+                    self._cache[name] = value = dct.__getitem__(name)
                     return value
             for i in metadata.synonyms:
                 if dct.__contains__(i):
