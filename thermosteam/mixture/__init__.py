@@ -619,6 +619,15 @@ class EOSMixture(Mixture):
         return T
     
     def eos_args(self, phase, mol, T, P):
+        if phase in self.active_eos:
+            eos, index, eos_index, eos_mol = self.active_eos[phase]
+            if (eos.T, eos.P) != (T, P):
+                eos = eos.to_TP_zs(
+                    T=T, P=P, zs=eos.zs, 
+                    only_g=phase=='g', only_l=phase=='l',
+                    fugacities=False
+                )
+            return eos, index, eos_index, eos_mol
         if mol.__class__ is SparseVector: 
             items = mol.dct.items()
         else:
@@ -676,12 +685,9 @@ class EOSMixture(Mixture):
 
     def dh_dep_dzs(self, phase, mol, T, P):
         if phase == 's': return 0 * mol
-        if phase in self.active_eos:
-            eos, index, eos_index, eos_mol = self.active_eos[phase]
-        else:
-            eos, index, eos_index, eos_mol = self.eos_args(
-                phase, mol, T, P
-            )
+        eos, index, eos_index, eos_mol = self.eos_args(
+            phase, mol, T, P
+        )
         dH_dep_dzs = np.zeros(len(self.chemicals))
         if phase == 'l':
             dH_dep_dzs[index] = eos.dH_dep_dzs(eos.Z_l)
@@ -695,12 +701,9 @@ class EOSMixture(Mixture):
     def Cn(self, phase, mol, T, P=101325):
         Cn = self.Cn_ideal(phase, mol, T, P)
         if phase == 's': return Cn
-        if phase in self.active_eos:
-            eos, index, eos_index, eos_mol = self.active_eos[phase]
-        else:
-            eos, index, eos_index, eos_mol = self.eos_args(
-                phase, mol, T, P
-            )
+        eos, index, eos_index, eos_mol = self.eos_args(
+            phase, mol, T, P
+        )
         if eos is None: return Cn
         excess_ref = sum([
             mol[eos_index[i]] * get_excess_property(
@@ -717,12 +720,9 @@ class EOSMixture(Mixture):
         """Return enthalpy [J/mol]."""
         H = self.H_ideal(phase, mol, T, P)
         if phase == 's': return H
-        if phase in self.active_eos:
-            eos, _, eos_index, eos_mol = self.active_eos[phase]
-        else:
-            eos, _, eos_index, eos_mol = self.eos_args(
-                phase, mol, T, P
-            )
+        eos, index, eos_index, eos_mol = self.eos_args(
+            phase, mol, T, P
+        )
         if eos is None: return H
         H_dep = get_excess_property(eos, 'H', phase)
         H_excess = self.H_excess[phase]
@@ -736,12 +736,9 @@ class EOSMixture(Mixture):
         """Return entropy [J/mol/K]."""
         S = self.S_ideal(phase, mol, T, P)
         if phase == 's': return S
-        if phase in self.active_eos:
-            eos, _, eos_index, eos_mol = self.active_eos[phase]
-        else:
-            eos, _, eos_index, eos_mol = self.eos_args(
-                phase, mol, T, P
-            )
+        eos, index, eos_index, eos_mol = self.eos_args(
+            phase, mol, T, P
+        )
         if eos is None: return S
         S_dep = get_excess_property(eos, 'S', phase)
         S_excess = self.S_excess[phase]
