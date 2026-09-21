@@ -1454,7 +1454,7 @@ class VLE(Equilibrium, phases='lg'):
                 for i in index:
                     chemical = chemicals.tuple[i]
                     if T > chemical.Tc:
-                        nonzero.remove(i) # Exclude from VLE
+                        nonzero.discard(i) # Exclude from VLE
                         new_light_chems.append(i)
                 if new_light_chems:
                     if HNK_index: 
@@ -1466,7 +1466,7 @@ class VLE(Equilibrium, phases='lg'):
                 for i in index:
                     chemical = chemicals.tuple[i]
                     if P > chemical.Pc:
-                        nonzero.remove(i) # Exclude from VLE
+                        nonzero.discard(i) # Exclude from VLE
                         new_heavy_chems.append(i)
                 if new_heavy_chems:
                     if HNK_index: 
