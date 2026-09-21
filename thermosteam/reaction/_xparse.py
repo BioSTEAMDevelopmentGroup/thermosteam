@@ -30,8 +30,12 @@ def get_phases(reaction):
                 try: phase = reaction[i+1]
                 except: break
                 phases.append(phase)
+    elif hasattr(reaction, 'ndim'):
+        ndim = reaction.ndim
+        if ndim == 1: return ()
+        else: raise ValueError('cannot identify phases from an array')
     else:
-        raise ValueError(f"reaction must be either a str or a dict, not a '{type(reaction).__name__}' object")
+        raise ValueError(f"reaction must be either a str, dict, or array, not a '{type(reaction).__name__}' object")
     return phase_tuple(phases)
 
 def get_stoichiometric_array(reaction, phases, chemicals):

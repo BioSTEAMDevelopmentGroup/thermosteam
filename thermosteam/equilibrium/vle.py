@@ -1448,28 +1448,38 @@ class VLE(Equilibrium, phases='lg'):
         index = chemicals.get_vle_indices(nonzero)
         LNK_index = chemicals._light_indices
         HNK_index = chemicals._heavy_indices
+        heavy_solutes = chemicals._heavy_solutes
         if self._thermo.Gamma is not None:
+            new_light_chems = []
             if T is not None:
-                new_light_chems = []
                 for i in index:
                     chemical = chemicals.tuple[i]
-                    if T > chemical.Tc:
+                    Tc = chemical.Tc
+                    if Tc is not None and T > Tc:
                         nonzero.discard(i) # Exclude from VLE
                         new_light_chems.append(i)
                 if new_light_chems:
-                    if HNK_index: 
+                    if LNK_index:
                         LNK_index = [*LNK_index, *new_light_chems]
                     else:
                         LNK_index = new_light_chems
             if P is not None:
                 new_heavy_chems = []
                 for i in index:
+                    if i in new_light_chems:
+                        continue
                     chemical = chemicals.tuple[i]
-                    if P > chemical.Pc:
+                    Pc = chemical.Pc
+                    if Pc is not None and P > Pc:
                         nonzero.discard(i) # Exclude from VLE
                         new_heavy_chems.append(i)
                 if new_heavy_chems:
-                    if HNK_index: 
+                    # Newly-excluded chemicals are not literal solutes;
+                    # treat each as contributing 1 solute-equivalent.
+                    heavy_solutes = np.concatenate(
+                        [heavy_solutes, np.ones(len(new_heavy_chems))]
+                    )
+                    if HNK_index:
                         HNK_index = [*HNK_index, *new_heavy_chems]
                     else:
                         HNK_index = new_heavy_chems
@@ -1504,7 +1514,7 @@ class VLE(Equilibrium, phases='lg'):
         liquid_mol[LNK_index] = 0
         liquid_mol[HNK_index] = heavy_mol = mol[HNK_index]
         self._F_mol_light = F_mol_light = light_mol.sum()
-        self._F_mol_heavy = F_mol_heavy = (heavy_mol * chemicals._heavy_solutes).sum()
+        self._F_mol_heavy = F_mol_heavy = (heavy_mol * heavy_solutes).sum()
         self._F_mol_vle = F_mol_vle = mol_vle.sum()
         if F_mol_vle == 0: F_mol_vle = 1e-16
         self._F_mol = F_mol = F_mol_vle + F_mol_light + F_mol_heavy
