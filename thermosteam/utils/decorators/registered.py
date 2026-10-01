@@ -68,11 +68,8 @@ def _register(self, ID):
         registry.register(ID, self)
     elif hasattr(ID, '__iter__'):
         ID, *aliases = ID
-        if isinstance(ID, str):
-            self._register(ID)
-            for i in aliases: self.register_alias(i)
-        else:
-            raise ValueError(f'ID must be a string, not a {type(ID)} object')
+        self._register(ID)
+        for i in aliases: self.register_alias(i)
     else:
         raise ValueError('invalid ID {ID!r}; ID must be a string, integer, or an interable of these')
 

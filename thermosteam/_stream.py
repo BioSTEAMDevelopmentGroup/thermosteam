@@ -387,7 +387,7 @@ class Stream(AbstractStream):
                 for cID in chemical_flows:
                     if cID in group_wt_compositions:
                         raise ValueError(
-                            f"cannot set volumetric flow by chemical group '{i}'")
+                            f"cannot set volumetric flow by chemical group '{cID}'")
             self._init_indexer(flow, phase, chemicals, chemical_flows)
             mol = self.mol
             flow = getattr(self, name)
