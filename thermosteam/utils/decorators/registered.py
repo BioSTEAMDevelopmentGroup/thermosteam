@@ -8,6 +8,7 @@
 """
 """
 from ..registry import Registry
+from numbers import Integral
 
 __all__ = ('registered', 'unregistered', 'registered_franchise')
 
@@ -68,7 +69,10 @@ def _register(self, ID):
         registry.register(ID, self)
     elif hasattr(ID, '__iter__'):
         ID, *aliases = ID
-        self._register(ID)
+        if isinstance(ID, (str, Integral)): 
+            self._register(ID)
+        else:
+            raise ValueError(f'invalid ID type {type(ID).__name__}')
         for i in aliases: self.register_alias(i)
     else:
         raise ValueError('invalid ID {ID!r}; ID must be a string, integer, or an interable of these')
