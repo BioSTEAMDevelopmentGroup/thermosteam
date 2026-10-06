@@ -1273,6 +1273,28 @@ class ReactionItem(Reaction):
     def rate(self, rate):
         self._rate[self._index] = rate
         
+    @property
+    def reactant(self):
+        """[str] Reactant associated to conversion."""
+        if self._phases:
+            phase_index, chemical_index = self._reactant_index
+            return self._phases[phase_index], self.chemicals.IDs[chemical_index]
+        else:
+            return self.chemicals.IDs[self._reactant_index] 
+    @reactant.setter
+    def reactant(self, reactant):
+        """[str] Reactant associated to conversion."""
+        phases = self._phases
+        stoichiometry = self._stoichiometry
+        chemicals = self.chemicals
+        if phases:
+            reactant_index = chemicals.index(reactant)
+            for phase_index, x in enumerate(stoichiometry[:, reactant_index]):
+                if x: break
+            self._reactant_index = self._parent._reactant_index[self._index] = (phase_index, reactant_index)
+        else:
+            self._reactant_index = self._parent._reactant_index[self._index] = chemicals.index(reactant)
+        self._rescale()
 
 @chemicals_user
 class ReactionSet:
@@ -1809,7 +1831,9 @@ class ReactionSystem:
         if not reactions: raise ValueError('Reactions cannot be empty')
         self._reactions = reactions
         try: self._phases, = set([i._phases for i in reactions])
-        except: raise ValueError('all reactions must have the same phases')
+        except: 
+            breakpoint()
+            raise ValueError('all reactions must have the same phases')
         try: chemicals, = set([i.chemicals for i in reactions])
         except: raise ValueError('all reactions must have the same chemicals')
         self._chemicals = chemicals
@@ -1826,8 +1850,19 @@ class ReactionSystem:
     force_reaction = Reaction.force_reaction
     adiabatic_reaction = Reaction.adiabatic_reaction
     reaction_chemicals = Reaction.reaction_chemicals
+    backwards = ReactionSet.backwards
     __call__ = Reaction.__call__
     show = Reaction.show
+    
+    @property
+    def all_reactants(self):
+        negative_keys = sparse([i._stoichiometry for i in self._reactions]).negative_keys()
+        IDs = self.chemicals.IDs
+        return [IDs[i] for i in negative_keys]
+    
+    @property
+    def reactants(self):
+        return [i.reactant for i in self._reactions]
     
     def reaction_indices(self):
         """Return all chemical indices involved in the reaction."""
