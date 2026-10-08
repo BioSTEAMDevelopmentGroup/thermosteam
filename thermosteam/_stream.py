@@ -917,10 +917,9 @@ class Stream(AbstractStream):
                 else:
                     try:
                         IDs, flow = zip(*flow)
+                        imol[IDs] = flow
                     except:
                         imol.data[:] = flow
-                    else:
-                        imol[IDs] = flow
         self._imol = imol
 
     def reset_cache(self):
