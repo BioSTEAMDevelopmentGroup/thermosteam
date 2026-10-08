@@ -232,7 +232,7 @@ class FreeProductStreams:
         cache = self.cache
         if 'noncombustible_slurries' in cache: return cache['noncombustible_slurries']
         noncombustibles = self.noncombustibles
-        cache['noncombustible_slurries'] = noncombustible_slurries = frozenset([i for i in noncombustibles if i.phase != 'g'])
+        cache['noncombustible_slurries'] = noncombustible_slurries = frozenset([i for i in noncombustibles if 'g' not in i.phase and 'process_water' not in i.ID])
         return noncombustible_slurries
         
     def __repr__(self):
