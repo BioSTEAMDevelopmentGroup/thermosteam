@@ -1863,6 +1863,9 @@ class ReactionSystem:
     @property
     def reactants(self):
         return [i.reactant for i in self._reactions]
+    @reactants.setter
+    def reactants(self, reactants):
+        for i, j in zip(self._reactions, reactants): i.reactant = j
     
     def reaction_indices(self):
         """Return all chemical indices involved in the reaction."""
