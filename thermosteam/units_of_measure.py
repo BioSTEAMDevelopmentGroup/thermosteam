@@ -318,6 +318,9 @@ chemical_units_of_measure = {
     'epsilon': UnitsOfMeasure(''),
 }
 stream_units_of_measure = {
+    'regeneration_price': UnitsOfMeasure('USD/kmol'),
+    'heat_transfer_price': UnitsOfMeasure('USD/kJ'),
+    'price': UnitsOfMeasure('USD/kg'),
     'mol': UnitsOfMeasure('kmol/hr'),
     'mass': UnitsOfMeasure('kg/hr'),
     'vol': UnitsOfMeasure('m^3/hr'),
