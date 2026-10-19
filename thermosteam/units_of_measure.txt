@@ -18,4 +18,5 @@ lbmol = 453.59237*mol
 MM- = 10**6
 Debye = debye
 CO2e = [CO2] = CO2eq = CO2
+Water = [H2O] = H2O
 GGE = 114000*Btu
