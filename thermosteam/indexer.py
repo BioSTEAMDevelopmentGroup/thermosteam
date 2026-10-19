@@ -243,10 +243,6 @@ class Indexer:
     __slots__ = ('data',)
     units = None
     
-    @property
-    def _data(self): # For backwards compatibility
-        return self.data
-    
     def empty(self):
         self.data.clear()
     
