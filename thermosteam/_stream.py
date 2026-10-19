@@ -627,10 +627,12 @@ class Stream(AbstractStream):
             Units must also be dimensionally consistent with the default units.
 
         """
-        try:
-            value = self.characterization_factors[key]
-        except:
-            return 0.
+        CFs = self.characterization_factors
+        if key in CFs:
+            value = CFs[key]
+        elif key == 'WU':
+            value = self.imass['Water'] 
+            if value: value /= self.F_mass
         if units is not None:
             original_units = tmo.settings.get_impact_indicator_units(key)
             value = original_units.convert(value, units)
@@ -676,6 +678,11 @@ class Stream(AbstractStream):
         else:
             return 0.
 
+    def has_impact(self, key):
+        """Return whether there is a contribution to an impact indicator given the key."""
+        cfs = self.characterization_factors
+        return self.has_flow() and (key in cfs or key == 'WU' and self.sink and self._imol['Water'])
+        
     def empty_negative_flows(self):
         """
         Replace flows of all components with negative values with 0.
@@ -835,6 +842,25 @@ class Stream(AbstractStream):
     #     """Kinetic energy flow rate [kW]"""
     #     return 0.5 * self.F_mass / 3.6e6 * self._velocity * self._velocity
 
+    def has_flow(self):
+        """
+        Return whether or not stream has flows.
+    
+        Examples
+        --------
+        >>> import thermosteam as tmo
+        >>> tmo.settings.set_thermo(['Water'], cache=True)
+        >>> stream = tmo.Stream(Water=1)
+        >>> stream.has_flow()
+        True
+    
+        >>> stream.empty()        
+        >>> stream.has_flow()
+        False
+    
+        """
+        return self._imol.data.any()
+
     def isempty(self):
         """
         Return whether or not stream is empty.
@@ -848,7 +874,7 @@ class Stream(AbstractStream):
         True
 
         """
-        return self._imol.isempty()
+        return not self._imol.data.any()
 
     def sanity_check(self):
         """
@@ -866,8 +892,7 @@ class Stream(AbstractStream):
         InfeasibleRegion: negative material flow rate is infeasible
 
         """
-        material = self._imol.data
-        if material.has_negatives():
+        if self._imol.data.has_negatives():
             raise InfeasibleRegion('negative material flow rate')
 
     @property
@@ -1702,8 +1727,7 @@ class Stream(AbstractStream):
         isa = isinstance
         for i in others:
             if isa(i, Stream):
-                if not i.isempty():
-                    streams.append(i)
+                if i.has_flow(): streams.append(i)
             elif i:
                 Q += i.heat  # Must be a heat or power object, assume power turns to heat
         N_streams = len(streams)
