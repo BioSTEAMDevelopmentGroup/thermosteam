@@ -112,8 +112,13 @@ class UnitGraphics:
             label = f"{owner.ID}\n{label}"
             if N is not None and N > 1: label = f"{label}\n1 of {N}"
             node['label'] = label
+        elif unit.line:
+            if unit.ID:
+                node['label'] = '\n'.join([unit.ID, unit.line])
+            else:
+                node['label'] = unit.line
         else:
-            node['label'] = '\n'.join([unit.ID, unit.line]) if unit.line else unit.ID
+            node['label'] = unit.ID
         tailor_node_to_unit = self.tailor_node_to_unit
         if 'fillcolor' not in node:
             node['fillcolor'] = tmo.preferences.unit_color
@@ -211,7 +216,13 @@ def tailor_utility_heat_exchanger_node(node, unit): # pragma: no coverage
     except:
         line = 'Heat exchanger'
     if unit.owner is unit:
-        node['label'] = '\n'.join([unit.ID, line])
+        if line:
+            if unit.ID:
+                node['label'] = '\n'.join([unit.ID, line])
+            else:
+                node['label'] = line
+        else:
+            node['label'] = unit.ID
 
 utility_heat_exchanger_graphics = UnitGraphics(single_edge_in, single_edge_out, node,
                                                tailor_utility_heat_exchanger_node)

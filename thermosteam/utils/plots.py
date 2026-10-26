@@ -150,7 +150,7 @@ def style_axis(ax=None, xticks=None, yticks=None,
     
     xticks = set_ticks(ax, xticks, 'x', xtext, xrot, xha, offset_xticks, fs, ticklen=ticklen)
     yticks = set_ticks(ax, yticks, 'y', ytext, yrot, yha, offset_yticks, fs, ticklen=ticklen)
-    ax.zorder = 1
+    ax.zorder = -10
     xlim = plt.xlim()
     ylim = plt.ylim()
     axes = {'ax': ax}
@@ -160,18 +160,26 @@ def style_axis(ax=None, xticks=None, yticks=None,
         axes['twinx'] = x_twin 
         plt.sca(x_twin)
         x_twin.tick_params(axis='y', right=True, direction="in", length=ticklen)
-        x_twin.zorder = 2
+        x_twin.zorder = -10
         plt.ylim(ylim)
         plt.yticks(yticks, ())
+        x_twin.spines['left'].set_visible(False)
     if top:
         y_twin = ax.twiny() if axtwiny is None else axtwiny
         ax._cached_ytwin = y_twin
         axes['twiny'] = y_twin 
         plt.sca(y_twin)
         y_twin.tick_params(axis='x', top=True, direction="in", length=ticklen)
-        y_twin.zorder = 2
+        y_twin.zorder = -10
         plt.xlim(xlim)
         plt.xticks(xticks, ())
+        y_twin.spines['bottom'].set_visible(False)
+    # for i in axes.values():
+    #     i.set_axisbelow(True) 
+    #     i.set_clip_on(False)
+    #     i.yaxis.set_zorder(-10)
+    #     i.spines['left'].set_zorder(-10)
+    #     i.spines['bottom'].set_zorder(-10)
     return axes
     
 def style_plot_limits(xticks, yticks): # pragma: no cover
