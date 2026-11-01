@@ -632,11 +632,10 @@ class InletPipe:
     >>> stream-1
     <InletPipe: s1-1>
     
-    Use pipe notation to create a sink and connect the stream:
+    Use pipe notation to connect the stream:
     
-    >>> stream-1-unit # The last unit is returned to continue piping; just ignore this
-    <Mixer: M1>
-    >>> unit.show()
+    >>> stream-1-unit
+    ... unit.show()
     Mixer: M1
     ins...
     [0] missing stream
@@ -690,11 +689,10 @@ class OutletPipe:
     >>> 1**stream
     <OutletPipe: 1-s1>
     
-    Use -pipe- notation to create a source and connect the stream:
+    Use -pipe- notation to connect the stream:
     
-    >>> unit**0**stream # First unit is returned to continue backwards piping; just ignore this
-    <Mixer: M1>
-    >>> unit.show()
+    >>> unit**0**stream
+    ... unit.show()
     Mixer: M1
     ins...
     [0] missing stream
