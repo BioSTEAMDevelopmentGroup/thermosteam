@@ -911,7 +911,7 @@ def superposition_property(name):
     return p
 
 def _superposition(cls, parent, port):
-    excluded = set([*cls.__dict__, port, '_' + port, 'port', 'F_node', 'E_node', 'T_node'])
+    excluded = set([*cls.__dict__, port, '_' + port, 'port', '_F_node', '_E_node', '_T_node'])
     for name in (*parent.__dict__, *AbstractStream.__slots__):
         if name in excluded: continue
         setattr(cls, name, superposition_property(name))
@@ -1427,7 +1427,6 @@ class AbstractUnit:
             sum([[i.ID for i in (i.ins + i.outs)] for i in self.auxiliary_units], [])
         )
     
-    
     def get_node(self):
         """Return unit node attributes for graphviz."""
         if tmo.preferences.minimal_nodes:
@@ -1623,7 +1622,6 @@ class AbstractUnit:
         for i in self.path_until(units, inclusive, system): 
             if isa(i, AbstractUnit): i.run()
             else: i.converge() # Must be a system
-        
         
     @property
     def system(self):
@@ -2616,33 +2614,6 @@ class Network:
                                 excluded[sink] = 1
         if len(path) > 1 and path[-1] is path[0]: path.pop() 
             
-    # def repeat_interaction_units(self, excluded=None, next_units=None):
-    #     isa = isinstance
-    #     path = self.path
-    #     if excluded is None: excluded = set()
-    #     length = len(path)
-    #     for i, u in enumerate(path):
-    #         if isa(u, Network):
-    #             u.add_interaction_units(excluded, path[i+1:])
-    #         else:
-    #             for s in u.outs:
-    #                 sink = s.sink
-    #                 if sink and sink._interaction and sink not in excluded:
-    #                     inext = i + 1
-    #                     if inext == length: 
-    #                         try:
-    #                             unext = next_units[0]
-    #                         except:
-    #                             continue
-    #                     else:
-    #                         unext = path[inext]
-    #                     if isa(unext, Network): unext = unext.get_first_unit()
-    #                     if sink is not unext:
-    #                         length += 1
-    #                         path.insert(i+1, sink)
-    #                         excluded.add(sink)
-    #     if len(path) > 1 and path[-1] is path[0]: path.pop()
-    
     def get_first_unit(self):
         path = self.path
         first = path[0]
