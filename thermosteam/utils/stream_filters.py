@@ -21,7 +21,6 @@ __all__ = (
     'feeds_from_units',
     'products_from_units',
     'get_inlet_origin',
-    'get_streams_from_context_level',
     'get_fresh_process_water_streams',
     'FreeProductStreams',
 )
@@ -36,14 +35,12 @@ def streams_from_units(units):
     return set(sum([i._ins + i._outs for i in units], []))
 
 def streams_from_path(path):
-    isa = isinstance
     streams = set()
-    Unit = tmo.AbstractUnit
     for i in path:
-        if isa(i, Unit):
-            streams.update(i._ins + i._outs)
-        else:
+        if hasattr(i, 'converge'): # Must be a system
             streams.update(i.streams)
+        else: # Must be a unit
+            streams.update(i._ins + i._outs)
     return streams
 
 def get_inlet_origin(inlet):
@@ -82,54 +79,6 @@ def products_from_units(units):
     return sum([[i for i in u._outs if i._sink not in unit_set]
                  for u in units], [])
 
-def get_streams_from_context_level(level=None):
-    """
-    Return streams created in given context level.
-    
-    Parameters
-    ----------
-    level : int, optional
-        If given, only filter through streams created in the given context 
-        level. For example, use:
-        * 0: to filter within the outer-most context level.
-        * -1: to filter within the current context level.
-        * -2: to filter within the outer context level.
-        
-    
-    Examples
-    --------
-    Get all waste streams created (as registerd in the flowsheet):
-        
-    >>> import biosteam as bst
-    >>> bst.main_flowsheet.clear()
-    >>> bst.settings.set_thermo(['Water', 'Ethanol'], cache=True)
-    >>> waste = bst.Stream('waste')
-    >>> mixer = bst.Mixer('mixer', outs=waste)
-    >>> streams = bst.get_streams_from_context_level()
-    >>> assert len(streams) == 1 and streams[0] == waste
-    
-    Get waste streams created within a context:
-        
-    >>> with bst.System('sys') as sys:
-    ...     new_waste = bst.Stream('new_waste')
-    ...     tank = bst.MixTank('tank', outs=new_waste)
-    ...     streams = bst.get_streams_from_context_level(level=0)
-    ...     assert len(streams) == 1 and streams[0] == new_waste
-    
-    """
-    if level is None:
-        streams = list(tmo.AbstractStream.registry)
-    else:
-        units = tmo.AbstractUnit.registry
-        context_levels = units.context_levels
-        N_levels = len(context_levels)
-        if (level >= 0 and level >= N_levels or level < 0 and -level > N_levels):
-            streams = list(tmo.AbstractStream.registry)
-        else:
-            units = context_levels[level]
-            streams = [i for i in streams_from_units(units) if i]
-    return streams
-
 def get_fresh_process_water_streams(streams=None):
     """
     Return all feed water streams without a price.
@@ -152,7 +101,7 @@ def get_fresh_process_water_streams(streams=None):
     >>> assert len(streams) == 1 and streams[0] == water
     
     """    
-    if streams is None: streams = tmo.AbstractStream.registry
+    if streams is None: streams = tmo.Stream.registry
     return [
         i for i in streams
         if not i.price and i.isfeed() and not i.sink._interaction and has_only_water(i)

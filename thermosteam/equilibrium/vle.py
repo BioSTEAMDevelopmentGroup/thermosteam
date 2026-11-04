@@ -1455,7 +1455,7 @@ class VLE(Equilibrium, phases='lg'):
                 for i in index:
                     chemical = chemicals.tuple[i]
                     Tc = chemical.Tc
-                    if Tc is not None and T > Tc:
+                    if Tc is not None and T >= Tc: # Supercritical (consistent with single component VLE)
                         nonzero.discard(i) # Exclude from VLE
                         new_light_chems.append(i)
                 if new_light_chems:

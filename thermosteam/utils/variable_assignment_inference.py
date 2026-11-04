@@ -43,28 +43,46 @@ def infer_variable_assignment(caller):
                 # Must be ipython or notebook session
                 lines = linecache.cache[filename][2]
                 crossout = False
-            except: 
-                lines = None
-        if lines is None:
-            if os.path.isabs(filename):
-                fullname = filename
-            else:
-                # Try looking through the module search path, which is only useful
-                # when handling a relative filename.
-                for dirname in sys.path:
-                    try: fullname = os.path.join(dirname, filename)
-                    except (TypeError, AttributeError): continue
-                    else: break
-            try:
-                with tokenize.open(fullname) as fp: lines = fp.readlines()
             except:
-                pass
-        # We use variable_cache to cache the lines that we already tried 
-        # and not attempt them again; this improves speed.
-        variable_cache = None if lines is None else {}
-        cache[filename] = lines, variable_cache, crossout
-        if cache.__len__() > max_filecache:
-            del cache[cache.__iter__().__next__()]
+                lines = None
+        
+        if filename.startswith('<'):
+            # Pseudo-files (e.g., doctest examples) may provide their source
+            # through linecache.getlines (which doctest patches).
+            try:
+                lines = linecache.getlines(filename, frame.f_globals)
+            except:
+                lines = None
+            else:
+                if not lines: # No source available (e.g., python -c or exec)
+                    lines = None
+                else:
+                    # Do not cache; pseudo-file names may be reused with different source.
+                    lines = list(lines)
+                    variable_cache = {}
+                    crossout = False
+                    filename = None
+        else:
+            if lines is None:
+                if os.path.isabs(filename):
+                    fullname = filename
+                else:
+                    # Try looking through the module search path, which is only useful
+                    # when handling a relative filename.
+                    for dirname in sys.path:
+                        try: fullname = os.path.join(dirname, filename)
+                        except (TypeError, AttributeError): continue
+                        else: break
+                try:
+                    with tokenize.open(fullname) as fp: lines = fp.readlines()
+                except:
+                    pass
+            # We use variable_cache to cache the lines that we already tried 
+            # and not attempt them again; this improves speed.
+            variable_cache = None if lines is None else {}
+            cache[filename] = lines, variable_cache, crossout
+            if cache.__len__() > max_filecache:
+                del cache[cache.__iter__().__next__()]
     if lines is None: return default
     n = frame.f_lineno - 1
     if n in variable_cache:

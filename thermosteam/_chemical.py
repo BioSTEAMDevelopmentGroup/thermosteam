@@ -364,6 +364,7 @@ class Chemical:
     >>> #          UNIFAC: <1H2O>
     >>> #          PSRK: <1H2O>
     >>> #          NIST: <Empty>
+    >>> #          atoms: {'H': 2, 'O': 1}
     >>> # [Data]   MW: 18.015 g/mol
     >>> #          Tm: 273.15 K
     >>> #          Tb: 373.12 K
@@ -684,6 +685,7 @@ class Chemical:
                  UNIFAC: <Empty>
                  PSRK: <Empty>
                  NIST: <Empty>
+                 atoms: {}
         [Data]   MW: None
                  Tm: None
                  Tb: None

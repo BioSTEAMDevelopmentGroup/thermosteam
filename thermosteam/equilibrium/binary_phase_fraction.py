@@ -60,6 +60,11 @@ def solve_phase_fraction_Rashford_Rice(zs, Ks, guess, za=0, zb=0):
     numerically solving the Rashford Rice equation.
     
     """
+    za += zs[Ks > 1e24].sum()
+    zb += zs[Ks < 1e-24].sum()
+    mask = (1e-24 < Ks) & (Ks < 1e24)
+    Ks = Ks[mask]
+    zs = zs[mask]
     if Ks.max() <= (1.0 + 1e-9) and not za: return 0.
     if Ks.min() >= (1.0 - 1e-9) and not zb: return 1.
     K_minus_1 = Ks - 1.

@@ -48,7 +48,6 @@ from . import (
     phenomenode,
 )
 from .utils import docround
-from .network import *
 from ._chemical_data import ChemicalData
 from ._chemical import Chemical
 from ._chemicals import Chemicals, CompiledChemicals, ChemicalDraft, ChemicalsOutline
@@ -61,7 +60,6 @@ from . import (
     reaction,
     equilibrium,
     mixture,
-    network,
 )
 from ._stream import Stream
 from ._heat_and_power import Heat, Power
@@ -77,7 +75,7 @@ __all__ = ('Chemical', 'ChemicalData', 'Chemicals', 'CompiledChemicals',
            'ChemicalDraft', 'ChemicalsOutline', 'Thermo', 'IdealThermo', 
            'Stream', 'MultiStream', 'Heat', 'Power', 'ThermalCondition', 'ProcessSettings',
            'mixture', 'ThermoData', *reaction.__all__, *equilibrium.__all__,  *mixture.__all__,
-           *network.__all__, 'preferences',
+           'preferences',
            'indexer', 'settings', 'functor', 'functors', 'chemicals', 'base', 
            'equilibrium', 'units_of_measure', 'exceptions', 'functional', 
            'reaction', 'constants', 'utils', 'separations', *phenomenode.__all__)

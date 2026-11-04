@@ -22,7 +22,6 @@ from . import utils
 from .indexer import nonzeros
 from typing import TYPE_CHECKING
 from ._phase import valid_phases
-from .network import AbstractStream
 from .phenomenode import VariableNode
 from .exceptions import NoEquilibrium
 if TYPE_CHECKING:
@@ -36,6 +35,20 @@ MaterialIndexer = tmo.indexer.MaterialIndexer
 __all__ = ('Stream',)
 
 # %% Utilities
+
+def stream_info(source, sink):
+    """Return stream information header."""
+    # First line
+    if source is None:
+        source = ''
+    else:
+        source = f' from {repr(source)}'
+    if sink is None:
+        sink = ''
+    else:
+        sink = f' to {repr(sink)}'
+    return f"{source}{sink}"
+
 
 impact_indicator_basis = tmo.units_of_measure.UnitsOfMeasure('kg')
 mol_units = indexer.ChemicalMolarFlowIndexer.units
@@ -118,7 +131,8 @@ class Equations:
 
 @utils.define_units_of_measure(UofM.stream_units_of_measure)
 @utils.thermo_user
-class Stream(AbstractStream):
+@utils.registered(ticket_name='s')
+class Stream:
     """
     Create a Stream object that defines material flow rates
     along with its thermodynamic state. Thermodynamic and transport
@@ -321,6 +335,7 @@ class Stream(AbstractStream):
 
     """
     __slots__ = (
+        '_ID', '_source', '_sink', '_thermo', 'port',
         'characterization_factors',
         'equations',
         '_imol', '_thermal_condition', '_streams',
@@ -346,6 +361,71 @@ class Stream(AbstractStream):
     _units_of_measure = UofM.stream_units_of_measure
 
     _flow_cache = {}
+
+    #: Name denoting the type of object (used in diagrams).
+    line = 'Stream'
+
+    #: Priority of feed streams for determining the simulation order of a system.
+    feed_priorities = {}
+
+    def get_feed_priority(self):
+        if self.isfeed():
+            return self.feed_priorities.get(self)
+        else:
+            raise RuntimeError(f"stream '{self}' is not a feed")
+
+    def set_feed_priority(self, value):
+        if self.isfeed():
+            self.feed_priorities[self] = value
+        else:
+            raise RuntimeError(f"stream '{self}' is not a feed")
+
+    @property
+    def source(self):
+        """Outlet location."""
+        return self._source
+    @property
+    def sink(self):
+        """Inlet location."""
+        return self._sink
+
+    def isfeed(self):
+        """Return whether stream has a sink but no source."""
+        return bool(self._sink and not self._source)
+
+    def isproduct(self):
+        """Return whether stream has a source but no sink."""
+        return bool(self._source and not self._sink)
+
+    def disconnect_source(self):
+        """Disconnect stream from source."""
+        source = self._source
+        if source: source.outs.remove(self)
+
+    def disconnect_sink(self):
+        """Disconnect stream from sink."""
+        sink = self._sink
+        if sink: sink.ins.remove(self)
+
+    def disconnect(self):
+        """Disconnect stream from unit."""
+        self.disconnect_source()
+        self.disconnect_sink()
+
+    def __sub__(self, other):
+        if hasattr(other, 'separate_out'):
+            new = self.copy()
+            new.separate_out(other)
+            return new
+        else:
+            return NotImplemented
+
+    def _basic_info(self):
+        return (f"{type(self).__name__}: {self.ID or ''}"
+                f"{stream_info(self._source, self._sink)}\n")
+
+    def _source_info(self):
+        return f"{source}-{source.outs.index(self)}" if (source:=self.source) else self.ID
 
     def __init__(self, ID: Optional[str] = '',
                  flow: Optional[Sequence[float] | Sequence[tuple[str, float]]] = None,
@@ -567,7 +647,8 @@ class Stream(AbstractStream):
         >>> s1.show('cwt')
         Stream: s1
         phase: 'g', T: 300.1 K, P: 101325 Pa
-        flow: 2 kg/hr Ethanol
+        flow (%): Ethanol  100
+                  -------  2 kg/hr
 
         """
         self.reset_flow(**flows)
@@ -589,7 +670,8 @@ class Stream(AbstractStream):
         >>> s1.show('cwt')
         Stream: s1
         phase: 'g', T: 298.15 K, P: 101325 Pa
-        flow: 2 kg/hr Ethanol
+        flow (%): Ethanol  100
+                  -------  2 kg/hr
 
         """
         imol = self._imol
@@ -696,7 +778,7 @@ class Stream(AbstractStream):
         >>> s1.show()
         Stream: s1
         phase: 'l', T: 298.15 K, P: 101325 Pa
-        flow: 1 kmol/hr Water
+        flow (kmol/hr): Water  1
 
         """
         self._imol.data.remove_negatives()
@@ -763,7 +845,7 @@ class Stream(AbstractStream):
         >>> stream.show()
         Stream: stream
         phase: 'l', T: 298.15 K, P: 101325 Pa
-        flow: 10 kmol/hr Water
+        flow (kmol/hr): Water  10
         >>> stream.set_data(data_vle)
         >>> stream.show()
         MultiStream: stream
@@ -1641,7 +1723,7 @@ class Stream(AbstractStream):
         >>> s_mix.show(flow='kg/hr')
         Stream: s_mix
         phase: 'l', T: 298.15 K, P: 101325 Pa
-        flow: 40 kg/hr Water
+        flow (kg/hr): Water  40
 
         Removing empty streams is fine too:
 
@@ -1649,7 +1731,7 @@ class Stream(AbstractStream):
         >>> s_mix.show(flow='kg/hr')
         Stream: s_mix
         phase: 'l', T: 298.15 K, P: 101325 Pa
-        flow: 40 kg/hr Water
+        flow (kg/hr): Water  40
 
         """
         if other:
@@ -1841,7 +1923,7 @@ class Stream(AbstractStream):
         >>> s1.show(flow='kg/hr')
         Stream: s1
         phase: 'l', T: 298.15 K, P: 101325 Pa
-        flow: 2 kg/hr Water
+        flow (kg/hr): Water  2
 
         Copy data from another stream with a different property package:
 
@@ -1854,7 +1936,7 @@ class Stream(AbstractStream):
         >>> s1.show(flow='kg/hr')
         Stream: s1
         phase: 'l', T: 298.15 K, P: 101325 Pa
-        flow: 2 kg/hr Water
+        flow (kg/hr): Water  2
 
         """
         if isinstance(other.imol, MaterialIndexer):
@@ -1887,7 +1969,7 @@ class Stream(AbstractStream):
         >>> s1.show(flow='kg/hr')
         Stream: s1
         phase: 'l', T: 300 K, P: 101325 Pa
-        flow: 2 kg/hr Water
+        flow (kg/hr): Water  2
 
         """
         self._thermal_condition.copy_like(other._thermal_condition)
@@ -1946,7 +2028,7 @@ class Stream(AbstractStream):
         >>> s2.show(flow='kg/hr')
         Stream: s2
         phase: 'l', T: 298.15 K, P: 101325 Pa
-        flow: 20 kg/hr Water
+        flow (kg/hr): Water  20
 
         Reset and copy all flows except water:
 
@@ -1955,7 +2037,7 @@ class Stream(AbstractStream):
         >>> s2.show(flow='kg/hr')
         Stream: s2
         phase: 'l', T: 298.15 K, P: 101325 Pa
-        flow: 10 kg/hr Ethanol
+        flow (kg/hr): Ethanol  10
 
         Cut and paste flows:
 
@@ -1979,7 +2061,7 @@ class Stream(AbstractStream):
         >>> s2.show()
         Stream: s2
         phase: 'l', T: 298.15 K, P: 101325 Pa
-        flow: 10 kmol/hr Water
+        flow (kmol/hr): Water  10
         >>> s1.show()
         MultiStream: s1
         phases: ('g', 'l'), T: 298.15 K, P: 101325 Pa
@@ -1993,11 +2075,11 @@ class Stream(AbstractStream):
         >>> s1.show('wt')
         Stream: s1
         phase: 'l', T: 298.15 K, P: 101325 Pa
-        flow: 20 kg/hr Water
+        flow (kg/hr): Water  20
         >>> s2.show('wt')
         Stream: s2
         phase: 'l', T: 298.15 K, P: 101325 Pa
-        flow: 10 kg/hr Ethanol
+        flow (kg/hr): Ethanol  10
 
         """
         other_mol = other.mol

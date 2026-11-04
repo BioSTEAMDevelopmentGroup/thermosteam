@@ -194,7 +194,7 @@ class DisplayNotation:
     >>> stream.show()
     Stream: stream
     phase: 'l', T: 298.15 K, P: 101325 Pa
-    flow: 0.073 kmol/hr Water
+    flow (kmol/hr): Water  0.073
     
     >>> # Change back to kmol/hr
     >>> tmo.Stream.display_notation.flow = '.3g'
@@ -227,7 +227,7 @@ class DisplayUnits:
     >>> stream.show()
     Stream: stream
     phase: 'l', T: 298.15 K, P: 101325 Pa
-    flow: 1 kg/hr Water
+    flow (kg/hr): Water  1
     
     >>> # Change back to kmol/hr
     >>> tmo.Stream.display_units.flow = 'kmol/hr'
