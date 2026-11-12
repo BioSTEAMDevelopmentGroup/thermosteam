@@ -15,8 +15,9 @@ from math import ceil
 import numpy as np
 from collections.abc import Iterable
 from math import floor, log10
-from inspect import signature
+from inspect import signature, Parameter
 from types import FunctionType
+from typing import Optional
 
 __all__ = (
     'extended_signature',
@@ -40,7 +41,7 @@ __all__ = (
 
 # %% Function signature
 
-def extended_signature(f, g):
+def extended_signature(f, g, design_inputs=()):
     if hasattr(f, '__wrapped__'): f = f.__wrapped__
     sigf = signature(f)
     paramsf = [*sigf.parameters.values()][1:-1]
@@ -49,16 +50,34 @@ def extended_signature(f, g):
     h = FunctionType(f.__code__, f.__globals__, name=f.__name__,
                      argdefs=f.__defaults__, closure=f.__closure__)
     h.__kwdefaults__ = f.__kwdefaults__
-    all_params = [*paramsf, *[i.replace(kind=3) for i in paramsg]]
-    params = []
-    names = set()
-    for i in tuple(all_params):
-        if i.name in names: continue
-        names.add(i.name)
-        params.append(i)
-    h.__signature__ = sigf.replace(parameters=params)
-    h.__annotations__ = f.__annotations__ | g.__annotations__
+    names = set([i.name for i in paramsf])
+    design_annotations = {}
+    for i in design_inputs:
+        name = i.key  
+        if name in names: continue
+        names.add(name)
+        design_annotations[name] = return_annotation = i.fget.__annotations__['return']
+        if i.default is NotImplemented:
+            paramsf.append(
+                Parameter(name, kind=3, annotation=return_annotation)
+            )
+        else:
+            paramsf.append(
+                Parameter(
+                    name, kind=3, 
+                    default=i.default, 
+                    annotation=Optional[return_annotation]
+                )
+            )
+    for i in paramsg:
+        name = i.name   
+        if name in names: continue 
+        names.add(name)
+        paramsf.append(i.replace(kind=3))
+    h.__signature__ = sigf.replace(parameters=paramsf)
+    h.__annotations__ = f.__annotations__ | g.__annotations__ | design_annotations
     h.__wrapped__ = f
+    h._extension = g
     return h
 
 # %% Helpful tools
