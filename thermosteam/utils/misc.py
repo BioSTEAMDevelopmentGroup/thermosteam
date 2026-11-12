@@ -77,7 +77,7 @@ def extended_signature(f, g, design_inputs=()):
     h.__signature__ = sigf.replace(parameters=paramsf)
     h.__annotations__ = f.__annotations__ | g.__annotations__ | design_annotations
     h.__wrapped__ = f
-    h._extension = g
+    h.extension = g
     return h
 
 # %% Helpful tools
