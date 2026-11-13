@@ -53,7 +53,7 @@ def extended_signature(f, g, design_inputs=()):
     names = set([i.name for i in paramsf])
     design_annotations = {}
     for i in design_inputs:
-        name = i.key  
+        name = i.__name__  
         if name in names: continue
         names.add(name)
         design_annotations[name] = return_annotation = i.fget.__annotations__['return']
