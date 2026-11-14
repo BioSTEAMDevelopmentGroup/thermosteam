@@ -41,12 +41,10 @@ __all__ = (
 
 # %% Function signature
 
-def extended_signature(f, g, design_inputs=()):
+def extended_signature(f, g=None, design_inputs=()):
     if hasattr(f, '__wrapped__'): f = f.__wrapped__
     sigf = signature(f)
     paramsf = [*sigf.parameters.values()][1:-1]
-    sigg = signature(g)
-    paramsg = [*sigg.parameters.values()][1:]
     h = FunctionType(f.__code__, f.__globals__, name=f.__name__,
                      argdefs=f.__defaults__, closure=f.__closure__)
     h.__kwdefaults__ = f.__kwdefaults__
@@ -69,11 +67,14 @@ def extended_signature(f, g, design_inputs=()):
                     annotation=Optional[return_annotation]
                 )
             )
-    for i in paramsg:
-        name = i.name   
-        if name in names: continue 
-        names.add(name)
-        paramsf.append(i.replace(kind=3))
+    if g is not None:
+        sigg = signature(g)
+        paramsg = [*sigg.parameters.values()][1:]
+        for i in paramsg:
+            name = i.name   
+            if name in names: continue 
+            names.add(name)
+            paramsf.append(i.replace(kind=3))
     h.__signature__ = sigf.replace(parameters=paramsf)
     h.__annotations__ = f.__annotations__ | g.__annotations__ | design_annotations
     h.__wrapped__ = f
