@@ -74,7 +74,7 @@ def extended_signature(f, g=None, design_inputs=()):
     if g is not None:
         sigg = signature(g)
         paramsg = [*sigg.parameters.values()][1:]
-        defaulted = {i.name for i, j in design_inputs.items() if i.default is not empty}
+        defaulted = {i.__name__ for i, j in design_inputs.items() if i.default is not empty}
         for i in paramsg:
             name = i.name  
             if name in defaulted and i.default is not empty: 
