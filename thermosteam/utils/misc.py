@@ -15,7 +15,7 @@ from math import ceil
 import numpy as np
 from collections.abc import Iterable
 from math import floor, log10
-from inspect import signature, Parameter, empty
+from inspect import signature, Parameter, _empty as empty
 from types import FunctionType
 from typing import Optional
 
