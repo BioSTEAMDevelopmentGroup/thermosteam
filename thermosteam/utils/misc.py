@@ -77,11 +77,11 @@ def extended_signature(f, g=None, design_inputs=()):
             paramsf.append(i.replace(kind=3))
     h.__signature__ = sigf.replace(parameters=paramsf)
     if g is None:
-        h.__annotations__ = f.__annotations__ | g.__annotations__ | design_annotations
-        h.extension = g
-    else:
         h.__annotations__ = f.__annotations__ | design_annotations
         if hasattr(f, 'extension'): h.extension = f.extension
+    else:
+        h.__annotations__ = f.__annotations__ | g.__annotations__ | design_annotations
+        h.extension = g
     h.__wrapped__ = f
     return h
 
