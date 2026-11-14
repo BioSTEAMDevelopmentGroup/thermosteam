@@ -15,7 +15,7 @@ from math import ceil
 import numpy as np
 from collections.abc import Iterable
 from math import floor, log10
-from inspect import signature, Parameter
+from inspect import signature, Parameter, empty
 from types import FunctionType
 from typing import Optional
 
@@ -56,22 +56,37 @@ def extended_signature(f, g=None, design_inputs=()):
         if name in names: continue
         names.add(name)
         design_annotations[name] = return_annotation = i._return_type
-        paramsf.append(
-            Parameter(
-                name, kind=3, 
-                default=i.default, 
-                annotation=Optional[return_annotation]
+        if i.default is empty:
+            paramsf.append(
+                Parameter(
+                    name, kind=3, 
+                    annotation=return_annotation
+                )
             )
-        )
+        else:
+            paramsf.append(
+                Parameter(
+                    name, kind=3, 
+                    default=i.default, 
+                    annotation=Optional[return_annotation]
+                )
+            )
     if g is not None:
         sigg = signature(g)
         paramsg = [*sigg.parameters.values()][1:]
+        defaulted = {i.name for i, j in design_inputs.items() if i.default is not empty}
         for i in paramsg:
-            name = i.name   
+            name = i.name  
+            if name in defaulted and i.default is not empty: 
+                raise RuntimeError(
+                    f'design_input {name} already has a default but '
+                    f'`_init` overrides the default value'
+                )
             if name in names: continue 
             names.add(name)
             paramsf.append(i.replace(kind=3))
         g.parameters = frozenset([i.name for i in paramsg])
+        
     h.__signature__ = sigf.replace(parameters=paramsf)
     if g is None:
         h.__annotations__ = f.__annotations__ | design_annotations
