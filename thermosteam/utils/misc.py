@@ -76,6 +76,7 @@ def extended_signature(f, g=None, design_inputs=()):
             if name in names: continue 
             names.add(name)
             paramsf.append(i.replace(kind=3))
+        g.parameters = frozenset([i.name for i in paramsg])
     h.__signature__ = sigf.replace(parameters=paramsf)
     if g is None:
         h.__annotations__ = f.__annotations__ | design_annotations
