@@ -56,18 +56,13 @@ def extended_signature(f, g=None, design_inputs=()):
         if name in names: continue
         names.add(name)
         design_annotations[name] = return_annotation = i._return_type
-        if i.default is NotImplemented:
-            paramsf.append(
-                Parameter(name, kind=3, annotation=return_annotation)
+        paramsf.append(
+            Parameter(
+                name, kind=3, 
+                default=i.default, 
+                annotation=Optional[return_annotation]
             )
-        else:
-            paramsf.append(
-                Parameter(
-                    name, kind=3, 
-                    default=i.default, 
-                    annotation=Optional[return_annotation]
-                )
-            )
+        )
     if g is not None:
         sigg = signature(g)
         paramsg = [*sigg.parameters.values()][1:]
