@@ -74,12 +74,12 @@ def extended_signature(f, g=None, design_inputs=()):
     if g is not None:
         sigg = signature(g)
         paramsg = [*sigg.parameters.values()][1:]
-        defaulted = {i.__name__ for i, j in design_inputs.items() if i.default is not empty}
+        defaulted = {i.__name__ for i in design_inputs if i.default is not empty}
         for i in paramsg:
             name = i.name  
             if name in defaulted and i.default is not empty: 
                 raise RuntimeError(
-                    f'design_input {name} already has a default but '
+                    f'design_input `{name}` already has a default but '
                     f'`_init` overrides the default value'
                 )
             if name in names: continue 
