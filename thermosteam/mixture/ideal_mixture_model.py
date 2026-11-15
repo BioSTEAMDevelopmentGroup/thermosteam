@@ -23,7 +23,7 @@ class IdealTPMixtureModel:
     
     Parameters
     ----------
-    models : Iterable[function(T, P)]
+    models : Iterable[``function(T, P)``]
         Chemical property functions of temperature and pressure.
     var : str
         Description of thermodynamic variable returned.
@@ -72,7 +72,7 @@ class IdealEntropyModel:
     
     Parameters
     ----------
-    models : Iterable[function(T, P)]
+    models : Iterable[``function(T, P)``]
         Chemical property functions of temperature and pressure.
     var : str
         Description of thermodynamic variable returned.
@@ -119,7 +119,7 @@ class IdealTMixtureModel:
     
     Parameters
     ----------
-    models : Iterable[function(T, P)]
+    models : Iterable[``function(T, P)``]
         Chemical property functions of temperature and pressure.
     var : str
         Description of thermodynamic variable returned.
@@ -163,7 +163,7 @@ class SinglePhaseIdealTMixtureModel:
     
     Parameters
     ----------
-    models : Iterable[function(T, P)]
+    models : Iterable[``function(T, P)``]
         Chemical property functions of temperature and pressure.
     var : str
         Description of thermodynamic variable returned.
@@ -206,7 +206,7 @@ class SinglePhaseIdealTPMixtureModel:
     
     Parameters
     ----------
-    models : Iterable[function(T, P)]
+    models : Iterable[``function(T, P)``]
         Chemical property functions of temperature and pressure.
     var : str
         Description of thermodynamic variable returned.

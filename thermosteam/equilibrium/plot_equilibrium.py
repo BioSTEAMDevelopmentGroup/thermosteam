@@ -84,7 +84,7 @@ def plot_vle_binary_phase_envelope(chemicals, T=None, P=None, vc=None, lc=None, 
     >>> # from thermosteam import equilibrium as eq
     >>> # eq.plot_vle_binary_phase_envelope(['Ethanol', 'Water'], P=101325)
     
-    .. figure:: ../images/water_ethanol_binary_phase_envelope.png
+    .. figure:: /images/water_ethanol_binary_phase_envelope.png
 
     """
     if line_styles is None: line_styles = ['-', '-.', '--']
@@ -273,7 +273,7 @@ def plot_lle_ternary_diagram(
     >>> # from thermosteam import equilibrium as eq
     >>> # eq.plot_lle_ternary_diagram('Water', 'Ethanol', 'EthylAcetate', T=298.15)
     
-    .. figure:: ../images/water_ethanol_ethyl_acetate_ternary_diagram.png
+    .. figure:: /images/water_ethanol_ethyl_acetate_ternary_diagram.png
 
     """
     import ternary

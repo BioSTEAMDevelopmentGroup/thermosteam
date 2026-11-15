@@ -312,21 +312,21 @@ class Chemical:
         * 'BioSTEAM' to search for common chemicals used in biorefineries. 
         * 'ChEDL' to search for chemicals broadly used in process models.
         * None to not search a database.
-    Cn : float or function(T), optional
+    Cn : float or ``function(T)``, optional
         Molar heat capacity model [J/mol] as a function of temperature [K].
-    sigma : float or function(T), optional
+    sigma : float or ``function(T)``, optional
         Surface tension model [N/m] as a function of temperature [K].
-    epsilon : float or function(T), optional
+    epsilon : float or ``function(T)``, optional
         Relative permittivity model [-] as a function of temperature [K].
-    Psat : float or function(T), optional
+    Psat : float or ``function(T)``, optional
         Vapor pressure model [N/m] as a function of temperature [K].
-    Hvap : float or function(T), optional
+    Hvap : float or ``function(T)``, optional
         Heat of vaporization model [J/mol] as a function of temperature [K].
-    V : float or function(T, P), optional
+    V : float or ``function(T, P)``, optional
         Molar volume model [m3/mol] as a function of temperature [K] and pressure [Pa].
-    mu : float or function(T, P), optional
+    mu : float or ``function(T, P)``, optional
         Dynamic viscosity model [Pa*s] as a function of temperature [K] and pressure [Pa].
-    kappa : float or function(T, P), optional
+    kappa : float or ``function(T, P)``, optional
         Thermal conductivity model [W/m/K] as a function of temperature [K] and pressure [Pa].
     Cp : float, optional
         Constant heat capacity model [J/g].
@@ -465,8 +465,8 @@ class Chemical:
         like VaporPressure and VolumeLiquid, visit 
         `thermo's documentation <https://thermo.readthedocs.io/>`_.
     
-    Attributes
-    ----------
+    Thermodynamic models
+    --------------------
     mu(phase, T, P) : 
         Dynamic viscosity [Pa*s].
     kappa(phase, T, P): 

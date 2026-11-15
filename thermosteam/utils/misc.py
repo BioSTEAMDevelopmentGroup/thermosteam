@@ -45,7 +45,7 @@ def extended_signature(f, g=None, design_inputs=()):
     g = f.extension if (g is None and hasattr(f, 'extension')) else g
     if hasattr(f, '__wrapped__'): f = f.__wrapped__
     sigf = signature(f)
-    paramsf = [*sigf.parameters.values()][1:-1]
+    paramsf = [*sigf.parameters.values()][:-1]
     h = FunctionType(f.__code__, f.__globals__, name=f.__name__,
                      argdefs=f.__defaults__, closure=f.__closure__)
     h.__kwdefaults__ = f.__kwdefaults__
