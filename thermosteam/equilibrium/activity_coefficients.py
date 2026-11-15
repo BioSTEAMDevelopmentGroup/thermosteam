@@ -31,7 +31,8 @@ __all__ = ('ActivityCoefficients',
            'GroupActivityCoefficients',
            'DortmundActivityCoefficients',
            'UNIFACActivityCoefficients',
-           'NISTActivityCoefficients')
+           'NISTActivityCoefficients',
+           'activity_coefficient_classes')
 
 # %% Utilities
 

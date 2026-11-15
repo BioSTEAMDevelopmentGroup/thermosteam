@@ -715,6 +715,8 @@ class Stream:
         elif key == 'WU':
             value = self.imass['Water'] 
             if value: value /= self.F_mass
+        else:
+            return 0
         if units is not None:
             original_units = tmo.settings.get_impact_indicator_units(key)
             value = original_units.convert(value, units)

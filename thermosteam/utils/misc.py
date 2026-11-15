@@ -51,24 +51,43 @@ def extended_signature(f, g=None, design_inputs=()):
     h.__kwdefaults__ = f.__kwdefaults__
     names = set([i.name for i in paramsf])
     design_annotations = {}
+    # Defaults of design inputs may be given by the extension (e.g., `_init`)
+    extension_defaults = {} if g is None else {
+        i.name: i.default for i in [*signature(g).parameters.values()][1:]
+        if i.default is not empty
+    }
     for i in design_inputs:
         name = i.__name__  
         if name in names: continue
         names.add(name)
-        design_annotations[name] = return_annotation = i._return_type
+        return_annotation = i._return_type
+        if return_annotation is None: 
+            return_annotation = optional_annotation = empty
+        else:
+            design_annotations[name] = return_annotation
+            optional_annotation = Optional[return_annotation]
         if i.default is empty:
-            paramsf.append(
-                Parameter(
-                    name, kind=3, 
-                    annotation=return_annotation
+            if name in extension_defaults:
+                paramsf.append(
+                    Parameter(
+                        name, kind=3, 
+                        default=extension_defaults[name],
+                        annotation=return_annotation
+                    )
                 )
-            )
+            else:
+                paramsf.append(
+                    Parameter(
+                        name, kind=3, 
+                        annotation=return_annotation
+                    )
+                )
         else:
             paramsf.append(
                 Parameter(
                     name, kind=3, 
                     default=i.default, 
-                    annotation=Optional[return_annotation]
+                    annotation=optional_annotation
                 )
             )
     if g is not None:

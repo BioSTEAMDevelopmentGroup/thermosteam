@@ -621,7 +621,7 @@ class EOSMixture(Mixture):
     def eos_args(self, phase, mol, T, P):
         if phase in self.active_eos:
             eos, index, eos_index, eos_mol = self.active_eos[phase]
-            if (eos.T, eos.P) != (T, P):
+            if eos is None or (eos.T, eos.P) != (T, P):
                 eos = eos.to_TP_zs(
                     T=T, P=P, zs=eos.zs, 
                     only_g=phase=='g', only_l=phase=='l',
@@ -674,7 +674,7 @@ class EOSMixture(Mixture):
                     T=T, P=P, zs=zs, only_g=only_g, only_l=only_l,
                     fugacities=False
                 )
-            self.cache[key] = eos
+            cache[key] = eos
         return eos, index, eos_index, eos_mol
 
     def Hvap(self, mol, T, P):
