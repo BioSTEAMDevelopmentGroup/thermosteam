@@ -438,7 +438,7 @@ class SplitIndexer(Indexer):
             dlim = ",\n" + tab
         else:
             dlim = ", "
-        ID_data = utils.repr_IDs_data(self._chemicals.IDs, self.data.to_array(self._chemicals.size), dlim, start='')
+        ID_data = utils.repr_IDs_data(self._chemicals.IDs, self.data.to_array(), dlim, start='')
         return f"{type(self).__name__}({ID_data})"
     
     def __repr__(self):
@@ -570,7 +570,7 @@ class ChemicalIndexer(Indexer):
                     idata = idata.sum(0)
                     sc_data.append(idata)
                     other_data.append(
-                        (i, *index_overlap(chemicals, ichemicals, idata.nonzero_keys()))
+                        (idata, *index_overlap(chemicals, ichemicals, idata.nonzero_keys()))
                     )
             elif ichemicals is chemicals:
                 sc_data.append(idata)
@@ -850,7 +850,9 @@ class MaterialIndexer(Indexer):
             self.empty()
             other_data = other.data
             phase = other.phase
-            if phase not in phase_indexer: self._expand_phases(phase)
+            if phase not in phase_indexer: 
+                self._expand_phases(phase)
+                phase_indexer = self._phase_indexer
             phase_index = phase_indexer(phase)
             if self.chemicals is other.chemicals:
                 self.data.rows[phase_index].copy_like(other_data)
@@ -881,6 +883,7 @@ class MaterialIndexer(Indexer):
                     for i, j in other: data[phase_indexer(i)] += j
                 else:
                     self._expand_phases(other._phases)
+                    phase_indexer = self._phase_indexer
                     data[:, left_index] = other_data[:, right_index]
             
     def mix_from(self, others):

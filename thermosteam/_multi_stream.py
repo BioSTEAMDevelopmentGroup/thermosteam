@@ -240,7 +240,7 @@ class MultiStream(Stream):
                     for item in chemical_flows:
                         cID, value = item
                         if cID in group_wt_compositions:
-                            raise ValueError(f"cannot set volumetric flow by chemical group '{i}'")
+                            raise ValueError(f"cannot set volumetric flow by chemical group '{cID}'")
             self._init_indexer(flow, phases, chemicals, phase_flows)
             flow = getattr(self, 'i' + name)
             material_data = self._imol.data / factor

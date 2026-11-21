@@ -442,8 +442,7 @@ class Stream:
                  **chemical_flows: float):
         self.equations: list[Callable] = Equations()
         #: Characterization factors for life cycle assessment [impact/kg].
-        self.characterization_factors: dict[str, float] = {
-        } if characterization_factors is None else {}
+        self.characterization_factors: dict[str, float] = {} if characterization_factors is None else characterization_factors
         self._thermal_condition = tmo.ThermalCondition(T, P)
         thermo = self._load_thermo(thermo)
         chemicals = thermo.chemicals
@@ -1011,7 +1010,7 @@ class Stream:
                     phase, chemicals, parent=parent)
         else:
             if chemical_flows:
-                ValueError(
+                raise ValueError(
                     "may specify either 'flow' or 'chemical_flows', but not both"
                 )
             if isinstance(flow, indexer.ChemicalMolarFlowIndexer):
