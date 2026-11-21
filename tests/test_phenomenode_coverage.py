@@ -9,11 +9,17 @@
 """
 import pytest
 import os
+import shutil
 import tempfile
 import numpy as np
 import pandas as pd
 from numpy.testing import assert_allclose
 from thermosteam import phenomenode as pn
+
+graphviz_available = shutil.which('dot') is not None
+requires_graphviz = pytest.mark.skipif(
+    not graphviz_available, reason='Graphviz executables are not available'
+)
 
 def create_network():
     values = {'mol_s1': 1., 'T_s1': 300., 'mol_s2': 2., 'T_s2': 310.}
@@ -76,6 +82,7 @@ def test_nodes():
     assert dotfile.subfile('a') == 'graph_a.dot'
     assert 'graph.dot' in repr(dotfile)
 
+@requires_graphviz
 def test_phenome_graph():
     variables, equations = create_network()
     criteria_selection = [
@@ -125,6 +132,7 @@ def create_bipartite_graph(name='graph', file=None, **kwargs):
     )
     return graph
 
+@requires_graphviz
 def test_bipartite_phenome_graph():
     graph = create_bipartite_graph(maxiter='10')
     assert repr(graph) == 'graph'
@@ -159,6 +167,7 @@ def temporary_directory_without_zeros():
         folder.cleanup()
     raise RuntimeError('could not create temporary directory')
 
+@requires_graphviz
 def test_bipartite_convergence_gif():
     graph = create_bipartite_graph(maxiter='10')
     reference = {j.name: i for i, j in enumerate(graph.equations)}
@@ -181,6 +190,6 @@ def test_bipartite_convergence_gif():
 
 if __name__ == '__main__':
     test_nodes()
-    test_phenome_graph()
-    test_bipartite_phenome_graph()
-    test_bipartite_convergence_gif()
+    if graphviz_available: test_phenome_graph()
+    if graphviz_available: test_bipartite_phenome_graph()
+    if graphviz_available: test_bipartite_convergence_gif()

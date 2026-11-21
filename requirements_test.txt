@@ -12,7 +12,7 @@ numpy>=1.22
 xlrd==1.2.0
 openpyxl>=3.0.0 
 free_properties>=0.2.6
-flexsolve==0.5.3 
+flexsolve>=0.5.9
 numba>=0.55.2
 python-ternary
 pyglet

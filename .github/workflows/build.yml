@@ -14,42 +14,49 @@ jobs:
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        python-version: [3.9]
+        python-version: ['3.13', '3.14']
 
     steps:
-    - uses: actions/checkout@v2
-    - name: Set up Python ${{ matrix.python-version }} ${{ matrix.architecture }}
-      uses: actions/setup-python@v2
+    - uses: actions/checkout@v4
+    - name: Set up Python ${{ matrix.python-version }}
+      uses: actions/setup-python@v5
       with:
         python-version: ${{ matrix.python-version }}
-        architecture: ${{ matrix.architecture }}
 
-    - name: cache Linux
-      uses: actions/cache@v2
-      if: startsWith(runner.os, 'Linux')
+    - name: Cache pip
+      uses: actions/cache@v4
       with:
         path: ~/.cache/pip
-        key: ${{ runner.os }}-pip-${{ hashFiles('**/requirements_test.txt') }}
+        key: ${{ runner.os }}-py${{ matrix.python-version }}-pip-${{ hashFiles('**/requirements_test.txt', 'setup.py') }}
         restore-keys: |
-          ${{ runner.os }}-${{ runner.architecture }}-${{ runner.python-version }}pip-
-    - name: cache MacOS
-      uses: actions/cache@v2
-      if: startsWith(runner.os, 'macOS')
-      with:
-        path: ~/Library/Caches/pip
-        key: ${{ runner.os }}-pip-${{ hashFiles('**/requirements_test.txt') }}
-        restore-keys: |
-          ${{ runner.os }}-${{ runner.architecture }}-${{ runner.python-version }}pip-
-    - name: cache Windows
-      uses: actions/cache@v2
-      if: startsWith(runner.os, 'Windows')
-      with:
-        path: ~\AppData\Local\pip\Cache
-        key: ${{ runner.os }}-pip-${{ hashFiles('**/requirements_test.txt') }}
-        restore-keys: |
-          ${{ runner.os }}-${{ runner.architecture }}-${{ runner.python-version }}pip-
+          ${{ runner.os }}-py${{ matrix.python-version }}-pip-
+
+    - name: Install Graphviz
+      # Optional: graphviz tests are skipped when the `dot` executable is missing.
+      run: sudo apt-get update && sudo apt-get install -y graphviz
+
     - name: Install dependencies
+      env:
+        # On a pull request this is the PR's source branch; on a push it is the pushed branch.
+        BRANCH: ${{ github.head_ref || github.ref_name }}
+        # Owner of the repository the PR comes from (differs from the upstream org for PRs from forks).
+        HEAD_OWNER: ${{ github.event.pull_request.head.repo.owner.login || github.repository_owner }}
       run: |
+        # Return a pip-installable git URL for a BioSTEAM repository. If a branch with the same
+        # name as this branch exists there (first in the PR author's fork, then upstream),
+        # use that branch; otherwise use the default branch.
+        repo_url() {
+          local owner=$1 repo=$2 candidate
+          for candidate in "$HEAD_OWNER/$repo" "$owner/$repo"; do
+            if git ls-remote --exit-code --heads "https://github.com/$candidate.git" "$BRANCH" > /dev/null 2>&1; then
+              echo "Using branch '$BRANCH' of $candidate" >&2
+              echo "git+https://github.com/$candidate.git@$BRANCH"
+              return
+            fi
+          done
+          echo "No branch '$BRANCH' in $repo; using default branch of $owner/$repo" >&2
+          echo "git+https://github.com/$owner/$repo.git"
+        }
         python -c "import platform; print(platform.platform()); print(platform.architecture())"
         python -m pip install --upgrade pip
         python -m pip install wheel
@@ -57,13 +64,13 @@ jobs:
         pip install --no-cache-dir git+https://github.com/CalebBell/chemicals.git
         pip install --no-cache-dir git+https://github.com/CalebBell/thermo.git
         pip install -r requirements_test.txt
-        pip install --no-cache-dir git+https://github.com/BioSTEAMDevelopmentGroup/biosteam.git
-        pip install --no-cache-dir git+https://github.com/BioSTEAMDevelopmentGroup/Bioindustrial-Park.git
+        pip install --no-cache-dir "$(repo_url BioSTEAMDevelopmentGroup biosteam)"
+        pip install --no-cache-dir "$(repo_url BioSTEAMDevelopmentGroup Bioindustrial-Park)"
         pip uninstall thermosteam -y
         pip install -e .
     - name: Test without numba
       run: |
-        pytest . -v --disable-numba=1 --cov-report html --cov=thermosteam --cov-report  term-missing -m "not slow"
+        pytest . -v --disable-numba=1 --cov-report html --cov=thermosteam --cov-report term-missing -m "not slow"
       env:
             COVERALLS_REPO_TOKEN: ${{ secrets.coveralls }}
             COVERALLS_PARALLEL: true
