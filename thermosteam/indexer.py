@@ -568,7 +568,6 @@ class ChemicalIndexer(Indexer):
                     sc_data.extend(idata.rows)
                 else:
                     idata = idata.sum(0)
-                    sc_data.append(idata)
                     other_data.append(
                         (idata, *index_overlap(chemicals, ichemicals, idata.nonzero_keys()))
                     )
@@ -884,7 +883,8 @@ class MaterialIndexer(Indexer):
                 else:
                     self._expand_phases(other._phases)
                     phase_indexer = self._phase_indexer
-                    data[:, left_index] = other_data[:, right_index]
+                    for phase, row in zip(other._phases, other_data.rows):
+                        data.rows[phase_indexer(phase)][left_index] = row[right_index]
             
     def mix_from(self, others):
         isa = isinstance
