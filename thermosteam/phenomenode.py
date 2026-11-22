@@ -19,6 +19,27 @@ import os
 from matplotlib import colormaps
 from matplotlib.colors import rgb2hex
 import shutil
+import re
+from graphviz.backend.execute import CalledProcessError as GraphvizCalledProcessError
+
+def pipe_with_layout_fallback(digraph, format, fallback='dot'):
+    """
+    Pipe digraph through Graphviz. If the requested layout engine is not
+    available (e.g., minimal Graphviz installations without "fdp"), retry
+    with the fallback layout.
+    """
+    try:
+        return digraph.pipe(format=format)
+    except GraphvizCalledProcessError as error:
+        stderr = error.stderr or b''
+        if isinstance(stderr, bytes): stderr = stderr.decode('utf-8', 'ignore')
+        match = re.search(r'Layout type: "([^"]*)" not recognized', stderr)
+        if not match or match.group(1) == fallback: raise
+        warn(f'Graphviz layout {match.group(1)!r} is not available; '
+             f'using {fallback!r} layout instead', RuntimeWarning)
+        digraph = digraph.copy()
+        digraph.attr('graph', layout=fallback) # Overrides previous layout
+        return digraph.pipe(format=format)
 
 viridis = colormaps['viridis']
 
@@ -601,7 +622,7 @@ class BipartitePhenomeGraph:
         self.digraph = digraph = self.create_digraph(
             maxiter, damping, K, subgraph_units,
         )
-        dot = digraph.pipe(format='dot') # Pin nodes
+        dot = pipe_with_layout_fallback(digraph, format='dot') # Pin nodes
         self.pydot = pydot.graph_from_dot_data(dot.decode('utf-8'))[0]
         if parent:
             nodes_dct = {i.get_name().strip('"'): i for i in self.pydot.get_nodes()}
