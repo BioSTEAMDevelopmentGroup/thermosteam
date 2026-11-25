@@ -10,6 +10,7 @@
 import thermosteam as tmo
 import numpy as np
 from .poyinting_correction_factors import MockPoyintingCorrectionFactors
+from .activity_coefficients import EOSActivityCoefficients
 
 __all__ = ('LiquidFugacities', 'GasFugacities', 'Fugacities',
            'fugacities_by_phase')
@@ -49,7 +50,7 @@ class LiquidFugacities:
     def __init__(self, chemicals, thermo=None):
         thermo = tmo.settings.get_default_thermo(thermo)
         self.chemicals = chemicals = tuple(chemicals)
-        if thermo.Gamma is None:
+        if issubclass(thermo.Gamma, EOSActivityCoefficients): # Use phi-phi
             self.phi = thermo.Phi(chemicals, phase='l')
             self.gamma = None
         else:

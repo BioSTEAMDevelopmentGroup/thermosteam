@@ -665,6 +665,53 @@ def test_equilibrium_base_class():
     assert 'VLE' in format(vle, '')
     vle.show()
 
+# %% Bubble and dew points with liquid-liquid equilibrium (water-butanol)
+
+def test_bubble_point_lle_heteroazeotrope():
+    chemicals = tmo.Chemicals(['Water', 'Butanol'], cache=True)
+    tmo.settings.set_thermo(chemicals)
+    BP = eq.BubblePoint(chemicals)
+    # Bubble point is invariant to composition inside the miscibility gap
+    Ts = [BP(np.array([i, 1 - i]), P=101325, lle=True).T for i in (0.5, 0.6, 0.7, 0.9)]
+    assert_allclose(Ts, Ts[0], atol=1e-2)
+    Ps = [BP(np.array([i, 1 - i]), T=360., lle=True).P for i in (0.5, 0.6, 0.9)]
+    assert_allclose(Ps, Ps[0], rtol=1e-4)
+    # Mass balance and liquid-liquid results
+    z = np.array([6., 4.]) # Unnormalized
+    bp = BP(z, P=101325, lle=True)
+    assert bp.two_liquids
+    assert 0 < bp.ϕ < 1
+    assert_allclose(bp.α + bp.β, z)
+    assert (bp.KL[0] - 1) * (bp.KL[1] - 1) < 0 # Water and butanol partition opposite ways
+    # Single liquid phase
+    bp = BP(np.array([0.3, 0.7]), P=101325, lle=True)
+    assert not bp.two_liquids
+    assert bp.KL is None
+    assert bp.ϕ == 1.
+
+def test_dew_point_lle_root_selection():
+    chemicals = tmo.Chemicals(['Water', 'Butanol'], cache=True)
+    tmo.settings.set_thermo(chemicals)
+    DP = eq.DewPoint(chemicals)
+    BP = eq.BubblePoint(chemicals)
+    T_het = BP(np.array([0.7, 0.3]), P=101325, lle=True).T
+    for yw in (0.5, 0.72, 0.76, 0.78, 0.9):
+        y = np.array([yw, 1 - yw])
+        dp = DP(y, P=101325, lle=True)
+        # Converged and stable incipient liquid
+        x = dp.x
+        assert dp.T >= T_het - 1e-3
+        stability = eq.tangential_plane_stability.lle_tangential_plane_analysis(
+            DP.gamma, x, dp.T, 101325
+        )
+        assert not stability.unstable
+        Psats = np.array([i(dp.T) for i in DP.Psats])
+        assert_allclose(x * DP.gamma(x, dp.T) * Psats, y * 101325, rtol=1e-3)
+    # Unnormalized composition gives the same result
+    assert_allclose(DP(np.array([5., 5.]), P=101325).T, DP(np.array([0.5, 0.5]), P=101325).T)
+    stream = tmo.Stream(None, Water=0.78, Butanol=0.22)
+    assert_allclose(stream.dew_point_at_P(lle=True).T, DP(np.array([0.78, 0.22]), P=101325, lle=True).T)
+
 
 if __name__ == '__main__':
     test_ideal_fugacity_coefficients()

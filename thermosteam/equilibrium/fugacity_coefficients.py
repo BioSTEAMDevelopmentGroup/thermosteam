@@ -11,7 +11,6 @@ from .ideal import ideal
 import thermosteam as tmo
 from thermo.interaction_parameters import IPDB
 from thermo import eos_mix
-from fluids.constants import R_inv
 import numpy as np
 
 __all__ = ('FugacityCoefficients', 
@@ -86,15 +85,16 @@ class GCEOSFugacityCoefficients(FugacityCoefficients):
     def __new__(cls, chemicals, phase):
         chemicals = tuple(chemicals)
         cache = cls.cache
-        if chemicals in cache:
-            return cache[chemicals, phase]
+        key = chemicals, phase
+        if key in cache:
+            return cache[key]
         elif phase not in 'lg': 
             raise ValueError(f"phase must be either 'g' or 'l', not {phase:r!}")
         else:
             self = super().__new__(cls)
             self._chemicals = chemicals
             self._phase = phase
-            cache[chemicals, phase] = self
+            cache[key] = self
             return self
     
     @classmethod
@@ -146,11 +146,8 @@ class GCEOSFugacityCoefficients(FugacityCoefficients):
     def __call__(self, x, T, P):
         eos = self.eos(x, T, P)
         try:
-            if self._phase == 'g':
-                log_phis = np.array(eos.dlnphi_dns(eos.Z_g)) + eos.G_dep_g * R_inv / T
-            else:
-                log_phis = np.array(eos.dlnphi_dns(eos.Z_l)) + eos.G_dep_l * R_inv / T
-            return np.exp(log_phis)
+            Z = eos.Z_g if self._phase == 'g' else eos.Z_l
+            return np.exp(eos.fugacity_coefficients(Z))
         except:
             return 1.
     f = __call__

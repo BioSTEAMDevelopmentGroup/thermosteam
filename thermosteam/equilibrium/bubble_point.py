@@ -12,7 +12,8 @@ import flexsolve as flx
 from .poyinting_correction_factors import MockPoyintingCorrectionFactors
 from .fugacity_coefficients import IdealFugacityCoefficients
 from .domain import vle_domain
-from .lle import solve_lle_mol
+from .activity_coefficients import EOSActivityCoefficients
+from .lle import solve_lle_phase
 from ..exceptions import InfeasibleRegion
 from .. import functional as fn
 from .._settings import settings
@@ -57,33 +58,45 @@ class BubblePointValues:
     def K(self):
         return self.y / self.x
     
+    # Liquid-liquid equilibrium results (only available when lle=True). 
+    # α is the molar amount of liquid phase α and β = z - α is the 
+    # remaining liquid phase. If the liquid is a single phase, β is zero 
+    # and β-related properties are None.
+    @property
+    def two_liquids(self):
+        if self.α is None: return False
+        β = self.z - self.α
+        return β.sum() > 1e-12 * self.z.sum()
+    
     @property
     def xα(self):
-        return None if self.alpha is None else self.α / self.α.sum()
+        return None if self.α is None else self.α / self.α.sum()
     
     @property
     def xβ(self):
-        return None if self.alpha is None else self.β / self.β.sum()
+        if not self.two_liquids: return None
+        β = self.β
+        return β / β.sum()
     
     @property
     def β(self):
-        return None if self.alpha is None else self.z - self.α
+        return None if self.α is None else self.z - self.α
     
     @property
     def ϕ(self):
-        return None if self.alpha is None else self.α.sum()
+        return None if self.α is None else self.α.sum() / self.z.sum()
     
     @property
     def KL(self):
-        return None if self.alpha is None else self.xα / self.xβ
+        return None if not self.two_liquids else self.xα / self.xβ
     
     @property
     def Kα(self):
-        return None if self.alpha is None else self.y / self.xα
+        return None if self.α is None else self.y / self.xα
     
     @property
     def Kβ(self):
-        return None if self.alpha is None else self.y / self.xβ
+        return None if not self.two_liquids else self.y / self.xβ
     
     def __repr__(self):
         return f"{type(self).__name__}(T={self.T:.2f}, P={self.P:.0f}, IDs={self.IDs}, z={self.z}, y={self.y})"
@@ -164,7 +177,7 @@ class BubblePoint:
         else:
             self = super().__new__(cls)
             self.IDs = tuple([i.ID for i in chemicals])
-            if thermo.Gamma is None:
+            if issubclass(thermo.Gamma, EOSActivityCoefficients): # Use phi-phi
                 self.gamma = None
                 self.phi_l = thermo.Phi(chemicals, 'l')
             else:
@@ -206,11 +219,8 @@ class BubblePoint:
     def _T_error_lle_gamma(self, T, P, z, y, x, α):
         if T <= 0: raise InfeasibleRegion('negative temperature')
         Psats = np.array([i(T) for i in self.Psats], dtype=float)
-        α[:] = solve_lle_mol(self.gamma, z, T, P, sample=x)
-        if α.any(): 
-            x[:] = α / α.sum()
-        else:
-            x = z
+        x[:], ϕ = solve_lle_phase(self.gamma, z, T, P, sample=x)
+        α[:] = ϕ * x
         y_phi =  (x / P
                   * Psats
                   * self.gamma(x, T, P) 
@@ -242,11 +252,8 @@ class BubblePoint:
     
     def _P_error_lle_gamma(self, P, T, z, Psats, y, x, α):
         if P <= 0: raise InfeasibleRegion('negative pressure')
-        α[:] = solve_lle_mol(self.gamma, z, T, P, sample=x)
-        if α.any(): 
-            x[:] = α / α.sum()
-        else:
-            x = z
+        x[:], ϕ = solve_lle_phase(self.gamma, z, T, P, sample=x)
+        α[:] = ϕ * x
         y_phi = Psats * x * self.gamma(x, T, P) * self.pcf(T, P, Psats) / P
         y[:] = solve_y(y_phi, self.phi_g, T, P, y)
         return 1. - y.sum()
@@ -353,7 +360,8 @@ class BubblePoint:
             y = z.copy()
             return T, fn.normalize(y)
         elif liquid_conversion is None:
-            z = z / z.sum()
+            z_total = z.sum()
+            z = z / z_total
             z_over_P = z / P
             T_guess, y = self._Ty_ideal(z_over_P)
             if self.gamma is None:
@@ -365,8 +373,8 @@ class BubblePoint:
                     args = (P, z, y)
             else:
                 if lle:
-                    x = y.copy()
-                    α = x.copy()
+                    x = z.copy()
+                    α = z.copy()
                     f = self._T_error_lle_gamma
                     args = (P, z, y, x, α)
                 else:
@@ -386,6 +394,9 @@ class BubblePoint:
                                          T_guess, self.T_tol, 5e-12, args, 
                                          checkiter=False, checkbounds=False, 
                                          maxiter=self.maxiter)
+            if α is not None:
+                f(T, *args) # Make sure LLE and vapor results correspond to final T
+                α = α * z_total
             y = fn.normalize(y)
             return (T, y, α) if full else (T, y)
         else:
@@ -455,7 +466,8 @@ class BubblePoint:
             if T > self.Tmax: T = self.Tmax
             elif T < self.Tmin: T = self.Tmin
             Psats = np.array([i(T) for i in self.Psats])
-            z = z / z.sum()
+            z_total = z.sum()
+            z = z / z_total
             α = None
             if self.gamma is None:
                 if lle:
@@ -470,18 +482,25 @@ class BubblePoint:
                 z_Psats = z * Psats
                 z_Psat_gamma = z_Psats * self.gamma(z, T, 101325)
                 P_guess, y = self._Py_ideal(z_Psat_gamma)
-                if self.gamma.P_dependent:
+                if lle and self.gamma.P_dependent:
+                    f = self._P_error_lle_gamma
+                    x = z.copy()
+                    α = z.copy()
+                    args = (T, z, Psats, y, x, α)
+                elif lle:
+                    # Liquid-liquid equilibrium is independent of P; solve once
+                    x, ϕ = solve_lle_phase(self.gamma, z, T, 101325)
+                    α = ϕ * x
+                    z_Psat_gamma = x * Psats * self.gamma(x, T, 101325)
+                    P_guess, y = self._Py_ideal(z_Psat_gamma)
+                    f = self._P_error_gamma
+                    args = (T, z_Psat_gamma, Psats, y)
+                elif self.gamma.P_dependent:
                     f = self._P_error_gamma_dep
                     args = (T, z, Psats, z_Psats, y)
                 else:
-                    if lle:
-                        f = self._P_error_lle_gamma
-                        x = y.copy()
-                        α = x.copy()
-                        args = (P, T, z, Psats, y, x, α)
-                    else:
-                        f = self._P_error_gamma
-                        args = (T, z_Psat_gamma, Psats, y)
+                    f = self._P_error_gamma
+                    args = (T, z_Psat_gamma, Psats, y)
             try:
                 P = flx.aitken_secant(f, P_guess, P_guess-1, self.P_tol, 1e-9,
                                       args, checkiter=False, maxiter=self.maxiter)
@@ -493,6 +512,9 @@ class BubblePoint:
                                          P_guess, self.P_tol, 5e-12, args,
                                          checkiter=False, checkbounds=False, 
                                          maxiter=self.maxiter)
+            if α is not None:
+                f(P, *args) # Make sure LLE and vapor results correspond to final P
+                α = α * z_total
             y = fn.normalize(y)
             return (P, y, α) if full else (P, y)
         else:

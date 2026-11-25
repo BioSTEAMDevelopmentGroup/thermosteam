@@ -74,7 +74,7 @@ class ProcessSettings:
         mixture=IdealMixture(...
             include_excess_energies=False
         ),
-        Gamma=DortmundActivityCoefficients,
+        Gamma=ModifiedUNIFACActivityCoefficients,
         Phi=IdealFugacityCoefficients,
         PCF=MockPoyintingCorrectionFactors
     )

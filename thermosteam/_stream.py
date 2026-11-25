@@ -2443,7 +2443,7 @@ class Stream:
         """
         return eq.DewPoint(self.chemicals[IDs] if IDs else self.vle_chemicals, self._thermo)
 
-    def bubble_point_at_T(self, T: Optional[float] = None, IDs: Optional[Sequence[str]] = None):
+    def bubble_point_at_T(self, T: Optional[float] = None, IDs: Optional[Sequence[str]] = None, lle=False):
         """
         Return a BubblePointResults object with all data on the bubble point at constant temperature.
 
@@ -2465,7 +2465,7 @@ class Stream:
         """
         bp = self.get_bubble_point(IDs)
         z = self.get_normalized_mol(bp.IDs)
-        return bp(z, T=T or self.T)
+        return bp(z, T=T or self.T, lle=lle)
 
     def bubble_point_at_P(self, P: Optional[float] = None, IDs: Optional[Sequence[str]] = None, lle=False):
         """
@@ -2489,7 +2489,7 @@ class Stream:
         z = self.get_normalized_mol(BP.IDs)
         return BP(z, P=P or self.P, lle=lle)
 
-    def dew_point_at_T(self, T: Optional[float] = None, IDs: Optional[Sequence[str]] = None):
+    def dew_point_at_T(self, T: Optional[float] = None, IDs: Optional[Sequence[str]] = None, lle=False):
         """
         Return a DewPointResults object with all data on the dew point
         at constant temperature.
@@ -2511,9 +2511,9 @@ class Stream:
         """
         dp = self.get_dew_point(IDs)
         z = self.get_normalized_mol(dp.IDs)
-        return dp(z, T=T or self.T)
+        return dp(z, T=T or self.T, lle=lle)
 
-    def dew_point_at_P(self, P: Optional[float] = None, IDs: Optional[Sequence[str]] = None):
+    def dew_point_at_P(self, P: Optional[float] = None, IDs: Optional[Sequence[str]] = None, lle=False):
         """
         Return a DewPointResults object with all data on the dew point
         at constant pressure.
@@ -2535,7 +2535,7 @@ class Stream:
         """
         dp = self.get_dew_point(IDs)
         z = self.get_normalized_mol(dp.IDs)
-        return dp(z, P=P or self.P)
+        return dp(z, P=P or self.P, lle=lle)
 
     def get_normalized_mol(self, IDs: Sequence[str]):
         """

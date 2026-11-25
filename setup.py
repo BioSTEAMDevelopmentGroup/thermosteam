@@ -53,7 +53,6 @@ setup(
             'mixture/*',
             'chemicals/*',
             'chemicals/Reaction/*',
-            'equilibrium/UNIFAC/*',
             'thermo/*',
             'units_of_measure.txt',
         ]

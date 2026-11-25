@@ -173,7 +173,8 @@ def test_stream_arithmetic():
     assert_allclose(total.F_mol, 6.)
     diff = total - s2
     assert_allclose(diff.mol.to_array(), s1.mol.to_array())
-    assert s1.__sub__(1) is NotImplemented
+    # Unsupported operand (biosteam overrides integer subtraction for piping)
+    assert s1.__sub__('not a stream') is NotImplemented
     neg = -s1
     assert_allclose(neg.mol.to_array(), -s1.mol.to_array())
     assert_allclose((s1 * 2).mol.to_array(), 2 * s1.mol.to_array())

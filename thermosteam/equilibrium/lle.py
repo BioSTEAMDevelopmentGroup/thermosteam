@@ -16,18 +16,12 @@ from .tangential_plane_stability import lle_tangential_plane_analysis
 from scipy.optimize import shgo, differential_evolution
 import flexsolve as flx
 import numpy as np
-from scipy.optimize import minimize
 
 __all__ = ('LLE', 'LLECache')
 
-# TODO: SUBMIT ISSUE TO NUMBA
-@njit(cache=True)
-def liquid_activities(mol_L, T, f_gamma, gamma_args):
-    total_mol_L = mol_L.sum()
-    x = mol_L / total_mol_L
-    gamma = f_gamma(x, T, *gamma_args)
-    xgamma = x * gamma
-    return xgamma
+# Note: Functions that take an activity coefficient function (f_gamma) have
+# non-jitted versions (with a "_py" suffix) for activity coefficients that
+# require python objects (i.e., do not implement f and args).
 
 @njit(cache=True)
 def gibbs_free_energy_of_liquid(mol_L, xgamma):
@@ -35,24 +29,28 @@ def gibbs_free_energy_of_liquid(mol_L, xgamma):
     g_mix = (mol_L * np.log(xgamma)).sum()
     return g_mix
 
-@njit(cache=True)
-def lle_objective_function(mol_L, mol, T, f_gamma, gamma_args):
+def lle_objective_function_py(mol_L, mol, T, f_gamma, gamma_args):
     mol_l = mol - mol_L
-    if mol_l.sum() == 0.:
+    total_mol_l = mol_l.sum()
+    if total_mol_l == 0.:
         g_mix_l = 0.
     else:
-        xgamma_l = liquid_activities(mol_l, T, f_gamma, gamma_args)
+        x = mol_l / total_mol_l
+        xgamma_l = x * f_gamma(x, T, *gamma_args)
         g_mix_l = gibbs_free_energy_of_liquid(mol_l, xgamma_l)
-    if mol_L.sum() == 0.:
+    total_mol_L = mol_L.sum()
+    if total_mol_L == 0.:
         g_mix_L = 0.
     else:
-        xgamma_L = liquid_activities(mol_L, T, f_gamma, gamma_args)
+        x = mol_L / total_mol_L
+        xgamma_L = x * f_gamma(x, T, *gamma_args)
         g_mix_L = gibbs_free_energy_of_liquid(mol_L, xgamma_L)
     g_mix = g_mix_l + g_mix_L
     return g_mix
 
-@njit(cache=True)
-def psuedo_equilibrium_inner_loop(logKgammay, z, T, n, f_gamma, gamma_args, phi):
+lle_objective_function = njit(cache=True)(lle_objective_function_py)
+
+def psuedo_equilibrium_inner_loop_py(logKgammay, z, T, n, f_gamma, gamma_args, phi):
     logKgammay_new = logKgammay.copy()
     K = np.exp(logKgammay[:n])
     x = z/(1. + phi * (K - 1.))
@@ -70,13 +68,19 @@ def psuedo_equilibrium_inner_loop(logKgammay, z, T, n, f_gamma, gamma_args, phi)
     logKgammay_new[n:] = gammay
     return logKgammay_new
 
+psuedo_equilibrium_inner_loop = njit(cache=True)(psuedo_equilibrium_inner_loop_py)
+
 def pseudo_equilibrium_outer_loop(logKgammayphi, z, T, n, f_gamma, gamma_args, inner_loop_options):
     logKgammayphi_new = logKgammayphi.copy()
     logKgammay = logKgammayphi[:-1]
     phi = logKgammayphi[-1]
     args=(z, T, n, f_gamma, gamma_args)
+    if gamma_args == (): # Must be a Python object
+        inner_loop = psuedo_equilibrium_inner_loop_py
+    else:
+        inner_loop = psuedo_equilibrium_inner_loop
     logKgammay = flx.aitken(
-        psuedo_equilibrium_inner_loop, logKgammay, 
+        inner_loop, logKgammay,
         args=(*args, phi), **inner_loop_options,
     )
     K = np.exp(logKgammay[:n])
@@ -119,30 +123,107 @@ def pseudo_equilibrium(K, phi, z, T, n, f_gamma, gamma_args, inner_loop_options,
         return z
 
 # Light weight
-def solve_lle_mol(gamma, z, T, P, sample=None, phi=1):
-    n = z.size
-    if sample is not None: sample = (sample,)
-    stability = lle_tangential_plane_analysis(gamma, z, T, P, samples=sample)
-    if stability.unstable:
-        y = stability.candidate
-        y[y < 1e-64] = 1e-64
-        phi = 0.99 * (z / y).min()
-        x = z - phi * y
+def _second_liquid_guess(gamma, z, y, T, P, npoints=25):
+    # Given a trial phase `y` (e.g., from tangent plane stability analysis),
+    # the conjugate phase must lie on the line from `y` through `z` (by mass
+    # balance): x(t) = z + t * (z - y). Pick the point of minimum tangent
+    # plane distance along that line as the initial guess.
+    d = z - y
+    negative = d < 0.
+    tmax = (z[negative] / -d[negative]).min() if negative.any() else 1e3
+    logfz = np.log(z * gamma(z, T, P) + 1e-30)
+    best_value = np.inf
+    best_x = None
+    best_t = None
+    for t in tmax * np.linspace(0.02, 0.98, npoints):
+        x = z + t * d
+        x[x < 1e-64] = 1e-64
         x /= x.sum()
-        K = gamma(y, T) / gamma(x, T)
-    else:
-        return z
-    K[K <= 0] = 1e-9
-    mol = pseudo_equilibrium(
-        K, phi, z, T, n, gamma.f, gamma.args, 
-        LLE.pseudo_equilibrium_inner_loop_options,
-        LLE.pseudo_equilibrium_outer_loop_options,
-    )
-    if mol.any():
-        return mol / mol.sum()
-    else:
-        return z
-    
+        value = np.dot(x, np.log(x * gamma(x, T, P) + 1e-30) - logfz)
+        if value < best_value:
+            best_value = value
+            best_x = x
+            best_t = t
+    phi = best_t / (1. + best_t) # Fraction of feed in phase y
+    return best_x, phi
+
+def solve_lle_phase(gamma, z, T, P, sample=None):
+    """
+    Return the composition and phase fraction of the dominant liquid phase
+    at liquid-liquid equilibrium. If `z` is stable as a single liquid phase,
+    `z` and 1 are returned.
+
+    """
+    n = z.size
+    z_total = z.sum()
+    z = z / z_total
+    samples = None if sample is None else (sample,)
+    stability = lle_tangential_plane_analysis(gamma, z, T, P, samples=samples)
+    if not stability.unstable: return z, 1.
+    y = stability.candidate.copy() # Candidate may be the sample itself
+    y[y < 1e-64] = 1e-64
+    y /= y.sum()
+    x, phi = _second_liquid_guess(gamma, z, y, T, P)
+    try:
+        x, phi = _lle_successive_substitution(gamma, z, x, y, phi, T, P)
+    except (NoEquilibrium, RuntimeError, FloatingPointError, ZeroDivisionError):
+        # Fall back to pseudo-equilibrium method
+        K = gamma(x, T, P) / gamma(y, T, P) # K = y / x
+        K[K <= 0] = 1e-9
+        mol = pseudo_equilibrium(
+            K, phi, z, T, n, gamma.f, gamma.args,
+            LLE.pseudo_equilibrium_inner_loop_options,
+            LLE.pseudo_equilibrium_outer_loop_options,
+        )
+        total = mol.sum()
+        if total <= 0. or not np.isfinite(total) or (mol is z) or total >= 1.:
+            return z, 1.
+        x = mol / total
+        phi = 1. - total
+    # Return the dominant phase for consistency
+    ϕ = 1. - phi # Fraction of feed in phase x
+    if ϕ < 0.5:
+        w = z - ϕ * x
+        w[w < 0.] = 0.
+        x = w / w.sum()
+        ϕ = 1. - ϕ
+    return x, ϕ
+
+def _lle_successive_substitution(gamma, z, x, y, phi, T, P,
+                                 maxiter=200, tol=1e-12, activity_tol=1e-9):
+    # Successive substitution with Aitken acceleration on log(K),
+    # where K = y / x = gamma(x) / gamma(y) and phi is the fraction of z in y.
+    phi = [phi]
+
+    def update(logK):
+        K = np.exp(logK)
+        phi[0] = f = phase_fraction(z, K, phi[0])
+        if not 0. < f < 1.: raise NoEquilibrium('trivial solution')
+        x = z / (1. + f * (K - 1.))
+        y = K * x
+        x /= x.sum()
+        y /= y.sum()
+        return np.log(gamma(x, T, P) / gamma(y, T, P))
+
+    logK = np.log(gamma(x, T, P) / gamma(y, T, P))
+    logK = flx.aitken(update, logK, xtol=tol, rtol=0., maxiter=maxiter,
+                      checkiter=False, checkconvergence=False,
+                      convergenceiter=10)
+    update(logK) # Phase fraction consistent with final K
+    K = np.exp(logK)
+    f = phi[0]
+    x = z / (1. + f * (K - 1.))
+    y = K * x
+    x /= x.sum()
+    y /= y.sum()
+    if np.abs(x - y).sum() < 1e-6: raise NoEquilibrium('trivial solution')
+    if np.abs(x * gamma(x, T, P) - y * gamma(y, T, P)).max() > activity_tol:
+        raise NoEquilibrium('liquid-liquid equilibrium did not converge')
+    return x, f
+
+def solve_lle_mol(gamma, z, T, P, sample=None, phi=1):
+    return solve_lle_phase(gamma, z, T, P, sample)[0]
+
 
 class LLE(Equilibrium, phases='lL'):
     """
@@ -345,6 +426,8 @@ class LLE(Equilibrium, phases='lL'):
         
     def solve_lle_liquid_mol(self, z, T, lle_chemicals, single_loop):
         gamma = self.thermo.Gamma(lle_chemicals)
+        f_gamma = gamma.f
+        gamma_args = gamma.args
         method = self.method
         n = z.size
         if method == 'pseudo equilibrium':
@@ -366,7 +449,7 @@ class LLE(Equilibrium, phases='lL'):
                     phi = 0.999 * (z / y).min()
                     x = z - phi * y
                     x /= x.sum()
-                    K = gamma(y, T) / gamma(x, T)
+                    K = gamma(x, T) / gamma(y, T) # K = y / x
             else:
                 indices = np.argsort(z * np.array([i.MW for i in lle_chemicals]))
                 x = z.copy()
@@ -379,11 +462,9 @@ class LLE(Equilibrium, phases='lL'):
                 y[b] = 0.99
                 x /= x.sum()
                 y /= y.sum()
-                K = gamma(y, T) / gamma(x, T)
+                K = gamma(x, T) / gamma(y, T) # K = y / x
                 phi = 0.5
             if single_loop:
-                f_gamma = gamma.f
-                gamma_args = gamma.args
                 phi = phase_fraction(z, K, phi)
                 try:
                     x = z/(1. + phi * (K - 1.))
@@ -398,8 +479,12 @@ class LLE(Equilibrium, phases='lL'):
                 Kgammay = Kgammayphi[:-1]
                 phi = Kgammayphi[-1]
                 args=(z, T, n, f_gamma, gamma_args)
+                if f_gamma is gamma:
+                    inner_loop = psuedo_equilibrium_inner_loop_py
+                else:
+                    inner_loop = psuedo_equilibrium_inner_loop
                 Kgammay = flx.fixed_point(
-                    psuedo_equilibrium_inner_loop, Kgammay, 
+                    inner_loop, Kgammay,
                     args=(*args, phi), **self.pseudo_equilibrium_inner_loop_options,
                 )
                 K = Kgammay[:n]
@@ -414,29 +499,33 @@ class LLE(Equilibrium, phases='lL'):
             else:
                 K[K <= 0] = 1e-9
                 return pseudo_equilibrium(
-                    K, phi, z, T, n, gamma.f, gamma.args, 
+                    K, phi, z, T, n, f_gamma, gamma_args, 
                     self.pseudo_equilibrium_inner_loop_options,
                     self.pseudo_equilibrium_outer_loop_options,
                 )
         index = np.argmax(z * np.array([i.MW for i in lle_chemicals]))
-        args = (z, T, gamma.f, gamma.args)
+        args = (z, T, f_gamma, gamma_args)
+        if f_gamma is gamma:
+            f = lle_objective_function_py
+        else:
+            f = lle_objective_function
         bounds = np.zeros([n, 2])
         bounds[:, 1] = z
         bounds[index, 1] = 0.5 * z[index] # Remove symmetry
         if method == 'shgo':
             result = shgo(
-                lle_objective_function, bounds, args,
+                f, bounds, args,
                 options=self.shgo_options
             )
             if not result.success or (result.x == 0.).all():
                 result = differential_evolution(
-                    lle_objective_function, bounds, args,
+                    f, bounds, args,
                     **self.differential_evolution_options
                 )
             return result.x
         elif method == 'differential evolution':
             result = differential_evolution(
-                lle_objective_function, bounds, args,
+                f, bounds, args,
                 **self.differential_evolution_options
             )
             return result.x

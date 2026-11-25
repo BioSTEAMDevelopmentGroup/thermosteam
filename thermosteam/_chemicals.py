@@ -743,9 +743,8 @@ class CompiledChemicals(Chemicals):
             if locked_phase:
                 if locked_phase in ('s', 'l'):
                     heavy_chemicals.append(i)
-                    if i.Dortmund or i.UNIFAC or i.NIST or i.PSRK:
-                        lle_chemicals.append(i)
-                        vlle_chemicals.append(i)
+                    lle_chemicals.append(i)
+                    vlle_chemicals.append(i)
                 elif locked_phase == 'g':
                     light_chemicals.append(i)
                 else:
@@ -753,8 +752,7 @@ class CompiledChemicals(Chemicals):
             else:
                 vle_chemicals.append(i)
                 vlle_chemicals.append(i)
-                if i.Dortmund or i.UNIFAC or i.NIST or i.PSRK: 
-                    lle_chemicals.append(i)
+                lle_chemicals.append(i)
         dct['vle_chemicals'] = tuple_(vle_chemicals)
         dct['lle_chemicals'] = tuple_(lle_chemicals)
         dct['heavy_chemicals'] = tuple_(heavy_chemicals)

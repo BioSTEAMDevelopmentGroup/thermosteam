@@ -505,6 +505,9 @@ class VLLE(Equilibrium, phases='Llg'):
                     xa * La, y * V, xb * Lb
                 ])
         values[values < 1e-24] = 0
+        # Remove phases that only hold round-off residue (flows are normalized
+        # to a total of 1, so this is relative to the total flow).
+        values[values.sum(axis=1) < 1e-12] = 0
         return values
     
     def _set_TP(self, T, P):
@@ -519,7 +522,10 @@ class VLLE(Equilibrium, phases='Llg'):
         if self._dew_point_values is None: self.dew_point_at_P(P)
         T_dew = self._dew_point_values.T_dew
         P_dew = self._dew_point_values.P_dew
-        if T >= T_dew - 1e-64 and P_dew <= P_dew + 1e64: 
+        # Dew point may have been computed at constant T (varying P) or at
+        # constant P (varying T); compare along the varying variable.
+        superheated = P <= P_dew if T_dew == T else T >= T_dew
+        if superheated:
             thermal_condition.T = T
             thermal_condition.P = P
             g_mol[:] += L_mol + l_mol
@@ -531,7 +537,8 @@ class VLLE(Equilibrium, phases='Llg'):
         if self._bubble_point_values is None: self.bubble_point_at_P(P)
         T_bubble = self._bubble_point_values.T_bubble
         P_bubble = self._bubble_point_values.P_bubble
-        if T <= T_bubble + 1e-64 and P_bubble >= P_bubble - 1e64: 
+        subcooled = P >= P_bubble if T_bubble == T else T <= T_bubble
+        if subcooled:
             l_mol += g_mol
             g_mol[:] = 0
             self.lle(T=T, P=P)
@@ -872,7 +879,7 @@ class VLLE(Equilibrium, phases='Llg'):
         
         # Check if super heated vapor
         P_dew = self.dew_point_at_T(T)
-        S_dew = self.mixture.xS(phase_data, P_dew, T)
+        S_dew = self.mixture.xS(phase_data, T, P_dew)
         dS_dew = S - S_dew
         if dS_dew >= 0:
             thermal_condition.P = self.mixture.xsolve_P_at_ST(phase_data, S, P_dew, T)

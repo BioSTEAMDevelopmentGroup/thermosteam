@@ -12,12 +12,46 @@ import thermosteam as tmo
 from . import equilibrium as eq
 from ._chemical import Chemical
 from ._chemicals import Chemicals
-from .mixture import Mixture, IdealMixture
+from .mixture import Mixture, IdealMixture, GibbsExcessMixture, PR78Mixture, SRKMixture
 from .utils import read_only, cucumber
 
 __all__ = (
     'Thermo', 'IdealThermo',
 )
+
+no_space_txt = str.maketrans("", "", "_ -")
+def name(txt):
+    return txt.lower().translate(no_space_txt).replace('modified', 'm')
+
+activity_dct = {
+    name('ideal'): eq.IdealActivityCoefficients,
+    name('UNIFAC'): eq.UNIFACActivityCoefficients,
+    name('Dortmund-UNIFAC'): eq.ModifiedUNIFACActivityCoefficients,
+    name('mUNIFAC'): eq.ModifiedUNIFACActivityCoefficients,
+    name('UNIFAC2'): eq.UNIFAC2ActivityCoefficients,
+    name('mUNIFAC2'): eq.ModifiedUNIFAC2ActivityCoefficients,
+}
+fugacity_dct = {
+    name('Ideal gas'): eq.IdealFugacityCoefficients,
+    name('Peng Robinson'): eq.PR78FugacityCoefficients,
+    name('PR'): eq.PR78FugacityCoefficients,
+    name('Soave-Redlich-Kwong'): eq.SRKFugacityCoefficients,
+    name('SRK'): eq.SRKFugacityCoefficients,
+}
+mixture_dct = {
+    name('Ideal gas'): IdealMixture,
+    name('Peng Robinson'): PR78Mixture,
+    name('PR'): PR78Mixture,
+    name('Soave-Redlich-Kwong'): SRKMixture,
+    name('SRK'): SRKMixture,
+}
+eos_activity_dct = { # Corresponding activity coefficients by EOS
+    name('Ideal gas'): eq.IdealActivityCoefficients,
+    name('Peng Robinson'): eq.PR78ActivityCoefficients,
+    name('PR'): eq.PR78ActivityCoefficients,
+    name('Soave-Redlich-Kwong'): eq.SRKActivityCoefficients,
+    name('SRK'): eq.SRKActivityCoefficients,
+}
 
 @cucumber # Just means you can pickle it
 @read_only
@@ -58,7 +92,7 @@ class Thermo:
         mixture=IdealMixture(...
             include_excess_energies=False
         ),
-        Gamma=DortmundActivityCoefficients,
+        Gamma=ModifiedUNIFACActivityCoefficients,
         Phi=IdealFugacityCoefficients,
         PCF=MockPoyintingCorrectionFactors
     )
@@ -109,7 +143,7 @@ class Thermo:
         mixture=IdealMixture(...
             include_excess_energies=False
         ),
-        Gamma=DortmundActivityCoefficients,
+        Gamma=ModifiedUNIFACActivityCoefficients,
         Phi=IdealFugacityCoefficients,
         PCF=MockPoyintingCorrectionFactors
     )
@@ -144,31 +178,47 @@ class Thermo:
         if mixture is not None and not isinstance(mixture, Mixture):
             raise ValueError(f"mixture must be a '{Mixture.__name__}' object")
         if PCF is None: PCF = eq.MockPoyintingCorrectionFactors
-        match pkg:
-            case 'ideal gas':
-                if Gamma is None: Gamma = eq.IdealActivityCoefficients
+        
+        # Package selection and defaults
+        if pkg is None: 
+            # Original thermodynamic property package
+            mixture = IdealMixture.from_chemicals(chemicals)
+            Gamma = eq.ModifiedUNIFACActivityCoefficients
+            Phi = eq.IdealFugacityCoefficients
+        else:
+            pkg = name(pkg)
+            if '|' in pkg:
+                eos, group = pkg.split('|')
+                if eos in activity_dct: group, eos = eos, group    
+            else:
+                if pkg in activity_dct:
+                    group = pkg
+                    eos = None
+                else:
+                    group = None
+                    eos = pkg
+            if eos is None:
                 if Phi is None: Phi = eq.IdealFugacityCoefficients
-                if mixture is None: mixture = IdealMixture.from_chemicals(chemicals)
-            case None | 'Dortmund-UNIFAC':
-                if Gamma is None: Gamma = eq.DortmundActivityCoefficients
-                if Phi is None: Phi = eq.IdealFugacityCoefficients
-                if mixture is None: mixture = IdealMixture.from_chemicals(chemicals)
-            case 'Peng Robinson':
-                if Gamma is None: Gamma = None
-                if Phi is None: Phi = eq.PR78FugacityCoefficients
-                if mixture is None: mixture = tmo.PR78Mixture.from_chemicals(chemicals)
-            case 'Peng Robinson | Dortmund-UNIFAC':
-                if Gamma is None: Gamma = eq.DortmundActivityCoefficients
-                if Phi is None: Phi = eq.PR78FugacityCoefficients
-                if mixture is None: mixture = tmo.PR78Mixture.from_chemicals(chemicals)
-            case _:
+            elif eos in fugacity_dct:
+                if Phi is None: Phi = fugacity_dct[eos]
+                if mixture is None: mixture = mixture_dct[eos].from_chemicals(chemicals)
+            else:
                 raise ValueError(
-                    f"property package {pkg!r} not implemented; "
-                    f"only 'ideal gas', 'Peng Robinson', 'Dortmund-UNIFAC', "
-                     "or 'Peng Robinson | Dortmund-UNIFAC' are valid options"
+                    f"property package {pkg!r} not implemented; valid options include "
+                     "'ideal gas', 'Peng Robinson', 'Dortmund-UNIFAC', "
+                     "and 'Peng Robinson | Dortmund-UNIFAC'"
                 )
+            if Gamma is None:
+                if group in activity_dct:
+                    Gamma = activity_dct[group]
+                    if mixture is None: mixture = GibbsExcessMixture.from_chemicals(chemicals, Gamma)
+                else: # Activity coefficients corresponding to the EOS
+                    Gamma = eos_activity_dct[eos]
+            if mixture is None: 
+                mixture = IdealMixture.from_chemicals(chemicals)
+        
         issubtype = issubclass
-        if not (Gamma is None or issubtype(Gamma, eq.ActivityCoefficients)): # pragma: no cover
+        if not issubtype(Gamma, eq.ActivityCoefficients): # pragma: no cover
             raise ValueError(f"Gamma must be a '{eq.ActivityCoefficients.__name__}' subclass")
         if not issubtype(Phi, eq.FugacityCoefficients): # pragma: no cover
             raise ValueError(f"Phi must be a '{eq.FugacityCoefficients.__name__}' subclass")
@@ -296,7 +346,7 @@ class Thermo:
         print(f"{type(self).__name__}(\n"
               f"    chemicals={chemical_info},\n"
               f"    mixture={mixture_info},\n"
-              f"    Gamma={None if self.Gamma is None else self.Gamma.__name__},\n"
+              f"    Gamma={self.Gamma.__name__},\n"
               f"    Phi={self.Phi.__name__},\n"
               f"    PCF={self.PCF.__name__}\n"
                ")")

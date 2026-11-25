@@ -11,6 +11,7 @@ import flexsolve as flx
 import thermosteam as tmo
 import numpy as np
 from math import exp
+from fluids.constants import R
 from thermosteam import functional as fn
 from thermo.interaction_parameters import IPDB
 from numpy.typing import NDArray
@@ -26,12 +27,12 @@ from .ideal_mixture_model import (
 )
 from .._chemicals import Chemical, CompiledChemicals, chemical_data_array
 
-__all__ = ('Mixture', 'IdealMixture')
+__all__ = ('Mixture', 'IdealMixture', 'GibbsExcessMixture')
 
 
 # %% Convenience for EOS
 
-def get_excess_property(eos, free_energy, phase):
+def get_departure_property(eos, free_energy, phase):
     name = f"{free_energy}_dep_{phase}"
     try: return getattr(eos, name)
     except: # Maybe identified closer to another phase near supercritical conditions (doesn't matter)
@@ -462,13 +463,14 @@ class IdealMixture(Mixture):
         eos = self._eos
         for i, j in items:
             eosi = eos[i].to_TP(T, P)
-            Cn += get_excess_property(eosi, 'Cp', phase) * j
+            Cn += get_departure_property(eosi, 'Cp', phase) * j
         return Cn
     
     @classmethod
     def from_chemicals(cls, chemicals, 
                        include_excess_energies=False, 
-                       cache=True):
+                       cache=True,
+                       Gamma=None):
         """
         Create a Mixture object from chemical objects.
         
@@ -537,8 +539,239 @@ class IdealMixture(Mixture):
         return (f"{type(self).__name__}(...\n"
                 f"    include_excess_energies={self.include_excess_energies}\n"
                  ")")
-    
-    
+
+
+# %% Gibbs excess mixture
+
+class GibbsExcessMixture(Mixture):
+    r"""
+    Create a GibbsExcessMixture object for estimating mixture properties,
+    accounting for the excess Gibbs free energy of mixing of liquids by
+    means of an activity coefficient model. Liquid phase ('l' and 'L')
+    enthalpies, entropies, and heat capacities include excess terms
+    [1]_:
+
+    .. math::
+
+        g^E = RT \sum_i x_i \ln \gamma_i
+
+        h^E = -RT^2 \sum_i x_i \frac{\partial \ln \gamma_i}{\partial T}
+
+        s^E = \frac{h^E - g^E}{T}
+
+        c_p^E = \frac{\partial h^E}{\partial T} = -R \sum_i x_i \left(
+            2T \frac{\partial \ln \gamma_i}{\partial T}
+            + T^2 \frac{\partial^2 \ln \gamma_i}{\partial T^2}
+        \right)
+
+    Temperature derivatives of activity coefficients are given by the
+    activity coefficient model (`f_der_T` and `f_der2_T`). Pure component
+    contributions and all other properties are computed by molar weighting
+    (as in an ideal mixture).
+
+    Parameters
+    ----------
+    chemicals : tuple[Chemical]
+        Chemicals in the same order as molar data.
+    Gamma : type[:class:`~thermosteam.equilibrium.activity_coefficients.ActivityCoefficients`]
+        Activity coefficient model.
+    Cn_ideal : function(phase, mol, T)
+        Ideal molar isobaric heat capacity mixture model [J/mol/K].
+    H_ideal : function(phase, mol, T)
+        Ideal enthalpy mixture model [J/mol].
+    S_ideal : function(phase, mol, T, P)
+        Ideal entropy mixture model, including the ideal entropy of
+        mixing [J/mol].
+    mu : function(phase, mol, T, P)
+        Dynamic viscosity mixture model [Pa*s].
+    V : function(phase, mol, T, P)
+        Molar volume mixture model [m^3/mol].
+    kappa : function(phase, mol, T, P)
+        Thermal conductivity mixture model [W/m/K].
+    Hvap : function(mol, T)
+        Heat of vaporization mixture model [J/mol]
+    sigma : function(mol, T, P)
+        Surface tension mixture model [N/m].
+    epsilon : function(mol, T, P)
+        Relative permitivity mixture model [-]
+    MWs : 1d array[float]
+        Component molecular weights [g/mol].
+
+    Examples
+    --------
+    >>> import thermosteam as tmo
+    >>> mixture = tmo.GibbsExcessMixture.from_chemicals(
+    ...     ['Water', 'Ethanol'], tmo.equilibrium.ModifiedUNIFACActivityCoefficients
+    ... )
+    >>> mol = [0.5, 0.5]
+    >>> mixture.HE(mol, 350, 101325) # Excess enthalpy [J]
+    228.7
+    >>> mixture.GE(mol, 350, 101325) # Excess Gibbs free energy [J]
+    880.63
+
+    References
+    ----------
+    .. [1] Prausnitz, J. M.; Lichtenthaler, R. N.; de Azevedo, E. G.
+       Molecular Thermodynamics of Fluid-Phase Equilibria, 3rd ed.;
+       Prentice Hall: Upper Saddle River, NJ, 1999.
+
+    """
+    __slots__ = (
+        'chemicals', 'Gamma', 'Cn_ideal', 'H_ideal', 'S_ideal',
+        'mu', 'V', 'kappa', 'Hvap', 'sigma', 'epsilon', 'MWs',
+    )
+
+    #: Phases that account for excess energies of mixing.
+    liquid_phases = frozenset(['l', 'L'])
+
+    def __init__(self, chemicals, Gamma, Cn_ideal, H_ideal, S_ideal,
+                 mu, V, kappa, Hvap, sigma, epsilon, MWs):
+        self.chemicals = tuple(chemicals)
+        self.Gamma = Gamma
+        self.Cn_ideal = Cn_ideal
+        self.H_ideal = H_ideal
+        self.S_ideal = S_ideal
+        self.mu = mu
+        self.V = V
+        self.kappa = kappa
+        self.Hvap = Hvap
+        self.sigma = sigma
+        self.epsilon = epsilon
+        self.MWs = MWs
+
+    @classmethod
+    def from_chemicals(cls, chemicals, Gamma, cache=True):
+        """
+        Create a GibbsExcessMixture object from chemical objects.
+
+        Parameters
+        ----------
+        chemicals : Iterable[Chemical]
+            For retrieving pure component chemical data.
+        Gamma : type[ActivityCoefficients]
+            Activity coefficient model.
+        cache : optional
+            Whether or not to use cached chemicals and cache new chemicals. Defaults to True.
+
+        """
+        isa = isinstance
+        if isa(chemicals, CompiledChemicals):
+            MWs = chemicals.MW
+            chemicals = chemicals.tuple
+        else:
+            chemicals = [(i if isa(i, Chemical) else Chemical(i, cache=cache)) for i in chemicals]
+            MWs = chemical_data_array(chemicals, 'MW')
+        getfield = getattr
+        Cn_ideal = create_mixture_model(chemicals, 'Cn', IdealTMixtureModel)
+        H_ideal = create_mixture_model(chemicals, 'H', IdealTPMixtureModel)
+        S_ideal = create_mixture_model(chemicals, 'S', IdealEntropyModel)
+        mu = create_mixture_model(chemicals, 'mu', IdealTPMixtureModel)
+        V = create_mixture_model(chemicals, 'V', IdealTPMixtureModel)
+        kappa = create_mixture_model(chemicals, 'kappa', IdealTPMixtureModel)
+        Hvap = IdealHvapModel(chemicals)
+        sigma = SinglePhaseIdealTMixtureModel([getfield(i, 'sigma') for i in chemicals], 'sigma')
+        epsilon = SinglePhaseIdealTMixtureModel([getfield(i, 'epsilon') for i in chemicals], 'epsilon')
+        return cls(chemicals, Gamma, Cn_ideal, H_ideal, S_ideal,
+                   mu, V, kappa, Hvap, sigma, epsilon, MWs)
+
+    def _liquid_data(self, mol):
+        # Return activity coefficient object, index, molar fractions,
+        # and total moles of chemicals present.
+        if mol.__class__ is SparseVector:
+            items = mol.dct.items()
+        else:
+            items = [(i, j) for i, j in enumerate(mol) if j]
+        if len(items) < 2: return None, None, None, 0.
+        index, mol = zip(*items)
+        mol = np.array(mol, float)
+        total = mol.sum()
+        chemicals = self.chemicals
+        gamma = self.Gamma([chemicals[i] for i in index])
+        return gamma, list(index), mol / total, total
+
+    def _lngammas(self, gamma, x, T, P):
+        return np.log(gamma.f(x, T, *gamma.args, P=P))
+
+    def _dlngammas_dT(self, gamma, x, T, P):
+        # Analytical temperature derivative from the activity coefficient model
+        args = gamma.args
+        return gamma.f_der_T(x, T, *args, P=P) / gamma.f(x, T, *args, P=P)
+
+    def GE(self, mol, T, P):
+        """Return excess Gibbs free energy of mixing of a liquid [J]."""
+        gamma, index, x, total = self._liquid_data(mol)
+        if gamma is None: return 0.
+        return R * T * (x * self._lngammas(gamma, x, T, P)).sum() * total
+
+    def HE(self, mol, T, P):
+        """Return excess enthalpy of mixing of a liquid [J]."""
+        gamma, index, x, total = self._liquid_data(mol)
+        if gamma is None: return 0.
+        return -R * T * T * (x * self._dlngammas_dT(gamma, x, T, P)).sum() * total
+
+    def SE(self, mol, T, P):
+        """Return excess entropy of mixing of a liquid [J/K]."""
+        gamma, index, x, total = self._liquid_data(mol)
+        if gamma is None: return 0.
+        lngammas = self._lngammas(gamma, x, T, P)
+        dlngammas_dT = self._dlngammas_dT(gamma, x, T, P)
+        # s^E = (h^E - g^E) / T
+        return -R * (x * (T * dlngammas_dT + lngammas)).sum() * total
+
+    def CnE(self, mol, T, P):
+        """Return excess isobaric heat capacity of mixing of a liquid [J/K]."""
+        gamma, index, x, total = self._liquid_data(mol)
+        if gamma is None: return 0.
+        # c_p^E = -R * sum_i(x_i * [2T * d ln gamma_i / dT + T^2 * d2 ln gamma_i / dT2])
+        # d ln gamma / dT = gamma' / gamma
+        # d2 ln gamma / dT2 = gamma'' / gamma - (gamma' / gamma)^2
+        args = gamma.args
+        gammas = gamma.f(x, T, *args, P=P)
+        dlngammas_dT = gamma.f_der_T(x, T, *args, P=P) / gammas
+        d2lngammas_dT2 = gamma.f_der2_T(x, T, *args, P=P) / gammas - dlngammas_dT * dlngammas_dT
+        return -R * T * (x * (2. * dlngammas_dT + T * d2lngammas_dT2)).sum() * total
+
+    def dh_dep_dzs(self, phase, mol, T, P):
+        r"""
+        Return partial molar excess enthalpies of mixing [J/mol],
+        :math:`\bar{h}_i^E = \partial (n h^E) / \partial n_i =
+        -RT^2 \partial \ln \gamma_i / \partial T`. Values are zero for
+        non-liquid phases and for chemicals not present.
+        """
+        dh_dep_dzs = np.zeros(len(self.chemicals))
+        if phase not in self.liquid_phases: return dh_dep_dzs
+        gamma, index, x, total = self._liquid_data(mol)
+        if gamma is None: return dh_dep_dzs
+        dh_dep_dzs[index] = -R * T * T * self._dlngammas_dT(gamma, x, T, P)
+        return dh_dep_dzs
+
+    def H(self, phase, mol, T, P):
+        """Return enthalpy [J/mol]."""
+        H = self.H_ideal(phase, mol, T, P)
+        if phase in self.liquid_phases: H += self.HE(mol, T, P)
+        return H
+
+    def S(self, phase, mol, T, P):
+        """Return entropy [J/mol/K]."""
+        S = self.S_ideal(phase, mol, T, P)
+        if phase in self.liquid_phases: S += self.SE(mol, T, P)
+        return S
+
+    def Cn(self, phase, mol, T, P=101325):
+        """Return molar isobaric heat capacity [J/mol/K]."""
+        Cn = self.Cn_ideal(phase, mol, T, P)
+        if phase in self.liquid_phases: Cn += self.CnE(mol, T, P)
+        return Cn
+
+    def __repr__(self):
+        return f"{type(self).__name__}(Gamma={self.Gamma.__name__}, ...)"
+
+    def _info(self):
+        return (f"{type(self).__name__}(...\n"
+                f"    Gamma={self.Gamma.__name__}\n"
+                 ")")
+
+
 # %% Thermo mixture
 
 class EOSMixture(Mixture):
@@ -621,9 +854,9 @@ class EOSMixture(Mixture):
     def eos_args(self, phase, mol, T, P):
         if phase in self.active_eos:
             eos, index, eos_index, eos_mol = self.active_eos[phase]
-            if eos is None:
+            if eos is None or (eos.T == T and eos.P == P):
                 return eos, index, eos_index, eos_mol
-            elif (eos.T, eos.P) != (T, P):
+            else:
                 eos = eos.to_TP_zs(
                     T=T, P=P, zs=eos.zs, 
                     only_g=phase=='g', only_l=phase=='l',
@@ -710,14 +943,14 @@ class EOSMixture(Mixture):
         )
         if eos is None: return Cn
         excess_ref = sum([
-            mol[eos_index[i]] * get_excess_property(
+            mol[eos_index[i]] * get_departure_property(
                 eos.to_TPV_pure(T=T, P=101325, V=None, i=i),
                 'Cp', 
                 phase
             )
             for i in range(eos.N)
         ])
-        Cn += get_excess_property(eos, 'Cp', phase) * eos_mol - excess_ref
+        Cn += get_departure_property(eos, 'Cp', phase) * eos_mol - excess_ref
         return Cn
     
     def H(self, phase, mol, T, P):
@@ -728,7 +961,7 @@ class EOSMixture(Mixture):
             phase, mol, T, P
         )
         if eos is None: return H
-        H_dep = get_excess_property(eos, 'H', phase)
+        H_dep = get_departure_property(eos, 'H', phase)
         H_excess = self.H_excess[phase]
         H_ref = 0
         for i, z in zip(eos_index, eos.zs):
@@ -744,7 +977,7 @@ class EOSMixture(Mixture):
             phase, mol, T, P
         )
         if eos is None: return S
-        S_dep = get_excess_property(eos, 'S', phase)
+        S_dep = get_departure_property(eos, 'S', phase)
         S_excess = self.S_excess[phase]
         S_ref = 0
         for i, z in zip(eos_index, eos.zs):
@@ -820,7 +1053,7 @@ class EOSMixture(Mixture):
         )
 
 dct = globals()
-mixture_classes = [IdealMixture]    
+mixture_classes = [IdealMixture, GibbsExcessMixture]    
 clsnames = []
 for name in ('PRMIX', 'SRKMIX', 'PR78MIX', 'VDWMIX', 'PRSVMIX',
              'PRSV2MIX', 'TWUPRMIX', 'TWUSRKMIX', 'APISRKMIX', 'IGMIX', 'RKMIX',

@@ -50,15 +50,7 @@ from .free_energy import (
     Excess_Gas_Enthalpy_Ref_Gas,
     Excess_Gas_Entropy_Ref_Gas
 )
-from .equilibrium.unifac import (
-    DDBST_UNIFAC_assignments, 
-    DDBST_MODIFIED_UNIFAC_assignments,
-    DDBST_PSRK_assignments,
-    UNIFACGroupCounts, 
-    DortmundGroupCounts, 
-    PSRKGroupCounts,
-    NISTGroupCounts,
-)
+from .equilibrium.unifac import get_group_counts
 from .units_of_measure import chemical_units_of_measure
 from ._biorefinery_chemicals import search_biorefinery_chemicals
 from .base import (PhaseHandle, PhaseTHandle, PhaseTPHandle,
@@ -147,6 +139,33 @@ def unpickle_chemical(chemical_data):
         setfield(chemical, field, value)
     return chemical
 
+class LazyHydroxylFlag:
+    """
+    Boolean-like flag which evaluates whether a chemical has a hydroxyl
+    group only when needed (to avoid loading functional groups on
+    chemical creation).
+
+    """
+    __slots__ = ('chemical', 'value')
+
+    def __init__(self, chemical):
+        self.chemical = chemical
+        self.value = None
+
+    def __bool__(self):
+        value = self.value
+        if value is None: self.value = value = self.chemical.has_hydroxyl
+        return value
+
+    def __eq__(self, other):
+        return bool(self) == other
+
+    def __hash__(self):
+        return hash(bool(self))
+
+    def __repr__(self):
+        return repr(bool(self))
+
 
 # %% Representation
     
@@ -232,11 +251,12 @@ _names = ('_CAS',
           '_smiles', 
           '_formula')
 
+_shown_names = (*_names, '_atoms')
+
 _groups = ('_Dortmund',
            '_UNIFAC', 
            '_PSRK',
-           '_NIST',
-           '_atoms')
+           '_NIST')
 
 _model_handles = ('_Psat', '_Hvap', '_sigma', '_epsilon', '_Hsub', '_Psub')
     
@@ -267,8 +287,7 @@ _checked_properties = (
     'combustion', *_functor_data
 )
 
-_chemical_fields = {'\n[Names]  ': _names,
-                    '\n[Groups] ': _groups,
+_chemical_fields = {'\n[Names]  ': _shown_names,
                     '\n[Data]   ': _data}
 
 # %% Chemical
@@ -360,10 +379,6 @@ class Chemical:
     >>> #          pubchemid: 962
     >>> #          smiles: O
     >>> #          formula: H2O
-    >>> # [Groups] Dortmund: <1H2O>
-    >>> #          UNIFAC: <1H2O>
-    >>> #          PSRK: <1H2O>
-    >>> #          NIST: <Empty>
     >>> #          atoms: {'H': 2, 'O': 1}
     >>> # [Data]   MW: 18.015 g/mol
     >>> #          Tm: 273.15 K
@@ -495,7 +510,7 @@ class Chemical:
     """
     __slots__ = ('_ID', '_locked_state', 
                  '_phase_ref', '_eos', 
-                 '_aliases', *_names, *_groups, 
+                 '_aliases', *_names, *_groups, '_group_key', '_atoms',
                  *_handles, *_data,
                  '_N_solutes')
     
@@ -681,10 +696,6 @@ class Chemical:
                  pubchemid: None
                  smiles: None
                  formula: None
-        [Groups] Dortmund: <Empty>
-                 UNIFAC: <Empty>
-                 PSRK: <Empty>
-                 NIST: <Empty>
                  atoms: {}
         [Data]   MW: None
                  Tm: None
@@ -710,10 +721,7 @@ class Chemical:
         self = super().__new__(cls)
         self._ID = ID
         self._eos = None
-        self._UNIFAC = UNIFACGroupCounts()
-        self._Dortmund = DortmundGroupCounts()
-        self._PSRK = PSRKGroupCounts()
-        self._NIST = NISTGroupCounts()
+        self._init_groups(None)
         self._atoms = {}
         self.aliases = aliases or ()
         if synonyms: 
@@ -737,7 +745,7 @@ class Chemical:
         self._init_handles(CAS, self._MW, self._Tm, self._Tb, self._Pt, self._Tt, 
                            self._Tc, self._Pc, self.Zc, self._Vc,
                            self._omega, self._dipole, self._similarity_variable,
-                           self._iscyclic_aliphatic, self._eos, self.has_hydroxyl,
+                           self._iscyclic_aliphatic, self._eos, LazyHydroxylFlag(self),
                            self._Hfus)
         self._locked_state = None
         self._estimate_missing_properties(self.Psat)
@@ -1020,27 +1028,36 @@ class Chemical:
     
     ### Functional groups ###
     
+    def _get_groups(self, name):
+        # Load group counts on demand and cache them in the chemical.
+        field = '_' + name
+        groups = getattr(self, field, None)
+        if groups is None:
+            groups = get_group_counts(name, getattr(self, '_group_key', None))
+            setattr(self, field, groups)
+        return groups
+
     @property
     def Dortmund(self):
         """[DortmundGroupCounts] Dictionary-like object with functional group 
         numerical identifiers as keys and the number of groups as values."""
-        return self._Dortmund
+        return self._get_groups('Dortmund')
     @property
     def UNIFAC(self):
         """[UNIFACGroupCounts] Dictionary-like object with functional group 
         numerical identifiers as keys and the number of groups as values."""
-        return self._UNIFAC
+        return self._get_groups('UNIFAC')
     @property
     def PSRK(self): 
         """[PSRKGroupCounts] Dictionary-like object with functional group 
         numerical identifiers as keys and the number of groups as values."""
-        return self._PSRK
+        return self._get_groups('PSRK')
     @property
     def NIST(self): 
         """[NISTGroupCounts] Dictionary-like object with functional group 
         numerical identifiers as keys and the number of groups as values."""
-        return self._NIST
-    
+        return self._get_groups('NIST')
+
     ### Equations of state ###
     
     @property
@@ -1352,7 +1369,7 @@ class Chemical:
     def has_hydroxyl(self):
         """[bool] Whether or not chemical contains a hydroxyl functional group,
         as determined by the Dortmund/UNIFAC/PSRK functional groups."""
-        for dct in (self._Dortmund, self._UNIFAC, self._PSRK):
+        for dct in (self.Dortmund, self.UNIFAC, self.PSRK):
             for n in (14, 15, 16, 81):
                 if n in dct: return True
         return False
@@ -1483,8 +1500,6 @@ class Chemical:
                          pubchemid, iupac_name, common_name,
                          formula, aliases, synonyms)
         self._init_groups(InChI_key)
-        if CAS == '56-81-5': # TODO: Make this part of data
-            self._Dortmund = DortmundGroupCounts({2: 2, 3: 1, 14: 2, 81: 1})
         self._init_data(CAS, MW, Tm, Tb, Tc, Pc, Vc, omega, Pt, Tt, Hfus,
                         dipole, atoms, similarity_variable, iscyclic_aliphatic)
         self._init_eos(eos, self._Tc, self._Pc, self._omega)
@@ -1493,7 +1508,7 @@ class Chemical:
         self._init_handles(CAS, self._MW, self._Tm, self._Tb, self._Pt, self._Tt, 
                            self._Tc, self._Pc, self.Zc, self._Vc,
                            self._omega, self._dipole, self._similarity_variable,
-                           self._iscyclic_aliphatic, self._eos, self.has_hydroxyl,
+                           self._iscyclic_aliphatic, self._eos, LazyHydroxylFlag(self),
                            self._Hfus)
         self._locked_state = None
         self._estimate_missing_properties(self._Psat)
@@ -1586,20 +1601,9 @@ class Chemical:
         self._formula = formula
         
     def _init_groups(self, InChI_key):
-        if InChI_key in DDBST_UNIFAC_assignments:
-            self._UNIFAC = DDBST_UNIFAC_assignments[InChI_key]
-        else:
-            self._UNIFAC = UNIFACGroupCounts()
-        if InChI_key in DDBST_MODIFIED_UNIFAC_assignments:
-            self._Dortmund = DDBST_MODIFIED_UNIFAC_assignments[InChI_key]
-        else:
-            self._Dortmund = DortmundGroupCounts()
-        if InChI_key in DDBST_PSRK_assignments:
-            self._PSRK = DDBST_PSRK_assignments[InChI_key]
-        else:
-            self._PSRK = PSRKGroupCounts()
-        # TODO: Download data for NIST UNIFAC group assignments
-        self._NIST = NISTGroupCounts()
+        # Functional groups are loaded on demand (see `_get_groups`).
+        self._group_key = InChI_key
+        self._Dortmund = self._UNIFAC = self._PSRK = self._NIST = None
 
     def _init_data(self, CAS, MW, Tm, Tb, Tc, Pc, Vc, omega, Pt, Tt, Hfus,
                    dipole, atoms, similarity_variable, iscyclic_aliphatic):

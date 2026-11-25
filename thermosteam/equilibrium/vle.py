@@ -10,6 +10,7 @@
 from scipy.optimize import shgo
 import flexsolve as flx
 from numba import njit
+from numba.core.dispatcher import Dispatcher
 from warnings import warn
 from ..base import SparseVector
 from ..exceptions import InfeasibleRegion, NoEquilibrium
@@ -202,7 +203,7 @@ class VLE(Equilibrium, phases='lg'):
     VLE(imol=MolarFlowIndexer(
             g=[('Water', 128.1), ('Ethanol', 26.45), ('Methanol', 33.6), ('Propanol', 0.8978), ('O2', 10)],
             l=[('Water', 175.9), ('Ethanol', 3.555), ('Methanol', 6.399), ('Propanol', 0.1022), ('Glucose', 5)]),
-        thermal_condition=ThermalCondition(T=363.88, P=106562))
+        thermal_condition=ThermalCondition(T=363.88, P=106564))
 
     The presence of a non-partitioning gaseous chemical will result in some
     evaporation, even if the tempeture is below the saturated bubble point:
@@ -1286,7 +1287,7 @@ class VLE(Equilibrium, phases='lg'):
             mol_vle = self._mol_vle
             z = mol_vle / F_mol_vle
             self._v = v = F_mol_vle * solve_vle_vapor_mol_shgo(
-                z, T, gamma.f, gamma.args, P, pcf * Psats, phi.f, phi.args, 
+                z, T, gamma.f, gamma.args, P,pcf * Psats, phi.f, phi.args,
                 dict(f_tol=self.y_tol, minimizer_kwargs=dict(f_tol=self.y_tol)),
             )
             self._z_last = z
@@ -1449,7 +1450,7 @@ class VLE(Equilibrium, phases='lg'):
         LNK_index = chemicals._light_indices
         HNK_index = chemicals._heavy_indices
         heavy_solutes = chemicals._heavy_solutes
-        if self._thermo.Gamma is not None:
+        if not issubclass(self._thermo.Gamma, ac.EOSActivityCoefficients):
             new_light_chems = []
             if T is not None:
                 for i in index:
@@ -1547,38 +1548,33 @@ class VLECache(Cache): load = VLE
 del Cache, Equilibrium
 
 @njit(cache=True)
-def liquid_fugacity(mol_L, T, pcf_Psats, f_gamma, gamma_args):
-    total_mol_L = mol_L.sum()
-    if total_mol_L:
-        x = mol_L / total_mol_L
-        fugacity = x * f_gamma(x, T, *gamma_args) * pcf_Psats
-    else:
-        fugacity = np.ones_like(mol_L)
-    return fugacity 
-
-@njit(cache=True)
-def vapor_fugacity(mol_v, T, P, f_phi, phi_args):
-    total_mol_v = mol_v.sum()
-    if total_mol_v:
-        y = mol_v / total_mol_v
-        fugacity = y * P * f_phi(y, T, P, *phi_args)
-    else:
-        fugacity = np.ones_like(mol_v)
-    return fugacity
-
-@njit(cache=True)
 def gibbs_free_energy(mol, fugacity):
     fugacity[fugacity <= 0] = 1
     g_mix = (mol * np.log(fugacity)).sum()
     return g_mix
 
-@njit(cache=True)
-def vle_objective_function(mol_v, mol, T, f_gamma, gamma_args, P, pcf_Psats, f_phi, phi_args):
+def vle_objective_function_py(mol_v, mol, T, f_gamma, gamma_args, P, pcf_Psats, f_phi, phi_args):
+    # Non-jitted version for activity/fugacity coefficients that require
+    # python objects (i.e., do not implement f and args).
     mol_l = mol - mol_v
-    g_mix_l = gibbs_free_energy(mol_l, liquid_fugacity(mol_l, T, pcf_Psats, f_gamma, gamma_args))
-    g_mix_g = gibbs_free_energy(mol_v, vapor_fugacity(mol_v, T, P, f_phi, phi_args))
+    total_mol_l = mol_l.sum()
+    if total_mol_l:
+        x = mol_l / total_mol_l
+        fugacity_l = x * f_gamma(x, T, *gamma_args) * pcf_Psats
+    else:
+        fugacity_l = np.ones_like(mol_l)
+    total_mol_v = mol_v.sum()
+    if total_mol_v:
+        y = mol_v / total_mol_v
+        fugacity_g = y * P * f_phi(y, T, P, *phi_args)
+    else:
+        fugacity_g = np.ones_like(mol_v)
+    g_mix_l = gibbs_free_energy(mol_l, fugacity_l)
+    g_mix_g = gibbs_free_energy(mol_v, fugacity_g)
     g_mix = g_mix_l + g_mix_g
     return g_mix
+
+vle_objective_function = njit(cache=True)(vle_objective_function_py)
 
 def solve_vle_vapor_mol_shgo(
         mol, T, f_gamma, gamma_args, P, pcf_Psats, f_phi, phi_args, shgo_options,
@@ -1586,5 +1582,9 @@ def solve_vle_vapor_mol_shgo(
     args = (mol, T, f_gamma, gamma_args, P, pcf_Psats, f_phi, phi_args)
     bounds = np.zeros([mol.size, 2])
     bounds[:, 1] = mol
-    result = shgo(vle_objective_function, bounds, args, options=shgo_options)
+    if isinstance(f_gamma, Dispatcher) and isinstance(f_phi, Dispatcher):
+        objective_function = vle_objective_function
+    else:
+        objective_function = vle_objective_function_py
+    result = shgo(objective_function, bounds, args, options=shgo_options)
     return result.x

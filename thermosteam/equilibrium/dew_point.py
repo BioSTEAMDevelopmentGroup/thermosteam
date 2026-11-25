@@ -15,6 +15,8 @@ from .. import functional as fn
 from ..exceptions import InfeasibleRegion
 from .._settings import settings
 from .domain import vle_domain
+from .activity_coefficients import EOSActivityCoefficients
+from .tangential_plane_stability import lle_tangential_plane_analysis
 
 __all__ = ('DewPoint',)
 
@@ -121,6 +123,8 @@ class DewPoint:
     maxiter = 50
     T_tol = 1e-9
     P_tol = 1e-3
+    residual_tol = 1e-6 # Maximum error in sum of liquid composition
+    lle_maxiter = 5 # Maximum attempts to find the stable liquid root
     Tmin_factor = 0.1
     Tmax_factor = 10
     Pmin_factor = 0.1 
@@ -139,7 +143,7 @@ class DewPoint:
         else:
             self = super().__new__(cls)
             self.IDs = tuple([i.ID for i in chemicals])
-            if thermo.Gamma is None:
+            if issubclass(thermo.Gamma, EOSActivityCoefficients): # Use phi-phi
                 self.phi_l = thermo.Phi(chemicals, 'l')
                 self.gamma = None
             else:
@@ -248,13 +252,79 @@ class DewPoint:
         x = z_over_Psats * P
         return P, x
     
-    def __call__(self, z, *, T=None, P=None, gas_conversion=None, guess=None):
+    def _solve_T(self, f, args, T_guess0, T_guess1):
+        try:
+            T = flx.aitken_secant(f, T_guess0, T_guess1,
+                                  self.T_tol, 5e-12, args,
+                                  maxiter=self.maxiter,
+                                  checkiter=False)
+            if abs(f(T, *args)) > self.residual_tol:
+                raise RuntimeError('secant method did not converge')
+        except (RuntimeError, InfeasibleRegion, FloatingPointError):
+            Tmin = max(self.Tmin_factor * T_guess0, self.Tmin)
+            Tmax = min(self.Tmax_factor * T_guess0, self.Tmax)
+            T = flx.IQ_interpolation(f, Tmin, Tmax,
+                                     f(Tmin, *args), f(Tmax, *args),
+                                     T_guess0, self.T_tol, 5e-12, args,
+                                     checkiter=False, checkbounds=False,
+                                     maxiter=self.maxiter)
+        return T, abs(f(T, *args)) # Also makes sure x corresponds to T
+
+    def _solve_P(self, f, args, P_guess0, P_guess1):
+        try:
+            P = flx.aitken_secant(f, P_guess0, P_guess1, self.P_tol, 5e-12, args,
+                                  checkiter=False, maxiter=self.maxiter)
+            if abs(f(P, *args)) > self.residual_tol:
+                raise RuntimeError('secant method did not converge')
+        except (RuntimeError, InfeasibleRegion, FloatingPointError):
+            Pmin = max(self.Pmin_factor * P_guess0, self.Pmin)
+            Pmax = min(self.Pmax_factor * P_guess0, self.Pmax)
+            P = flx.IQ_interpolation(f, Pmin, Pmax,
+                                     f(Pmin, *args), f(Pmax, *args),
+                                     P_guess0, self.P_tol, 5e-12, args,
+                                     checkiter=False, checkbounds=False,
+                                     maxiter=self.maxiter)
+        return P, abs(f(P, *args)) # Also makes sure x corresponds to P
+
+    def _find_stable_liquid_root(self, f, args, x, T, P, solve_T):
+        # With liquid-liquid immiscibility, x * gamma(x) = f_vapor has
+        # multiple roots. The dew point is the first liquid to form (highest
+        # T at given P; lowest P at given T). Any other root is an unstable
+        # liquid and its tangent plane stability candidate is a good guess
+        # for the root that forms first.
+        gamma = self.gamma
+        for i in range(self.lle_maxiter):
+            x_norm = x / x.sum()
+            stability = lle_tangential_plane_analysis(gamma, x_norm, T, P)
+            if not stability.unstable: break
+            x_last = x.copy()
+            x_trial = stability.candidate.copy()
+            x_trial[x_trial < 1e-32] = 1e-32
+            x[:] = x_trial / x_trial.sum()
+            try:
+                if solve_T:
+                    new, error = self._solve_T(f, args, T, T + 1e-3)
+                    better = new > T
+                else:
+                    new, error = self._solve_P(f, args, P, P - 1.)
+                    better = new < P
+            except Exception:
+                error = np.inf
+            if error < self.residual_tol and better:
+                if solve_T: T = new
+                else: P = new
+            else:
+                x[:] = x_last
+                break
+        return T if solve_T else P
+
+    def __call__(self, z, *, T=None, P=None, gas_conversion=None, guess=None, lle=False):
         z = np.asarray(z, float)
         if T:
             if P: raise ValueError("may specify either T or P, not both")
-            P, *args = self.solve_Px(z, T, gas_conversion, guess)
+            P, *args = self.solve_Px(z, T, gas_conversion, guess, lle)
         elif P:
-            T, *args = self.solve_Tx(z, P, gas_conversion, guess)
+            T, *args = self.solve_Tx(z, P, gas_conversion, guess, lle)
         else:
             raise ValueError("must specify either T or P")
         if gas_conversion:
@@ -262,7 +332,7 @@ class DewPoint:
         else:
             return DewPointValues(T, P, self.IDs, z, *args)
     
-    def solve_Tx(self, z, P, gas_conversion=None, guess=None):
+    def solve_Tx(self, z, P, gas_conversion=None, guess=None, lle=False):
         """
         Dew point given composition and pressure.
 
@@ -302,7 +372,7 @@ class DewPoint:
             return T, fn.normalize(x)
         elif gas_conversion is None:
             z_norm = z/z.sum()
-            zP = z * P
+            zP = z_norm * P
             if guess is None:
                 T_guess0, x = self._Tx_ideal(zP) 
                 T_guess1 = T_guess0 + 1e-3
@@ -314,19 +384,10 @@ class DewPoint:
             else:
                 f = self._T_error_gamma
                 args = (P, z_norm, zP, x)
-            try:
-                T = flx.aitken_secant(f, T_guess0, T_guess1,
-                                      self.T_tol, 5e-12, args,
-                                      maxiter=self.maxiter,
-                                      checkiter=False)
-            except RuntimeError:
-                Tmin = max(self.Tmin_factor * T_guess0, self.Tmin)
-                Tmax = min(self.Tmax_factor * T_guess0, self.Tmax)
-                T = flx.IQ_interpolation(f, Tmin, Tmax,
-                                         f(Tmin, *args), f(Tmax, *args),
-                                         T_guess0, self.T_tol, 5e-12, args,
-                                         checkiter=False, checkbounds=False,
-                                         maxiter=self.maxiter)
+            T, error = self._solve_T(f, args, T_guess0, T_guess1)
+            if lle and self.gamma is not None:
+                T = self._find_stable_liquid_root(f, args, x, T, P, True)
+                f(T, *args) # Make sure x corresponds to T
             return T, fn.normalize(x)
         else:
             if self.gamma is None:
@@ -352,7 +413,7 @@ class DewPoint:
                                          checkiter=False, checkbounds=False)
             return T, dz, fn.normalize(y), x
     
-    def solve_Px(self, z, T, gas_conversion=None, guess=None):
+    def solve_Px(self, z, T, gas_conversion=None, guess=None, lle=False):
         """
         Dew point given composition and temperature.
 
@@ -393,7 +454,7 @@ class DewPoint:
         elif gas_conversion is None:
             z_norm = z / z.sum()
             Psats = np.array([i(T) for i in self.Psats], dtype=float)
-            z_over_Psats = z / Psats
+            z_over_Psats = z_norm / Psats
             if guess is None:
                 P_guess0, x = self._Px_ideal(z_over_Psats)
                 P_guess1 = P_guess0 - 10
@@ -405,17 +466,10 @@ class DewPoint:
             else:
                 args = (T, z_norm, z_over_Psats, Psats, x)
                 f = self._P_error_gamma
-            try:
-                P = flx.aitken_secant(f, P_guess0, P_guess1, self.P_tol, 5e-12, args,
-                                      checkiter=False, maxiter=self.maxiter)
-            except RuntimeError:
-                Pmin = max(self.Pmin_factor * P_guess0, self.Pmin)
-                Pmax = min(self.Pmax_factor * P_guess0, self.Pmax)
-                P = flx.IQ_interpolation(f, Pmin, Pmax, 
-                                         f(Pmin, *args), f(Pmax, *args),
-                                         P_guess0, self.P_tol, 5e-12, args,
-                                         checkiter=False, checkbounds=False,
-                                         maxiter=self.maxiter)
+            P, error = self._solve_P(f, args, P_guess0, P_guess1)
+            if lle and self.gamma is not None:
+                P = self._find_stable_liquid_root(f, args, x, T, P, False)
+                f(P, *args) # Make sure x corresponds to P
             return P, fn.normalize(x)
         else:
             if self.gamma is None:
