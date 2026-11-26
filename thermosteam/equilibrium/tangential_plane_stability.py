@@ -89,62 +89,71 @@ def edge_points_simplex_masked(z: np.ndarray,
 
     return np.array(pts)
 
-# Light weight
+# Tangent plane distances within this tolerance of zero are considered
+# stable (e.g., the conjugate phase of a composition on the binodal).
+tpd_tolerance = 1e-12
+
+def near_pure_points(n, epsilon=1e-3):
+    """Return trial compositions rich in one component each."""
+    points = np.full((n, n), epsilon)
+    np.fill_diagonal(points, 1.)
+    points /= points.sum(axis=1, keepdims=True)
+    return points
+
 def lle_tangential_plane_analysis(gamma, z, T, P, samples=None):
-    MW = np.array([i.MW for i in gamma.chemicals])
+    """
+    Yield trial liquids that make `z` unstable as a single liquid (i.e.,
+    with negative tangent plane distance). Candidates are computed lazily,
+    in order of increasing cost:
+
+    1. The given samples.
+    2. Local minima of the tangent plane distance starting from the given
+       samples, edge points of the simplex (only those that improve on the
+       best tangent plane distance so far), and near-pure liquids (which
+       edge points, biased towards major components, may miss).
+
+    """
     logfz = np.log(z * gamma(z, T, P) + 1e-30)
-    if samples is None: samples = ()
-    
-    def objective(w, T, P, logfz, softmax=False):
-        if softmax:
-            w = np.exp(w - np.max(w)) # Softmax for unconstrained optimization
-            w /= w.sum()
+
+    def tpd(w):
         return np.dot(w, np.log(w * gamma(w, T, P) + 1e-30) - logfz)
-    
-    args = (T, P, logfz)
-    best_val = np.inf
-    best_result = None
-    for sample in samples:
-        val = objective(sample, *args)
-        if val < best_val:
-            best_result = sample
-            best_val = val
-        if best_val < 0 and np.abs(best_result - z).sum() > 1e-9:
-            return StabilityReport(
-                unstable=True,
-                candidate=sample,
-                tpd=best_val,
-                early_exit=True,
-            )
-    w = z * MW
-    w /= w.sum()
-    samples = edge_points_simplex_masked(w)
-    samples /= MW
-    samples /= samples.sum(axis=1, keepdims=True)
-    for sample in samples:
-        value = objective(sample, *args)
-        if value < best_val:
-            best_val = value
-            best_result = sample
-            result = minimize(
-                objective, 
-                best_result, 
-                method="L-BFGS-B", 
-                options=dict(maxiter=20),
-                args=(*args, True),
-            )
-            value = result.fun
-            if value < best_val:
-                w = result.x
-                w = np.exp(w - np.max(w)) # Softmax for unconstrained optimization
-                w /= w.sum()
-                best_result = w
-                best_val = value
-    return StabilityReport(
-        unstable=best_val < 0 and np.abs(best_result - z).sum() > 1e-9,
-        candidate=best_result,
-        tpd=best_val,
-    )
+
+    def tpd_and_gradient(v):
+        # Softmax parameterization for unconstrained optimization. By the
+        # Gibbs-Duhem equation, the gradient with respect to v is
+        # w * (g - tpd), where g is the log fugacity difference.
+        w = np.exp(v - v.max())
+        w /= w.sum()
+        g = np.log(w * gamma(w, T, P) + 1e-30) - logfz
+        value = np.dot(w, g)
+        return value, w * (g - value)
+
+    def minimize_tpd(w):
+        result = minimize(
+            tpd_and_gradient, np.log(np.maximum(w, 1e-300)),
+            method="L-BFGS-B", jac=True, options=dict(maxiter=20),
+        )
+        w = np.exp(result.x - result.x.max())
+        return w / w.sum(), result.fun
+
+    def is_unstable(w, value):
+        return value < -tpd_tolerance and np.abs(w - z).sum() > 1e-9
+
+    if samples is None: samples = ()
+    for w in samples:
+        if is_unstable(w, tpd(w)): yield w
+    MW = np.array([i.MW for i in gamma.chemicals])
+    edge_points = edge_points_simplex_masked(z * MW) / MW
+    edge_points /= edge_points.sum(axis=1, keepdims=True)
+    best = np.inf
+    for points, always in ((samples, True),
+                           (edge_points, False),
+                           (near_pure_points(z.size), True)):
+        for w in points:
+            if always or tpd(w) < best:
+                w, value = minimize_tpd(w)
+                best = min(best, value)
+                if is_unstable(w, value): yield w
 
 class TangentPlaneStabilityAnalysis:
     __slots__ = ('fugacity_models', 'MW')
@@ -156,12 +165,19 @@ class TangentPlaneStabilityAnalysis:
             for i in phases
         }
     
-    def objective(self, w, T, P, model, logfz, reduce, softmax=False):
-        if softmax:
-            w = np.exp(w - np.max(w)) # Softmax for unconstrained optimization
-            w /= w.sum()
+    def objective(self, w, T, P, model, logfz, reduce):
         return np.dot(w, np.log(model(w, T, P, reduce) + 1e-30) - logfz)
-    
+
+    def objective_and_gradient(self, v, T, P, model, logfz, reduce):
+        # Softmax parameterization for unconstrained optimization. By the
+        # Gibbs-Duhem equation, the gradient with respect to v is
+        # w * (g - tpd), where g is the log fugacity difference.
+        w = np.exp(v - np.max(v))
+        w /= w.sum()
+        g = np.log(model(w, T, P, reduce) + 1e-30) - logfz
+        tpd = np.dot(w, g)
+        return tpd, w * (g - tpd)
+
     def __call__(self, z, T, P, reference_phase='l', potential_phase='L', samples=None):
         reference_model = self.fugacity_models[reference_phase]
         same_phase = reference_phase.lower() == potential_phase.lower()
@@ -177,7 +193,7 @@ class TangentPlaneStabilityAnalysis:
             if val < best_val:
                 best_result = sample
                 best_val = val
-            if best_val < 0 and np.abs(best_result - z).sum() > 1e-9:
+            if best_val < -tpd_tolerance and np.abs(best_result - z).sum() > 1e-9:
                 return StabilityReport(
                     unstable=True,
                     candidate=sample,
@@ -185,6 +201,21 @@ class TangentPlaneStabilityAnalysis:
                     early_exit=True,
                 )
         MW = self.MW
+        if best_result is not None: 
+            # Minimize from the best sample (otherwise samples could prevent
+            # the search below from minimizing at all)
+            result = minimize(
+                self.objective_and_gradient,
+                np.log(np.maximum(best_result, 1e-300)),
+                method="L-BFGS-B",
+                jac=True,
+                options=dict(maxiter=20),
+                args=args,
+            )
+            if result.fun < best_val:
+                w = np.exp(result.x - np.max(result.x))
+                best_result = w / w.sum()
+                best_val = result.fun
         w = z * MW
         w /= w.sum()
         samples = edge_points_simplex_masked(w)
@@ -196,11 +227,12 @@ class TangentPlaneStabilityAnalysis:
                 best_val = value
                 best_result = sample
                 result = minimize(
-                    objective, 
-                    best_result, 
-                    method="L-BFGS-B", 
+                    self.objective_and_gradient,
+                    np.log(np.maximum(best_result, 1e-300)),
+                    method="L-BFGS-B",
+                    jac=True,
                     options=dict(maxiter=20),
-                    args=(*args, True),
+                    args=args,
                 )
                 value = result.fun
                 if value < best_val:
@@ -210,7 +242,7 @@ class TangentPlaneStabilityAnalysis:
                     best_result = w
                     best_val = value
         return StabilityReport(
-            unstable=best_val < 0 and np.abs(best_result - z).sum() > 1e-9,
+            unstable=best_val < -tpd_tolerance and np.abs(best_result - z).sum() > 1e-9,
             candidate=best_result,
             tpd=best_val,
         )

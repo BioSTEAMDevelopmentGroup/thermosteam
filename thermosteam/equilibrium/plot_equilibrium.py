@@ -14,6 +14,7 @@ from .bubble_point import BubblePoint
 from .lle import LLE, solve_lle_phase
 from ..indexer import MaterialIndexer
 import matplotlib.pyplot as plt
+from matplotlib.ticker import AutoLocator
 from math import floor
 import thermosteam as tmo
 import numpy as np
@@ -359,6 +360,11 @@ def plot_vlle_phase_envelope(
                 ylim = (M3 - 0.3 * (max(Ms) - M3), max(Ms))
             else:
                 ylim = (min(Ms), M3 + 0.3 * (M3 - min(Ms)))
+        # Ticks may extend the axis beyond the limits, so settle them first
+        # to trace the liquid-liquid solubility curves to the edge of the plot.
+        if yticks is None:
+            yticks = [int(i) if i.is_integer() else i for i in AutoLocator().tick_values(*ylim)]
+        ylim = (min(ylim[0], min(yticks)), max(ylim[1], max(yticks)))
 
         # Trace liquid-liquid solubility curves away from the three-phase line
         # until the limit of the plot or the critical solution point.

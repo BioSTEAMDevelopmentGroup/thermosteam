@@ -24,6 +24,12 @@ from .ideal_mixture_model import (
     IdealEntropyModel, 
     IdealHvapModel
 )
+from .mixing_rules import (
+    VolumeMixtureModel,
+    ViscosityMixtureModel,
+    ThermalConductivityMixtureModel,
+    SurfaceTensionMixtureModel,
+)
 from .._chemicals import Chemical, CompiledChemicals, chemical_data_array
 
 __all__ = ('Mixture', 'IdealMixture', 'GibbsExcessMixture')
@@ -40,7 +46,7 @@ def get_departure_property(eos, free_energy, phase):
 
 # %% Functions for building mixture models
 
-def create_mixture_model(chemicals, var, Model):
+def get_phase_handles(chemicals, var):
     getfield = getattr
     isa = isinstance
     handles = []
@@ -53,7 +59,10 @@ def create_mixture_model(chemicals, var, Model):
         else:
             phase_handle = MockPhaseTPHandle(var, obj)
         handles.append(phase_handle)
-    return Model(handles, var)
+    return handles
+
+def create_mixture_model(chemicals, var, Model):
+    return Model(get_phase_handles(chemicals, var), var)
     
 
 # %% Energy balance
@@ -565,8 +574,20 @@ class GibbsExcessMixture(Mixture):
 
     Temperature derivatives of activity coefficients are given by the
     activity coefficient model (`f_der_T` and `f_der2_T`). Pure component
-    contributions and all other properties are computed by molar weighting
-    (as in an ideal mixture).
+    contributions, heats of vaporization, and relative permitivities are
+    computed by molar weighting. Volumetric, transport, and interfacial
+    properties are computed by the following mixing rules (see
+    :mod:`~thermosteam.mixture.mixing_rules`):
+
+    * Liquid molar volume: Amagat's law (consistent with activity
+      coefficient models, which have no pressure dependence).
+    * Gas molar volume: Amagat's law plus the excess volume given by second
+      virial coefficients (Tsonopoulos with Tarakad-Danner combining rules).
+    * Liquid viscosity: logarithmic molar mixing (Grunberg-Nissan).
+    * Gas viscosity: Wilke.
+    * Liquid thermal conductivity: Li (DIPPR 9I).
+    * Gas thermal conductivity: Wassiljewa with Mason-Saxena coefficients.
+    * Surface tension: Winterfeld, Scriven, and Davis.
 
     Parameters
     ----------
@@ -664,11 +685,16 @@ class GibbsExcessMixture(Mixture):
         Cn_ideal = create_mixture_model(chemicals, 'Cn', IdealTMixtureModel)
         H_ideal = create_mixture_model(chemicals, 'H', IdealTPMixtureModel)
         S_ideal = create_mixture_model(chemicals, 'S', IdealEntropyModel)
-        mu = create_mixture_model(chemicals, 'mu', IdealTPMixtureModel)
-        V = create_mixture_model(chemicals, 'V', IdealTPMixtureModel)
-        kappa = create_mixture_model(chemicals, 'kappa', IdealTPMixtureModel)
+        IDs = [i.ID for i in chemicals]
+        V = VolumeMixtureModel(
+            get_phase_handles(chemicals, 'V'),
+            *[[getfield(i, j) for i in chemicals] for j in ('Tc', 'Pc', 'Vc', 'omega')],
+            IDs,
+        )
+        mu = ViscosityMixtureModel(get_phase_handles(chemicals, 'mu'), MWs, IDs)
+        kappa = ThermalConductivityMixtureModel(get_phase_handles(chemicals, 'kappa'), mu.models, V.models, MWs, IDs)
         Hvap = IdealHvapModel(chemicals)
-        sigma = SinglePhaseIdealTMixtureModel([getfield(i, 'sigma') for i in chemicals], 'sigma')
+        sigma = SurfaceTensionMixtureModel([getfield(i, 'sigma') for i in chemicals], V.models, IDs)
         epsilon = SinglePhaseIdealTMixtureModel([getfield(i, 'epsilon') for i in chemicals], 'epsilon')
         return cls(chemicals, Gamma, Cn_ideal, H_ideal, S_ideal,
                    mu, V, kappa, Hvap, sigma, epsilon, MWs)
@@ -774,8 +800,24 @@ class GibbsExcessMixture(Mixture):
 # %% Thermo mixture
 
 class EOSMixture(Mixture):
+    """
+    Abstract class for estimating mixture properties with a cubic equation 
+    of state. Enthalpies, entropies, heat capacities, and heats of 
+    vaporization of liquid and gas phases include departures given by
+    the equation of state. Gas molar volumes are given by the equation of 
+    state, while liquid molar volumes are molar weighted (Amagat's law). 
+    Transport and interfacial properties are computed by the following 
+    mixing rules (see :mod:`~thermosteam.mixture.mixing_rules`):
+    
+    * Liquid viscosity: logarithmic molar mixing (Grunberg-Nissan).
+    * Gas viscosity: Wilke.
+    * Liquid thermal conductivity: Li (DIPPR 9I).
+    * Gas thermal conductivity: Wassiljewa with Mason-Saxena coefficients.
+    * Surface tension: Winterfeld, Scriven, and Davis.
+    
+    """
     __slots__ = (
-        'chemicals', 'eos_chemical_index', 'Cn_ideal', 'mu', 'V', 
+        'chemicals', 'eos_chemical_index', 'Cn_ideal', 'mu', 'V_ideal', 
         'kappa', 'sigma', 'epsilon', 'MWs', 
         'H_ideal', 'S_ideal', 
         'H_excess', 'S_excess', 
@@ -792,7 +834,7 @@ class EOSMixture(Mixture):
         self.H_ideal = H_ideal
         self.S_ideal = S_ideal
         self.mu = mu
-        self.V = V
+        self.V_ideal = V
         self.kappa = kappa
         self.sigma = sigma
         self.epsilon = epsilon
@@ -913,6 +955,20 @@ class EOSMixture(Mixture):
             cache[key] = eos
         return eos, index, eos_index, eos_mol
 
+    def V(self, phase, mol, T, P):
+        """Return molar volume [m^3/mol]."""
+        if phase != 'g': return self.V_ideal(phase, mol, T, P)
+        eos, index, eos_index, eos_mol = self.eos_args(phase, mol, T, P)
+        if eos is None: return self.V_ideal(phase, mol, T, P)
+        try: V = eos.V_g
+        except: V = eos.V_l # Maybe identified closer to liquid near supercritical conditions
+        V *= eos_mol
+        eos_chemical_index = self.eos_chemical_index
+        V_ideal_models = self.V_ideal.models
+        for i in index:
+            if i not in eos_chemical_index: V += mol[i] * V_ideal_models[i](phase, T, P)
+        return V
+    
     def Hvap(self, mol, T, P):
         phase = 'l'
         eos, _, _, eos_mol = self.eos_args(phase, mol, T, P)
@@ -1033,9 +1089,10 @@ class EOSMixture(Mixture):
         H = create_mixture_model(chemicals, 'H', IdealTPMixtureModel)
         S = create_mixture_model(chemicals, 'S', IdealEntropyModel)
         V = create_mixture_model(chemicals, 'V', IdealTPMixtureModel)
-        kappa = create_mixture_model(chemicals, 'kappa', IdealTPMixtureModel)
-        mu = create_mixture_model(chemicals, 'mu', IdealTPMixtureModel)
-        sigma = SinglePhaseIdealTMixtureModel([getfield(i, 'sigma') for i in chemicals], 'sigma')
+        IDs = [i.ID for i in chemicals]
+        mu = ViscosityMixtureModel(get_phase_handles(chemicals, 'mu'), MWs, IDs)
+        kappa = ThermalConductivityMixtureModel(get_phase_handles(chemicals, 'kappa'), mu.models, V.models, MWs, IDs)
+        sigma = SurfaceTensionMixtureModel([getfield(i, 'sigma') for i in chemicals], V.models, IDs)
         epsilon = SinglePhaseIdealTMixtureModel([getfield(i, 'epsilon') for i in chemicals], 'epsilon')
         return cls(chemicals, eos_chemical_index, Cn, H, S, mu, V, kappa, sigma, epsilon, MWs)
     

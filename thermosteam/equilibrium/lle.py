@@ -147,39 +147,46 @@ def _second_liquid_guess(gamma, z, y, T, P, npoints=25):
     phi = best_t / (1. + best_t) # Fraction of feed in phase y
     return best_x, phi
 
-def solve_lle_phase(gamma, z, T, P, sample=None):
-    """
-    Return the composition and phase fraction of the dominant liquid phase
-    at liquid-liquid equilibrium. If `z` is stable as a single liquid phase,
-    `z` and 1 are returned.
-
-    """
-    n = z.size
-    z_total = z.sum()
-    z = z / z_total
-    samples = None if sample is None else (sample,)
-    stability = lle_tangential_plane_analysis(gamma, z, T, P, samples=samples)
-    if not stability.unstable: return z, 1.
-    y = stability.candidate.copy() # Candidate may be the sample itself
+def _solve_lle_from_candidate(gamma, z, y, T, P, activity_tol):
+    # Return (x, y, phi), where phi is the fraction of z in y, or None if no
+    # nontrivial solution is found from the trial phase y.
+    y = y.copy() # Candidate may be a sample
     y[y < 1e-64] = 1e-64
     y /= y.sum()
     x, phi = _second_liquid_guess(gamma, z, y, T, P)
+    guess = (x, y, phi)
     try:
-        x, phi = _lle_successive_substitution(gamma, z, x, y, phi, T, P)
-    except (NoEquilibrium, RuntimeError, FloatingPointError, ZeroDivisionError):
-        # Fall back to pseudo-equilibrium method
-        K = gamma(x, T, P) / gamma(y, T, P) # K = y / x
-        K[K <= 0] = 1e-9
-        mol = pseudo_equilibrium(
-            K, phi, z, T, n, gamma.f, gamma.args,
-            LLE.pseudo_equilibrium_inner_loop_options,
-            LLE.pseudo_equilibrium_outer_loop_options,
-        )
-        total = mol.sum()
-        if total <= 0. or not np.isfinite(total) or (mol is z) or total >= 1.:
-            return z, 1.
-        x = mol / total
-        phi = 1. - total
+        solution = _lle_successive_substitution(gamma, z, x, y, phi, T, P)
+    except:
+        # Includes trivial solutions; retry with pseudo-equilibrium method
+        try: return _lle_pseudo_equilibrium(gamma, z, *guess, T, P)
+        except: return None
+    x, y, phi = solution
+    # Refine with pseudo-equilibrium method if activities do not match
+    if np.abs(x * gamma(x, T, P) - y * gamma(y, T, P)).max() > activity_tol:
+        try: return _lle_pseudo_equilibrium(gamma, z, *solution, T, P)
+        except:
+            try: return _lle_pseudo_equilibrium(gamma, z, *guess, T, P)
+            except: pass
+    return solution
+
+def solve_lle_phase(gamma, z, T, P, sample=None, activity_tol=1e-9, samples=None):
+    """
+    Return the composition and phase fraction of the dominant liquid phase
+    at liquid-liquid equilibrium. If `z` is stable as a single liquid phase,
+    `z` and 1 are returned. Trial compositions (`sample` or `samples`) are
+    tried first as candidates for the second liquid.
+
+    """
+    z_total = z.sum()
+    z = z / z_total
+    if samples is None: samples = None if sample is None else (sample,)
+    for y in lle_tangential_plane_analysis(gamma, z, T, P, samples):
+        solution = _solve_lle_from_candidate(gamma, z, y, T, P, activity_tol)
+        if solution is not None: break
+    else:
+        return z, 1.
+    x, y, phi = solution
     # Return the dominant phase for consistency
     ϕ = 1. - phi # Fraction of feed in phase x
     if ϕ < 0.5:
@@ -189,40 +196,80 @@ def solve_lle_phase(gamma, z, T, P, sample=None):
         ϕ = 1. - ϕ
     return x, ϕ
 
+def _lle_pseudo_equilibrium(gamma, z, x, y, phi, T, P):
+    # Pseudo-equilibrium method, where phi is the fraction of z in y.
+    # Raises NoEquilibrium if the result is trivial. 
+    K = gamma(x, T, P) / gamma(y, T, P) # K = y / x
+    K[K <= 0] = 1e-12
+    mol = pseudo_equilibrium(
+        K, phi, z, T, z.size, gamma.f, gamma.args,
+        LLE.pseudo_equilibrium_inner_loop_options,
+        LLE.pseudo_equilibrium_outer_loop_options,
+    )
+    total = mol.sum()
+    if mol is z or not 0. < total < 1.:
+        raise NoEquilibrium('trivial solution')
+    x = mol / total
+    phi = 1. - total
+    y = (z - mol) / phi
+    y[y < 0.] = 0.
+    y /= y.sum()
+    if np.abs(x - y).sum() < 1e-6: raise NoEquilibrium('trivial solution')
+    return x, y, phi
+
 def _lle_successive_substitution(gamma, z, x, y, phi, T, P,
-                                 maxiter=200, tol=1e-12, activity_tol=1e-9):
+                                 maxiter=200, tol=1e-12):
     # Successive substitution with Aitken acceleration on log(K),
     # where K = y / x = gamma(x) / gamma(y) and phi is the fraction of z in y.
-    phi = [phi]
+    # If the iteration breaks down, the last valid guess is returned.
+    # Raises NoEquilibrium only if the result is trivial.
+    last = [x, y, phi]
 
     def update(logK):
         K = np.exp(logK)
-        phi[0] = f = phase_fraction(z, K, phi[0])
+        f = phase_fraction(z, K, last[2])
         if not 0. < f < 1.: raise NoEquilibrium('trivial solution')
         x = z / (1. + f * (K - 1.))
         y = K * x
         x /= x.sum()
         y /= y.sum()
+        if not (np.isfinite(x).all() and np.isfinite(y).all()):
+            raise NoEquilibrium('invalid composition')
+        last[:] = x, y, f
         return np.log(gamma(x, T, P) / gamma(y, T, P))
 
     logK = np.log(gamma(x, T, P) / gamma(y, T, P))
     logK = flx.aitken(update, logK, xtol=tol, rtol=0., maxiter=maxiter,
                       checkiter=False, checkconvergence=False,
-                      convergenceiter=10)
-    update(logK) # Phase fraction consistent with final K
-    K = np.exp(logK)
-    f = phi[0]
-    x = z / (1. + f * (K - 1.))
-    y = K * x
-    x /= x.sum()
-    y /= y.sum()
+                      convergenceiter=3)
+    update(logK)
+    x, y, f = last
     if np.abs(x - y).sum() < 1e-6: raise NoEquilibrium('trivial solution')
-    if np.abs(x * gamma(x, T, P) - y * gamma(y, T, P)).max() > activity_tol:
-        raise NoEquilibrium('liquid-liquid equilibrium did not converge')
-    return x, f
+    return x, y, f
 
 def solve_lle_mol(gamma, z, T, P, sample=None, phi=1):
     return solve_lle_phase(gamma, z, T, P, sample)[0]
+
+def solve_lle_phases(lle, index, z, T, P):
+    """
+    Perform liquid-liquid equilibrium on composition `z` (of chemicals at
+    `index`) using an LLE object. Return the composition of the dominant
+    liquid, the composition of the other liquid, and the fraction of `z` in
+    the dominant liquid. If `z` is a single liquid, the other liquid is None
+    and the fraction is 1.
+
+    """
+    imol = lle.imol
+    imol.empty()
+    imol['l'][index] = z
+    lle(T, P)
+    a = imol['L'][index]
+    b = imol['l'][index]
+    A = a.sum()
+    B = b.sum()
+    if A < B: a, b, A, B = b, a, B, A
+    if B <= 0.: return z / z.sum(), None, 1.
+    return a / A, b / B, A / (A + B)
 
 
 class LLE(Equilibrium, phases='lL'):
@@ -263,8 +310,8 @@ class LLE(Equilibrium, phases='lL'):
            algorithm for lipschitz optimisation”, Journal of Global Optimization.
     
     """
-    __slots__ = ('composition_cache_tolerance',
-                 'temperature_cache_tolerance',
+    __slots__ = ('mol_cache_tol',
+                 'T_cache_tol',
                  'method',
                  'TPSA',
                  '_z_mol',
@@ -288,30 +335,34 @@ class LLE(Equilibrium, phases='lL'):
         xtol=1e-9, rtol=1e-9, maxiter=20, checkiter=False,
         checkconvergence=False, convergenceiter=5,
     )
-    default_composition_cache_tolerance = 1e-6
-    default_temperature_cache_tolerance = 1e-3
-    
+    #: Maximum absolute difference in molar composition from the last
+    #: solved feed for reusing the last solution.
+    default_mol_cache_tol = 1e-6
+    #: Maximum absolute difference in temperature [K] from the last solved
+    #: feed for reusing the last solution.
+    default_T_cache_tol = 1e-3
+
     def __init__(self, imol=None, thermal_condition=None, thermo=None,
-                 composition_cache_tolerance=None,
-                 temperature_cache_tolerance=None,
+                 mol_cache_tol=None,
+                 T_cache_tol=None,
                  method=None):
         super().__init__(imol, thermal_condition, thermo)
-        self.composition_cache_tolerance = (
-            self.default_composition_cache_tolerance 
-            if composition_cache_tolerance  is None else 
-            composition_cache_tolerance 
+        self.mol_cache_tol = (
+            self.default_mol_cache_tol
+            if mol_cache_tol is None else
+            mol_cache_tol
         )
-        self.temperature_cache_tolerance = (
-            self.default_temperature_cache_tolerance 
-            if temperature_cache_tolerance is None else 
-            temperature_cache_tolerance
+        self.T_cache_tol = (
+            self.default_T_cache_tol
+            if T_cache_tol is None else
+            T_cache_tol
         )
         self.method = self.default_method if method is None else method
         self._lle_chemicals = None
         self._K = None
         self._phi = None
     
-    def __call__(self, T, P=None, top_chemical=None, update=True, use_cache=True, single_loop=False):
+    def __call__(self, T, P=None, top_chemical=None, update=True, use_cache=True):
         """
         Perform liquid-liquid equilibrium.
 
@@ -349,9 +400,13 @@ class LLE(Equilibrium, phases='lL'):
                 top_chemical_index = index[mol_lL.argmax()]
         if F_mol and len(lle_chemicals) > 1:
             z_mol = mol_lL / F_mol # Normalize first
+            cache_hit = False
             if (use_cache and self._lle_chemicals == lle_chemicals):
-                if (T - self._T < self.temperature_cache_tolerance 
-                    and (self._z_mol - z_mol < self.composition_cache_tolerance).all()):
+                # Compare against the last state that was actually solved
+                # (cache keys are not updated on hits to prevent drift).
+                if (abs(T - self._T) < self.T_cache_tol
+                    and np.abs(self._z_mol - z_mol).max() < self.mol_cache_tol):
+                    cache_hit = True
                     K = self._K 
                     self._phi = phi = phase_fraction(z_mol, K, self._phi)
                     if phi >= 1.:
@@ -360,12 +415,12 @@ class LLE(Equilibrium, phases='lL'):
                         y = z_mol * K / (phi * K + (1 - phi))
                         mol_L = y * phi
                 else:
-                    mol_L = self.solve_lle_liquid_mol(z_mol, T, lle_chemicals, single_loop)
+                    mol_L = self.solve_lle_liquid_mol(z_mol, T, lle_chemicals)
             else:
                 self._K = None
                 self._gamma_y = None
                 self._phi = None
-                mol_L = self.solve_lle_liquid_mol(z_mol, T, lle_chemicals, single_loop)
+                mol_L = self.solve_lle_liquid_mol(z_mol, T, lle_chemicals)
             mol_l = z_mol - mol_L
             MW = self.chemicals.MW[index]
             mass_L = mol_L * MW
@@ -399,8 +454,9 @@ class LLE(Equilibrium, phases='lL'):
                 self._gamma_y = gamma(x_mol_L, T)
                 self._phi = F_mol_L / (F_mol_L + F_mol_l)
             self._lle_chemicals = lle_chemicals
-            self._z_mol = z_mol
-            self._T = T
+            if not cache_hit:
+                self._z_mol = z_mol
+                self._T = T
             if not update: 
                 imol.data[:] = old_data
                 return self._lle_chemicals, self._K, self._gamma_y, self._phi
@@ -424,7 +480,7 @@ class LLE(Equilibrium, phases='lL'):
             imol.data[:] = old_data
             return lle_chemicals, K, gamma_y, phi
         
-    def solve_lle_liquid_mol(self, z, T, lle_chemicals, single_loop):
+    def solve_lle_liquid_mol(self, z, T, lle_chemicals):
         gamma = self.thermo.Gamma(lle_chemicals)
         f_gamma = gamma.f
         gamma_args = gamma.args
@@ -438,71 +494,12 @@ class LLE(Equilibrium, phases='lL'):
                 x /= x.sum()
                 y = x * K
                 y /= y.sum()
-                samples = [x, y] 
+                samples = [x, y]
             else:
                 samples = ()
-            stability = lle_tangential_plane_analysis(gamma, z, T, 101325, samples=samples)
-            if stability.unstable:
-                y = stability.candidate
-                if not stability.early_exit:
-                    y[y < 1e-32] = 1e-32
-                    phi = 0.999 * (z / y).min()
-                    x = z - phi * y
-                    x /= x.sum()
-                    K = gamma(x, T) / gamma(y, T) # K = y / x
-            else:
-                indices = np.argsort(z * np.array([i.MW for i in lle_chemicals]))
-                x = z.copy()
-                y = z.copy()
-                a = indices[-1]
-                b = indices[-2]
-                x[a] = 0.99
-                y[a] = 1e-3
-                x[b] = 1e-3
-                y[b] = 0.99
-                x /= x.sum()
-                y /= y.sum()
-                K = gamma(x, T) / gamma(y, T) # K = y / x
-                phi = 0.5
-            if single_loop:
-                phi = phase_fraction(z, K, phi)
-                try:
-                    x = z/(1. + phi * (K - 1.))
-                except:
-                    x = np.ones(n)
-                x /= x.sum()
-                y = K * x
-                Kgammayphi = np.zeros(2*n + 1)
-                Kgammayphi[:n] = K
-                Kgammayphi[n:-1] = f_gamma(y, T, *gamma_args)
-                Kgammayphi[-1] = phi
-                Kgammay = Kgammayphi[:-1]
-                phi = Kgammayphi[-1]
-                args=(z, T, n, f_gamma, gamma_args)
-                if f_gamma is gamma:
-                    inner_loop = psuedo_equilibrium_inner_loop_py
-                else:
-                    inner_loop = psuedo_equilibrium_inner_loop
-                Kgammay = flx.fixed_point(
-                    inner_loop, Kgammay,
-                    args=(*args, phi), **self.pseudo_equilibrium_inner_loop_options,
-                )
-                K = Kgammay[:n]
-                try:
-                    phi = phase_fraction(z, K, phi)
-                except (ZeroDivisionError, FloatingPointError):
-                    return z
-                if np.isnan(phi): return z
-                if phi > 1: phi = 1 - 1e-16
-                if phi < 0: phi = 1e-16
-                return z/(1. + phi * (K - 1.)) * (1 - phi)
-            else:
-                K[K <= 0] = 1e-9
-                return pseudo_equilibrium(
-                    K, phi, z, T, n, f_gamma, gamma_args, 
-                    self.pseudo_equilibrium_inner_loop_options,
-                    self.pseudo_equilibrium_outer_loop_options,
-                )
+            # Cached liquid compositions are the first stability candidates
+            x, ϕ = solve_lle_phase(gamma, z, T, 101325, samples=samples)
+            return ϕ * x
         index = np.argmax(z * np.array([i.MW for i in lle_chemicals]))
         args = (z, T, f_gamma, gamma_args)
         if f_gamma is gamma:

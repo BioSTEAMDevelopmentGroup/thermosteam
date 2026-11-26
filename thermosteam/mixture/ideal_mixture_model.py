@@ -65,6 +65,7 @@ class IdealTPMixtureModel:
     def __repr__(self):
         return f"<{display_asfunctor(self)}>"
 
+
 class IdealEntropyModel:
     """
     Create an IdealEntropyModel object that calculates entropy of a mixture 
@@ -199,6 +200,7 @@ class SinglePhaseIdealTMixtureModel:
         models = self.models
         return sum([j * models[i](T) for i, j in mol.dct.items()])
 
+
 class SinglePhaseIdealTPMixtureModel:
     """
     Create an IdealTPMixtureModel object that calculates mixture properties
@@ -247,6 +249,7 @@ class SinglePhaseIdealTPMixtureModel:
     
     def __repr__(self):
         return f"<{display_asfunctor(self)}>"
+
 
 class IdealHvapModel:
     __slots__ = ('chemicals',)

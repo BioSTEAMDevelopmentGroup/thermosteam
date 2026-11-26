@@ -136,8 +136,7 @@ def test_gibbs_excess_mixture_properties():
         assert mixture.H('g', mol, T, P) == ideal.H('g', mol, T, P), msg
         assert mixture.S('g', mol, T, P) == ideal.S('g', mol, T, P), msg
         assert mixture.Cn('g', mol, T, P) == ideal.Cn('g', mol, T, P), msg
-        assert mixture.V('l', mol, T, P) == ideal.V('l', mol, T, P), msg
-        assert mixture.mu('l', mol, T, P) == ideal.mu('l', mol, T, P), msg
+        assert_allclose(mixture.V('l', mol, T, P), ideal.V('l', mol, T, P), rtol=1e-14, err_msg=msg)
         assert mixture.Hvap(mol, T, P) == ideal.Hvap(mol, T, P), msg
         # Heat capacity is consistent with enthalpy
         H = lambda T: mixture.H('l', mol, T, P)
@@ -190,6 +189,163 @@ def test_gibbs_excess_mixture_in_streams():
     assert_allclose(stream.H, H + 5e5, rtol=1e-8)
     assert 0. < stream.vapor_fraction < 1.
 
+# %% Mixing rules
+
+def get_nonideal_mixtures(chemicals):
+    return [
+        tmo.GibbsExcessMixture.from_chemicals(chemicals, eq.ModifiedUNIFACActivityCoefficients),
+        tmo.PRMixture.from_chemicals(chemicals),
+    ]
+
+def test_mixing_rules():
+    # Transport and interfacial properties match the mixing rules
+    # implemented in the chemicals library
+    from chemicals import viscosity as cv, thermal_conductivity as ck, interface as ci
+    chemicals = tmo.Chemicals(['Water', 'Ethanol', 'Methanol', 'O2'], cache=True)
+    x = np.array([0.3, 0.4, 0.2, 0.1])
+    T = 330.
+    P = 101325.
+    MWs = [i.MW for i in chemicals]
+    Vls = [i.V('l', T, P) for i in chemicals]
+    for mixture in get_nonideal_mixtures(chemicals):
+        msg = type(mixture).__name__
+        mus = [i.mu('l', T, P) for i in chemicals]
+        kappas = [i.kappa('l', T, P) for i in chemicals]
+        assert_allclose(mixture.mu('l', x, T, P), np.exp((x * np.log(mus)).sum()), rtol=1e-12, err_msg=msg)
+        assert_allclose(mixture.kappa('l', x, T, P), ck.DIPPR9I(list(x), Vls, kappas), rtol=1e-12, err_msg=msg)
+        mus = [i.mu('g', T, P) for i in chemicals]
+        kappas = [i.kappa('g', T, P) for i in chemicals]
+        assert_allclose(mixture.mu('g', x, T, P), cv.Wilke(list(x), mus, MWs), rtol=1e-12, err_msg=msg)
+        # Mason-Saxena coefficients are the Wilke coefficients
+        phis = [[(1 + (mui / muj)**0.5 * (Mj / Mi)**0.25)**2 / (8 * (1 + Mi / Mj))**0.5
+                 for muj, Mj in zip(mus, MWs)] for mui, Mi in zip(mus, MWs)]
+        kappa = sum([x[i] * kappas[i] / (np.array(phis[i]) * x).sum() for i in range(4)])
+        assert_allclose(mixture.kappa('g', x, T, P), kappa, rtol=1e-12, err_msg=msg)
+        sigmas = [i.sigma(T) for i in chemicals]
+        assert_allclose(
+            mixture.sigma(x, T, P),
+            ci.Winterfeld_Scriven_Davis(list(x), sigmas, [1 / i for i in Vls]),
+            rtol=1e-12, err_msg=msg
+        )
+
+def test_mixing_rules_consistency():
+    chemicals = tmo.Chemicals(['Water', 'Ethanol', 'O2'], cache=True)
+    T = 330.
+    P = 101325.
+    x = np.array([0.5, 0.5, 0.])
+    ideal = tmo.IdealMixture.from_chemicals(chemicals)
+    for mixture in get_nonideal_mixtures(chemicals):
+        msg = type(mixture).__name__
+        for phase in ('l', 'g'):
+            for name in ('mu', 'kappa', 'V'):
+                f = getattr(mixture, name)
+                # Properties are homogeneous of degree one in moles (as in the ideal mixture)
+                assert_allclose(f(phase, 5 * x, T, P), 5 * f(phase, x, T, P), rtol=1e-10, err_msg=msg)
+                # Sparse molar data gives the same result
+                assert_allclose(f(phase, tmo.base.SparseVector(x), T, P), f(phase, x, T, P), rtol=1e-14, err_msg=msg)
+            for name in ('mu', 'kappa'):
+                # Pure components are not affected by mixing rules
+                pure = np.array([0., 2., 0.])
+                f = getattr(mixture, name)
+                assert f(phase, pure, T, P) == getattr(ideal, name)(phase, pure, T, P), msg
+        assert_allclose(mixture.sigma(5 * x, T, P), 5 * mixture.sigma(x, T, P), rtol=1e-10, err_msg=msg)
+        # Trace dissolved gases (with extrapolated liquid properties above
+        # their critical temperature) do not dominate liquid properties
+        trace = np.array([0.5, 0.5 - 1e-5, 1e-5])
+        for name in ('mu', 'kappa'):
+            f = getattr(mixture, name)
+            assert_allclose(f('l', trace, T, P), f('l', x, T, P), rtol=1e-3, err_msg=msg)
+        assert_allclose(mixture.sigma(trace, T, P), mixture.sigma(x, T, P), rtol=1e-3, err_msg=msg)
+        # Mixtures of water and ethanol have lower thermal conductivities and
+        # surface tensions than predicted by molar weighting
+        assert mixture.kappa('l', x, T, P) < ideal.kappa('l', x, T, P), msg
+        assert mixture.sigma(x, T, P) < ideal.sigma(x, T, P), msg
+
+def test_eos_mixture_gas_volume():
+    from thermo import PRMIX
+    # Gas molar volumes are given by the equation of state
+    chemicals = tmo.Chemicals(['Water', 'Ethanol', 'Methane'], cache=True)
+    mixture = tmo.PRMixture.from_chemicals(chemicals)
+    x = np.array([0.1, 0.1, 0.8])
+    T = 450.
+    for P in (101325., 2e6):
+        data = tmo.ChemicalData(chemicals)
+        kijs = tmo.equilibrium.get_kijs('ChemSep PR', chemicals)
+        ref = PRMIX(Tcs=data.Tcs, Pcs=data.Pcs, omegas=data.omegas, kijs=kijs, T=T, P=P, zs=list(x))
+        assert_allclose(mixture.V('g', x, T, P), ref.V_g, rtol=1e-12)
+        assert_allclose(mixture.V('g', 2 * x, T, P), 2 * ref.V_g, rtol=1e-12)
+    # Liquid molar volumes follow Amagat's law
+    ideal = tmo.IdealMixture.from_chemicals(chemicals)
+    assert_allclose(mixture.V('l', x, 300., 101325.), ideal.V('l', x, 300., 101325.), rtol=1e-14)
+
+def test_gibbs_excess_mixture_gas_volume():
+    # Gas molar volumes include the excess volume given by second virial
+    # coefficients (Tsonopoulos with Tarakad-Danner combining rules)
+    from chemicals import virial as v
+    chemicals = tmo.Chemicals(['Water', 'Ethanol', 'CO2', 'N2'], cache=True)
+    mixture = tmo.GibbsExcessMixture.from_chemicals(chemicals, eq.ModifiedUNIFACActivityCoefficients)
+    ideal = tmo.IdealMixture.from_chemicals(chemicals)
+    x = np.array([0.3, 0.2, 0.3, 0.2])
+    T = 400.
+    N = len(x)
+    Tcs, Pcs, Vcs, omegas = [[getattr(i, j) for i in chemicals] for j in ('Tc', 'Pc', 'Vc', 'omega')]
+    Tcijs = v.Tarakad_Danner_virial_CSP_Tcijs(Tcs, np.zeros([N, N]))
+    Pcijs = v.Tarakad_Danner_virial_CSP_Pcijs(Tcs, Pcs, Vcs, Tcijs)
+    omegaijs = v.Tarakad_Danner_virial_CSP_omegaijs(omegas)
+    Bs = [[v.BVirial_Tsonopoulos(T, Tcijs[i][j], Pcijs[i][j], omegaijs[i][j]) for j in range(N)] for i in range(N)]
+    for P in (101325., 1e6):
+        VE = v.BVirial_mixture(list(x), Bs) - sum([x[i] * Bs[i][i] for i in range(N)])
+        assert_allclose(mixture.V('g', x, T, P), ideal.V('g', x, T, P) + VE, rtol=1e-12)
+        assert_allclose(mixture.V('g', 2 * x, T, P), 2 * mixture.V('g', x, T, P), rtol=1e-12)
+        # Pure component second virial coefficients are consistent with
+        # pure component gas molar volumes
+        for i, chemical in enumerate(chemicals):
+            assert_allclose(chemical.V('g', T, P), 8.314462618 * T / P + Bs[i][i], rtol=1e-10)
+    # Pure components follow their pure component models
+    pure = np.array([0., 2., 0., 0.])
+    assert mixture.V('g', pure, T, P) == ideal.V('g', pure, T, P)
+    # Liquid molar volumes follow Amagat's law (no pressure dependence
+    # of the activity coefficient model)
+    assert_allclose(mixture.V('l', x, 300., 101325.), ideal.V('l', x, 300., 101325.), rtol=1e-14)
+    # Chemicals without critical properties do not contribute to the excess volume
+    from thermosteam.mixture import VolumeMixtureModel
+    V = VolumeMixtureModel([i.V for i in chemicals], Tcs, Pcs, Vcs[:2] + [None, None], omegas)
+    P = 101325.
+    VE = sum([x[i] * x[j] * (Bs[i][j] - Bs[i][i]) for i in range(2) for j in range(2)])
+    assert_allclose(V('g', x, T, P), ideal.V('g', x, T, P) + VE, rtol=1e-12)
+
+def test_mixing_rules_infeasible_values():
+    # Infeasible pure component values raise a RuntimeError noting the chemical
+    import pytest
+    from thermosteam.mixture import (
+        ViscosityMixtureModel, ThermalConductivityMixtureModel, SurfaceTensionMixtureModel
+    )
+    chemicals = tmo.Chemicals(['Water', 'Ethanol', 'O2'], cache=True)
+    mixture = tmo.PRMixture.from_chemicals(chemicals)
+    x = np.array([0.4, 0.4, 0.2])
+    T = 330.
+    P = 101325.
+    constant = lambda value: (lambda *args: value)
+    models = list(mixture.mu.models)
+    models[1] = constant(-1e-3)
+    mu = ViscosityMixtureModel(models, mixture.mu.MWs, mixture.mu.IDs)
+    for phase in ('l', 'g'):
+        with pytest.raises(RuntimeError, match="viscosity .* 'Ethanol'"):
+            mu(phase, x, T, P)
+    models = list(mixture.kappa.V_models)
+    models[2] = constant(float('nan'))
+    kappa = ThermalConductivityMixtureModel(
+        mixture.kappa.models, mixture.kappa.mu_models, models, 
+        mixture.kappa.MWs, mixture.kappa.IDs,
+    )
+    with pytest.raises(RuntimeError, match="molar volume .* 'O2'"):
+        kappa('l', x, T, P)
+    models = list(mixture.sigma.models)
+    models[0] = constant(-0.01)
+    sigma = SurfaceTensionMixtureModel(models, mixture.sigma.V_models, mixture.sigma.IDs)
+    with pytest.raises(RuntimeError, match="surface tension of 'Water'"):
+        sigma(x, T, P)
+
 if __name__ == '__main__':
     test_gibbs_excess_mixture_excess_properties()
     test_gibbs_excess_mixture_excess_property_consistency()
@@ -198,3 +354,8 @@ if __name__ == '__main__':
     test_gibbs_excess_mixture_pure_components()
     test_gibbs_excess_mixture_sparse_flows()
     test_gibbs_excess_mixture_in_streams()
+    test_mixing_rules()
+    test_mixing_rules_consistency()
+    test_eos_mixture_gas_volume()
+    test_gibbs_excess_mixture_gas_volume()
+    test_mixing_rules_infeasible_values()

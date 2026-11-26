@@ -16,7 +16,7 @@ from ..exceptions import InfeasibleRegion
 from .._settings import settings
 from .domain import vle_domain
 from .activity_coefficients import EOSActivityCoefficients
-from .tangential_plane_stability import lle_tangential_plane_analysis
+from .lle import LLE, solve_lle_phases
 
 __all__ = ('DewPoint',)
 
@@ -118,7 +118,8 @@ class DewPoint:
 
     """
     __slots__ = ('chemicals', 'phi_g', 'phi_l', 'gamma', 'IDs', 
-                 'pcf', 'Psats', 'Tmin', 'Tmax', 'Pmin', 'Pmax')
+                 'pcf', 'Psats', 'Tmin', 'Tmax', 'Pmin', 'Pmax',
+                 'thermo', '_lle', '_lle_index')
     _cached = {}
     maxiter = 50
     T_tol = 1e-9
@@ -158,8 +159,18 @@ class DewPoint:
             self.Pmin = min([i(Tmin) for i in Psats])
             self.Pmax = max([i(Tmax) for i in Psats])
             self.chemicals = chemicals
+            self.thermo = thermo
+            self._lle = None
             cached[key] = self
             return self
+
+    def _lle_phases(self, z, T, P):
+        # Liquid-liquid equilibrium with an LLE object (created on first use)
+        lle = self._lle
+        if lle is None:
+            self._lle = lle = LLE(thermo=self.thermo)
+            self._lle_index = self.thermo.chemicals.indices(self.IDs)
+        return solve_lle_phases(lle, self._lle_index, z, T, P)
     
     def _solve_x(self, x_g, T, P, x):
         gamma = self.gamma
@@ -286,36 +297,45 @@ class DewPoint:
                                      maxiter=self.maxiter)
         return P, abs(f(P, *args)) # Also makes sure x corresponds to P
 
-    def _find_stable_liquid_root(self, f, args, x, T, P, solve_T):
+    def _find_stable_liquid_root(self, f, args, z, x, T, P, solve_T):
         # With liquid-liquid immiscibility, x * gamma(x) = f_vapor has
         # multiple roots. The dew point is the first liquid to form (highest
-        # T at given P; lowest P at given T). Any other root is an unstable
-        # liquid and its tangent plane stability candidate is a good guess
-        # for the root that forms first.
-        gamma = self.gamma
+        # T at given P; lowest P at given T). The liquids from LLE of the
+        # vapor composition (where no component is a trace) are guesses for
+        # these roots. Any root that is an unstable liquid splits into two
+        # liquids (by LLE), each of which is a guess for the root that forms
+        # first. So, the order is: (1) LLE of the vapor composition, then
+        # (2) LLE of the current root until it is a stable liquid. Only roots
+        # that form first by more than the solver tolerance are accepted.
         for i in range(self.lle_maxiter):
-            x_norm = x / x.sum()
-            stability = lle_tangential_plane_analysis(gamma, x_norm, T, P)
-            if not stability.unstable: break
-            x_last = x.copy()
-            x_trial = stability.candidate.copy()
-            x_trial[x_trial < 1e-32] = 1e-32
-            x[:] = x_trial / x_trial.sum()
-            try:
-                if solve_T:
-                    new, error = self._solve_T(f, args, T, T + 1e-3)
-                    better = new > T
-                else:
-                    new, error = self._solve_P(f, args, P, P - 1.)
-                    better = new < P
-            except Exception:
-                error = np.inf
-            if error < self.residual_tol and better:
-                if solve_T: T = new
-                else: P = new
-            else:
-                x[:] = x_last
+            xa, xb, _ = self._lle_phases(z if i == 0 else x / x.sum(), T, P)
+            if xb is None:
+                if i == 0: continue # Check the root itself
                 break
+            x_root = x.copy()
+            best = T if solve_T else P
+            x_best = None
+            for x_trial in (xa, xb):
+                x[:] = x_trial
+                try:
+                    if solve_T:
+                        new, error = self._solve_T(f, args, T, T + 1e-3)
+                        better = new > best + self.T_tol
+                    else:
+                        new, error = self._solve_P(f, args, P, P - 1.)
+                        better = new < best - self.P_tol
+                except Exception:
+                    continue
+                if error < self.residual_tol and better:
+                    best = new
+                    x_best = x.copy()
+            if x_best is None:
+                x[:] = x_root
+                if i == 0: continue # Check the root itself
+                break
+            x[:] = x_best
+            if solve_T: T = best
+            else: P = best
         return T if solve_T else P
 
     def __call__(self, z, *, T=None, P=None, gas_conversion=None, guess=None, lle=False):
@@ -386,7 +406,7 @@ class DewPoint:
                 args = (P, z_norm, zP, x)
             T, error = self._solve_T(f, args, T_guess0, T_guess1)
             if lle and self.gamma is not None:
-                T = self._find_stable_liquid_root(f, args, x, T, P, True)
+                T = self._find_stable_liquid_root(f, args, z_norm, x, T, P, True)
                 f(T, *args) # Make sure x corresponds to T
             return T, fn.normalize(x)
         else:
@@ -468,7 +488,7 @@ class DewPoint:
                 f = self._P_error_gamma
             P, error = self._solve_P(f, args, P_guess0, P_guess1)
             if lle and self.gamma is not None:
-                P = self._find_stable_liquid_root(f, args, x, T, P, False)
+                P = self._find_stable_liquid_root(f, args, z_norm, x, T, P, False)
                 f(P, *args) # Make sure x corresponds to P
             return P, fn.normalize(x)
         else:

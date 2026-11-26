@@ -177,10 +177,15 @@ def test_lle_tangential_plane_analysis():
     chemicals = tmo.Chemicals(['Water', 'Octane'], cache=True)
     gamma = eq.DortmundActivityCoefficients(chemicals)
     z = np.array([0.5, 0.5])
-    report = lle_tangential_plane_analysis(gamma, z, 300., 101325., samples=[np.array([0.99, 0.01])])
-    assert report.unstable and report.early_exit
-    report = lle_tangential_plane_analysis(gamma, z, 300., 101325., samples=[z])
-    assert report.unstable
+    # Unstable samples are the first candidates
+    sample = np.array([0.99, 0.01])
+    assert next(lle_tangential_plane_analysis(gamma, z, 300., 101325., samples=[sample])) is sample
+    # Samples that do not make z unstable are only starting points for minimization
+    candidate = next(lle_tangential_plane_analysis(gamma, z, 300., 101325., samples=[z]))
+    assert candidate is not z
+    assert_allclose(candidate.sum(), 1.)
+    # A single stable liquid has no candidates
+    assert next(lle_tangential_plane_analysis(gamma, np.array([1 - 1e-8, 1e-8]), 300., 101325.), None) is None
 
 # %% Bubble and dew points
 
@@ -686,10 +691,10 @@ def test_dew_point_lle_root_selection():
         # Converged and stable incipient liquid
         x = dp.x
         assert dp.T >= T_het - 1e-3
-        stability = eq.tangential_plane_stability.lle_tangential_plane_analysis(
+        candidates = eq.tangential_plane_stability.lle_tangential_plane_analysis(
             DP.gamma, x, dp.T, 101325
         )
-        assert not stability.unstable
+        assert next(candidates, None) is None
         Psats = np.array([i(dp.T) for i in DP.Psats])
         assert_allclose(x * DP.gamma(x, dp.T) * Psats, y * 101325, rtol=1e-3)
     # Unnormalized composition gives the same result

@@ -53,36 +53,64 @@ def phase_fraction(zs, Ks, guess=None, za=0., zb=0.):
 def phase_composition(zs, Ks, phi):
     return zs * Ks / (phi * Ks + (1. - phi))
 
-# @njit(cache=True)
 def solve_phase_fraction_Rashford_Rice(zs, Ks, guess, za=0, zb=0):
     """
     Return phase fraction for N-component binary equilibrium by
     numerically solving the Rashford Rice equation.
     
     """
-    za += zs[Ks > 1e24].sum()
-    zb += zs[Ks < 1e-24].sum()
+    return solve_phase_fraction_Rashford_Rice_jit(
+        np.asarray(zs, dtype=float), np.asarray(Ks, dtype=float),
+        -1. if guess is None else float(guess), float(za), float(zb),
+    )
+
+@njit(cache=True)
+def solve_phase_fraction_Rashford_Rice_jit(zs, Ks, guess, za, zb):
+    """
+    Return phase fraction for N-component binary equilibrium by solving the 
+    Rashford Rice equation with a safeguarded Newton-bisection method (the 
+    objective function is strictly increasing in the phase fraction). A 
+    negative `guess` means no guess.
+    
+    """
     mask = (1e-24 < Ks) & (Ks < 1e24)
+    za += zs[Ks >= 1e24].sum()
+    zb += zs[Ks <= 1e-24].sum()
     Ks = Ks[mask]
     zs = zs[mask]
-    if Ks.max() <= (1.0 + 1e-9) and not za: return 0.
+    if Ks.size == 0 or (Ks.max() <= (1.0 + 1e-9) and not za): return 0.
     if Ks.min() >= (1.0 - 1e-9) and not zb: return 1.
     K_minus_1 = Ks - 1.
-    args = (- zs * K_minus_1, K_minus_1, za, zb)
-    f = phase_fraction_objective_function
+    negative_zs_K_minus_1 = - zs * K_minus_1
     x0 = 1e-16 if za else 0.
     x1 = (1 - 1e-16) if zb else 1.
-    y0 = f(x0, *args) 
-    y1 = f(x1, *args)
-    if y0 > y1 > 0.: return 1
-    if y1 > y0 > 0.: return 0.
-    if y0 < y1 < 0.: return 1.
-    if y1 < y0 < 0.: return 0.
-    x0, x1, y0, y1 = flx.find_bracket(f, x0, x1, y0, y1, args, tol=5e-8)
-    if abs(x1 - x0) < 1e-6: return (x0 + x1) / 2.
-    return flx.IQ_interpolation(f, x0, x1, y0, y1,
-                                guess, 1e-16, 1e-16,
-                                args, checkiter=False)
+    y0 = phase_fraction_objective_function(x0, negative_zs_K_minus_1, K_minus_1, za, zb)
+    y1 = phase_fraction_objective_function(x1, negative_zs_K_minus_1, K_minus_1, za, zb)
+    if y0 >= 0.: return 0. # Root at or below lower bound
+    if y1 <= 0.: return 1. # Root at or above upper bound
+    x = guess if x0 < guess < x1 else 0.5 * (x0 + x1)
+    for i in range(100):
+        denominator = 1. + x * K_minus_1
+        y = (negative_zs_K_minus_1 / denominator).sum()
+        dy = (zs * K_minus_1 * K_minus_1 / (denominator * denominator)).sum()
+        if za > 0.:
+            y -= za / x
+            dy += za / (x * x)
+        if zb > 0.:
+            y += zb / (1. - x)
+            dy += zb / ((1. - x) * (1. - x))
+        if y > 0.:
+            x1 = x
+        elif y < 0.:
+            x0 = x
+        else:
+            return x
+        dx = y / dy if dy > 0. else 0.
+        x_new = x - dx
+        if not (x0 < x_new < x1): x_new = 0.5 * (x0 + x1) # Bisection
+        if abs(x_new - x) < 1e-15 or x1 - x0 < 1e-15: return x_new
+        x = x_new
+    return x
 
 @njit(cache=True)
 def phase_fraction_objective_function(phi, negative_zs_K_minus_1, K_minus_1, za, zb):

@@ -13,7 +13,7 @@ from .poyinting_correction_factors import MockPoyintingCorrectionFactors
 from .fugacity_coefficients import IdealFugacityCoefficients
 from .domain import vle_domain
 from .activity_coefficients import EOSActivityCoefficients
-from .lle import solve_lle_phase
+from .lle import LLE, solve_lle_phases
 from ..exceptions import InfeasibleRegion
 from .. import functional as fn
 from .._settings import settings
@@ -153,11 +153,16 @@ class BubblePoint:
     
     """
     __slots__ = ('chemicals', 'IDs', 'gamma', 'phi_g', 'phi_l', 'pcf',
-                 'Psats', 'Tmin', 'Tmax', 'Pmin', 'Pmax')
+                 'Psats', 'Tmin', 'Tmax', 'Pmin', 'Pmax', 'thermo', '_lle', '_lle_index')
     _cached = {}
     maxiter = 100
     T_tol = 1e-12
     P_tol = 1e-6
+    #: Maximum iterations of the outer loop that alternates between
+    #: liquid-liquid equilibrium and the bubble point of the dominant liquid.
+    lle_maxiter = 20
+    #: Temperature tolerance [K] of the liquid-liquid equilibrium outer loop.
+    lle_T_tol = 1e-9
     Tmin_factor = 0.1
     Tmax_factor = 10
     Pmin_factor = 0.1 
@@ -191,8 +196,18 @@ class BubblePoint:
             self.Pmin = min([i(Tmin) for i in Psats])
             self.Pmax = max([i(Tmax) for i in Psats])
             self.chemicals = chemicals
+            self.thermo = thermo
+            self._lle = None
             cached[key] = self
             return self
+
+    def _lle_phases(self, z, T, P):
+        # Liquid-liquid equilibrium with an LLE object (created on first use)
+        lle = self._lle
+        if lle is None:
+            self._lle = lle = LLE(thermo=self.thermo)
+            self._lle_index = self.thermo.chemicals.indices(self.IDs)
+        return solve_lle_phases(lle, self._lle_index, z, T, P)
     
     def _T_error_phi(self, T, P, z, y):
         if T <= 0: raise InfeasibleRegion('negative temperature')
@@ -218,7 +233,7 @@ class BubblePoint:
     def _T_error_lle_gamma(self, T, P, z, y, x, α):
         if T <= 0: raise InfeasibleRegion('negative temperature')
         Psats = np.array([i(T) for i in self.Psats], dtype=float)
-        x[:], ϕ = solve_lle_phase(self.gamma, z, T, P, sample=x)
+        x[:], _, ϕ = self._lle_phases(z, T, P)
         α[:] = ϕ * x
         y_phi =  (x / P
                   * Psats
@@ -249,14 +264,6 @@ class BubblePoint:
         y[:] = solve_y(y_phi, self.phi_g, T, P, y)
         return 1. - y.sum()
     
-    def _P_error_lle_gamma(self, P, T, z, Psats, y, x, α):
-        if P <= 0: raise InfeasibleRegion('negative pressure')
-        x[:], ϕ = solve_lle_phase(self.gamma, z, T, P, sample=x)
-        α[:] = ϕ * x
-        y_phi = Psats * x * self.gamma(x, T, P) * self.pcf(T, P, Psats) / P
-        y[:] = solve_y(y_phi, self.phi_g, T, P, y)
-        return 1. - y.sum()
-    
     def _T_error_reactive_gamma(self, T, P, z, dz, y, x, liquid_conversion):
         if T <= 0: raise InfeasibleRegion('negative temperature')
         dz[:] = liquid_conversion(z, T, P, 'l')
@@ -280,6 +287,33 @@ class BubblePoint:
         y[:] = solve_y(y_phi, self.phi_g, T, P, y)
         return 1. - y.sum()
     
+    def _solve_Ty_lle(self, z, P):
+        # Alternate between liquid-liquid equilibrium at T and the bubble point
+        # of the dominant liquid (which needs no LLE) until T converges.
+        # Activity coefficients depend weakly on temperature, so only a few
+        # LLE solves are needed (and the LLE object may reuse its cached
+        # solution). The fixed point T = T_bubble(x(T)) is accelerated with
+        # the secant method on h(T) = T_bubble(x(T)) - T. Return None on failure.
+        T, y = self.solve_Ty(z, P) # Single liquid bubble point as initial guess
+        T_tol = self.lle_T_tol
+        T_last = h_last = None
+        for i in range(self.lle_maxiter):
+            x, _, ϕ = self._lle_phases(z, T, P)
+            if ϕ >= 1.:
+                # Single liquid at its own bubble point; otherwise, the
+                # liquid split was lost along the way.
+                return (T, y, z.copy()) if i == 0 else None
+            T_new, y = self.solve_Ty(x, P)
+            h = T_new - T
+            if abs(h) < T_tol: return T_new, y, ϕ * x
+            if h_last is None or h == h_last:
+                T_next = T_new
+            else:
+                T_next = T - h * (T - T_last) / (h - h_last)
+            T_last = T
+            h_last = h
+            T = T_next
+
     def _T_error_ideal(self, T, z_over_P, y):
         y[:] = z_over_P * np.array([i(T) for i in self.Psats], dtype=float)
         return 1 - y.sum()
@@ -372,6 +406,12 @@ class BubblePoint:
                     args = (P, z, y)
             else:
                 if lle:
+                    result = self._solve_Ty_lle(z, P)
+                    if result is not None:
+                        T, y, α = result
+                        α = α * z_total
+                        return (T, y, α) if full else (T, y)
+                    # Outer loop failed; solve LLE at every temperature iteration
                     x = z.copy()
                     α = z.copy()
                     f = self._T_error_lle_gamma
@@ -481,19 +521,19 @@ class BubblePoint:
                 z_Psats = z * Psats
                 z_Psat_gamma = z_Psats * self.gamma(z, T, 101325)
                 P_guess, y = self._Py_ideal(z_Psat_gamma)
-                if lle and self.gamma.P_dependent:
-                    f = self._P_error_lle_gamma
-                    x = z.copy()
-                    α = z.copy()
-                    args = (T, z, Psats, y, x, α)
-                elif lle:
+                if lle:
                     # Liquid-liquid equilibrium is independent of P; solve once
-                    x, ϕ = solve_lle_phase(self.gamma, z, T, 101325)
+                    x, _, ϕ = self._lle_phases(z, T, P_guess)
                     α = ϕ * x
-                    z_Psat_gamma = x * Psats * self.gamma(x, T, 101325)
+                    x_Psats = x * Psats
+                    z_Psat_gamma = x_Psats * self.gamma(x, T, 101325)
                     P_guess, y = self._Py_ideal(z_Psat_gamma)
-                    f = self._P_error_gamma
-                    args = (T, z_Psat_gamma, Psats, y)
+                    if self.gamma.P_dependent:
+                        f = self._P_error_gamma_dep
+                        args = (T, x, Psats, x_Psats, y)
+                    else:
+                        f = self._P_error_gamma
+                        args = (T, z_Psat_gamma, Psats, y)
                 elif self.gamma.P_dependent:
                     f = self._P_error_gamma_dep
                     args = (T, z, Psats, z_Psats, y)
