@@ -1,0 +1,2264 @@
+{
+"data": {
+"630-08-0 7440-59-7": {
+"kij": 0.6507,
+"T": null,
+"Tmin": null,
+"Tmax": null,
+"P": null,
+"Pmin": null,
+"Pmax": null,
+"page": [
+"p203"
+]
+},
+"1333-74-0 7727-37-9": {
+"kij": 0.0563,
+"T": null,
+"Tmin": 90.0,
+"Tmax": 113.0,
+"P": null,
+"Pmin": null,
+"Pmax": null,
+"page": [
+"p210"
+]
+},
+"630-08-0 1333-74-0": {
+"kij": 0.0919,
+"T": null,
+"Tmin": 68.2,
+"Tmax": 88.2,
+"P": null,
+"Pmin": null,
+"Pmax": null,
+"page": [
+"p215"
+]
+},
+"74-82-8 1333-74-0": {
+"kij": -0.0133,
+"T": null,
+"Tmin": 90.3,
+"Tmax": 127.0,
+"P": null,
+"Pmin": null,
+"Pmax": null,
+"page": [
+"p219"
+]
+},
+"74-85-1 1333-74-0": {
+"kij": 0.0033,
+"T": null,
+"Tmin": 123.15,
+"Tmax": 248.15,
+"P": null,
+"Pmin": null,
+"Pmax": null,
+"page": [
+"p229"
+]
+},
+"74-84-0 1333-74-0": {
+"kij": -0.1822,
+"T": null,
+"Tmin": 149.61,
+"Tmax": 189.57,
+"P": null,
+"Pmin": null,
+"Pmax": null,
+"page": [
+"p233"
+]
+},
+"124-38-9 1333-74-0": {
+"kij": -0.3426,
+"T": null,
+"Tmin": null,
+"Tmax": null,
+"P": null,
+"Pmin": null,
+"Pmax": null,
+"page": [
+"p242"
+]
+},
+"115-07-1 1333-74-0": {
+"kij": -0.3233,
+"T": null,
+"Tmin": null,
+"Tmax": null,
+"P": null,
+"Pmin": null,
+"Pmax": null,
+"page": [
+"p244"
+]
+},
+"74-98-6 1333-74-0": {
+"kij": -0.2904,
+"T": null,
+"Tmin": 173.15,
+"Tmax": 348.15,
+"P": null,
+"Pmin": null,
+"Pmax": null,
+"page": [
+"p245"
+]
+},
+"106-97-8 1333-74-0": {
+"kij": -0.51,
+"T": null,
+"Tmin": 327.65,
+"Tmax": 394.25,
+"P": null,
+"Pmin": null,
+"Pmax": null,
+"page": [
+"p247"
+]
+},
+"110-54-3 1333-74-0": {
+"kij": -0.08,
+"T": null,
+"Tmin": null,
+"Tmax": null,
+"P": null,
+"Pmin": null,
+"Pmax": null,
+"page": [
+"p250"
+]
+},
+"142-82-5 1333-74-0": {
+"kij": -0.22,
+"T": null,
+"Tmin": null,
+"Tmax": null,
+"P": null,
+"Pmin": null,
+"Pmax": null,
+"page": [
+"p253"
+]
+},
+"108-88-3 1333-74-0": {
+"kij": 0.39,
+"T": null,
+"Tmin": null,
+"Tmax": null,
+"P": null,
+"Pmin": null,
+"Pmax": null,
+"page": [
+"p255"
+]
+},
+"91-22-5 1333-74-0": {
+"kij": -0.51,
+"T": null,
+"Tmin": null,
+"Tmax": null,
+"P": null,
+"Pmin": null,
+"Pmax": null,
+"page": [
+"p259"
+]
+},
+"92-51-3 1333-74-0": {
+"kij": 1.1585,
+"T": null,
+"Tmin": null,
+"Tmax": null,
+"P": null,
+"Pmin": null,
+"Pmax": null,
+"page": [
+"p261"
+]
+},
+"90-12-0 1333-74-0": {
+"kij": 0.44,
+"T": null,
+"Tmin": null,
+"Tmax": null,
+"P": null,
+"Pmin": null,
+"Pmax": null,
+"page": [
+"p263"
+]
+},
+"630-08-0 7727-37-9": {
+"kij": 0.043,
+"T": 83.82,
+"Tmin": null,
+"Tmax": null,
+"P": null,
+"Pmin": null,
+"Pmax": null,
+"page": [
+"p265"
+]
+},
+"7440-37-1 7727-37-9": {
+"kij": 0.0056,
+"T": 83.82,
+"Tmin": null,
+"Tmax": null,
+"P": null,
+"Pmin": null,
+"Pmax": null,
+"page": [
+"p268"
+]
+},
+"7727-37-9 7782-44-7": {
+"kij": -0.0156,
+"T": null,
+"Tmin": 90.53,
+"Tmax": 124.96,
+"P": null,
+"Pmin": 118900.0,
+"Pmax": 2972000.0,
+"page": [
+"p277"
+]
+},
+"74-82-8 7727-37-9": {
+"kij": 0.0267,
+"T": null,
+"Tmin": 88.71,
+"Tmax": 188.71,
+"P": null,
+"Pmin": null,
+"Pmax": null,
+"page": [
+"p285"
+]
+},
+"74-85-1 7727-37-9": {
+"kij": 0.0798,
+"T": null,
+"Tmin": null,
+"Tmax": null,
+"P": null,
+"Pmin": null,
+"Pmax": null,
+"page": [
+"p298"
+]
+},
+"74-84-0 7727-37-9": {
+"kij": 0.0174,
+"T": null,
+"Tmin": 200.0,
+"Tmax": 290.0,
+"P": null,
+"Pmin": null,
+"Pmax": null,
+"page": [
+"p300"
+]
+},
+"7727-37-9 10024-97-2": {
+"kij": -0.011,
+"T": null,
+"Tmin": null,
+"Tmax": null,
+"P": null,
+"Pmin": null,
+"Pmax": null,
+"page": [
+"p304"
+]
+},
+"124-38-9 7727-37-9": {
+"kij": -0.0344,
+"T": null,
+"Tmin": 223.15,
+"Tmax": 273.15,
+"P": null,
+"Pmin": null,
+"Pmax": null,
+"page": [
+"p306"
+]
+},
+"7727-37-9 7783-06-4": {
+"kij": 0.1696,
+"T": null,
+"Tmin": null,
+"Tmax": null,
+"P": null,
+"Pmin": null,
+"Pmax": null,
+"page": [
+"p316"
+]
+},
+"115-07-1 7727-37-9": {
+"kij": 0.09,
+"T": null,
+"Tmin": null,
+"Tmax": null,
+"P": null,
+"Pmin": null,
+"Pmax": null,
+"page": [
+"p320"
+]
+},
+"74-98-6 7727-37-9": {
+"kij": 0.0793,
+"T": null,
+"Tmin": 143.15,
+"Tmax": 353.15,
+"P": null,
+"Pmin": null,
+"Pmax": null,
+"page": [
+"p322"
+]
+},
+"7664-41-7 7727-37-9": {
+"kij": 0.2222,
+"T": null,
+"Tmin": null,
+"Tmax": null,
+"P": null,
+"Pmin": null,
+"Pmax": null,
+"page": [
+"p326"
+]
+},
+"75-71-8 7727-37-9": {
+"kij": -0.0093,
+"T": null,
+"Tmin": null,
+"Tmax": null,
+"P": null,
+"Pmin": null,
+"Pmax": null,
+"page": [
+"p328"
+]
+},
+"75-28-5 7727-37-9": {
+"kij": 0.0944,
+"T": null,
+"Tmin": null,
+"Tmax": null,
+"P": null,
+"Pmin": null,
+"Pmax": null,
+"page": [
+"p330"
+]
+},
+"7446-09-5 7727-37-9": {
+"kij": 0.0578,
+"T": null,
+"Tmin": null,
+"Tmax": null,
+"P": null,
+"Pmin": null,
+"Pmax": null,
+"page": [
+"p332"
+]
+},
+"106-97-8 7727-37-9": {
+"kij": 0.09,
+"T": null,
+"Tmin": 310.93,
+"Tmax": 422.04,
+"P": null,
+"Pmin": null,
+"Pmax": null,
+"page": [
+"p333"
+]
+},
+"78-78-4 7727-37-9": {
+"kij": 0.0867,
+"T": null,
+"Tmin": null,
+"Tmax": null,
+"P": null,
+"Pmin": null,
+"Pmax": null,
+"page": [
+"p336"
+]
+},
+"109-66-0 7727-37-9": {
+"kij": 0.0878,
+"T": null,
+"Tmin": null,
+"Tmax": null,
+"P": null,
+"Pmin": null,
+"Pmax": null,
+"page": [
+"p338"
+]
+},
+"67-56-1 7727-37-9": {
+"kij": -0.2881,
+"T": null,
+"Tmin": null,
+"Tmax": null,
+"P": null,
+"Pmin": null,
+"Pmax": null,
+"page": [
+"p340"
+]
+},
+"110-54-3 7727-37-9": {
+"kij": 0.1496,
+"T": null,
+"Tmin": null,
+"Tmax": null,
+"P": null,
+"Pmin": null,
+"Pmax": null,
+"page": [
+"p341"
+]
+},
+"71-43-2 7727-37-9": {
+"kij": 0.153,
+"T": null,
+"Tmin": null,
+"Tmax": null,
+"P": null,
+"Pmin": null,
+"Pmax": null,
+"page": [
+"p343"
+]
+},
+"142-82-5 7727-37-9": {
+"kij": 0.1422,
+"T": null,
+"Tmin": null,
+"Tmax": null,
+"P": null,
+"Pmin": null,
+"Pmax": null,
+"page": [
+"p344"
+]
+},
+"111-65-9 7727-37-9": {
+"kij": -0.4,
+"T": null,
+"Tmin": null,
+"Tmax": null,
+"P": null,
+"Pmin": null,
+"Pmax": null,
+"page": [
+"p347"
+]
+},
+"124-18-5 7727-37-9": {
+"kij": 0.1033,
+"T": null,
+"Tmin": 310.93,
+"Tmax": 410.93,
+"P": null,
+"Pmin": null,
+"Pmax": null,
+"page": [
+"p349"
+]
+},
+"74-82-8 630-08-0": {
+"kij": 0.0322,
+"T": null,
+"Tmin": null,
+"Tmax": null,
+"P": null,
+"Pmin": null,
+"Pmax": null,
+"page": [
+"p353"
+]
+},
+"74-84-0 630-08-0": {
+"kij": -0.0278,
+"T": null,
+"Tmin": null,
+"Tmax": null,
+"P": null,
+"Pmin": null,
+"Pmax": null,
+"page": [
+"p354"
+]
+},
+"630-08-0 7783-06-4": {
+"kij": 0.0367,
+"T": null,
+"Tmin": null,
+"Tmax": null,
+"P": null,
+"Pmin": null,
+"Pmax": null,
+"page": [
+"p356"
+]
+},
+"74-98-6 630-08-0": {
+"kij": 0.0156,
+"T": null,
+"Tmin": null,
+"Tmax": null,
+"P": null,
+"Pmin": null,
+"Pmax": null,
+"page": [
+"p358"
+]
+},
+"7440-37-1 7782-44-7": {
+"kij": 0.0181,
+"T": null,
+"Tmin": 89.95,
+"Tmax": 109.95,
+"P": null,
+"Pmin": 104500.0,
+"Pmax": 661800.0,
+"page": [
+"p360"
+]
+},
+"74-82-8 7440-37-1": {
+"kij": 0.0367,
+"T": null,
+"Tmin": 91.6,
+"Tmax": 123.9,
+"P": null,
+"Pmin": null,
+"Pmax": null,
+"page": [
+"p363"
+]
+},
+"7440-37-1 7664-41-7": {
+"kij": -0.22,
+"T": null,
+"Tmin": null,
+"Tmax": null,
+"P": null,
+"Pmin": null,
+"Pmax": null,
+"page": [
+"p371"
+]
+},
+"7439-90-9 7782-44-7": {
+"kij": 0.0344,
+"T": null,
+"Tmin": 90.15,
+"Tmax": 100.15,
+"P": null,
+"Pmin": 68800.0,
+"Pmax": 248600.00000000003,
+"page": [
+"p373"
+]
+},
+"7782-44-7 10024-97-2": {
+"kij": 0.0433,
+"T": null,
+"Tmin": null,
+"Tmax": null,
+"P": null,
+"Pmin": null,
+"Pmax": null,
+"page": [
+"p376"
+]
+},
+"74-82-8 74-85-1": {
+"kij": 0.0344,
+"T": null,
+"Tmin": 198.15,
+"Tmax": 248.15,
+"P": null,
+"Pmin": null,
+"Pmax": null,
+"page": [
+"p378"
+]
+},
+"74-82-8 74-84-0": {
+"kij": -0.0089,
+"T": null,
+"Tmin": 130.37,
+"Tmax": 199.93,
+"P": null,
+"Pmin": null,
+"Pmax": null,
+"page": [
+"p385"
+]
+},
+"74-82-8 10024-97-2": {
+"kij": 0.0211,
+"T": null,
+"Tmin": null,
+"Tmax": null,
+"P": null,
+"Pmin": null,
+"Pmax": null,
+"page": [
+"p396"
+]
+},
+"74-82-8 124-38-9": {
+"kij": 0.0789,
+"T": null,
+"Tmin": 173.0,
+"Tmax": 220.0,
+"P": null,
+"Pmin": 2600000.0,
+"Pmax": 6600000.0,
+"page": [
+"p398"
+]
+},
+"74-82-8 7783-06-4": {
+"kij": 0.07955,
+"T": null,
+"Tmin": null,
+"Tmax": null,
+"P": null,
+"Pmin": null,
+"Pmax": null,
+"page": []
+},
+"74-82-8 463-58-1": {
+"kij": 0.0252,
+"T": null,
+"Tmin": null,
+"Tmax": null,
+"P": null,
+"Pmin": null,
+"Pmax": null,
+"page": [
+"p410"
+]
+},
+"74-82-8 115-07-1": {
+"kij": 0.0289,
+"T": null,
+"Tmin": null,
+"Tmax": null,
+"P": null,
+"Pmin": null,
+"Pmax": null,
+"page": [
+"p412"
+]
+},
+"74-82-8 74-98-6": {
+"kij": 0.005,
+"T": null,
+"Tmin": 130.37,
+"Tmax": 213.71,
+"P": null,
+"Pmin": null,
+"Pmax": null,
+"page": [
+"p413"
+]
+},
+"74-82-8 75-28-5": {
+"kij": 0.0241,
+"T": null,
+"Tmin": null,
+"Tmax": null,
+"P": null,
+"Pmin": null,
+"Pmax": null,
+"page": [
+"p419"
+]
+},
+"74-82-8 7446-09-5": {
+"kij": 0.1279,
+"T": null,
+"Tmin": null,
+"Tmax": null,
+"P": null,
+"Pmin": null,
+"Pmax": null,
+"page": [
+"p421"
+]
+},
+"74-82-8 106-97-8": {
+"kij": 0.0215,
+"T": null,
+"Tmin": 294.0,
+"Tmax": 394.0,
+"P": null,
+"Pmin": null,
+"Pmax": null,
+"page": [
+"p422"
+]
+},
+"74-82-8 78-78-4": {
+"kij": -0.0078,
+"T": null,
+"Tmin": null,
+"Tmax": null,
+"P": null,
+"Pmin": null,
+"Pmax": null,
+"page": [
+"p436"
+]
+},
+"74-82-8 109-66-0": {
+"kij": 0.018,
+"T": null,
+"Tmin": 278.0,
+"Tmax": 461.0,
+"P": null,
+"Pmin": null,
+"Pmax": null,
+"page": [
+"p438"
+]
+},
+"74-82-8 110-54-3": {
+"kij": 0.0367,
+"T": null,
+"Tmin": 183.0,
+"Tmax": 423.0,
+"P": null,
+"Pmin": null,
+"Pmax": null,
+"page": [
+"p453"
+]
+},
+"71-43-2 74-82-8": {
+"kij": 0.08,
+"T": null,
+"Tmin": 421.0,
+"Tmax": 501.0,
+"P": null,
+"Pmin": null,
+"Pmax": null,
+"page": [
+"p463"
+]
+},
+"74-82-8 110-82-7": {
+"kij": 0.0333,
+"T": null,
+"Tmin": null,
+"Tmax": null,
+"P": null,
+"Pmin": null,
+"Pmax": null,
+"page": [
+"p466"
+]
+},
+"74-82-8 142-82-5": {
+"kij": 0.0367,
+"T": null,
+"Tmin": 200.0,
+"Tmax": 255.0,
+"P": null,
+"Pmin": null,
+"Pmax": null,
+"page": [
+"p469"
+]
+},
+"74-82-8 108-88-3": {
+"kij": 0.0978,
+"T": null,
+"Tmin": null,
+"Tmax": null,
+"P": null,
+"Pmin": null,
+"Pmax": null,
+"page": [
+"p474"
+]
+},
+"74-82-8 111-65-9": {
+"kij": 0.0448,
+"T": null,
+"Tmin": null,
+"Tmax": null,
+"P": null,
+"Pmin": null,
+"Pmax": null,
+"page": [
+"p477"
+]
+},
+"74-82-8 108-38-3": {
+"kij": 0.09,
+"T": null,
+"Tmin": null,
+"Tmax": null,
+"P": null,
+"Pmin": null,
+"Pmax": null,
+"page": [
+"p479"
+]
+},
+"74-82-8 111-84-2": {
+"kij": 0.0448,
+"T": null,
+"Tmin": null,
+"Tmax": null,
+"P": null,
+"Pmin": null,
+"Pmax": null,
+"page": [
+"p481"
+]
+},
+"74-82-8 124-18-5": {
+"kij": 0.0433,
+"T": null,
+"Tmin": 244.0,
+"Tmax": 277.0,
+"P": null,
+"Pmin": null,
+"Pmax": null,
+"page": [
+"p485"
+]
+},
+"74-82-8 108-39-4": {
+"kij": 0.1222,
+"T": null,
+"Tmin": null,
+"Tmax": null,
+"P": null,
+"Pmin": null,
+"Pmax": null,
+"page": [
+"p492"
+]
+},
+"74-82-8 119-64-2": {
+"kij": 0.1533,
+"T": null,
+"Tmin": null,
+"Tmax": null,
+"P": null,
+"Pmin": null,
+"Pmax": null,
+"page": [
+"p494"
+]
+},
+"74-82-8 90-12-0": {
+"kij": 0.123,
+"T": null,
+"Tmin": null,
+"Tmax": null,
+"P": null,
+"Pmin": null,
+"Pmax": null,
+"page": [
+"p497"
+]
+},
+"74-82-8 101-81-5": {
+"kij": 0.0826,
+"T": null,
+"Tmin": null,
+"Tmax": null,
+"P": null,
+"Pmin": null,
+"Pmax": null,
+"page": [
+"p499"
+]
+},
+"74-84-0 74-85-1": {
+"kij": 0.0081,
+"T": null,
+"Tmin": 200.0,
+"Tmax": 255.0,
+"P": null,
+"Pmin": 220000.00000000003,
+"Pmax": 2670000.0,
+"page": [
+"p503"
+]
+},
+"74-85-1 74-86-2": {
+"kij": 0.0596,
+"T": null,
+"Tmin": null,
+"Tmax": null,
+"P": null,
+"Pmin": null,
+"Pmax": null,
+"page": [
+"p512"
+]
+},
+"74-85-1 124-38-9": {
+"kij": 0.0556,
+"T": null,
+"Tmin": 232.0,
+"Tmax": 252.0,
+"P": null,
+"Pmin": 950000.0,
+"Pmax": 2620000.0,
+"page": [
+"p514"
+]
+},
+"74-85-1 106-97-8": {
+"kij": 0.1,
+"T": null,
+"Tmin": null,
+"Tmax": null,
+"P": null,
+"Pmin": null,
+"Pmax": null,
+"page": [
+"p518"
+]
+},
+"71-43-2 74-85-1": {
+"kij": 0.0241,
+"T": null,
+"Tmin": null,
+"Tmax": null,
+"P": null,
+"Pmin": null,
+"Pmax": null,
+"page": [
+"p520"
+]
+},
+"74-85-1 142-82-5": {
+"kij": 0.0144,
+"T": null,
+"Tmin": null,
+"Tmax": null,
+"P": null,
+"Pmin": null,
+"Pmax": null,
+"page": [
+"p522"
+]
+},
+"74-85-1 124-18-5": {
+"kij": 0.0248,
+"T": null,
+"Tmin": null,
+"Tmax": null,
+"P": null,
+"Pmin": null,
+"Pmax": null,
+"page": [
+"p524"
+]
+},
+"74-84-0 124-38-9": {
+"kij": 0.1359,
+"T": 250.0,
+"Tmin": null,
+"Tmax": null,
+"P": null,
+"Pmin": null,
+"Pmax": null,
+"page": [
+"p525"
+]
+},
+"74-84-0 7783-06-4": {
+"kij": 0.0852,
+"T": null,
+"Tmin": null,
+"Tmax": null,
+"P": null,
+"Pmin": 65000.0,
+"Pmax": 3050000.0,
+"page": [
+"p533"
+]
+},
+"74-84-0 115-07-1": {
+"kij": 0.0026,
+"T": null,
+"Tmin": null,
+"Tmax": null,
+"P": null,
+"Pmin": null,
+"Pmax": null,
+"page": [
+"p537"
+]
+},
+"74-84-0 74-98-6": {
+"kij": -0.0022,
+"T": null,
+"Tmin": null,
+"Tmax": null,
+"P": null,
+"Pmin": null,
+"Pmax": null,
+"page": [
+"p539"
+]
+},
+"74-84-0 75-28-5": {
+"kij": -0.01,
+"T": null,
+"Tmin": null,
+"Tmax": null,
+"P": null,
+"Pmin": null,
+"Pmax": null,
+"page": [
+"p542"
+]
+},
+"74-84-0 106-97-8": {
+"kij": 0.0052,
+"T": null,
+"Tmin": 229.0,
+"Tmax": 361.0,
+"P": null,
+"Pmin": 690000.0,
+"Pmax": 5790000.0,
+"page": [
+"p544"
+]
+},
+"60-29-7 74-84-0": {
+"kij": 0.0141,
+"T": null,
+"Tmin": null,
+"Tmax": null,
+"P": null,
+"Pmin": null,
+"Pmax": null,
+"page": [
+"p548"
+]
+},
+"74-84-0 109-66-0": {
+"kij": 0.0056,
+"T": null,
+"Tmin": null,
+"Tmax": null,
+"P": null,
+"Pmin": null,
+"Pmax": null,
+"page": [
+"p550"
+]
+},
+"67-64-1 74-84-0": {
+"kij": 0.1301,
+"T": null,
+"Tmin": null,
+"Tmax": null,
+"P": null,
+"Pmin": null,
+"Pmax": null,
+"page": [
+"p552"
+]
+},
+"74-84-0 79-20-9": {
+"kij": 0.1156,
+"T": null,
+"Tmin": null,
+"Tmax": null,
+"P": null,
+"Pmin": null,
+"Pmax": null,
+"page": [
+"p554"
+]
+},
+"67-56-1 74-84-0": {
+"kij": 0.0275,
+"T": null,
+"Tmin": null,
+"Tmax": null,
+"P": null,
+"Pmin": null,
+"Pmax": null,
+"page": [
+"p555"
+]
+},
+"74-84-0 110-54-3": {
+"kij": -0.0433,
+"T": null,
+"Tmin": 338.7,
+"Tmax": 449.8,
+"P": null,
+"Pmin": null,
+"Pmax": null,
+"page": [
+"p557"
+]
+},
+"71-43-2 74-84-0": {
+"kij": 0.0278,
+"T": null,
+"Tmin": 273.0,
+"Tmax": 553.0,
+"P": null,
+"Pmin": null,
+"Pmax": null,
+"page": [
+"p561"
+]
+},
+"74-84-0 110-82-7": {
+"kij": 0.0122,
+"T": null,
+"Tmin": null,
+"Tmax": null,
+"P": null,
+"Pmin": null,
+"Pmax": null,
+"page": [
+"p565"
+]
+},
+"74-84-0 142-82-5": {
+"kij": 0.0041,
+"T": null,
+"Tmin": null,
+"Tmax": null,
+"P": null,
+"Pmin": 689000.0,
+"Pmax": 8618600.0,
+"page": [
+"p567"
+]
+},
+"74-84-0 111-65-9": {
+"kij": 0.017,
+"T": null,
+"Tmin": null,
+"Tmax": null,
+"P": null,
+"Pmin": null,
+"Pmax": null,
+"page": [
+"p570"
+]
+},
+"74-84-0 124-18-5": {
+"kij": 0.0152,
+"T": null,
+"Tmin": null,
+"Tmax": null,
+"P": null,
+"Pmin": null,
+"Pmax": null,
+"page": [
+"p572"
+]
+},
+"124-38-9 10024-97-2": {
+"kij": 0.0022,
+"T": null,
+"Tmin": null,
+"Tmax": null,
+"P": null,
+"Pmin": null,
+"Pmax": null,
+"page": [
+"p575"
+]
+},
+"74-86-2 115-07-1": {
+"kij": -0.42,
+"T": null,
+"Tmin": null,
+"Tmax": null,
+"P": null,
+"Pmin": null,
+"Pmax": null,
+"page": [
+"p576"
+]
+},
+"75-46-7 75-72-9": {
+"kij": 0.103,
+"T": null,
+"Tmin": null,
+"Tmax": null,
+"P": null,
+"Pmin": null,
+"Pmax": null,
+"page": [
+"p577"
+]
+},
+"75-71-8 75-72-9": {
+"kij": 0.0311,
+"T": null,
+"Tmin": null,
+"Tmax": null,
+"P": null,
+"Pmin": null,
+"Pmax": null,
+"page": [
+"p579"
+]
+},
+"124-38-9 7783-06-4": {
+"kij": 0.0989,
+"T": null,
+"Tmin": 225.0,
+"Tmax": 363.0,
+"P": null,
+"Pmin": null,
+"Pmax": null,
+"page": [
+"p581"
+]
+},
+"75-10-5 124-38-9": {
+"kij": 0.0144,
+"T": null,
+"Tmin": null,
+"Tmax": null,
+"P": null,
+"Pmin": null,
+"Pmax": null,
+"page": [
+"p585"
+]
+},
+"115-07-1 124-38-9": {
+"kij": 0.0944,
+"T": null,
+"Tmin": null,
+"Tmax": null,
+"P": null,
+"Pmin": null,
+"Pmax": null,
+"page": [
+"p587"
+]
+},
+"74-98-6 124-38-9": {
+"kij": 0.1389,
+"T": null,
+"Tmin": 277.59,
+"Tmax": 344.26,
+"P": null,
+"Pmin": null,
+"Pmax": null,
+"page": [
+"p589"
+]
+},
+"75-28-5 124-38-9": {
+"kij": 0.143,
+"T": null,
+"Tmin": 310.93,
+"Tmax": 394.26,
+"P": null,
+"Pmin": null,
+"Pmax": null,
+"page": [
+"p601"
+]
+},
+"106-98-9 124-38-9": {
+"kij": 0.0596,
+"T": null,
+"Tmin": null,
+"Tmax": null,
+"P": null,
+"Pmin": null,
+"Pmax": null,
+"page": [
+"p605"
+]
+},
+"106-97-8 124-38-9": {
+"kij": 0.1444,
+"T": null,
+"Tmin": 310.93,
+"Tmax": 410.93,
+"P": null,
+"Pmin": null,
+"Pmax": null,
+"page": [
+"p607"
+]
+},
+"78-78-4 124-38-9": {
+"kij": 0.1307,
+"T": null,
+"Tmin": null,
+"Tmax": null,
+"P": null,
+"Pmin": null,
+"Pmax": null,
+"page": [
+"p612"
+]
+},
+"60-29-7 124-38-9": {
+"kij": 0.0498,
+"T": null,
+"Tmin": null,
+"Tmax": null,
+"P": null,
+"Pmin": null,
+"Pmax": null,
+"page": [
+"p614"
+]
+},
+"109-66-0 124-38-9": {
+"kij": -0.0078,
+"T": null,
+"Tmin": null,
+"Tmax": null,
+"P": null,
+"Pmin": 4133000.0,
+"Pmax": 8279000.000000001,
+"page": [
+"p616"
+]
+},
+"79-20-9 124-38-9": {
+"kij": -0.0567,
+"T": null,
+"Tmin": null,
+"Tmax": null,
+"P": null,
+"Pmin": null,
+"Pmax": null,
+"page": [
+"p619"
+]
+},
+"67-56-1 124-38-9": {
+"kij": 0.0141,
+"T": null,
+"Tmin": 213.0,
+"Tmax": 247.0,
+"P": null,
+"Pmin": null,
+"Pmax": null,
+"page": [
+"p621"
+]
+},
+"110-54-3 124-38-9": {
+"kij": 0.1178,
+"T": null,
+"Tmin": null,
+"Tmax": null,
+"P": null,
+"Pmin": null,
+"Pmax": null,
+"page": [
+"p625"
+]
+},
+"71-43-2 124-38-9": {
+"kij": 0.0767,
+"T": null,
+"Tmin": null,
+"Tmax": null,
+"P": null,
+"Pmin": null,
+"Pmax": null,
+"page": [
+"p627"
+]
+},
+"110-82-7 124-38-9": {
+"kij": 0.1289,
+"T": null,
+"Tmin": null,
+"Tmax": null,
+"P": null,
+"Pmin": null,
+"Pmax": null,
+"page": [
+"p629"
+]
+},
+"124-38-9 142-82-5": {
+"kij": 0.11,
+"T": null,
+"Tmin": null,
+"Tmax": null,
+"P": null,
+"Pmin": null,
+"Pmax": null,
+"page": [
+"p631"
+]
+},
+"124-38-9 7732-18-5": {
+"kij": 0.0578,
+"T": null,
+"Tmin": 523.0,
+"Tmax": 623.0,
+"P": null,
+"Pmin": null,
+"Pmax": null,
+"page": [
+"p633"
+]
+},
+"108-88-3 124-38-9": {
+"kij": 0.113,
+"T": null,
+"Tmin": null,
+"Tmax": null,
+"P": null,
+"Pmin": null,
+"Pmax": null,
+"page": [
+"p636"
+]
+},
+"124-18-5 124-38-9": {
+"kij": 0.1304,
+"T": null,
+"Tmin": null,
+"Tmax": null,
+"P": null,
+"Pmin": null,
+"Pmax": null,
+"page": [
+"p638"
+]
+},
+"104-51-8 124-38-9": {
+"kij": 0.1189,
+"T": null,
+"Tmin": null,
+"Tmax": null,
+"P": null,
+"Pmin": null,
+"Pmax": null,
+"page": [
+"p641"
+]
+},
+"74-98-6 7783-06-4": {
+"kij": 0.0319,
+"T": null,
+"Tmin": null,
+"Tmax": null,
+"P": null,
+"Pmin": 2758000.0,
+"Pmax": 4144000.0,
+"page": [
+"p643"
+]
+},
+"75-28-5 7783-06-4": {
+"kij": 0.0511,
+"T": null,
+"Tmin": null,
+"Tmax": null,
+"P": null,
+"Pmin": null,
+"Pmax": null,
+"page": [
+"p645"
+]
+},
+"109-66-0 7783-06-4": {
+"kij": 0.0689,
+"T": null,
+"Tmin": null,
+"Tmax": null,
+"P": null,
+"Pmin": null,
+"Pmax": null,
+"page": [
+"p647"
+]
+},
+"7732-18-5 7783-06-4": {
+"kij": 0.0074,
+"T": null,
+"Tmin": 303.0,
+"Tmax": 443.0,
+"P": null,
+"Pmin": null,
+"Pmax": null,
+"page": [
+"p648"
+]
+},
+"124-18-5 7783-06-4": {
+"kij": 0.0452,
+"T": null,
+"Tmin": null,
+"Tmax": null,
+"P": null,
+"Pmin": null,
+"Pmax": null,
+"page": [
+"p652"
+]
+},
+"74-98-6 115-07-1": {
+"kij": 0.0144,
+"T": null,
+"Tmin": 223.75,
+"Tmax": 239.35,
+"P": null,
+"Pmin": 72400.0,
+"Pmax": 183300.0,
+"page": [
+"p654"
+]
+},
+"75-28-5 115-07-1": {
+"kij": -0.0144,
+"T": null,
+"Tmin": null,
+"Tmax": null,
+"P": null,
+"Pmin": null,
+"Pmax": null,
+"page": [
+"p660"
+]
+},
+"106-98-9 115-07-1": {
+"kij": -0.0037,
+"T": null,
+"Tmin": null,
+"Tmax": null,
+"P": null,
+"Pmin": null,
+"Pmax": null,
+"page": [
+"p661"
+]
+},
+"74-98-6 75-28-5": {
+"kij": -0.01,
+"T": null,
+"Tmin": null,
+"Tmax": null,
+"P": null,
+"Pmin": null,
+"Pmax": null,
+"page": [
+"p663"
+]
+},
+"74-98-6 106-97-8": {
+"kij": 0.0,
+"T": null,
+"Tmin": null,
+"Tmax": null,
+"P": null,
+"Pmin": null,
+"Pmax": null,
+"page": [
+"p666"
+]
+},
+"74-98-6 78-78-4": {
+"kij": 0.0078,
+"T": null,
+"Tmin": null,
+"Tmax": null,
+"P": null,
+"Pmin": null,
+"Pmax": null,
+"page": [
+"p668"
+]
+},
+"74-98-6 109-66-0": {
+"kij": 0.0233,
+"T": null,
+"Tmin": null,
+"Tmax": null,
+"P": null,
+"Pmin": null,
+"Pmax": null,
+"page": [
+"p671"
+]
+},
+"74-98-6 110-54-3": {
+"kij": -0.0022,
+"T": null,
+"Tmin": null,
+"Tmax": null,
+"P": null,
+"Pmin": null,
+"Pmax": null,
+"page": [
+"p674"
+]
+},
+"64-17-5 74-98-6": {
+"kij": 0.0256,
+"T": null,
+"Tmin": null,
+"Tmax": null,
+"P": null,
+"Pmin": null,
+"Pmax": null,
+"page": [
+"p676"
+]
+},
+"71-43-2 74-98-6": {
+"kij": 0.02,
+"T": null,
+"Tmin": null,
+"Tmax": null,
+"P": null,
+"Pmin": null,
+"Pmax": null,
+"page": [
+"p679"
+]
+},
+"74-98-6 142-82-5": {
+"kij": 0.0044,
+"T": null,
+"Tmin": null,
+"Tmax": null,
+"P": null,
+"Pmin": null,
+"Pmax": null,
+"page": [
+"p681"
+]
+},
+"74-98-6 111-65-9": {
+"kij": 0.0074,
+"T": null,
+"Tmin": null,
+"Tmax": null,
+"P": null,
+"Pmin": null,
+"Pmax": null,
+"page": [
+"p683"
+]
+},
+"74-98-6 124-18-5": {
+"kij": 0.0,
+"T": null,
+"Tmin": null,
+"Tmax": null,
+"P": null,
+"Pmin": null,
+"Pmax": null,
+"page": [
+"p686"
+]
+},
+"75-45-6 76-15-3": {
+"kij": 0.0885,
+"T": null,
+"Tmin": null,
+"Tmax": null,
+"P": null,
+"Pmin": null,
+"Pmax": null,
+"page": [
+"p688"
+]
+},
+"75-45-6 75-71-8": {
+"kij": 0.0544,
+"T": null,
+"Tmin": null,
+"Tmax": null,
+"P": null,
+"Pmin": null,
+"Pmax": null,
+"page": [
+"p689"
+]
+},
+"7664-41-7 7732-18-5": {
+"kij": -0.27,
+"T": null,
+"Tmin": 333.15,
+"Tmax": 420.15,
+"P": null,
+"Pmin": null,
+"Pmax": null,
+"page": [
+"p690"
+]
+},
+"75-28-5 106-97-8": {
+"kij": 0.0011,
+"T": null,
+"Tmin": null,
+"Tmax": null,
+"P": null,
+"Pmin": null,
+"Pmax": null,
+"page": [
+"p694"
+]
+},
+"71-43-2 7446-09-5": {
+"kij": 0.0093,
+"T": null,
+"Tmin": null,
+"Tmax": null,
+"P": null,
+"Pmin": null,
+"Pmax": null,
+"page": [
+"p696"
+]
+},
+"106-98-9 106-99-0": {
+"kij": -0.0044,
+"T": null,
+"Tmin": null,
+"Tmax": null,
+"P": null,
+"Pmin": null,
+"Pmax": null,
+"page": [
+"p697"
+]
+},
+"106-97-8 106-98-9": {
+"kij": -0.0056,
+"T": null,
+"Tmin": 311.0,
+"Tmax": 411.0,
+"P": null,
+"Pmin": 355000.0,
+"Pmax": 3489000.0,
+"page": [
+"p699"
+]
+},
+"106-97-8 106-99-0": {
+"kij": 0.0081,
+"T": null,
+"Tmin": null,
+"Tmax": null,
+"P": null,
+"Pmin": null,
+"Pmax": null,
+"page": [
+"p702"
+]
+},
+"106-97-8 109-66-0": {
+"kij": 0.0204,
+"T": null,
+"Tmin": null,
+"Tmax": null,
+"P": null,
+"Pmin": null,
+"Pmax": null,
+"page": [
+"p704"
+]
+},
+"106-97-8 110-54-3": {
+"kij": -0.0111,
+"T": null,
+"Tmin": null,
+"Tmax": null,
+"P": null,
+"Pmin": null,
+"Pmax": null,
+"page": [
+"p706"
+]
+},
+"106-97-8 142-82-5": {
+"kij": -0.0004,
+"T": null,
+"Tmin": null,
+"Tmax": null,
+"P": null,
+"Pmin": null,
+"Pmax": null,
+"page": [
+"p707"
+]
+},
+"106-97-8 111-65-9": {
+"kij": 0.0044,
+"T": null,
+"Tmin": null,
+"Tmax": null,
+"P": null,
+"Pmin": null,
+"Pmax": null,
+"page": [
+"p708"
+]
+},
+"106-97-8 124-18-5": {
+"kij": 0.0067,
+"T": null,
+"Tmin": null,
+"Tmax": null,
+"P": null,
+"Pmin": null,
+"Pmax": null,
+"page": [
+"p710"
+]
+},
+"71-43-2 109-66-0": {
+"kij": 0.0244,
+"T": null,
+"Tmin": 255.0,
+"Tmax": 289.0,
+"P": null,
+"Pmin": 6900.000000000001,
+"Pmax": 46900.0,
+"page": [
+"p716"
+]
+},
+"109-66-0 110-82-7": {
+"kij": 0.0041,
+"T": null,
+"Tmin": null,
+"Tmax": null,
+"P": null,
+"Pmin": null,
+"Pmax": null,
+"page": [
+"p719"
+]
+},
+"109-66-0 142-82-5": {
+"kij": 0.0019,
+"T": null,
+"Tmin": null,
+"Tmax": null,
+"P": null,
+"Pmin": null,
+"Pmax": null,
+"page": [
+"p720"
+]
+},
+"109-66-0 111-65-9": {
+"kij": -0.0022,
+"T": null,
+"Tmin": null,
+"Tmax": null,
+"P": null,
+"Pmin": null,
+"Pmax": null,
+"page": [
+"p721"
+]
+},
+"71-41-0 75-83-2": {
+"kij": 0.0446,
+"T": null,
+"Tmin": null,
+"Tmax": null,
+"P": null,
+"Pmin": null,
+"Pmax": null,
+"page": [
+"p722"
+]
+},
+"71-41-0 79-29-8": {
+"kij": 0.047,
+"T": null,
+"Tmin": null,
+"Tmax": null,
+"P": null,
+"Pmin": null,
+"Pmax": null,
+"page": [
+"p724"
+]
+},
+"71-41-0 107-83-5": {
+"kij": 0.0463,
+"T": null,
+"Tmin": null,
+"Tmax": null,
+"P": null,
+"Pmin": null,
+"Pmax": null,
+"page": [
+"p726"
+]
+},
+"71-41-0 96-14-0": {
+"kij": 0.0489,
+"T": null,
+"Tmin": null,
+"Tmax": null,
+"P": null,
+"Pmin": null,
+"Pmax": null,
+"page": [
+"p728"
+]
+},
+"67-56-1 7732-18-5": {
+"kij": -0.0789,
+"T": null,
+"Tmin": null,
+"Tmax": null,
+"P": null,
+"Pmin": null,
+"Pmax": null,
+"page": [
+"p730"
+]
+},
+"71-43-2 110-54-3": {
+"kij": 0.0189,
+"T": 298.15,
+"Tmin": null,
+"Tmax": null,
+"P": null,
+"Pmin": null,
+"Pmax": null,
+"page": [
+"p732"
+]
+},
+"110-54-3 110-82-7": {
+"kij": -0.0011,
+"T": null,
+"Tmin": null,
+"Tmax": null,
+"P": 101400.0,
+"Pmin": null,
+"Pmax": null,
+"page": [
+"p742"
+]
+},
+"67-63-0 110-54-3": {
+"kij": 0.0911,
+"T": null,
+"Tmin": null,
+"Tmax": null,
+"P": null,
+"Pmin": null,
+"Pmax": null,
+"page": [
+"p744"
+]
+},
+"110-54-3 142-82-5": {
+"kij": -0.0011,
+"T": null,
+"Tmin": null,
+"Tmax": null,
+"P": null,
+"Pmin": null,
+"Pmax": null,
+"page": [
+"p745"
+]
+},
+"110-54-3 123-51-3": {
+"kij": 0.0496,
+"T": null,
+"Tmin": null,
+"Tmax": null,
+"P": null,
+"Pmin": null,
+"Pmax": null,
+"page": [
+"p747"
+]
+},
+"71-41-0 110-54-3": {
+"kij": 0.047,
+"T": null,
+"Tmin": null,
+"Tmax": null,
+"P": null,
+"Pmin": null,
+"Pmax": null,
+"page": [
+"p749"
+]
+},
+"71-43-2 110-82-7": {
+"kij": 0.0322,
+"T": null,
+"Tmin": null,
+"Tmax": null,
+"P": null,
+"Pmin": null,
+"Pmax": null,
+"page": [
+"p752"
+]
+},
+"71-43-2 142-82-5": {
+"kij": 0.0089,
+"T": 333.15,
+"Tmin": null,
+"Tmax": null,
+"P": null,
+"Pmin": 31600.0,
+"Pmax": 51800.0,
+"page": [
+"p753"
+]
+},
+"71-43-2 540-84-1": {
+"kij": 0.0048,
+"T": null,
+"Tmin": null,
+"Tmax": null,
+"P": null,
+"Pmin": null,
+"Pmax": null,
+"page": [
+"p757"
+]
+},
+"71-43-2 111-65-9": {
+"kij": 0.007,
+"T": null,
+"Tmin": null,
+"Tmax": null,
+"P": null,
+"Pmin": null,
+"Pmax": null,
+"page": [
+"p758"
+]
+},
+"110-82-7 110-83-8": {
+"kij": 0.0044,
+"T": null,
+"Tmin": null,
+"Tmax": null,
+"P": null,
+"Pmin": null,
+"Pmax": null,
+"page": [
+"p761"
+]
+},
+"107-06-2 110-82-7": {
+"kij": 0.0793,
+"T": null,
+"Tmin": null,
+"Tmax": null,
+"P": null,
+"Pmin": null,
+"Pmax": null,
+"page": [
+"p762"
+]
+},
+"108-94-1 110-82-7": {
+"kij": 0.07,
+"T": null,
+"Tmin": null,
+"Tmax": null,
+"P": null,
+"Pmin": null,
+"Pmax": null,
+"page": [
+"p763"
+]
+},
+"107-06-2 110-83-8": {
+"kij": 0.0478,
+"T": null,
+"Tmin": null,
+"Tmax": null,
+"P": null,
+"Pmin": null,
+"Pmax": null,
+"page": [
+"p765"
+]
+},
+"142-82-5 540-84-1": {
+"kij": 0.0007,
+"T": null,
+"Tmin": null,
+"Tmax": null,
+"P": null,
+"Pmin": null,
+"Pmax": null,
+"page": [
+"p766"
+]
+},
+"107-87-9 142-82-5": {
+"kij": 0.074,
+"T": null,
+"Tmin": null,
+"Tmax": null,
+"P": null,
+"Pmin": null,
+"Pmax": null,
+"page": [
+"p767"
+]
+},
+"124-38-9 7782-44-7": {
+"kij": 0.106,
+"T": 273.0,
+"Tmin": null,
+"Tmax": null,
+"P": null,
+"Pmin": null,
+"Pmax": null,
+"page": []
+},
+"7732-18-5 7782-44-7": {
+"kij": -0.365,
+"T": 273.0,
+"Tmin": null,
+"Tmax": null,
+"P": null,
+"Pmin": null,
+"Pmax": null,
+"page": []
+},
+"74-82-8 7732-18-5": {
+"kij": -0.37,
+"T": 273.0,
+"Tmin": null,
+"Tmax": null,
+"P": null,
+"Pmin": null,
+"Pmax": null,
+"page": []
+},
+"74-84-0 7732-18-5": {
+"kij": 0.492,
+"T": null,
+"Tmin": null,
+"Tmax": null,
+"P": null,
+"Pmin": null,
+"Pmax": null,
+"page": []
+},
+"74-98-6 7732-18-5": {
+"kij": 0.5525,
+"T": null,
+"Tmin": null,
+"Tmax": null,
+"P": null,
+"Pmin": null,
+"Pmax": null,
+"page": []
+},
+"75-28-5 7732-18-5": {
+"kij": 0.5091,
+"T": null,
+"Tmin": null,
+"Tmax": null,
+"P": null,
+"Pmin": null,
+"Pmax": null,
+"page": []
+},
+"106-97-8 7732-18-5": {
+"kij": 0.5091,
+"T": null,
+"Tmin": null,
+"Tmax": null,
+"P": null,
+"Pmin": null,
+"Pmax": null,
+"page": []
+},
+"78-78-4 7732-18-5": {
+"kij": 0.5,
+"T": null,
+"Tmin": null,
+"Tmax": null,
+"P": null,
+"Pmin": null,
+"Pmax": null,
+"page": []
+},
+"109-66-0 7732-18-5": {
+"kij": 0.5,
+"T": null,
+"Tmin": null,
+"Tmax": null,
+"P": null,
+"Pmin": null,
+"Pmax": null,
+"page": []
+},
+"7727-37-9 7732-18-5": {
+"kij": 0.08,
+"T": null,
+"Tmin": null,
+"Tmax": null,
+"P": null,
+"Pmin": null,
+"Pmax": null,
+"page": []
+}
+},
+"metadata": {
+"symmetric": true,
+"source": "ChemSep 8.51 (DECHEMA)",
+"components": 2,
+"necessary keys": [
+"kij"
+],
+"P dependent": false,
+"missing": {
+"kij": 0
+},
+"type": "SRK kij",
+"T dependent": false
+}
+}

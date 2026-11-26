@@ -45,7 +45,7 @@ def get_eos_models():
         # Activity coefficient class, thermo EOS class, ChemSep interaction parameters
         (eq.PRActivityCoefficients, eos_mix.PRMIX, 'ChemSep PR'),
         (eq.PR78ActivityCoefficients, eos_mix.PR78MIX, 'ChemSep PR'),
-        (eq.SRKActivityCoefficients, eos_mix.SRKMIX, None),
+        (eq.SRKActivityCoefficients, eos_mix.SRKMIX, 'ChemSep SRK'),
     ]
 
 def get_eos_cases():
@@ -162,7 +162,7 @@ def test_eos_activity_coefficients():
             if chemsep_db is None:
                 kijs = None
             else:
-                kijs = IPDB.get_ip_asymmetric_matrix(chemsep_db, [i.CAS for i in chemicals], 'kij')
+                kijs = eq.get_kijs(chemsep_db, chemicals)
             liquid = CEOSLiquid(
                 EOS, dict(Tcs=[i.Tc for i in chemicals], Pcs=[i.Pc for i in chemicals],
                           omegas=[i.omega for i in chemicals], kijs=kijs),

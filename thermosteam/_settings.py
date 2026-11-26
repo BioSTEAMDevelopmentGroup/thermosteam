@@ -28,10 +28,6 @@ def raise_no_thermo_error():
     raise RuntimeError("no available 'Thermo' object; "
                        "use settings.set_thermo to set the default thermo object")
 
-def raise_no_flashpkg_error():
-    raise RuntimeError("no available 'FlashPackage' object; "
-                       "use settings.set_flashpkg to set the default flash package object")
-    
 # %%
     
 class ProcessSettings:
@@ -100,7 +96,6 @@ class ProcessSettings:
     """
     __slots__ = (
         '_thermo',
-        '_flashpkg',
         'ID_magic',
     )
     
@@ -216,70 +211,6 @@ class ProcessSettings:
             raise ValueError("chemicals must be a 'Mixture' object")
         return mixture
     
-    def get_default_flashpkg(self, flashpkg):
-        """
-        Warnings
-        --------
-        This method is not yet ready for users.
-        
-        """
-        if not flashpkg: flashpkg = self.get_flashpkg()
-        return flashpkg
-    
-    def get_flashpkg(self):
-        """
-        Warnings
-        --------
-        This method is not yet ready for users.
-        
-        """
-        try:
-            flashpkg = self._flashpkg
-        except AttributeError:
-            self._flashpkg = flashpkg = tmo.equilibrium.FlashPackage()
-        return flashpkg
-    
-    def get_default_flasher(self, flasher):
-        """
-        Warnings
-        --------
-        This method is not yet ready for users.
-        
-        """
-        if not flasher:
-            flashpkg = self.get_flashpkg()
-            return flashpkg.flahser()
-        return flasher
-    
-    def flasher(self, IDs=None, N_liquid=None, N_solid=None):
-        """
-        Warnings
-        --------
-        This method is not yet ready for users.
-        
-        """
-        return self.get_flashpkg().flasher(IDs, N_liquid, N_solid)
-    
-    def set_flashpkg(self, flashpkg):
-        """
-        Set the default FlashPackage object. 
-        
-        Parameters
-        ----------
-        flashpkg : FlashPackage
-            A FlashPackage object that predefines algorithms for equilibrium 
-            calculations.
-
-        Warnings
-        --------
-        This method is not yet ready for users.
-        
-        """
-        if isinstance(flashpkg, tmo.equilibrium.FlashPackage):
-            self._flashpkg = flashpkg
-        else:
-            raise ValueError(f"flashpkg must be a FlashPackage object, not a '{type(flashpkg).__name__}'")
-
 #: 
 settings: ProcessSettings = object.__new__(ProcessSettings)
 

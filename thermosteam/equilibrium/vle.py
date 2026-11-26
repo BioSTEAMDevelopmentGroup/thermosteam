@@ -201,8 +201,8 @@ class VLE(Equilibrium, phases='lg'):
     >>> vle(S=S, T=363.88)
     >>> vle 
     VLE(imol=MolarFlowIndexer(
-            g=[('Water', 128.1), ('Ethanol', 26.45), ('Methanol', 33.6), ('Propanol', 0.8978), ('O2', 10)],
-            l=[('Water', 175.9), ('Ethanol', 3.555), ('Methanol', 6.399), ('Propanol', 0.1022), ('Glucose', 5)]),
+            g=[('Water', 128.1), ('Ethanol', 26.4), ('Methanol', 33.6), ('Propanol', 0.8978), ('O2', 10)],
+            l=[('Water', 175.9), ('Ethanol', 3.555), ('Methanol', 6.4), ('Propanol', 0.1022), ('Glucose', 5)]),
         thermal_condition=ThermalCondition(T=363.88, P=106564))
 
     The presence of a non-partitioning gaseous chemical will result in some

@@ -9,7 +9,7 @@
 """
 from .ideal import ideal
 import thermosteam as tmo
-from thermo.interaction_parameters import IPDB
+from .interaction_parameters import get_kijs
 from thermo import eos_mix
 import numpy as np
 
@@ -133,7 +133,7 @@ class GCEOSFugacityCoefficients(FugacityCoefficients):
                 kijs = None
             else:
                 try:
-                    kijs = IPDB.get_ip_asymmetric_matrix(self.chemsep_db, data.CASs, 'kij')
+                    kijs = get_kijs(self.chemsep_db, self.chemicals)
                 except:
                     kijs = None
             self._eos = eos = self.EOS(
@@ -169,5 +169,6 @@ for name in ('PRMIX', 'SRKMIX', 'PR78MIX', 'VDWMIX', 'PRSVMIX',
 
 dct['PRFugacityCoefficients'].chemsep_db = 'ChemSep PR'
 dct['PR78FugacityCoefficients'].chemsep_db = 'ChemSep PR'
+dct['SRKFugacityCoefficients'].chemsep_db = 'ChemSep SRK'
 __all__ = (*__all__, *clsnames, 'fugacity_coefficient_classes')
 del dct, clsnames

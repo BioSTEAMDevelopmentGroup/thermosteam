@@ -15,6 +15,7 @@
 __all__ = []
 
 from . import ideal
+from . import interaction_parameters
 from . import domain
 from . import activity_coefficients
 from . import poyinting_correction_factors
@@ -29,10 +30,10 @@ from . import lle
 from . import sle
 from . import vlle
 from . import plot_equilibrium
-from . import flash_package
 from . import tangential_plane_stability
 
 __all__ = (*ideal.__all__,
+           *interaction_parameters.__all__,
            *domain.__all__,
            *activity_coefficients.__all__,
            *poyinting_correction_factors.__all__,
@@ -47,10 +48,10 @@ __all__ = (*ideal.__all__,
            *lle.__all__,
            *sle.__all__,
            *plot_equilibrium.__all__,
-           *flash_package.__all__,
            *vlle.__all__)
 
 from .ideal import *
+from .interaction_parameters import *
 from .domain import *
 from .binary_phase_fraction import *
 from .activity_coefficients import *
@@ -65,6 +66,5 @@ from .vle import *
 from .lle import *
 from .sle import *
 from .plot_equilibrium import *
-from .flash_package import *
 from .vlle import *
 

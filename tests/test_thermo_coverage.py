@@ -197,15 +197,11 @@ def test_settings():
         assert settings.get_default_mixture(thermo.mixture) is thermo.mixture
         with pytest.raises(ValueError):
             settings.get_default_mixture(1)
-        assert settings.get_default_flashpkg(1) == 1
-        assert settings.get_default_flasher(1) == 1
         settings.set_thermo(['Water', 'Ethanol'], cache=True, ideal=True)
         assert isinstance(settings.thermo, tmo.IdealThermo)
         del settings._thermo
         with pytest.raises(RuntimeError):
             settings.thermo
-        with pytest.raises(RuntimeError):
-            tmo._settings.raise_no_flashpkg_error()
     finally:
         if original is None:
             if hasattr(settings, '_thermo'): del settings._thermo

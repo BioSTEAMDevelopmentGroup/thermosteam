@@ -13,7 +13,6 @@ import numpy as np
 from math import exp
 from fluids.constants import R
 from thermosteam import functional as fn
-from thermo.interaction_parameters import IPDB
 from numpy.typing import NDArray
 from thermo import eos_mix
 from .. import units_of_measure as thermo_units
@@ -900,7 +899,7 @@ class EOSMixture(Mixture):
                 kijs = None
             else:
                 try:
-                    kijs = IPDB.get_ip_asymmetric_matrix(self.chemsep_db, data.CASs, 'kij')
+                    kijs = tmo.equilibrium.get_kijs(self.chemsep_db, eos_chemicals)
                 except:
                     kijs = None
             if key == ():
@@ -1067,5 +1066,6 @@ for name in ('PRMIX', 'SRKMIX', 'PR78MIX', 'VDWMIX', 'PRSVMIX',
     mixture_classes.append(cls)
 
 dct['PRMixture'].chemsep_db = 'ChemSep PR'
+dct['SRKMixture'].chemsep_db = 'ChemSep SRK'
 __all__ = (*__all__, *clsnames, 'mixture_classes')
 del dct, clsnames

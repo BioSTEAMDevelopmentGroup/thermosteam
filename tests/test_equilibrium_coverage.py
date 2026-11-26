@@ -146,21 +146,6 @@ def test_NIST_activity_coefficients():
     assert (values > 1.).all() and (values < 3.).all()
     assert_allclose(gamma.activity_coefficients(x, 350.), values, rtol=1e-2)
 
-# %% Thermo-package constructors (flash package)
-
-def test_flash_package_constructors():
-    import thermo as tm
-    chemicals = tmo.Chemicals(['Water', 'Ethanol'], cache=True)
-    data = tmo.ChemicalData(chemicals)
-    for version in (0, 1, 2):
-        GE = tm.UNIFAC.from_data(data, version=version)
-        assert GE is not None
-    with pytest.raises(RuntimeError):
-        tm.UNIFAC.from_data(data, version=3)
-    assert tm.CEOSGas.from_data(data) is not None
-    assert tm.CEOSLiquid.from_data(data) is not None
-    assert tm.IdealGas.from_data(data) is not None
-
 # %% Tangent plane stability analysis
 
 def test_tangent_plane_stability_analysis():
@@ -720,7 +705,6 @@ if __name__ == '__main__':
     test_fugacities()
     test_activity_coefficients()
     test_NIST_activity_coefficients()
-    test_flash_package_constructors()
     test_tangent_plane_stability_analysis()
     test_edge_points_simplex()
     test_lle_tangential_plane_analysis()

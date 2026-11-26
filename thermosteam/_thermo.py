@@ -182,9 +182,9 @@ class Thermo:
         # Package selection and defaults
         if pkg is None: 
             # Original thermodynamic property package
-            mixture = IdealMixture.from_chemicals(chemicals)
-            Gamma = eq.ModifiedUNIFACActivityCoefficients
-            Phi = eq.IdealFugacityCoefficients
+            if mixture is None: mixture = IdealMixture.from_chemicals(chemicals)
+            if Gamma is None: Gamma = eq.ModifiedUNIFACActivityCoefficients
+            if Phi is None: Phi = eq.IdealFugacityCoefficients
         else:
             pkg = name(pkg)
             if '|' in pkg:

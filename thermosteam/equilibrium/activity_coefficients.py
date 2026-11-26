@@ -22,7 +22,7 @@ from .unifac import DOUFSG, UFSG, NISTUFSG, PSRKSG
 from numba import njit, prange
 from .ideal import ideal
 import thermosteam as tmo
-from thermo.interaction_parameters import IPDB
+from .interaction_parameters import get_kijs
 from fluids.constants import R, R_inv
 from thermo import eos_mix
 import numpy as np
@@ -55,21 +55,20 @@ def chemgroup_array(chemgroups, index):
     return array
 
 @njit(cache=True)
-def group_activity_coefficients(x, chemgroups, loggammacs,
-                                Qs, psis, cQfs, gpsis):
-    weighted_counts = chemgroups.transpose() @ x
-    Q_fractions = Qs * weighted_counts 
+def group_activity_coefficients(x, chem_Qs, loggammacs, psis, cQfs, gpsis):
+    # chem_Qs[i, k] = Q_k * nu_ki
+    Q_fractions = x @ chem_Qs
     Q_fractions /= Q_fractions.sum()
     Q_psis = psis * Q_fractions
     sum1 = Q_psis.sum(1)
     sum2 = -(psis.transpose() / sum1) @ Q_fractions
-    loggamma_groups = Qs * (1. - np.log(sum1) + sum2)
+    loggamma_groups = 1. - np.log(sum1) + sum2
     sum1 = cQfs @ gpsis.transpose()
     sum1 = np.where(sum1==0, 1., sum1)
     fracs = - cQfs / sum1
     sum2 = fracs @ gpsis
-    chem_loggamma_groups = Qs*(1. - np.log(sum1) + sum2)
-    loggammars = ((loggamma_groups - chem_loggamma_groups) * chemgroups).sum(1)
+    chem_loggamma_groups = 1. - np.log(sum1) + sum2
+    loggammars = ((loggamma_groups - chem_loggamma_groups) * chem_Qs).sum(1)
     return np.exp(loggammacs + loggammars)
 
 def get_interaction(all_interactions, i, j, no_interaction):
@@ -79,10 +78,6 @@ def get_interaction(all_interactions, i, j, no_interaction):
         return all_interactions[i][j]
     except:
         return no_interaction
-
-def as_abc(interaction):
-    if isinstance(interaction, (int, float)): return (interaction, 0., 0.)
-    return interaction
 
 def get_chemgroups(chemicals, field):
     getfield = getattr
@@ -110,10 +105,10 @@ def loggammacs_UNIFAC(qs, rs, x):
     return 1. - Vs + np.log(Vs) - 5.*qs*(1. - Vs_over_Fs + np.log(Vs_over_Fs))
 
 @njit(cache=True)
-def loggammacs_modified_UNIFAC(qs, rs, x):
+def loggammacs_modified_UNIFAC(qs, rs, rs_p, x):
+    # rs_p = rs**0.75
     r_net = np.dot(x, rs)
     q_net = np.dot(x, qs)
-    rs_p = rs**0.75
     r_pnet = np.dot(rs_p, x)
     Vs = rs/r_net
     Fs = qs/q_net
@@ -146,9 +141,32 @@ def fill_group_psis(group_psis, psis, group_mask):
                 group_psis[i, j] = 0.
 
 @njit(cache=True)
-def gamma_UNIFAC(x, T, interactions, 
-                 group_psis, group_mask, qs, rs, Qs,
-                 chemgroups, chem_Qfractions, index, P=None):
+def gamma_UNIFAC(x, T, interactions,
+                 group_psis, group_mask, qs, rs,
+                 chem_Qs, chem_Qfractions, index, P=None):
+    N_chemicals = index.size
+    gamma = np.ones(x.size)
+    if N_chemicals > 1:
+        x_sub = np.ones(N_chemicals)
+        for i, j in enumerate(index): x_sub[i] = x[j]
+        xsum = x_sub.sum()
+        if xsum != 0:
+            x_sub /= xsum
+            psis = psi_UNIFAC(T, interactions)
+            fill_group_psis(group_psis, psis, group_mask)
+            gamma_sub = group_activity_coefficients(x_sub, chem_Qs,
+                                        loggammacs_UNIFAC(qs, rs, x_sub),
+                                        psis, chem_Qfractions, group_psis)
+        for i, j in enumerate(index):
+            value = gamma_sub[i]
+            if np.isnan(value): continue
+            gamma[j] = value
+    return gamma
+
+@njit(cache=True)
+def gamma_PSRK(x, T, interactions,
+               group_psis, group_mask, qs, rs,
+               chem_Qs, chem_Qfractions, index, P=None):
     N_chemicals = index.size
     gamma = np.ones(x.size)
     if N_chemicals > 1:
@@ -160,21 +178,19 @@ def gamma_UNIFAC(x, T, interactions,
             x_sub /= xsum
             psis = psi_abc(T, interactions)
             fill_group_psis(group_psis, psis, group_mask)
-            gamma_sub = group_activity_coefficients(x_sub, chemgroups,
+            gamma_sub = group_activity_coefficients(x_sub, chem_Qs,
                                         loggammacs_UNIFAC(qs, rs, x_sub),
-                                        Qs, psis,
-                                        chem_Qfractions,
-                                        group_psis)
-        for i, j in enumerate(index): 
+                                        psis, chem_Qfractions, group_psis)
+        for i, j in enumerate(index):
             value = gamma_sub[i]
             if np.isnan(value): continue
             gamma[j] = value
     return gamma
 
 @njit(cache=True)
-def gamma_modified_UNIFAC(x, T, interactions, 
-                   group_psis, group_mask, qs, rs, Qs,
-                   chemgroups, chem_Qfractions, index, P=None):
+def gamma_modified_UNIFAC(x, T, interactions,
+                          group_psis, group_mask, qs, rs,
+                          chem_Qs, chem_Qfractions, index, rs_p, P=None):
     N_chemicals = index.size
     gamma = np.ones(x.size)
     if N_chemicals > 1:
@@ -187,11 +203,9 @@ def gamma_modified_UNIFAC(x, T, interactions,
             psis = psi_abc(T, interactions)
             fill_group_psis(group_psis, psis, group_mask)
             gamma_sub = group_activity_coefficients(
-                x_sub, chemgroups,
-                loggammacs_modified_UNIFAC(qs, rs, x_sub),
-                Qs, psis,
-                chem_Qfractions,
-                group_psis
+                x_sub, chem_Qs,
+                loggammacs_modified_UNIFAC(qs, rs, rs_p, x_sub),
+                psis, chem_Qfractions, group_psis
             )
         for i, j in enumerate(index):
             value = gamma_sub[i]
@@ -200,6 +214,15 @@ def gamma_modified_UNIFAC(x, T, interactions,
     return gamma
 
 # %% Analytical derivatives of group activity coefficients
+
+@njit(cache=True)
+def psi_UNIFAC_derivatives(T, a):
+    # psi = exp(-a/T)
+    # dpsi/dT = psi * g, where g = a/T^2
+    # d2psi/dT2 = psi * (g^2 - 2a/T^3)
+    psis = np.exp(-a / T)
+    g = a / (T * T)
+    return psis, psis * g, psis * (g * g - 2. * a / (T * T * T))
 
 @njit(cache=True)
 def psi_abc_derivatives(T, abc):
@@ -242,14 +265,13 @@ def loggamma_groups_derivatives(thetas, psis, dpsis, d2psis):
 
 @njit(cache=True)
 def group_activity_coefficients_derivatives(
-        x, chemgroups, loggammacs, Qs, psis, dpsis, d2psis,
+        x, chem_Qs, loggammacs, psis, dpsis, d2psis,
         cQfs, gpsis, dgpsis, d2gpsis
     ):
     # Return activity coefficients and the first and second temperature
     # derivatives of their logarithm. The combinatorial part (loggammacs)
     # is independent of temperature.
-    weighted_counts = chemgroups.transpose() @ x
-    Q_fractions = Qs * weighted_counts
+    Q_fractions = x @ chem_Qs
     Q_fractions /= Q_fractions.sum()
     thetas = Q_fractions.reshape((1, Q_fractions.size))
     mix = loggamma_groups_derivatives(
@@ -258,16 +280,51 @@ def group_activity_coefficients_derivatives(
     pure = loggamma_groups_derivatives(
         cQfs, gpsis.transpose(), dgpsis.transpose(), d2gpsis.transpose()
     )
-    loggammars = ((Qs * (mix[0] - pure[0])) * chemgroups).sum(1)
-    dloggammars = ((Qs * (mix[1] - pure[1])) * chemgroups).sum(1)
-    d2loggammars = ((Qs * (mix[2] - pure[2])) * chemgroups).sum(1)
+    loggammars = ((mix[0] - pure[0]) * chem_Qs).sum(1)
+    dloggammars = ((mix[1] - pure[1]) * chem_Qs).sum(1)
+    d2loggammars = ((mix[2] - pure[2]) * chem_Qs).sum(1)
     return np.exp(loggammacs + loggammars), dloggammars, d2loggammars
 
 @njit(cache=True)
-def group_gamma_derivative(x, T, interactions, group_mask, qs, rs, Qs,
-                           chemgroups, chem_Qfractions, index, modified, order):
-    # Return first (order=1) or second (order=2) temperature derivative of
-    # activity coefficients
+def group_gamma_derivative(dgamma, x_sub, psis, dpsis, d2psis, group_mask,
+                           chem_Qs, chem_Qfractions, index, loggammacs, order):
+    # Set first (order=1) or second (order=2) temperature derivative of
+    # activity coefficients given the normalized composition of chemicals
+    # with groups (x_sub) and the combinatorial part (loggammacs)
+    gamma, dlngamma, d2lngamma = group_activity_coefficients_derivatives(
+        x_sub, chem_Qs, loggammacs, psis, dpsis, d2psis,
+        chem_Qfractions,
+        np.where(group_mask, psis, 0.),
+        np.where(group_mask, dpsis, 0.),
+        np.where(group_mask, d2psis, 0.),
+    )
+    if order == 1:
+        dgamma_sub = gamma * dlngamma
+    else:
+        dgamma_sub = gamma * (d2lngamma + dlngamma * dlngamma)
+    for i, j in enumerate(index):
+        value = dgamma_sub[i]
+        if not np.isnan(value): dgamma[j] = value
+
+@njit(cache=True)
+def gamma_UNIFAC_derivative(x, T, interactions, group_mask, qs, rs,
+                            chem_Qs, chem_Qfractions, index, order):
+    dgamma = np.zeros(x.size)
+    if index.size > 1:
+        x_sub = x[index]
+        xsum = x_sub.sum()
+        if xsum:
+            x_sub = x_sub / xsum
+            psis, dpsis, d2psis = psi_UNIFAC_derivatives(T, interactions)
+            group_gamma_derivative(
+                dgamma, x_sub, psis, dpsis, d2psis, group_mask, chem_Qs,
+                chem_Qfractions, index, loggammacs_UNIFAC(qs, rs, x_sub), order
+            )
+    return dgamma
+
+@njit(cache=True)
+def gamma_PSRK_derivative(x, T, interactions, group_mask, qs, rs,
+                          chem_Qs, chem_Qfractions, index, order):
     dgamma = np.zeros(x.size)
     if index.size > 1:
         x_sub = x[index]
@@ -275,58 +332,68 @@ def group_gamma_derivative(x, T, interactions, group_mask, qs, rs, Qs,
         if xsum:
             x_sub = x_sub / xsum
             psis, dpsis, d2psis = psi_abc_derivatives(T, interactions)
-            if modified:
-                loggammacs = loggammacs_modified_UNIFAC(qs, rs, x_sub)
-            else:
-                loggammacs = loggammacs_UNIFAC(qs, rs, x_sub)
-            gamma, dlngamma, d2lngamma = group_activity_coefficients_derivatives(
-                x_sub, chemgroups, loggammacs, Qs, psis, dpsis, d2psis,
-                chem_Qfractions,
-                np.where(group_mask, psis, 0.),
-                np.where(group_mask, dpsis, 0.),
-                np.where(group_mask, d2psis, 0.),
+            group_gamma_derivative(
+                dgamma, x_sub, psis, dpsis, d2psis, group_mask, chem_Qs,
+                chem_Qfractions, index, loggammacs_UNIFAC(qs, rs, x_sub), order
             )
-            if order == 1:
-                dgamma_sub = gamma * dlngamma
-            else:
-                dgamma_sub = gamma * (d2lngamma + dlngamma * dlngamma)
-            for i, j in enumerate(index):
-                value = dgamma_sub[i]
-                if not np.isnan(value): dgamma[j] = value
     return dgamma
 
 @njit(cache=True)
-def gamma_UNIFAC_der_T(x, T, interactions,
-                       group_psis, group_mask, qs, rs, Qs,
-                       chemgroups, chem_Qfractions, index, P=None):
-    return group_gamma_derivative(x, T, interactions, group_mask, qs, rs, Qs,
-                                  chemgroups, chem_Qfractions, index, False, 1)
+def gamma_modified_UNIFAC_derivative(x, T, interactions, group_mask, qs, rs,
+                                     chem_Qs, chem_Qfractions, index, rs_p, order):
+    dgamma = np.zeros(x.size)
+    if index.size > 1:
+        x_sub = x[index]
+        xsum = x_sub.sum()
+        if xsum:
+            x_sub = x_sub / xsum
+            psis, dpsis, d2psis = psi_abc_derivatives(T, interactions)
+            group_gamma_derivative(
+                dgamma, x_sub, psis, dpsis, d2psis, group_mask, chem_Qs,
+                chem_Qfractions, index,
+                loggammacs_modified_UNIFAC(qs, rs, rs_p, x_sub), order
+            )
+    return dgamma
 
 @njit(cache=True)
-def gamma_UNIFAC_der2_T(x, T, interactions,
-                        group_psis, group_mask, qs, rs, Qs,
-                        chemgroups, chem_Qfractions, index, P=None):
-    return group_gamma_derivative(x, T, interactions, group_mask, qs, rs, Qs,
-                                  chemgroups, chem_Qfractions, index, False, 2)
+def gamma_UNIFAC_der_T(x, T, interactions, group_psis, group_mask, qs, rs,
+                       chem_Qs, chem_Qfractions, index, P=None):
+    return gamma_UNIFAC_derivative(x, T, interactions, group_mask, qs, rs,
+                                   chem_Qs, chem_Qfractions, index, 1)
 
 @njit(cache=True)
-def gamma_modified_UNIFAC_der_T(x, T, interactions,
-                                group_psis, group_mask, qs, rs, Qs,
-                                chemgroups, chem_Qfractions, index, P=None):
-    return group_gamma_derivative(x, T, interactions, group_mask, qs, rs, Qs,
-                                  chemgroups, chem_Qfractions, index, True, 1)
+def gamma_UNIFAC_der2_T(x, T, interactions, group_psis, group_mask, qs, rs,
+                        chem_Qs, chem_Qfractions, index, P=None):
+    return gamma_UNIFAC_derivative(x, T, interactions, group_mask, qs, rs,
+                                   chem_Qs, chem_Qfractions, index, 2)
 
 @njit(cache=True)
-def gamma_modified_UNIFAC_der2_T(x, T, interactions,
-                                 group_psis, group_mask, qs, rs, Qs,
-                                 chemgroups, chem_Qfractions, index, P=None):
-    return group_gamma_derivative(x, T, interactions, group_mask, qs, rs, Qs,
-                                  chemgroups, chem_Qfractions, index, True, 2)
+def gamma_PSRK_der_T(x, T, interactions, group_psis, group_mask, qs, rs,
+                     chem_Qs, chem_Qfractions, index, P=None):
+    return gamma_PSRK_derivative(x, T, interactions, group_mask, qs, rs,
+                                 chem_Qs, chem_Qfractions, index, 1)
 
 @njit(cache=True)
-def gamma_group_der_P(x, T, interactions,
-                      group_psis, group_mask, qs, rs, Qs,
-                      chemgroups, chem_Qfractions, index, P=None):
+def gamma_PSRK_der2_T(x, T, interactions, group_psis, group_mask, qs, rs,
+                      chem_Qs, chem_Qfractions, index, P=None):
+    return gamma_PSRK_derivative(x, T, interactions, group_mask, qs, rs,
+                                 chem_Qs, chem_Qfractions, index, 2)
+
+@njit(cache=True)
+def gamma_modified_UNIFAC_der_T(x, T, interactions, group_psis, group_mask, qs, rs,
+                                chem_Qs, chem_Qfractions, index, rs_p, P=None):
+    return gamma_modified_UNIFAC_derivative(x, T, interactions, group_mask, qs, rs,
+                                            chem_Qs, chem_Qfractions, index, rs_p, 1)
+
+@njit(cache=True)
+def gamma_modified_UNIFAC_der2_T(x, T, interactions, group_psis, group_mask, qs, rs,
+                                 chem_Qs, chem_Qfractions, index, rs_p, P=None):
+    return gamma_modified_UNIFAC_derivative(x, T, interactions, group_mask, qs, rs,
+                                            chem_Qs, chem_Qfractions, index, rs_p, 2)
+
+@njit(cache=True)
+def gamma_group_der_P(x, T, interactions, group_psis, group_mask, qs, rs,
+                      chem_Qs, chem_Qfractions, index, rs_p=None, P=None):
     # Group contribution models are independent of pressure
     return np.zeros(x.size)
 
@@ -410,12 +477,12 @@ class GroupActivityCoefficients(ActivityCoefficients):
     
     """
     P_dependent = False
-    __slots__ = ('_rs', '_qs', '_Qs','_chemgroups',
+    __slots__ = ('_rs', '_qs', '_Qs','_chemgroups', '_chem_Qs',
                  '_group_psis',  '_chem_Qfractions',
                  '_group_mask', '_interactions',
-                 '_chemicals', '_index')
+                 '_chemicals', '_index', '_args')
 
-    #: Interaction parameters (a, b, c) for missing interactions.
+    #: Interaction parameters for missing interactions.
     _no_interaction = (0., 0., 0.)
     _cached = {}
 
@@ -444,7 +511,7 @@ class GroupActivityCoefficients(ActivityCoefficients):
         self._rs = chemgroups @ Rs
         self._qs = chemgroups @ Qs
         self._chemgroups = chemgroups
-        chem_Qs = Qs * chemgroups
+        self._chem_Qs = chem_Qs = Qs * chemgroups
         self._chem_Qfractions = cQfs = chem_Qs/chem_Qs.sum(1, keepdims=True)
         all_interactions = self.all_interactions
         if isinstance(all_interactions, str): # Load on demand
@@ -452,9 +519,8 @@ class GroupActivityCoefficients(ActivityCoefficients):
         N_groups = len(all_groups)
         group_shape = (N_groups, N_groups)
         no_interaction = self._no_interaction
-        # Interaction parameters as (a, b, c), where psi = exp(-a/T - b - c*T)
         self._interactions = np.array(
-            [[as_abc(get_interaction(all_interactions, i, j, no_interaction))
+            [[get_interaction(all_interactions, i, j, no_interaction)
               for i in main_group_ids]
              for j in main_group_ids], dtype=float)
         # Psis array with only symmetrically available groups
@@ -466,20 +532,25 @@ class GroupActivityCoefficients(ActivityCoefficients):
         for index in indices:
             for i in index:
                 group_mask[i, index] = True
+        self._save_args()
         self._cached[chemicals] = self
         self._chemicals = chemicals
         return self
+    
+    def _save_args(self):
+        # Save arguments of activity coefficient functions, which are 
+        # independent of temperature, pressure, and composition. Subclasses 
+        # may extend this method to save model-specific arguments.
+        self._args = (self._interactions, self._group_psis, self._group_mask,
+                      self._qs, self._rs, self._chem_Qs,
+                      self._chem_Qfractions, self._index)
     
     def __reduce__(self):
         return type(self), (self.chemicals,)
     
     @property
     def args(self):
-        return (self._interactions,
-                self._group_psis, self._group_mask,
-                self._qs, self._rs, self._Qs,
-                self._chemgroups, self._chem_Qfractions,
-                self._index)
+        return self._args
 
     @property
     def f_der_P(self):
@@ -497,13 +568,10 @@ class GroupActivityCoefficients(ActivityCoefficients):
             Temperature [K]
         
         """
-        psis = self.psi(T, self._interactions.copy())
-        self._group_psis[self._group_mask] =  psis[self._group_mask]
-        return group_activity_coefficients(x, self._chemgroups,
-                                           self.loggammacs(self._qs, self._rs, x),
-                                           self._Qs, psis,
-                                           self._chem_Qfractions,
-                                           self._group_psis)
+        index = self._index
+        x_all = np.zeros(len(self._chemicals))
+        x_all[index] = x
+        return self.f(x_all, T, *self._args)[index]
     
     def __call__(self, x, T, P=101325):
         """
@@ -550,6 +618,7 @@ class UNIFACActivityCoefficients(GroupActivityCoefficients):
     all_subgroups = UFSG
     all_interactions = 'UFIP'
     group_name = 'UNIFAC'
+    _no_interaction = 0. # Only parameter a, where psi = exp(-a/T)
 
     @property
     def f(self):
@@ -562,14 +631,6 @@ class UNIFACActivityCoefficients(GroupActivityCoefficients):
     @property
     def f_der2_T(self):
         return gamma_UNIFAC_der2_T
-
-    @property
-    def loggammacs(self):
-        return loggammacs_UNIFAC
-
-    @property
-    def psi(self):
-        return psi_abc
 
 
 class UNIFAC2ActivityCoefficients(UNIFACActivityCoefficients):
@@ -621,6 +682,19 @@ class PSRKActivityCoefficients(UNIFACActivityCoefficients):
     all_subgroups = PSRKSG
     all_interactions = 'PSRKIP'
     group_name = 'PSRK'
+    _no_interaction = (0., 0., 0.) # Parameters (a, b, c), where psi = exp(-a/T - b - c*T)
+
+    @property
+    def f(self):
+        return gamma_PSRK
+
+    @property
+    def f_der_T(self):
+        return gamma_PSRK_der_T
+
+    @property
+    def f_der2_T(self):
+        return gamma_PSRK_der2_T
 
 
 class ModifiedUNIFACActivityCoefficients(GroupActivityCoefficients):
@@ -679,13 +753,10 @@ class ModifiedUNIFACActivityCoefficients(GroupActivityCoefficients):
     def f_der2_T(self):
         return gamma_modified_UNIFAC_der2_T
 
-    @property
-    def loggammacs(self):
-        return loggammacs_modified_UNIFAC
-
-    @property
-    def psi(self):
-        return psi_abc
+    def _save_args(self):
+        super()._save_args()
+        # Volume fractions of the modified combinatorial term use r_i^0.75
+        self._args += (self._rs ** 0.75,)
 
 DortmundActivityCoefficients = ModifiedUNIFACActivityCoefficients
 
@@ -885,7 +956,7 @@ class EOSActivityCoefficients(ActivityCoefficients):
     critical pressure, or acentric factor are default to 1.
 
     """
-    __slots__ = ('_index', '_eos', '_TP', '_phis_pure')
+    __slots__ = ('_index', '_eos', '_eos_parameters', '_TP', '_phis_pure')
     P_dependent = True
     EOS = None #: type[GCEOSMIX] Mixture cubic EOS class.
     chemsep_db = None #: Optional[str] Name of ChemSep table of interaction parameters.
@@ -911,11 +982,26 @@ class EOSActivityCoefficients(ActivityCoefficients):
         self = super().__new__(cls)
         self._chemicals = chemicals
         self._index = np.array(index, dtype=int)
+        self._save_eos_parameters()
         self._eos = None
         self._TP = None
         self._phis_pure = None
         cached[chemicals] = self
         return self
+
+    def _save_eos_parameters(self):
+        # Save EOS parameters of chemicals with defined critical properties,
+        # which are independent of temperature, pressure, and composition
+        chemicals = [self._chemicals[i] for i in self._index]
+        Tcs = [i.Tc for i in chemicals]
+        Pcs = [i.Pc for i in chemicals]
+        omegas = [i.omega for i in chemicals]
+        kijs = None
+        if self.chemsep_db is not None:
+            try:
+                kijs = get_kijs(self.chemsep_db, chemicals)
+            except: pass
+        self._eos_parameters = dict(kijs=kijs, Tcs=Tcs, Pcs=Pcs, omegas=omegas)
 
     def __reduce__(self):
         return type(self), (self.chemicals,)
@@ -927,21 +1013,7 @@ class EOSActivityCoefficients(ActivityCoefficients):
         x = [float(i) for i in x]
         eos = self._eos
         if eos is None:
-            chemicals = [self._chemicals[i] for i in self._index]
-            kijs = None
-            if self.chemsep_db is not None:
-                try:
-                    kijs = IPDB.get_ip_asymmetric_matrix(
-                        self.chemsep_db, [i.CAS for i in chemicals], 'kij'
-                    )
-                except: pass
-            eos = self.EOS(
-                T=T, P=P, zs=x, kijs=kijs,
-                Tcs=[i.Tc for i in chemicals],
-                Pcs=[i.Pc for i in chemicals],
-                omegas=[i.omega for i in chemicals],
-                only_l=True,
-            )
+            eos = self.EOS(T=T, P=P, zs=x, only_l=True, **self._eos_parameters)
         else:
             eos = eos.to_TP_zs_fast(T=T, P=P, zs=x, only_l=True)
         self._eos = eos
@@ -1075,7 +1147,7 @@ class PRActivityCoefficients(EOSActivityCoefficients):
     >>> chemicals = tmo.Chemicals(['Hexane', 'Toluene'], cache=True)
     >>> Gamma = tmo.equilibrium.PRActivityCoefficients(chemicals)
     >>> Gamma([0.5, 0.5], 350., 101325.)
-    array([1.059, 1.069])
+    array([1.097, 1.117])
 
     """
     __slots__ = ()
@@ -1100,7 +1172,7 @@ class PR78ActivityCoefficients(PRActivityCoefficients):
     >>> chemicals = tmo.Chemicals(['Hexane', 'Toluene'], cache=True)
     >>> Gamma = tmo.equilibrium.PR78ActivityCoefficients(chemicals)
     >>> Gamma([0.5, 0.5], 350., 101325.)
-    array([1.059, 1.069])
+    array([1.097, 1.117])
 
     """
     __slots__ = ()
@@ -1112,7 +1184,9 @@ class SRKActivityCoefficients(EOSActivityCoefficients):
     Create a SRKActivityCoefficients object that estimates activity
     coefficients using the Soave-Redlich-Kwong equation of state when called
     with a composition, a temperature (K), and a pressure (Pa). Binary
-    interaction parameters are zero.
+    interaction parameters are taken from ChemSep, or estimated from ChemSep
+    PR interaction parameters using the PR2SRK relationship if missing
+    (see :func:`~thermosteam.equilibrium.SRK_kijs`).
 
     Parameters
     ----------
@@ -1124,11 +1198,12 @@ class SRKActivityCoefficients(EOSActivityCoefficients):
     >>> chemicals = tmo.Chemicals(['Hexane', 'Toluene'], cache=True)
     >>> Gamma = tmo.equilibrium.SRKActivityCoefficients(chemicals)
     >>> Gamma([0.5, 0.5], 350., 101325.)
-    array([1.061, 1.071])
+    array([1.097, 1.116])
 
     """
     __slots__ = ()
     EOS = eos_mix.SRKMIX
+    chemsep_db = 'ChemSep SRK'
 
 
 activity_coefficient_classes = (
