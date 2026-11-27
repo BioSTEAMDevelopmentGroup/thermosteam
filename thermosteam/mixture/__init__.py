@@ -25,7 +25,6 @@ from .ideal_mixture_model import (
     IdealHvapModel
 )
 from .mixing_rules import (
-    VolumeMixtureModel,
     ViscosityMixtureModel,
     ThermalConductivityMixtureModel,
     SurfaceTensionMixtureModel,
@@ -348,11 +347,23 @@ class Mixture:
     
     def xmu(self, phase_mol, T, P):
         """Multi-phase mixture hydrolic [Pa*s]."""
-        return sum([self.mu(phase, mol, T, P) for phase, mol in phase_mol])
-    
+        # Mixing rules take normalized composition of each phase
+        mu = self.mu
+        value = 0.
+        for phase, mol in phase_mol:
+            total = mol.sum()
+            if total: value += total * mu(phase, mol / total, T, P)
+        return value
+
     def xkappa(self, phase_mol, T, P):
         """Multi-phase mixture thermal conductivity [W/m/K]."""
-        return sum([self.kappa(phase, mol, T, P) for phase, mol in phase_mol])
+        # Mixing rules take normalized composition of each phase
+        kappa = self.kappa
+        value = 0.
+        for phase, mol in phase_mol:
+            total = mol.sum()
+            if total: value += total * kappa(phase, mol / total, T, P)
+        return value
         
     def __repr__(self):
         return f"{type(self).__name__}(...)"
@@ -523,8 +534,8 @@ class IdealMixture(Mixture):
             chemicals = [(i if isa(i, Chemical) else Chemical(i, cache=cache)) for i in chemicals]
             MWs = chemical_data_array(chemicals, 'MW')
         getfield = getattr
-        Cn =  create_mixture_model(chemicals, 'Cn', IdealTMixtureModel)
-        H =  create_mixture_model(chemicals, 'H', IdealTPMixtureModel)
+        Cn = create_mixture_model(chemicals, 'Cn', IdealTMixtureModel)
+        H = create_mixture_model(chemicals, 'H', IdealTPMixtureModel)
         S = create_mixture_model(chemicals, 'S', IdealEntropyModel)
         H_excess = create_mixture_model(chemicals, 'H_excess', IdealTPMixtureModel)
         S_excess = create_mixture_model(chemicals, 'S_excess', IdealTPMixtureModel)
@@ -574,15 +585,11 @@ class GibbsExcessMixture(Mixture):
 
     Temperature derivatives of activity coefficients are given by the
     activity coefficient model (`f_der_T` and `f_der2_T`). Pure component
-    contributions, heats of vaporization, and relative permitivities are
-    computed by molar weighting. Volumetric, transport, and interfacial
-    properties are computed by the following mixing rules (see
+    contributions, heats of vaporization, relative permitivities, and molar
+    volumes (Amagat's law) are computed by molar weighting. Transport and
+    interfacial properties are computed by the following mixing rules (see
     :mod:`~thermosteam.mixture.mixing_rules`):
 
-    * Liquid molar volume: Amagat's law (consistent with activity
-      coefficient models, which have no pressure dependence).
-    * Gas molar volume: Amagat's law plus the excess volume given by second
-      virial coefficients (Tsonopoulos with Tarakad-Danner combining rules).
     * Liquid viscosity: logarithmic molar mixing (Grunberg-Nissan).
     * Gas viscosity: Wilke.
     * Liquid thermal conductivity: Li (DIPPR 9I).
@@ -686,11 +693,7 @@ class GibbsExcessMixture(Mixture):
         H_ideal = create_mixture_model(chemicals, 'H', IdealTPMixtureModel)
         S_ideal = create_mixture_model(chemicals, 'S', IdealEntropyModel)
         IDs = [i.ID for i in chemicals]
-        V = VolumeMixtureModel(
-            get_phase_handles(chemicals, 'V'),
-            *[[getfield(i, j) for i in chemicals] for j in ('Tc', 'Pc', 'Vc', 'omega')],
-            IDs,
-        )
+        V = create_mixture_model(chemicals, 'V', IdealTPMixtureModel)
         mu = ViscosityMixtureModel(get_phase_handles(chemicals, 'mu'), MWs, IDs)
         kappa = ThermalConductivityMixtureModel(get_phase_handles(chemicals, 'kappa'), mu.models, V.models, MWs, IDs)
         Hvap = IdealHvapModel(chemicals)
