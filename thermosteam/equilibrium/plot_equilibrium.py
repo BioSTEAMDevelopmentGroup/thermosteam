@@ -150,24 +150,39 @@ def plot_vle_phase_envelope(
         IDs, zs, T_range=None, P_range=None, thermo=None, vc=None, lc=None, 
         xticks=None, yticks=None, N=None, line_styles=None, labels=None): # pragma: no cover
     """
-    Plot the binary phase envelope of two chemicals at a given temperature or pressure.
+    Plot the bubble point (liquid) and dew point (vapor) curves of a mixture
+    at a fixed overall composition over a range of temperatures or pressures.
+    If a pressure range is given, pressure [atm] is plotted on the x-axis and
+    temperature [K] on the y-axis; if a temperature range is given, temperature
+    [K] is plotted on the x-axis and pressure [atm] on the y-axis. Multiple
+    thermodynamic property packages may be passed to compare models.
 
     Parameters
     ----------
     IDs : Iterable[str]
-        IDs of chemicals in equilibrium.
+        IDs of chemicals in equilibrium (any number of components).
     zs : Iterable[float]
-        Molar fraction of chemicals in equilibrium.
-    T_range : tuple[float, float] optional
-        Temperature [K]. 
-    P_range : tuple[float, float] optional
-        Pressure [atm]. 
+        Overall molar fraction of chemicals in equilibrium.
+    T_range : tuple[float, float], optional
+        Lower and upper temperature bounds [K].
+    P_range : tuple[float, float], optional
+        Lower and upper pressure bounds [atm].
     thermo : Thermo|Iterable[Thermo], optional
-        Thermodynamic property package(s).
+        Thermodynamic property package(s). Defaults to the current thermo.
     vc : str, optional
-        Color of vapor line.
+        Color of vapor (dew point) line.
     lc : str, optional
-        Color of liquid line.
+        Color of liquid (bubble point) line.
+    xticks : Iterable[float], optional
+        Ticks of the x-axis.
+    yticks : Iterable[float], optional
+        Ticks of the y-axis.
+    N : int, optional
+        Number of points along the temperature or pressure range. Defaults to 20.
+    line_styles : Iterable[str], optional
+        Line style for each property package. Defaults to ['-', '-.', '--'].
+    labels : Iterable[str], optional
+        Legend label for each property package.
 
     """
     if line_styles is None: line_styles = ['-', '-.', '--']
