@@ -12,6 +12,7 @@ from ..utils import colors, style_axis
 from chemicals.identifiers import to_searchable_format
 from .bubble_point import BubblePoint
 from .lle import LLE, solve_lle_phase
+from .sle import SLE
 from ..indexer import MaterialIndexer
 import matplotlib.pyplot as plt
 from matplotlib.ticker import AutoLocator
@@ -28,6 +29,7 @@ __all__ = (
     'plot_vle_binary_phase_envelope',
     'plot_vle_phase_envelope',
     'plot_vlle_phase_envelope',
+    'plot_sle_binary_phase_envelope',
     'plot_lle_ternary_diagram',
     'ternary_composition_grid',
 )
@@ -429,6 +431,129 @@ def plot_vlle_phase_envelope(
     if xticks is None: xticks = [0, 0.2, 0.4, 0.6, 0.8, 1]
     style_axis(xticks=xticks, yticks=yticks)
 
+def plot_sle_binary_phase_envelope(
+        chemicals, P=None, thermo=None, N=None, dCp=None,
+        ylim=None, lc=None, ec=None, xticks=None, yticks=None,
+    ): # pragma: no cover
+    """
+    Plot the solid-liquid equilibrium (SLE) phase envelope of a binary
+    mixture at a given pressure. The molar fraction of the first chemical is
+    plotted on the x-axis and the temperature on the y-axis. Each chemical is
+    assumed to crystallize as a pure solid (i.e., simple eutectic behavior).
+
+    The envelope includes the liquidus curves (solubility of each solid) and
+    the eutectic line, below which both chemicals are solid.
+
+    Parameters
+    ----------
+    chemicals : Iterable[Chemical|str]
+        The two chemicals in equilibrium; both must have a melting point,
+        `Tm`, and a heat of fusion, `Hfus`.
+        The first chemical's molar fraction is plotted along the x-axis.
+    P : float, optional
+        Pressure [Pa]. Defaults to 101325.
+    thermo : Thermo, optional
+        Thermodynamic property package.
+    N : int, optional
+        Number of points along each liquidus curve. Defaults to 50.
+    dCp : float or dict[str, float], optional
+        Heat capacity of fusion [J/mol/K]. Defaults to 0.
+    ylim : tuple[float, float], optional
+        Limits of the y-axis. By default, the region below the eutectic line
+        is shown down to 20% of the span of the liquidus curves.
+    lc : str, optional
+        Color of liquidus lines.
+    ec : str, optional
+        Color of eutectic line.
+
+    Returns
+    -------
+    T_eutectic : float
+        Eutectic temperature [K].
+    x_eutectic : float
+        Molar fraction of the first chemical at the eutectic point.
+
+    Examples
+    --------
+    >>> # from thermosteam import equilibrium as eq
+    >>> # eq.plot_sle_binary_phase_envelope(['Naphthalene', 'Benzene'])
+
+    """
+    thermo = as_thermo(thermo, chemicals)
+    chemicals = [thermo.as_chemical(i) for i in chemicals]
+    if len(chemicals) != 2:
+        raise ValueError(f'must pass exactly two chemicals, not {len(chemicals)}')
+    for i in chemicals:
+        if not (i.Tm and i.Hfus):
+            raise RuntimeError(
+                f"{i} requires a melting temperature, Tm, and a heat of fusion, Hfus"
+            )
+    IDs = [i.ID for i in chemicals]
+    if P is None: P = 101325.
+    if N is None: N = 50
+    imol = MaterialIndexer(phases=('l', 's'), chemicals=thermo.chemicals)
+    sle = SLE(imol, tmo.ThermalCondition(298.15, P), thermo, dCp=dCp)
+
+    def liquid_composition(z0, T):
+        # Return the molar fraction of the first chemical in the liquid
+        imol.empty()
+        imol['l'] = [z0, 1. - z0]
+        sle(T=T)
+        liquid = imol['l'].to_array()
+        return liquid[0] / liquid.sum()
+
+    # Eutectic point; any feed with both chemicals solidifies at the eutectic
+    # temperature and the liquid just above it is at the eutectic composition.
+    imol.empty()
+    imol['l'] = [0.5, 0.5]
+    T_eutectic = sle.T_solidus()
+    x_eutectic = liquid_composition(0.5, T_eutectic + 1e-6)
+
+    # Trace each liquidus curve from the eutectic point to the melting point
+    # of the crystallizing chemical. A feed of nearly the pure crystallizing
+    # chemical ensures the solid is present.
+    branches = []
+    for z0, Tm, x_pure in ((1. - 1e-9, chemicals[0].Tm, 1.), (1e-9, chemicals[1].Tm, 0.)):
+        Ts = np.linspace(T_eutectic, Tm, N)
+        xs = [x_eutectic, *[liquid_composition(z0, T) for T in Ts[1:-1]], x_pure]
+        branches.append((xs, Ts))
+    Ts = [j for _, i in branches for j in i]
+    T_max = max(Ts)
+    if ylim is None:
+        ylim = (T_eutectic - 0.2 * (T_max - T_eutectic), T_max + 0.05 * (T_max - T_eutectic))
+    if yticks is None:
+        yticks = [int(i) if i.is_integer() else i for i in AutoLocator().tick_values(*ylim)]
+    ylim = (min(ylim[0], min(yticks)), max(ylim[1], max(yticks)))
+
+    if lc is None: lc = colors.blue.RGBn
+    if ec is None: ec = colors.neutral_shade.RGBn
+    plt.figure()
+    for i, (xs, Ts) in enumerate(branches):
+        plt.plot(xs, Ts, c=lc, label=None if i else 'Liquidus')
+    plt.plot([0, 1], [T_eutectic, T_eutectic], c=ec, label='Eutectic line')
+    # Label phase regions (if wide enough)
+    text = dict(ha='center', va='center', color=colors.neutral_shade.RGBn)
+    plt.text(0.5, 0.5 * (ylim[0] + T_eutectic), f'{IDs[0]}(s) + {IDs[1]}(s)', **text)
+    T = T_eutectic + 0.5 * (T_max - T_eutectic)
+    (xs_a, Ts_a), (xs_b, Ts_b) = branches
+    x_lb = np.interp(T, Ts_b, xs_b) if T < Ts_b[-1] else 0.
+    x_ub = np.interp(T, Ts_a, xs_a) if T < Ts_a[-1] else 1.
+    plt.text(0.5 * (x_lb + x_ub), T, 'Liquid', **text)
+    for (xs, Ts), x_edge, ID in zip(branches, (1., 0.), IDs):
+        T = T_eutectic + 0.3 * (Ts[-1] - T_eutectic)
+        x_liquidus = np.interp(T, Ts, xs)
+        if abs(x_edge - x_liquidus) < 0.3: continue
+        plt.text(0.5 * (x_liquidus + x_edge), T, f'Liquid + {ID}(s)', **text)
+    plt.xlim([0, 1])
+    plt.ylim(ylim)
+    # The liquid region is widest above the chemical with the lower melting point
+    plt.legend(loc='upper left' if chemicals[0].Tm > chemicals[1].Tm else 'upper right')
+    plt.xlabel(f'{IDs[0]} molar fraction')
+    plt.ylabel('Temperature [K]')
+    if xticks is None: xticks = [0, 0.2, 0.4, 0.6, 0.8, 1]
+    style_axis(xticks=xticks, yticks=yticks)
+    return T_eutectic, x_eutectic
+
 def plot_lle_ternary_diagram(
         carrier, solvent, solute, T, P=101325, thermo=None, color=None,
         tie_line_points=None,
@@ -461,6 +586,11 @@ def plot_lle_ternary_diagram(
         Number of tie lines. The default is 5.
     N_equilibrium_grids : int, optional
         Number of solute composition points to plot. The default is 20.
+
+    Returns
+    -------
+    tax : ternary.TernaryAxesSubplot
+        Ternary axis (wt. % of carrier, solute, and solvent with a scale of 100).
 
     Examples
     --------
@@ -577,3 +707,4 @@ def plot_lle_ternary_diagram(
     tax.ticks(axis='lbr', multiple=10, linewidth=1, offset=0.025)
     tax.get_axes().axis('off')
     tax.clear_matplotlib_ticks()
+    return tax

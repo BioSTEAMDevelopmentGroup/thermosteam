@@ -253,9 +253,9 @@ class SLE(Equilibrium, phases='ls'):
     solidus temperature (eutectic point, last liquid crystallizes upon
     cooling) are also available:
 
-    >>> round(sle.liquidus_temperature(), 1)
+    >>> round(sle.T_liquidus(), 1)
     319.5
-    >>> round(sle.solidus_temperature(), 1)
+    >>> round(sle.T_solidus(), 1)
     179.1
 
     Solid-liquid equilibrium of a pure chemical:
@@ -433,7 +433,7 @@ class SLE(Equilibrium, phases='ls'):
             else: T_hot = T
         return 0.5 * (T_cold + T_hot)
 
-    def liquidus_temperature(self, solute=None):
+    def T_liquidus(self, solute=None):
         """
         Return the temperature [K] at which the first solid crystallizes upon
         cooling (i.e., the highest temperature at which a solid is present).
@@ -451,7 +451,7 @@ class SLE(Equilibrium, phases='ls'):
         ...     phases=('s', 'l')
         ... )
         >>> sle = equilibrium.SLE(imol)
-        >>> round(sle.liquidus_temperature(), 1)
+        >>> round(sle.T_liquidus(), 1)
         302.1
 
         References
@@ -465,7 +465,7 @@ class SLE(Equilibrium, phases='ls'):
             lambda T: self._solid_fraction_at_T(T) > 0., *self._temperature_bounds()
         )
 
-    def solidus_temperature(self, solute=None):
+    def T_solidus(self, solute=None):
         """
         Return the temperature [K] at which the last liquid crystallizes upon
         cooling (e.g., the eutectic temperature). If a liquid remains at all
@@ -485,7 +485,7 @@ class SLE(Equilibrium, phases='ls'):
         ...     phases=('s', 'l')
         ... )
         >>> sle = equilibrium.SLE(imol)
-        >>> round(sle.solidus_temperature(), 1)
+        >>> round(sle.T_solidus(), 1)
         269.7
 
         References
@@ -495,9 +495,9 @@ class SLE(Equilibrium, phases='ls'):
 
         """
         if not self._setup(solute, None): return None
-        return self._solidus_temperature()
+        return self._T_solidus()
 
-    def _solidus_temperature(self):
+    def _T_solidus(self):
         T_min, T_max = self._temperature_bounds()
         T_liquidus = self._phase_boundary(
             lambda T: self._solid_fraction_at_T(T) > 0., T_min, T_max
@@ -663,7 +663,7 @@ class SLE(Equilibrium, phases='ls'):
         candidates = self._candidates
         if self._solubility is None:
             T_max = self._temperature_bounds()[1]
-            T_min = max(self._solidus_temperature() - 1e-6, self.T_tol)
+            T_min = max(self._T_solidus() - 1e-6, self.T_tol)
         else:
             T = thermal_condition.T
             T_max = T + 50.

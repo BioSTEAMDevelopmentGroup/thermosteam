@@ -112,7 +112,7 @@ def test_sle_eutectic_plateau():
     # between the completely solid and the saturated liquid states result in
     # the eutectic temperature with varying solid fraction
     s = sle_stream(['Toluene', 'Naphthalene'], [10, 1])
-    T_eutectic = s.sle.solidus_temperature()
+    T_eutectic = s.sle.T_solidus()
     dT = 1e-3
     s.sle(T=T_eutectic - dT)
     assert s.sle.solid_fraction == 1.
@@ -177,7 +177,7 @@ def test_sle_ideal_freezing_point_depression():
     s = sle_stream(['Water', 'Glucose'], [0.98, 0.02], Gamma=IdealActivityCoefficients)
     water = s.chemicals.Water
     T = 1. / (1. / water.Tm - R * log(0.98) / water.Hfus)
-    assert_allclose(s.sle.liquidus_temperature(), T, atol=1e-6)
+    assert_allclose(s.sle.T_liquidus(), T, atol=1e-6)
     s.sle(T=T - 1.)
     assert s.sle.solids == ('Water',)
 
@@ -193,7 +193,7 @@ benzene_naphthalene_liquidus = [
 @pytest.mark.parametrize('T, x', benzene_naphthalene_liquidus)
 def test_benzene_naphthalene_liquidus(T, x):
     s = sle_stream(['Benzene', 'Naphthalene'], [1 - x, x])
-    assert_allclose(s.sle.liquidus_temperature(), T, atol=1.)
+    assert_allclose(s.sle.T_liquidus(), T, atol=1.)
 
 # (chemicals, eutectic composition, eutectic temperature [K], tolerance [K])
 eutectic_points = [
@@ -208,7 +208,7 @@ eutectic_points = [
 @pytest.mark.parametrize('chemicals, z, T, atol', eutectic_points)
 def test_eutectic_temperature(chemicals, z, T, atol):
     s = sle_stream(chemicals, z)
-    assert_allclose(s.sle.solidus_temperature(), T, atol=atol)
+    assert_allclose(s.sle.T_solidus(), T, atol=atol)
 
 # Naphthalene solubility at ~298 K: (solvent, mol fraction, relative tolerance)
 naphthalene_solubility = [
@@ -245,6 +245,19 @@ def test_glucose_solubility(T, x):
     assert_allclose(liquid_mol_fraction(s, 'Glucose'), x, rtol=0.1)
 
 
+def test_plot_sle_binary_phase_envelope():
+    # Eutectic point of benzene-naphthalene: 269.6 K at a naphthalene mol
+    # fraction of 0.134 (Kravchenko, 1939; NIST SRD 106 sysID 59_126)
+    import matplotlib
+    matplotlib.use('Agg')
+    import matplotlib.pyplot as plt
+    from thermosteam.equilibrium import plot_sle_binary_phase_envelope
+    tmo.settings.set_thermo(['Naphthalene', 'Benzene'], cache=True)
+    T, x = plot_sle_binary_phase_envelope(['Naphthalene', 'Benzene'], N=10)
+    plt.close('all')
+    assert_allclose(T, 269.6, atol=0.5)
+    assert_allclose(x, 0.134, atol=0.01)
+
 if __name__ == '__main__':
     for case in equilibrium_cases:
         test_sle_equilibrium_conditions(*case)
@@ -266,3 +279,4 @@ if __name__ == '__main__':
         test_naphthalene_solubility(*case)
     for case in glucose_solubility:
         test_glucose_solubility(*case)
+    test_plot_sle_binary_phase_envelope()
