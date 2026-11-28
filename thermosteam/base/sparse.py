@@ -17,12 +17,17 @@ __all__ = (
 
 open_slice = slice(None)
 bools = frozenset([bool, np.bool_, np.dtype('bool')])
+scalar_types = frozenset([
+    int, float, bool, np.float64, np.float32, np.int64, np.int32, np.bool_
+]) # For fast dispatch of sparse-scalar operations
 ndim_max = 3
 
 # TODO: With python 3.10, use strict=True zip kwarg
 sparse_array_imath = """
 def __i{name}__(self, other):
-    if other.__class__ is SparseArray:
+    if other.__class__ in scalar_types:
+        for i in self.rows: i._i{name}_scalar(other)
+    elif other.__class__ is SparseArray:
         rows = self.rows
         other_rows = other.rows
         dtype = self.dtype
@@ -62,7 +67,9 @@ def __i{name}__(self, other):
 sparse_array_math = """
 def __{name}__(self, other):
     rows = self.rows
-    if other.__class__ is SparseArray:
+    if other.__class__ in scalar_types:
+        return SparseArray.from_rows([i._{name}_scalar(other) for i in rows])
+    elif other.__class__ is SparseArray:
         other_rows = other.rows
         dtype = self.dtype
         other_dtype = other.dtype
@@ -119,7 +126,10 @@ not_read_only = ''
 sparse_vector_imath = """
 def __i{name}__(self, other):
     {read_only}
-    if other.__class__ in SparseVectorSet:
+    cls = other.__class__
+    if cls in scalar_types:
+        self._i{name}_scalar(other)
+    elif cls in SparseVectorSet:
         self._i{name}_sparse(other)
     elif other.__class__ is SparseArray:
         if len(other.rows) == 1:
@@ -142,7 +152,9 @@ def __i{name}__(self, other):
 sparse_vector_math = """
 def __{name}__(self, other):
     cls = other.__class__
-    if cls is self.__class__:
+    if cls in scalar_types:
+        return self._{name}_scalar(other)
+    elif cls is self.__class__:
         new = self._{name}_sparse(other)
     elif cls is SparseLogicalVector:
         other = SparseVector.from_dict({{i: 1. for i in other.set}}, other.size)
@@ -484,7 +496,7 @@ def get_ndim(value):
     return ndim
 
 def reduce_ndim(value):
-    if hasattr(value, 'ndim'): 
+    if hasattr(value, 'ndim'):
         ndim = value.ndim
         while ndim:
             size = len(value)
@@ -525,17 +537,28 @@ def get_array_properties(index):
             raise ValueError(f'index dimensions exceed {ndim_max}')
     return ndim, index.__class__ in bools
 
+def add_dicts(dcts):
+    """Return the element-wise sum of dictionaries."""
+    if not dcts: return {}
+    first, *others = dcts
+    values = first.copy()
+    for other in others:
+        for i, j in other.items():
+            if i in values: values[i] += j
+            else: values[i] = j
+    return {i: j for i, j in values.items() if j}
+
 def sum_sparse_vectors(svs):
     if svs: dtype = svs[0].dtype
     else: return {}
     if dtype is bool:
-        sets = [i.set for i in svs]
-        keys = {i for set in sets for i in set}
-        dct = {i: sum([1. for j in sets if i in j]) for i in keys}
+        dct = {}
+        for sv in svs:
+            for i in sv.set:
+                if i in dct: dct[i] += 1.
+                else: dct[i] = 1.
     elif dtype is float:
-        dcts = [i.dct for i in svs]
-        keys = {i for dct in dcts for i in dct}
-        dct = {i: x for i in keys if (x:=sum([j[i] for j in dcts if i in j]))}
+        dct = add_dicts([i.dct for i in svs])
     else:
         raise RuntimeError('unexpected dtype')
     return dct
@@ -1069,8 +1092,15 @@ class SparseArray:
             else:
                 raise RuntimeError('unexpected dtype')
         return arr
-    astype = to_array    
-    
+    astype = to_array
+
+    def __array__(self, dtype=None, copy=None):
+        # Allows NumPy to convert sparse arrays by only copying nonzero values
+        # instead of iterating through every element (e.g., np.dot(dense, sparse)).
+        if copy is False:
+            raise ValueError('a copy is required to convert a sparse array to a NumPy array')
+        return self.to_array(dtype)
+
     def sum_of(self, index, axis=0):
         rows = self.rows
         if axis == 0:
@@ -1483,17 +1513,13 @@ class SparseVector:
             for i in other_dcts:
                 if i is dct: repeated += 1
                 else: dcts.append(i)
-            if repeated == 0:
-                dct.clear()
-            elif repeated == 1:
+            if repeated == 1:
                 dcts.append(dct.copy())
-            else:
+            elif repeated:
                 dcts.append({i: j * repeated for i, j in dct.items()})
-            keys = {i for dct in dcts for i in dct}
-            for i in keys:
-                x = sum([j[i] for j in dcts if i in j])
-                if x: dct[i] = x
-                elif i in dct: del dct[i]
+            new = add_dicts(dcts)
+            dct.clear()
+            dct.update(new)
         else:
             self.dct.clear()
     
@@ -1664,7 +1690,8 @@ class SparseVector:
         for i, j in self.dct.items(): arr[i] = j
         return arr
     astype = to_array
-    
+    __array__ = SparseArray.__array__
+
     def copy(self):
         return SparseVector.from_dict(self.dct.copy(), self.size)
     
@@ -1698,7 +1725,7 @@ class SparseVector:
                 value.setflags(0)
                 return value
         elif ndim:
-            raise IndexError(f'index can be at most 1-d, not {ndim}-d')    
+            raise IndexError(f'index can be at most 1-d, not {ndim}-d')
         else:
             return dct.get(index, 0.)
 
@@ -2713,7 +2740,8 @@ class SparseLogicalVector:
         for i in self.set: arr[i] = True
         return arr
     astype = to_array
-    
+    __array__ = SparseArray.__array__
+
     def copy(self):
         return SparseLogicalVector.from_set(self.set.copy(), self.size)
     
@@ -2737,7 +2765,7 @@ class SparseLogicalVector:
                 value.setflags(0)
                 return value
         elif ndim:
-            raise IndexError(f'index can be at most 1-d, not {ndim}-d')    
+            raise IndexError(f'index can be at most 1-d, not {ndim}-d')
         else:
             return True if index in set else False
 
